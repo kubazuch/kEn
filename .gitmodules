@@ -1,0 +1,3 @@
+[submodule "kEn/vendor/spdlog"]
+	path = kEn/vendor/spdlog
+	url = https://github.com/gabime/spdlog.git

@@ -27,9 +27,15 @@
     <ClInclude Include="src\kEn\entry_point.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\kEn\log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\kEn\application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\kEn\log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
