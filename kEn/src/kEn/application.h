@@ -9,7 +9,7 @@ namespace kEn {
 		application();
 		virtual ~application();
 
-		void run();
+		virtual void run();
 	};
 
 	application* create_application();
