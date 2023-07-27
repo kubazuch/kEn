@@ -38,7 +38,7 @@ public:
 
 	void run() override
 	{
-		uint32_t c = 0;
+		uint32_t c = 0; 
 
 		kEn::event_dispatcher event_bus;
 		event_bus.subscribe<fizz_buzz_event>(on_fizz_buzz_event);
@@ -56,7 +56,7 @@ public:
 		}
 	}
 
-	static bool on_fizz_buzz_event(fizz_buzz_event& event)
+	static bool on_fizz_buzz_event(const fizz_buzz_event& event)
 	{
 		KEN_INFO(event);
 		return event.num() % 7 != 0;
