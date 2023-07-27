@@ -1,5 +1,6 @@
 #pragma once
 #include "core.h"
+#include "window.h"
 
 namespace kEn {
 
@@ -10,6 +11,11 @@ namespace kEn {
 		virtual ~application();
 
 		virtual void run();
+
+		VIRTUAL_FIVE(application);
+	protected:
+		std::unique_ptr<window> window_;
+		bool running_ = true;
 	};
 
 	application* create_application();

@@ -14,6 +14,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "kEn/log.h"
+
 #ifdef KEN_PLATFORM_WIN
 #	include <Windows.h>
 #endif

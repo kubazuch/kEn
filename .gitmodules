@@ -1,3 +1,6 @@
 [submodule "kEn/vendor/spdlog"]
 	path = kEn/vendor/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "kEn/vendor/GLFW"]
+	path = kEn/vendor/GLFW
+	url = https://github.com/glfw/glfw.git

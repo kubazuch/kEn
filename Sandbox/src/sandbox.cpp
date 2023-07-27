@@ -1,7 +1,6 @@
 #include <kEn.h>
 
 #include "kEn/event/event.h"
-#include <sstream>
 
 class fizz_buzz_event : public kEn::event<fizz_buzz_event>
 {
@@ -36,25 +35,25 @@ class sandbox : public kEn::application
 public:
 	sandbox() {	srand(time(NULL)); }
 
-	void run() override
-	{
-		uint32_t c = 0; 
+	//void run() override
+	//{
+	//	uint32_t c = 0; 
 
-		kEn::event_dispatcher event_bus;
-		event_bus.subscribe<fizz_buzz_event>(on_fizz_buzz_event);
-		
-		while(true)
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 1000));
-			
-			KEN_CORE_TRACE("Cycle no.: {0}", c);
+	//	kEn::event_dispatcher event_bus;
+	//	event_bus.subscribe<fizz_buzz_event>(on_fizz_buzz_event);
+	//	
+	//	while(running_)
+	//	{
+	//		std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 1000));
+	//		
+	//		KEN_CORE_TRACE("Cycle no.: {0}", c);
 
-			if (fizz_buzz_event event(c); !event_bus.dispatch(event))
-				KEN_CORE_ERROR("Fizzbuzz event wasn't handled");
+	//		if (fizz_buzz_event event(c); !event_bus.dispatch(event))
+	//			KEN_CORE_ERROR("Fizzbuzz event wasn't handled");
 
-			c++;
-		}
-	}
+	//		c++;
+	//	}
+	//}
 
 	static bool on_fizz_buzz_event(const fizz_buzz_event& event)
 	{

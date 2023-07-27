@@ -11,6 +11,11 @@ workspace "kEn"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+IncludeDir = {}
+IncludeDir["glfw"] = "kEn/vendor/GLFW/include"
+
+include "kEn/vendor/glfw.lua"
+
 project "kEn"
 	location "kEn"
 	kind "SharedLib"
@@ -29,7 +34,13 @@ project "kEn"
 
 	includedirs {
 		"%{prj.name}/src",
-		"%{prj.name}/vendor/spdlog/include"
+		"%{prj.name}/vendor/spdlog/include",
+		"%{IncludeDir.glfw}"
+	}
+
+	links {
+		"GLFW",
+		"opengl32.lib"
 	}
 
 	filter "system:windows"

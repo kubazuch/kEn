@@ -1,5 +1,8 @@
 #pragma once
 
+#include "kenpch.h"
+#include "kEn/core.h"
+
 namespace kEn
 {
 	class base_event
@@ -13,11 +16,7 @@ namespace kEn
 		virtual const char* name() const = 0;
 		virtual std::string to_string() const { return name(); }
 
-		base_event(const base_event&) = delete;
-		base_event(base_event&&) = delete;
-		base_event& operator=(const base_event& other) noexcept = delete;
-		base_event& operator=(base_event&& other) noexcept = delete;
-
+		VIRTUAL_FIVE(base_event);
 	protected: 
 		static std::size_t next_id()
 		{
