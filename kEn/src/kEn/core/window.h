@@ -2,7 +2,7 @@
 
 #include "kenpch.h"
 #include "core.h"
-#include "event/event.h"
+#include "kEn/event/event.h"
 
 namespace kEn
 {
@@ -20,7 +20,7 @@ namespace kEn
 	class KEN_API window
 	{
 	public:
-		using callback_t = std::function<void(base_event&)>;
+		using handler_t = std::function<void(base_event&)>;
 
 		window() = default;
 		virtual ~window() = default;
@@ -30,7 +30,7 @@ namespace kEn
 		virtual unsigned int width() const = 0;
 		virtual unsigned int height() const = 0;
 
-		virtual void set_event_callback(const callback_t& callback) = 0;
+		virtual void set_event_handler(const handler_t& handler) = 0;
 		virtual void set_vsync(bool enabled) = 0;
 		virtual bool vsync() const = 0;
 

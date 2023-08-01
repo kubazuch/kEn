@@ -7,8 +7,6 @@
 #include "spdlog/fmt/ostr.h"
 #pragma warning(pop)
 
-KEN_TEMPLATE template class KEN_API std::shared_ptr<spdlog::logger>;
-
 namespace kEn {
 
 	class KEN_API log
@@ -29,7 +27,7 @@ namespace kEn {
 #define KEN_CORE_TRACE(...)    ::kEn::log::core_logger()->trace(__VA_ARGS__)
 #define KEN_CORE_INFO(...)     ::kEn::log::core_logger()->info(__VA_ARGS__)
 #define KEN_CORE_WARN(...)     ::kEn::log::core_logger()->warn(__VA_ARGS__)
-#define KEN_CORE_ERROR(...)    ::kEn::log::core_logger()->error(__VA_ARGS__)
+#define KEN_CORE_ERROR(...)    {::kEn::log::core_logger()->error(__VA_ARGS__);  __debugbreak(); }
 #define KEN_CORE_CRITICAL(...) ::kEn::log::core_logger()->critical(__VA_ARGS__)
 
 // Client macros
@@ -38,3 +36,12 @@ namespace kEn {
 #define KEN_WARN(...)     ::kEn::log::client_logger()->warn(__VA_ARGS__)
 #define KEN_ERROR(...)    ::kEn::log::client_logger()->error(__VA_ARGS__)
 #define KEN_CRITICAL(...) ::kEn::log::client_logger()->critical(__VA_ARGS__)
+
+// Debug
+#ifdef KEN_DEBUG
+#	define _KEN_CORE_DEBUG(...) ::kEn::log::core_logger()->debug(__VA_ARGS__)
+#	define _KEN_DEBUG(...)      ::kEn::log::client_logger()->debug(__VA_ARGS__)
+#else
+#	define _KEN_CORE_DEBUG(...)
+#	define _KEN_DEBUG_(...)
+#endif

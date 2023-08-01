@@ -1,7 +1,7 @@
 #pragma once
 
 #include "kenpch.h"
-#include "kEn/core.h"
+#include "kEn/core/core.h"
 
 namespace kEn
 {
@@ -15,6 +15,7 @@ namespace kEn
 
 		virtual const char* name() const = 0;
 		virtual std::string to_string() const { return name(); }
+		virtual std::size_t event_id() = 0;
 
 		VIRTUAL_FIVE(base_event);
 	protected: 
@@ -29,6 +30,7 @@ namespace kEn
 	class event : public base_event
 	{
 	public:
+		std::size_t event_id() override { return id(); }
 
 		static std::size_t id()
 		{
@@ -64,6 +66,19 @@ namespace kEn
 			return false;
 		}
 
+		bool dispatch(base_event& event)
+		{
+			const auto id = event.event_id();
+			for (auto& callback : subscribers_[id])
+			{
+				event.handled |= callback(event);
+				if (event.handled)
+					return true;
+			}
+
+			return false;
+		}
+
 	private:
 		std::unordered_map<std::size_t, std::vector<callback_t<base_event>>> subscribers_;
 
@@ -84,8 +99,7 @@ namespace kEn
 		};
 	};
 
-	template<typename EventType>
-	std::ostream& operator<<(std::ostream& os, const event<EventType>& e)
+	inline std::ostream& operator<<(std::ostream& os, const base_event& e)
 	{
 		return os << e.to_string();
 	}
