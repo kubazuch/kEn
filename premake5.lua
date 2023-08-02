@@ -20,6 +20,7 @@ project "kEn"
 	location "kEn"
 	kind "SharedLib"
 	language "C++"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("obj/" .. outputdir .. "/%{prj.name}")
@@ -45,7 +46,6 @@ project "kEn"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines {
@@ -59,20 +59,24 @@ project "kEn"
 
 	filter "configurations:Debug"
 		defines "KEN_DEBUG"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "KEN_RELEASE"
+		runtime "Release"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "KEN_DIST"
+		runtime "Release"
 		optimize "On"
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("obj/" .. outputdir .. "/%{prj.name}")
@@ -84,7 +88,8 @@ project "Sandbox"
 
 	includedirs {
 		"kEn/vendor/spdlog/include",
-		"kEn/src"
+		"kEn/src",
+		"kEn/vendor"
 	}
 
 	links {
@@ -93,7 +98,6 @@ project "Sandbox"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines {
@@ -102,12 +106,15 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines "KEN_DEBUG"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "KEN_RELEASE"
+		runtime "Release"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "KEN_DIST"
+		runtime "Release"
 		optimize "On"

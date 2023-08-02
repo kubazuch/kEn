@@ -28,12 +28,26 @@ namespace kEn
 #endif
 	}
 
+	void application::push_layer(layer* layer)
+	{
+		layer_stack_.push_layer(layer);
+	}
+
+	void application::push_overlay(layer* overlay)
+	{
+		layer_stack_.push_overlay(overlay);
+	}
+
 	void application::run()
 	{
 		while (running_)
 		{
 			glClearColor(0.19f, 0.65f, 0.32f, 0.01f);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			for (layer* layer : layer_stack_)
+				layer->on_update();
+
 			window_->on_update();
 		}
 	}
@@ -42,6 +56,13 @@ namespace kEn
 	{
 		KEN_CORE_INFO("{0}", e);
 		dispatcher_->dispatch(e);
+
+		for (auto it = layer_stack_.rbegin(); it != layer_stack_.rend(); ++it)
+		{
+			if (e.handled)
+				break;
+			(*it)->on_event(e);
+		}
 	}
 
 	bool application::on_window_close(window_close_event& e)

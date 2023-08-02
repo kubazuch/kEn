@@ -5,7 +5,7 @@
 
 namespace kEn
 {
-	class base_event
+	class KEN_API base_event
 	{
 	public:
 		bool handled = false;
@@ -27,7 +27,7 @@ namespace kEn
 	};
 
 	template<typename EventType>
-	class event : public base_event
+	class KEN_API event : public base_event
 	{
 	public:
 		std::size_t event_id() override { return id(); }
@@ -39,7 +39,7 @@ namespace kEn
 		}
 	};
 
-	class event_dispatcher
+	class KEN_API event_dispatcher
 	{
 	public:
 		template<typename EventType>

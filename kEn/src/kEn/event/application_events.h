@@ -4,7 +4,7 @@
 
 namespace kEn
 {
-	class window_close_event : public event<window_close_event>
+	class KEN_API window_close_event : public event<window_close_event>
 	{
 	public:
 		window_close_event() = default;
@@ -12,7 +12,7 @@ namespace kEn
 		const char* name() const override { return "WindowCloseEvent"; }
 	};
 
-	class window_resize_event : public event<window_resize_event>
+	class KEN_API window_resize_event : public event<window_resize_event>
 	{
 	public:
 		window_resize_event(unsigned int width, unsigned int height) : width_(width), height_(height) {}
