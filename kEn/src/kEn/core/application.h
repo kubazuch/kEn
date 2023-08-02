@@ -7,7 +7,7 @@
 
 namespace kEn {
 
-	class KEN_API application
+	class application
 	{
 	public:
 		application();

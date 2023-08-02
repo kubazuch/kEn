@@ -9,7 +9,7 @@
 
 namespace kEn {
 
-	class KEN_API log
+	class log
 	{
 	public:
 		static void init();

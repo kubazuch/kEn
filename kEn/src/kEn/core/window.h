@@ -17,7 +17,7 @@ namespace kEn
 		{}
 	};
 
-	class KEN_API window
+	class window
 	{
 	public:
 		using handler_t = std::function<void(base_event&)>;

@@ -1,6 +1,7 @@
 #include "kenpch.h"
 #include "application.h"
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 #include "kEn/event/application_events.h"
 

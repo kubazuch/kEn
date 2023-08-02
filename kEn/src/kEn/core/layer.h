@@ -3,7 +3,7 @@
 
 namespace kEn
 {
-	class KEN_API layer
+	class layer
 	{
 	public:
 		layer(const std::string& name = "Layer");

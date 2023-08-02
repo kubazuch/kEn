@@ -4,6 +4,8 @@
 #include "kEn/event/key_events.h"
 #include "kEn/event/mouse_events.h"
 
+#include <glad/glad.h>
+
 namespace kEn
 {
 	static bool GLFW_init = false;
@@ -47,6 +49,8 @@ namespace kEn
 
 		window_ptr = glfwCreateWindow(static_cast<int>(data_.width), static_cast<int>(data_.height), data_.title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(window_ptr);
+		int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
+		KEN_CORE_ASSERT(status, "Unable to init Glad");
 		glfwSetWindowUserPointer(window_ptr, &data_);
 		//set_vsync(true);
 

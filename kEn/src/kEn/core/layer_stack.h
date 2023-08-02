@@ -3,7 +3,7 @@
 
 namespace kEn
 {
-	class KEN_API layer_stack
+	class layer_stack
 	{
 	public:
 		layer_stack() = default;
