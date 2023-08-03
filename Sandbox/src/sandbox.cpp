@@ -5,6 +5,7 @@
 #include "kEn/event/event.h"
 #include "kEn/event/key_events.h"
 
+#include "kEn/core/assert.h"
 
 class fizzbuzz_layer : public kEn::layer
 {
@@ -17,8 +18,10 @@ public:
 
 	void on_attach() override
 	{
+		KEN_ASSERT(true);
 		_KEN_DEBUG("Attached!");
 	}
+
 	void on_detach() override
 	{
 		_KEN_DEBUG("Detached!");

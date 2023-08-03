@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
+#include "assert.h"
 #include "kEn/event/application_events.h"
 
 #ifdef KEN_PLATFORM_WIN

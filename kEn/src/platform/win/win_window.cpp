@@ -6,6 +6,8 @@
 
 #include <glad/glad.h>
 
+#include "kEn/core/assert.h"
+
 namespace kEn
 {
 	static bool GLFW_init = false;
