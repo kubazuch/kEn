@@ -5,26 +5,32 @@
 
 #include "kEn/event/application_events.h"
 
-
 #ifdef KEN_PLATFORM_WIN
 #	include "platform/win/win_window.h"
 #endif
 
 namespace kEn
 {
+	application* application::instance_ = nullptr;
+
 	application::application()
 	{
+		KEN_CORE_ASSERT(!instance_, "App already exists!");
+		instance_ = this;
+
 		window_ = std::unique_ptr<window>(window::create());
 		window_->set_event_handler([this](auto& event) { window_event_handler(event); });
 
 		dispatcher_ = std::make_unique<event_dispatcher>();
 		dispatcher_->subscribe<window_close_event>([this](auto& event) { return on_window_close(event); });
+
+		imgui_layer_ = new imgui_layer();
+		push_overlay(imgui_layer_);
 	}
 
-	application::~application()
+	application_cleanup::~application_cleanup()
 	{
 #ifdef KEN_PLATFORM_WIN
-		window_.reset();
 		windows_window::api_terminate();
 #endif
 	}
@@ -49,13 +55,17 @@ namespace kEn
 			for (layer* layer : layer_stack_)
 				layer->on_update();
 
+			imgui_layer_->begin();
+			for (layer* layer : layer_stack_)
+				layer->on_imgui();
+			imgui_layer_->end();
+
 			window_->on_update();
 		}
 	}
 
 	void application::window_event_handler(base_event& e)
 	{
-		KEN_CORE_INFO("{0}", e);
 		dispatcher_->dispatch(e);
 
 		for (auto it = layer_stack_.rbegin(); it != layer_stack_.rend(); ++it)

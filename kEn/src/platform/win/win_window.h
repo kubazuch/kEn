@@ -26,6 +26,8 @@ namespace kEn
 		static void api_init();
 		static void api_terminate();
 
+		virtual void* native_window() const override { return window_ptr; }
+
 		VIRTUAL_FIVE(windows_window);
 	private:
 		void set_glfw_callbacks() const;

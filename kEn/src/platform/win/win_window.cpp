@@ -17,7 +17,7 @@ namespace kEn
 
 	void windows_window::api_init()
 	{
-		int status = glfwInit();
+		const int status = glfwInit();
 		KEN_CORE_ASSERT(status, "GLFW init failed!");
 
 		glfwSetErrorCallback(api_error_callback);
@@ -49,7 +49,7 @@ namespace kEn
 
 		window_ptr = glfwCreateWindow(static_cast<int>(data_.width), static_cast<int>(data_.height), data_.title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(window_ptr);
-		int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
+		const int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
 		KEN_CORE_ASSERT(status, "Unable to init Glad");
 		glfwSetWindowUserPointer(window_ptr, &data_);
 		//set_vsync(true);

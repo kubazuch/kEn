@@ -16,6 +16,7 @@ group "Dependencies"
 	include "vendor/premake"
 	include "kEn/vendor/glfw.lua"
 	include "kEn/vendor/glad.lua"
+	include "kEn/vendor/imgui.lua"
 group ""
 
 include "kEn"

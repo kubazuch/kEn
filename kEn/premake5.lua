@@ -13,18 +13,23 @@ project "kEn"
 	files {
 		"src/**.h",
 		"src/**.cpp",
+		"vendor/glm/glm/**.hpp",
+		"vendor/glm/glm/**.inl"
 	}
 
 	includedirs {
 		"src",
 		"vendor/spdlog/include",
 		"%{IncludeDir.glfw}",
-		"%{IncludeDir.glad}"
+		"%{IncludeDir.glad}",
+		"%{IncludeDir.imgui}",
+		"%{IncludeDir.glm}"
 	}
 
 	links {
 		"GLFW",
 		"Glad",
+		"imgui",
 		"opengl32.lib"
 	}
 

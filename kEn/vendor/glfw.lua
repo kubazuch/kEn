@@ -3,7 +3,8 @@
 project "GLFW"
 	location "GLFW"
 	kind "StaticLib"
-	language "C"
+	language "C" 
+	staticruntime "off"
 	warnings "off"
 
 	targetdir ("%{prj.name}/bin/" .. outputdir .. "/%{prj.name}")
@@ -33,7 +34,6 @@ project "GLFW"
 		pic "On"
 
 		systemversion "latest"
-		staticruntime "On"
 		
 		files
 		{
@@ -80,7 +80,6 @@ project "GLFW"
 
 	filter "system:windows"
 		systemversion "latest"
-		staticruntime "On"
 
 		files
 		{
