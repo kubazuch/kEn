@@ -27,7 +27,7 @@
  * int result = dividend / divisor;
  * @endcode
  */
-#	define KEN_ASSERT(...) KEN_EXPAND(KEN_INT_ASSERT_GET_MACRO(__VA_ARGS__)(_, __VA_ARGS__))
+#	define KEN_ASSERT(...) KEN_SEMICOLON(KEN_INT_ASSERT_GET_MACRO(__VA_ARGS__)(_, __VA_ARGS__))
 /**
  * @brief Assertion macro that checks a condition. If the condition is false, it logs to CORE logger and triggers a debug breakpoint.
  *
@@ -42,7 +42,7 @@
  * int result = dividend / divisor;
  * @endcode
  */
-#	define KEN_CORE_ASSERT(...)KEN_EXPAND(KEN_INT_ASSERT_GET_MACRO(__VA_ARGS__)(_CORE_, __VA_ARGS__))
+#	define KEN_CORE_ASSERT(...)KEN_SEMICOLON(KEN_INT_ASSERT_GET_MACRO(__VA_ARGS__)(_CORE_, __VA_ARGS__))
 #else
 #	define KEN_ASSERT(...) 
 #	define KEN_CORE_ASSERT(...) 

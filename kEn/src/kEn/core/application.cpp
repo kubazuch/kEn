@@ -23,17 +23,40 @@ namespace kEn
 		window_->set_event_handler([this](auto& event) { window_event_handler(event); });
 
 		dispatcher_ = std::make_unique<event_dispatcher>();
-		dispatcher_->subscribe<window_close_event>([this](auto& event) { return on_window_close(event); });
+		dispatcher_->subscribe<window_close_event>(KEN_EVENT_SUBSCRIBER(on_window_close));
+		dispatcher_->subscribe<window_resize_event>(KEN_EVENT_SUBSCRIBER(on_window_resize));
 
 		imgui_layer_ = new imgui_layer();
 		push_overlay(imgui_layer_);
-	}
 
-	application_cleanup::~application_cleanup()
-	{
-#ifdef KEN_PLATFORM_WIN
-		windows_window::api_terminate();
-#endif
+		//TODO: remove
+		{
+			float vertices[3 * 3] = {
+				-0.5f, -0.5f, 0.0f,
+				 0.5f, -0.5f, 0.0f,
+				 0.0f,  0.5f, 0.0f
+			};
+
+			unsigned int indices[3] = { 0, 1, 2 };
+
+			// Generate VAO
+			glGenVertexArrays(1, &vertex_array_);
+			glBindVertexArray(vertex_array_);
+
+			// Generate VBO and load data into it
+			glGenBuffers(1, &vertex_buffer_);
+			glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
+			glBufferData(GL_ARRAY_BUFFER, sizeof vertices, vertices, GL_STATIC_DRAW);
+
+			// Set vertex attrib pointers
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+
+			// Generate indices
+			glGenBuffers(1, &index_buffer_);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof indices, indices, GL_STATIC_DRAW);
+		}
 	}
 
 	void application::push_layer(layer* layer)
@@ -50,8 +73,14 @@ namespace kEn
 	{
 		while (running_)
 		{
-			glClearColor(0.19f, 0.65f, 0.32f, 0.01f);
+			glClearColor(0.1f, 0.1f, 0.1f, 1.f);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			//TODO: remove
+			{
+				glBindVertexArray(vertex_array_);
+				glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+			}
 
 			for (layer* layer : layer_stack_)
 				layer->on_update();
@@ -80,6 +109,13 @@ namespace kEn
 	bool application::on_window_close(window_close_event& e)
 	{
 		running_ = false;
+		return true;
+	}
+
+	bool application::on_window_resize(window_resize_event& e)
+	{
+		// TODO: Renderer abstraction!
+		glViewport(0, 0, e.width(), e.height());
 		return true;
 	}
 }

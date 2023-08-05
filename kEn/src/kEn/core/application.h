@@ -6,22 +6,16 @@
 #include "kEn/event/event.h"
 #include "kEn/imgui/imgui_layer.h"
 
+int main(int argc, char** argv);
+
 namespace kEn {
 
-	class application_cleanup
-	{
-	public:
-		virtual ~application_cleanup();
-	};
-
-	class application : application_cleanup
+	class application
 	{
 	public:
 		application();
-		virtual ~application() override {}
-
-		virtual void run();
-
+		virtual ~application() = default;
+		
 		void window_event_handler(base_event& e);
 
 		void push_layer(layer* layer);
@@ -31,17 +25,25 @@ namespace kEn {
 		static application& instance() { return *instance_; }
 
 		VIRTUAL_FIVE(application);
-	protected:	//TODO: Private
+	private:
+		void run();
+
 		bool on_window_close(window_close_event& e);
+		bool on_window_resize(window_resize_event& e);
 
 		std::unique_ptr<window> window_;
 		std::unique_ptr<event_dispatcher> dispatcher_;
 		imgui_layer* imgui_layer_;
 		bool running_ = true;
 		layer_stack layer_stack_;
+
+		//TODO: remove
+		unsigned int vertex_array_, vertex_buffer_, index_buffer_;
 	private:
 		static application* instance_;
+		friend int ::main(int argc, char** argv);
 	};
 
+	// Client must define this!
 	application* create_application();
 }

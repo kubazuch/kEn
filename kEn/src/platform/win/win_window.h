@@ -5,6 +5,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include "kEn/renderer/graphics_context.h"
+
 namespace kEn
 {
 	class windows_window : public window
@@ -23,16 +25,18 @@ namespace kEn
 		void set_vsync(bool enabled) override;
 		bool vsync() const override;
 
-		static void api_init();
-		static void api_terminate();
 
-		virtual void* native_window() const override { return window_ptr; }
+		void* native_window() const override { return window_ptr; }
 
 		VIRTUAL_FIVE(windows_window);
+	private:
+		static void api_init();
+		static void api_shutdown();
 	private:
 		void set_glfw_callbacks() const;
 
 		GLFWwindow* window_ptr;
+		std::unique_ptr<graphics_context> context_;
 
 		struct data
 		{

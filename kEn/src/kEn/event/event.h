@@ -3,6 +3,8 @@
 #include "kenpch.h"
 #include "kEn/core/core.h"
 
+#define KEN_EVENT_SUBSCRIBER(function) [this](auto& event) { return function(event); }
+
 namespace kEn
 {
 	class base_event

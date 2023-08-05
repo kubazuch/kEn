@@ -5,6 +5,7 @@
 #endif
 
 #define KEN_EXPAND(X) X
+#define KEN_SEMICOLON(X) do {X} while(0)
 #define KEN_STRINGIFY(X) #X
 
 #define VIRTUAL_FIVE(class)	class(const class&) = delete;\

@@ -10,7 +10,7 @@
 
 namespace kEn
 {
-	static bool GLFW_init = false;
+	static uint8_t GLFW_window_count = 0;
 
 	static void api_error_callback(int error_code, const char* description)
 	{
@@ -23,14 +23,11 @@ namespace kEn
 		KEN_CORE_ASSERT(status, "GLFW init failed!");
 
 		glfwSetErrorCallback(api_error_callback);
-
-		GLFW_init = true;
 	}
 
-	void windows_window::api_terminate()
+	void windows_window::api_shutdown()
 	{
 		glfwTerminate();
-		GLFW_init = false;
 	}
 
 	window* window::create(const window_properties& props)
@@ -46,13 +43,20 @@ namespace kEn
 
 		_KEN_CORE_DEBUG("Creating window {0} ({1} x {2})", properties.title, properties.width, properties.height);
 
-		if (!GLFW_init)
+		if (GLFW_window_count == 0)
 			api_init();
 
+#ifdef KEN_DEBUG
+		//TODO: Only for opengl!
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+#endif
+
 		window_ptr = glfwCreateWindow(static_cast<int>(data_.width), static_cast<int>(data_.height), data_.title.c_str(), nullptr, nullptr);
-		glfwMakeContextCurrent(window_ptr);
-		const int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
-		KEN_CORE_ASSERT(status, "Unable to init Glad");
+		++GLFW_window_count;
+
+		context_ = graphics_context::create(window_ptr);
+		context_->init();
+
 		glfwSetWindowUserPointer(window_ptr, &data_);
 		//set_vsync(true);
 
@@ -82,7 +86,7 @@ namespace kEn
 		glfwSetKeyCallback(window_ptr, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
 			const data& win_data = *static_cast<data*>(glfwGetWindowUserPointer(window));
-
+			
 			switch (action)
 			{
 			case GLFW_PRESS:
@@ -154,12 +158,16 @@ namespace kEn
 	windows_window::~windows_window()
 	{
 		glfwDestroyWindow(window_ptr);
+		--GLFW_window_count;
+
+		if (GLFW_window_count == 0)
+			api_shutdown();
 	}
 
 	void windows_window::on_update()
 	{
 		glfwPollEvents();
-		glfwSwapBuffers(window_ptr);
+		context_->swap_buffers();
 	}
 
 	void windows_window::set_vsync(const bool enabled)
