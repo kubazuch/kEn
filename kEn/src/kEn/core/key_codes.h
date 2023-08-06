@@ -143,21 +143,22 @@ namespace kEn
 #		define ENUM_ENTRY(id, code)				id = code,
 #		define NAMED_ENUM_ENTRY(id, code, name)	id = code,
 
-#		define MAP_ENTRY(id, code)				{code, #id},
-#		define NAMED_MAP_ENTRY(id, code, name)	{code, name},
+#		define CASE_ENTRY(id, code)				case code: return #id;
+#		define NAMED_CASE_ENTRY(id, code, name)	case code: return name;
 
 		enum : key_code		
 		{
 			KEY_CODES(ENUM_ENTRY, NAMED_ENUM_ENTRY)
 		};
 
-		const std::unordered_map<key_code, const char*> name_map {
-			KEY_CODES(MAP_ENTRY, NAMED_MAP_ENTRY)
-		};
-
 		inline const char* name_of(const key_code key)
 		{
-			return name_map.at(key);
+			switch(key)
+			{
+			KEY_CODES(CASE_ENTRY, NAMED_CASE_ENTRY)
+			default:
+				return "INVALID";
+			}
 		}
 	}
 }
@@ -165,5 +166,5 @@ namespace kEn
 #undef KEY_CODES
 #undef ENUM_ENTRY
 #undef NAMED_ENUM_ENTRY
-#undef MAP_ENTRY
-#undef NAMED_MAP_ENTRY
+#undef CASE_ENTRY
+#undef NAMED_CASE_ENTRY
