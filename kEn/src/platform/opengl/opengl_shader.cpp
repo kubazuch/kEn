@@ -90,12 +90,12 @@ namespace kEn
 		glDeleteProgram(program_);
 	}
 
-	void opengl_shader::bind()
+	void opengl_shader::bind() const
 	{
 		glUseProgram(program_);
 	}
 
-	void opengl_shader::unbind()
+	void opengl_shader::unbind() const
 	{
 		glUseProgram(0);
 	}

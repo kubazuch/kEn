@@ -8,8 +8,8 @@ namespace kEn
 	public:
 		virtual ~shader() = default;
 
-		virtual void bind() = 0;
-		virtual void unbind() = 0;
+		virtual void bind() const = 0;
+		virtual void unbind() const = 0;
 
 		//TODO: uniforms
 		virtual void set_int(const std::string& name, int value) = 0;

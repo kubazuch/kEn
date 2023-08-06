@@ -5,6 +5,7 @@
 #include "kEn/event/application_events.h"
 #include "kEn/event/event.h"
 #include "kEn/imgui/imgui_layer.h"
+#include "kEn/renderer/buffer.h"
 #include "kEn/renderer/shader.h"
 
 int main(int argc, char** argv);
@@ -39,8 +40,10 @@ namespace kEn {
 		layer_stack layer_stack_;
 
 		//TODO: remove
-		unsigned int vertex_array_, vertex_buffer_, index_buffer_;
+		unsigned int vertex_array_;
 		std::unique_ptr<shader> shader_;
+		std::unique_ptr<vertex_buffer> vertex_buffer_;
+		std::unique_ptr<index_buffer> index_buffer_;
 	private:
 		static application* instance_;
 		friend int ::main(int argc, char** argv);

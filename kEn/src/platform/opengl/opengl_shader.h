@@ -11,8 +11,8 @@ namespace kEn
 		              const std::string& fragment_src);
 		~opengl_shader() override;
 
-		void bind() override;
-		void unbind() override;
+		void bind() const override;
+		void unbind() const override;
 
 		void set_int(const std::string& name, int value) override;
 		void set_int_array(const std::string& name, int* values, uint32_t count) override;

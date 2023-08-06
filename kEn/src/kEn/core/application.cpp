@@ -43,19 +43,13 @@ namespace kEn
 			glGenVertexArrays(1, &vertex_array_);
 			glBindVertexArray(vertex_array_);
 
-			// Generate VBO and load data into it
-			glGenBuffers(1, &vertex_buffer_);
-			glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
-			glBufferData(GL_ARRAY_BUFFER, sizeof vertices, vertices, GL_STATIC_DRAW);
+			vertex_buffer_ = vertex_buffer::create(vertices, sizeof vertices);
 
 			// Set vertex attrib pointers
 			glEnableVertexAttribArray(0);
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 
-			// Generate indices
-			glGenBuffers(1, &index_buffer_);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof indices, indices, GL_STATIC_DRAW);
+			index_buffer_ = index_buffer::create(indices, 3);
 
 			std::string vertex_src = R"(
 				#version 330 core
@@ -107,7 +101,7 @@ namespace kEn
 			{
 				glBindVertexArray(vertex_array_);
 				shader_->bind();
-				glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+				glDrawElements(GL_TRIANGLES, index_buffer_->get_count(), GL_UNSIGNED_INT, nullptr);
 				shader_->unbind();
 			}
 
