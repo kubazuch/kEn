@@ -27,7 +27,7 @@ namespace kEn {
 #define KEN_CORE_TRACE(...)    ::kEn::log::core_logger()->trace(__VA_ARGS__)
 #define KEN_CORE_INFO(...)     ::kEn::log::core_logger()->info(__VA_ARGS__)
 #define KEN_CORE_WARN(...)     ::kEn::log::core_logger()->warn(__VA_ARGS__)
-#define KEN_CORE_ERROR(...)    {::kEn::log::core_logger()->error(__VA_ARGS__);  __debugbreak(); }
+#define KEN_CORE_ERROR(...)    ::kEn::log::core_logger()->error(__VA_ARGS__)
 #define KEN_CORE_CRITICAL(...) ::kEn::log::core_logger()->critical(__VA_ARGS__)
 
 // Client macros

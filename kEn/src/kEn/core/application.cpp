@@ -56,6 +56,33 @@ namespace kEn
 			glGenBuffers(1, &index_buffer_);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof indices, indices, GL_STATIC_DRAW);
+
+			std::string vertex_src = R"(
+				#version 330 core
+				
+				layout(location = 0) in vec3 a_Position;
+				
+				out vec3 v_Position;
+
+				void main() {
+					v_Position = a_Position;
+					gl_Position = vec4(a_Position, 1.0);
+				}
+			)";
+
+			std::string fragment_src = R"(
+				#version 330 core
+				
+				layout(location = 0) out vec4 color;
+				
+				in vec3 v_Position;
+
+				void main() {
+					color = vec4(v_Position * 0.5 + 0.5, 1.0);
+				}
+			)";
+
+			shader_ = shader::create("basic", vertex_src, fragment_src);
 		}
 	}
 
@@ -79,7 +106,9 @@ namespace kEn
 			//TODO: remove
 			{
 				glBindVertexArray(vertex_array_);
+				shader_->bind();
 				glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+				shader_->unbind();
 			}
 
 			for (layer* layer : layer_stack_)
