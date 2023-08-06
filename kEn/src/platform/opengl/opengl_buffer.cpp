@@ -40,8 +40,8 @@ namespace kEn
 		: renderer_id_(0), count_(count)
 	{
 		glGenBuffers(1, &renderer_id_);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id_);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, renderer_id_);
+		glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
 	}
 
 	opengl_index_buffer::~opengl_index_buffer()

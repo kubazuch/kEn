@@ -42,10 +42,10 @@ namespace kEn
 				return "INVALID";
 			}
 		}
+
+#		undef MOUSE_CODES
+#		undef ENUM_ENTRY
+#		undef CASE_ENTRY
+#		undef NO_CASE_ENTRY
 	}
 }
-
-#undef MOUSE_CODES
-#undef ENUM_ENTRY
-#undef CASE_ENTRY
-#undef NO_CASE_ENTRY

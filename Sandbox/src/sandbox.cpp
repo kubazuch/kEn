@@ -29,7 +29,7 @@ public:
 
 	void on_event(kEn::base_event& event) override
 	{
-		KEN_TRACE("{0}", event);
+		//KEN_TRACE("{0}", event);
 	}
 
 	void on_imgui() override

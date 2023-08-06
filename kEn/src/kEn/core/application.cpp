@@ -14,6 +14,26 @@ namespace kEn
 {
 	application* application::instance_ = nullptr;
 
+	static GLenum tmp(shader_data_type type)
+	{
+		switch(type)
+		{
+		case shader_data_types::float_:	return GL_FLOAT;
+		case shader_data_types::float2:	return GL_FLOAT;
+		case shader_data_types::float3:	return GL_FLOAT;
+		case shader_data_types::float4:	return GL_FLOAT;
+		case shader_data_types::mat3:	return GL_FLOAT;
+		case shader_data_types::mat4:	return GL_FLOAT;
+		case shader_data_types::int_:	return GL_INT;
+		case shader_data_types::int2:	return GL_INT;
+		case shader_data_types::int3:	return GL_INT;
+		case shader_data_types::int4:	return GL_INT;
+		case shader_data_types::bool_:	return GL_BOOL;
+		}
+
+		return 0;
+	}
+
 	application::application()
 	{
 		KEN_CORE_ASSERT(!instance_, "App already exists!");
@@ -31,10 +51,10 @@ namespace kEn
 
 		//TODO: remove
 		{
-			float vertices[3 * 3] = {
-				-0.5f, -0.5f, 0.0f,
-				 0.5f, -0.5f, 0.0f,
-				 0.0f,  0.5f, 0.0f
+			float vertices[3 * (3 + 4)] = {
+				-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+				 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+				 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
 			};
 
 			unsigned int indices[3] = { 0, 1, 2 };
@@ -45,9 +65,28 @@ namespace kEn
 
 			vertex_buffer_ = vertex_buffer::create(vertices, sizeof vertices);
 
+			buffer_layout layout = {
+				{shader_data_types::float3, "a_Position"},
+				{shader_data_types::float4, "a_Color"}
+			};
+			vertex_buffer_->set_layout(layout);
+
 			// Set vertex attrib pointers
-			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+			//glEnableVertexAttribArray(0);
+			//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+
+			uint32_t index = 0;
+			for(const auto& element : vertex_buffer_->layout())
+			{
+				glEnableVertexAttribArray(index);
+				glVertexAttribPointer(index, 
+					shader_data_types::get_component_count(element.type),
+					tmp(element.type),
+					element.normalized ? GL_TRUE : GL_FALSE,
+					layout.stride(),
+					(const void*)element.offset);
+				index++;
+			}
 
 			index_buffer_ = index_buffer::create(indices, 3);
 
@@ -55,11 +94,12 @@ namespace kEn
 				#version 330 core
 				
 				layout(location = 0) in vec3 a_Position;
+				layout(location = 1) in vec4 a_Color;
 				
-				out vec3 v_Position;
+				out vec4 v_Color;
 
 				void main() {
-					v_Position = a_Position;
+					v_Color = a_Color;
 					gl_Position = vec4(a_Position, 1.0);
 				}
 			)";
@@ -69,10 +109,10 @@ namespace kEn
 				
 				layout(location = 0) out vec4 color;
 				
-				in vec3 v_Position;
+				in vec4 v_Color;
 
 				void main() {
-					color = vec4(v_Position * 0.5 + 0.5, 1.0);
+					color = v_Color;
 				}
 			)";
 
@@ -101,6 +141,8 @@ namespace kEn
 			{
 				glBindVertexArray(vertex_array_);
 				shader_->bind();
+				vertex_buffer_->bind();
+				index_buffer_->bind();
 				glDrawElements(GL_TRIANGLES, index_buffer_->get_count(), GL_UNSIGNED_INT, nullptr);
 				shader_->unbind();
 			}
