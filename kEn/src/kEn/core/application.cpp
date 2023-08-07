@@ -71,6 +71,7 @@ namespace kEn
 				}
 			)";
 
+			// https://www.shadertoy.com/view/mtyGWy
 			std::string fragment_src1 = R"(
 				#version 330 core
 				
@@ -114,6 +115,7 @@ namespace kEn
 				}
 			)";
 
+			// https://www.shadertoy.com/view/ftt3R7
 			std::string fragment_src2 = R"(
 				#version 330 core
 				
