@@ -2,6 +2,7 @@
 #include "buffer.h"
 
 #include "renderer.h"
+#include "renderer_api.h"
 #include "kEn/core/assert.h"
 #include "platform/opengl/opengl_buffer.h"
 
@@ -9,12 +10,12 @@ namespace kEn
 {
 	std::shared_ptr<vertex_buffer> vertex_buffer::create(float* vertices, uint32_t size)
 	{
-		switch(renderer::get_api())
+		switch(renderer_api::get_api())
 		{
-		case renderer_api::none:
+		case renderer_api::api:: none:
 			KEN_CORE_ASSERT(false, "Renderer has no api!");
 			return nullptr;
-		case renderer_api::opengl:
+		case renderer_api::api::opengl:
 			return std::make_shared<opengl_vertex_buffer>(vertices, size);
 		}
 
@@ -24,12 +25,12 @@ namespace kEn
 
 	std::shared_ptr<index_buffer> index_buffer::create(uint32_t* indices, uint32_t size)
 	{
-		switch (renderer::get_api())
+		switch (renderer_api::get_api())
 		{
-		case renderer_api::none:
+		case renderer_api::api::none:
 			KEN_CORE_ASSERT(false, "Renderer has no api!");
 			return nullptr;
-		case renderer_api::opengl:
+		case renderer_api::api::opengl:
 			return std::make_shared<opengl_index_buffer>(indices, size);
 		}
 

@@ -4,9 +4,8 @@
 #include "kEn/event/key_events.h"
 #include "kEn/event/mouse_events.h"
 
-#include <glad/glad.h>
-
 #include "kEn/core/assert.h"
+#include "kEn/renderer/renderer_api.h"
 
 namespace kEn
 {
@@ -41,14 +40,14 @@ namespace kEn
 		data_.width = properties.width;
 		data_.height = properties.height;
 
-		_KEN_CORE_DEBUG("Creating window {0} ({1} x {2})", properties.title, properties.width, properties.height);
+		KEN_CORE_DEBUG("Creating window {0} ({1} x {2})", properties.title, properties.width, properties.height);
 
 		if (GLFW_window_count == 0)
 			api_init();
 
-#ifdef KEN_DEBUG
-		//TODO: Only for opengl!
-		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+#ifdef _KEN_DEBUG
+		if(renderer_api::get_api() == renderer_api::api::opengl)
+			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 #endif
 
 		window_ptr = glfwCreateWindow(static_cast<int>(data_.width), static_cast<int>(data_.height), data_.title.c_str(), nullptr, nullptr);

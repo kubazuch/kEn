@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef KEN_DEBUG
+#ifdef _KEN_DEBUG
 #	define KEN_ENABLE_ASSERTS
 #endif
 

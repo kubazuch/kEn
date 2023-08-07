@@ -4,7 +4,7 @@
 
 namespace kEn
 {
-	class opengl_context : public graphics_context
+	class opengl_context final : public graphics_context
 	{
 	public:
 		opengl_context(GLFWwindow* window);

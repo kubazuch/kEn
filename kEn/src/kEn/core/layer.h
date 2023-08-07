@@ -9,11 +9,11 @@ namespace kEn
 		layer(const std::string& name = "Layer");
 		virtual ~layer() = default;
 
-		virtual void on_attach() = 0;
-		virtual void on_detach() = 0;
-		virtual void on_update() = 0;
-		virtual void on_imgui() = 0;
-		virtual void on_event(base_event& event) = 0;
+		virtual void on_attach() {}
+		virtual void on_detach() {}
+		virtual void on_update() {}
+		virtual void on_imgui() {}
+		virtual void on_event(base_event& event) {}
 
 		const std::string& name() const { return debug_name_; }
 

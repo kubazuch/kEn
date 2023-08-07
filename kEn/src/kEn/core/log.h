@@ -38,10 +38,10 @@ namespace kEn {
 #define KEN_CRITICAL(...) ::kEn::log::client_logger()->critical(__VA_ARGS__)
 
 // Debug
-#ifdef KEN_DEBUG
-#	define _KEN_CORE_DEBUG(...) ::kEn::log::core_logger()->debug(__VA_ARGS__)
-#	define _KEN_DEBUG(...)      ::kEn::log::client_logger()->debug(__VA_ARGS__)
+#ifdef _KEN_DEBUG
+#	define KEN_CORE_DEBUG(...) ::kEn::log::core_logger()->debug(__VA_ARGS__)
+#	define KEN_DEBUG(...)      ::kEn::log::client_logger()->debug(__VA_ARGS__)
 #else
-#	define _KEN_CORE_DEBUG(...)
-#	define _KEN_DEBUG(...)
+#	define KEN_CORE_DEBUG(...)
+#	define KEN_DEBUG(...)
 #endif

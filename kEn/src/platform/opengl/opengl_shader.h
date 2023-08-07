@@ -4,7 +4,7 @@
 
 namespace kEn
 {
-	class opengl_shader : public shader
+	class opengl_shader final : public shader
 	{
 	public:
 		opengl_shader(std::string name, const std::string& vertex_src,

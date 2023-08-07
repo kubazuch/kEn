@@ -3,7 +3,7 @@
 
 namespace kEn
 {
-	class opengl_vertex_array : public vertex_array
+	class opengl_vertex_array final : public vertex_array
 	{
 	public:
 		opengl_vertex_array();

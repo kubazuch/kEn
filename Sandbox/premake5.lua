@@ -31,16 +31,16 @@ project "Sandbox"
 		}
 
 	filter "configurations:Debug"
-		defines "KEN_DEBUG"
+		defines "_KEN_DEBUG"
 		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
-		defines "KEN_RELEASE"
+		defines "_KEN_RELEASE"
 		runtime "Release"
 		optimize "on"
 
 	filter "configurations:Dist"
-		defines "KEN_DIST"
+		defines "_KEN_DIST"
 		runtime "Release"
 		optimize "on"

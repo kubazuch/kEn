@@ -4,7 +4,7 @@
 
 namespace kEn
 {
-	class opengl_vertex_buffer : public vertex_buffer
+	class opengl_vertex_buffer final : public vertex_buffer
 	{
 	public:
 		opengl_vertex_buffer(float* vertices, uint32_t size);
@@ -21,7 +21,7 @@ namespace kEn
 		buffer_layout layout_;
 	};
 
-	class opengl_index_buffer : public index_buffer
+	class opengl_index_buffer final : public index_buffer
 	{
 	public:
 		opengl_index_buffer(uint32_t* indices, uint32_t count);

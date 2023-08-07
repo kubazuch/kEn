@@ -39,13 +39,7 @@ namespace kEn {
 		imgui_layer* imgui_layer_;
 		bool running_ = true;
 		layer_stack layer_stack_;
-
-		//TODO: TEMP
-	public:
-		std::shared_ptr<shader> shader_;
-		std::shared_ptr<vertex_array> vertex_array_;
-		std::shared_ptr<vertex_buffer> vertex_buffer_;
-		std::shared_ptr<index_buffer> index_buffer_;
+		
 	private:
 		static application* instance_;
 		friend int ::main(int argc, char** argv);
