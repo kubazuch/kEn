@@ -14,6 +14,10 @@ public:
 
 	void on_update() override
 	{
+		kEn::application::instance().shader_->bind();
+		kEn::application::instance().shader_->set_float("iTime", time_);
+		kEn::application::instance().shader_->set_float2("iMouse", kEn::input::get_mouse_pos());
+		kEn::application::instance().shader_->unbind();
 	}
 
 	void on_attach() override
@@ -39,8 +43,14 @@ public:
 
 		const auto pos = kEn::input::get_mouse_pos();
 		ImGui::Text("Mouse pos: %.1f, %.1f", pos.x, pos.y);
+
+
+		ImGui::DragFloat("Time", &time_, 0.1f, 0.0f);
 		ImGui::End();
 	}
+
+private:
+	float time_ = 0;
 };
 
 class sandbox : public kEn::application

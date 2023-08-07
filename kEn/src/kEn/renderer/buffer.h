@@ -121,7 +121,7 @@ namespace kEn
 		virtual const buffer_layout& layout() const = 0;
 		virtual void set_layout(const buffer_layout& layout) = 0;
 
-		static std::unique_ptr<vertex_buffer> create(float* vertices, uint32_t size);
+		static std::shared_ptr<vertex_buffer> create(float* vertices, uint32_t size);
 	};
 
 	class index_buffer
@@ -134,6 +134,6 @@ namespace kEn
 
 		virtual uint32_t get_count() const = 0;
 
-		static std::unique_ptr<index_buffer> create(uint32_t* indices, uint32_t size);
+		static std::shared_ptr<index_buffer> create(uint32_t* indices, uint32_t size);
 	};
 }

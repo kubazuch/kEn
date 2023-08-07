@@ -7,6 +7,7 @@
 #include "kEn/imgui/imgui_layer.h"
 #include "kEn/renderer/buffer.h"
 #include "kEn/renderer/shader.h"
+#include "kEn/renderer/vertex_array.h"
 
 int main(int argc, char** argv);
 
@@ -39,11 +40,12 @@ namespace kEn {
 		bool running_ = true;
 		layer_stack layer_stack_;
 
-		//TODO: remove
-		unsigned int vertex_array_;
-		std::unique_ptr<shader> shader_;
-		std::unique_ptr<vertex_buffer> vertex_buffer_;
-		std::unique_ptr<index_buffer> index_buffer_;
+		//TODO: TEMP
+	public:
+		std::shared_ptr<shader> shader_;
+		std::shared_ptr<vertex_array> vertex_array_;
+		std::shared_ptr<vertex_buffer> vertex_buffer_;
+		std::shared_ptr<index_buffer> index_buffer_;
 	private:
 		static application* instance_;
 		friend int ::main(int argc, char** argv);

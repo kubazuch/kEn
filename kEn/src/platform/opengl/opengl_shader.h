@@ -25,7 +25,7 @@ namespace kEn
 		const std::string& get_name() override { return name_; }
 
 	private:
-		GLuint program_;
+		uint32_t renderer_id_;
 
 		std::string name_;
 	};

@@ -7,7 +7,7 @@
 
 namespace kEn
 {
-	std::unique_ptr<vertex_buffer> vertex_buffer::create(float* vertices, uint32_t size)
+	std::shared_ptr<vertex_buffer> vertex_buffer::create(float* vertices, uint32_t size)
 	{
 		switch(renderer::get_api())
 		{
@@ -15,14 +15,14 @@ namespace kEn
 			KEN_CORE_ASSERT(false, "Renderer has no api!");
 			return nullptr;
 		case renderer_api::opengl:
-			return std::make_unique<opengl_vertex_buffer>(vertices, size);
+			return std::make_shared<opengl_vertex_buffer>(vertices, size);
 		}
 
 		KEN_CORE_ASSERT(false, "Unknown api!");
 		return nullptr;
 	}
 
-	std::unique_ptr<index_buffer> index_buffer::create(uint32_t* indices, uint32_t size)
+	std::shared_ptr<index_buffer> index_buffer::create(uint32_t* indices, uint32_t size)
 	{
 		switch (renderer::get_api())
 		{
@@ -30,7 +30,7 @@ namespace kEn
 			KEN_CORE_ASSERT(false, "Renderer has no api!");
 			return nullptr;
 		case renderer_api::opengl:
-			return std::make_unique<opengl_index_buffer>(indices, size);
+			return std::make_shared<opengl_index_buffer>(indices, size);
 		}
 
 		KEN_CORE_ASSERT(false, "Unknown api!");

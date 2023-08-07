@@ -56,23 +56,23 @@ namespace kEn
 			return;
 		}
 
-		program_ = glCreateProgram();
+		renderer_id_ = glCreateProgram();
 
-		glAttachShader(program_, vertex_shader);
-		glAttachShader(program_, fragment_shader);
+		glAttachShader(renderer_id_, vertex_shader);
+		glAttachShader(renderer_id_, fragment_shader);
 
-		glLinkProgram(program_);
+		glLinkProgram(renderer_id_);
 		status = 0;
-		glGetProgramiv(program_, GL_LINK_STATUS, &status);
+		glGetProgramiv(renderer_id_, GL_LINK_STATUS, &status);
 		if (status == GL_FALSE)
 		{
 			GLint length = 0;
-			glGetProgramiv(program_, GL_INFO_LOG_LENGTH, &length);
+			glGetProgramiv(renderer_id_, GL_INFO_LOG_LENGTH, &length);
 
 			std::vector<GLchar> info(length);
-			glGetProgramInfoLog(program_, length, &length, info.data());
+			glGetProgramInfoLog(renderer_id_, length, &length, info.data());
 
-			glDeleteProgram(program_);
+			glDeleteProgram(renderer_id_);
 			glDeleteShader(vertex_shader);
 			glDeleteShader(fragment_shader);
 
@@ -81,18 +81,18 @@ namespace kEn
 			return;
 		}
 
-		glDetachShader(program_, vertex_shader);
-		glDetachShader(program_, fragment_shader);
+		glDetachShader(renderer_id_, vertex_shader);
+		glDetachShader(renderer_id_, fragment_shader);
 	}
 
 	opengl_shader::~opengl_shader()
 	{
-		glDeleteProgram(program_);
+		glDeleteProgram(renderer_id_);
 	}
 
 	void opengl_shader::bind() const
 	{
-		glUseProgram(program_);
+		glUseProgram(renderer_id_);
 	}
 
 	void opengl_shader::unbind() const
@@ -110,10 +110,14 @@ namespace kEn
 
 	void opengl_shader::set_float(const std::string& name, float value)
 	{
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform1f(location, value);
 	}
 
 	void opengl_shader::set_float2(const std::string& name, const glm::vec2& value)
 	{
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform2f(location, value.x, value.y);
 	}
 
 	void opengl_shader::set_float3(const std::string& name, const glm::vec3& value)
@@ -122,7 +126,7 @@ namespace kEn
 
 	void opengl_shader::set_float4(const std::string& name, const glm::vec4& value)
 	{
-		GLint location = glGetUniformLocation(program_, name.c_str());
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
 		glUniform4f(location, value.x, value.y, value.z, value.w);
 	}
 

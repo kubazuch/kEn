@@ -43,5 +43,5 @@ namespace kEn {
 #	define _KEN_DEBUG(...)      ::kEn::log::client_logger()->debug(__VA_ARGS__)
 #else
 #	define _KEN_CORE_DEBUG(...)
-#	define _KEN_DEBUG_(...)
+#	define _KEN_DEBUG(...)
 #endif
