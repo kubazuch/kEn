@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #include "assert.h"
+#include "imgui.h"
 #include "kEn/event/application_events.h"
 #include "kEn/renderer/renderer.h"
 #include "kEn/renderer/render_command.h"
@@ -41,14 +42,68 @@ namespace kEn
 
 	void application::run()
 	{
+		double previous = glfwGetTime(); //TODO: platform
+		double lag = 0.0;
+		double time = 0.0;
+
+		//TODO: TEMP
+		int frames = 0, ticks = 0;
+		int FPS = 0, TPS = 0;
+		double frame_counter = 0.0;
+
+		bool vsync = window_->vsync();
+
+		int tps = 120;
+
+		//TODO: CLEANUP, cause this is hack city
 		while (running_)
 		{
+			double current = glfwGetTime(); //TODO: platform
+			double delta = current - previous;
+			previous = current;
+
+			lag += delta;
+			frame_counter += delta;
+
+			double mspt = 1.0 / tps;
+
+			while(lag >= mspt)
+			{
+				if (vsync != window_->vsync())
+					window_->set_vsync(vsync);
+
+				for (layer* layer : layer_stack_)
+					layer->on_update(mspt, time);
+				
+				lag -= mspt;
+				time += mspt;
+				++ticks;
+			}
+
 			for (layer* layer : layer_stack_)
-				layer->on_update();
+				layer->on_render();
+
+			++frames;
+			if (frame_counter >= 1.0)
+			{
+				FPS = frames;
+				TPS = ticks;
+				frames = 0;
+				ticks = 0;
+				frame_counter = 0;
+			}
 
 			imgui_layer_->begin();
 			for (layer* layer : layer_stack_)
 				layer->on_imgui();
+
+			ImGui::Begin("DEBUG");
+			ImGui::Text("FPS: %d", FPS);
+			ImGui::Text("TPS: %d", TPS);
+			ImGui::Checkbox("VSync", &vsync);
+			ImGui::SliderInt("Tickrate", &tps, 1, 240);
+			ImGui::End();
+
 			imgui_layer_->end();
 
 			window_->on_update();

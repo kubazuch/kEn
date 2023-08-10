@@ -11,7 +11,8 @@ namespace kEn
 
 		virtual void on_attach() {}
 		virtual void on_detach() {}
-		virtual void on_update() {}
+		virtual void on_update(double delta, double time) {}
+		virtual void on_render(/*TODO: renderer*/) {}
 		virtual void on_imgui() {}
 		virtual void on_event(base_event& event) {}
 

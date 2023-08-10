@@ -57,7 +57,7 @@ namespace kEn
 		context_->init();
 
 		glfwSetWindowUserPointer(window_ptr, &data_);
-		//set_vsync(true);
+		windows_window::set_vsync(true);
 
 		set_glfw_callbacks();
 	}

@@ -25,7 +25,7 @@ namespace kEn
 		ImGuiIO& io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // IF using Docking Branch
-		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 		ImGui::StyleColorsDark();
 
@@ -46,7 +46,8 @@ namespace kEn
 	void imgui_layer::on_imgui()
 	{
 		static bool show = true;
-		ImGui::ShowDemoWindow(&show); // Show demo window! :)
+		if(show)
+			ImGui::ShowDemoWindow(&show); // Show demo window! :)
 	}
 
 	void imgui_layer::begin()

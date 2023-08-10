@@ -11,7 +11,8 @@ namespace kEn
 
 		void on_attach() override;
 		void on_detach() override;
-		void on_update() override {}
+		void on_update(double, double) override {}
+		void on_render() override {}
 		void on_imgui() override;
 		void on_event(base_event& event) override {}
 

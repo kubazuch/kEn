@@ -5,6 +5,7 @@
 #include "kEn/core/application.h"
 #include "kEn/core/layer.h"
 #include "kEn/core/log.h"
+#include "kEn/core/assert.h"
 
 #include "kEn/core/input.h"
 #include "kEn/core/key_codes.h"

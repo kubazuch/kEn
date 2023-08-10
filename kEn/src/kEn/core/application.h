@@ -5,9 +5,8 @@
 #include "kEn/event/application_events.h"
 #include "kEn/event/event.h"
 #include "kEn/imgui/imgui_layer.h"
-#include "kEn/renderer/buffer.h"
-#include "kEn/renderer/shader.h"
-#include "kEn/renderer/vertex_array.h"
+
+#define KEN_TIME_PER_UPDATE (1.0/120.0)
 
 int main(int argc, char** argv);
 
@@ -34,12 +33,13 @@ namespace kEn {
 		bool on_window_close(window_close_event& e);
 		bool on_window_resize(window_resize_event& e);
 
+	private:
 		std::unique_ptr<window> window_;
 		std::unique_ptr<event_dispatcher> dispatcher_;
 		imgui_layer* imgui_layer_;
 		bool running_ = true;
 		layer_stack layer_stack_;
-		
+
 	private:
 		static application* instance_;
 		friend int ::main(int argc, char** argv);

@@ -1,6 +1,5 @@
 #include <kEn.h>
 #include <kEn/core/assert.h>
-#include <kEn/event/event.h>
 
 #include <imgui/imgui.h>
 
@@ -45,7 +44,7 @@ public:
 
 				void main() {
 					v_Pos = a_Position;
-					gl_Position = vec4(a_Position*1.5, 1.0);
+					gl_Position = vec4(a_Position*2, 1.0);
 				}
 			)";
 
@@ -154,7 +153,7 @@ public:
 				            vec3 hueShift = fract(n*2345.2)*vec3(.2, .3, .9)*123.2;
 
 				            vec3 color = sin(hueShift) * .5 + .5;
-				            color = color * vec3(1., .25, 1.+size);
+				            //color = color * vec3(1., .25, 1.+size);
 
 				            star *= sin(iTime*3.+n*6.2831)*.4+1.;
 				            col += star * size * color;
@@ -219,7 +218,13 @@ public:
 			shader_ = kEn::shader::create("basic", vertex_src, fragment_src2);
 	}
 
-	void on_update() override
+	void on_update(double delta, double time) override
+	{
+		shader_->bind();
+		shader_->set_float("iTime", time);
+	}
+
+	void on_render() override
 	{
 		kEn::render_command::set_clear_color({ 1.0f, 0.0f, 1.0f, 1.0f });
 		kEn::render_command::clear();
@@ -227,9 +232,8 @@ public:
 		kEn::renderer::begin_scene();
 		{
 			shader_->bind();
-			if(time_ != time_old_)
-				shader_->set_float("iTime", time_);
-			shader_->set_float2("iMouse", kEn::input::get_mouse_pos());
+			//shader_->set_float("iTime", time_);
+			//shader_->set_float2("iMouse", kEn::input::get_mouse_pos());
 
 			kEn::renderer::submit(vertex_array_);
 		}
@@ -253,13 +257,11 @@ public:
 
 		const auto pos = kEn::input::get_mouse_pos();
 		ImGui::Text("Mouse pos: %.1f, %.1f", pos.x, pos.y);
-
-		ImGui::DragFloat("Time", &time_, 0.1f, 0.0f);
 		ImGui::End();
 	}
 
 private:
-	float time_ = 0, time_old_ = -1;
+	float time_ = 0;
 
 	std::shared_ptr<kEn::vertex_array> vertex_array_;
 	std::shared_ptr<kEn::shader> shader_;
