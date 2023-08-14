@@ -1,6 +1,7 @@
 #include "kenpch.h"
 #include "opengl_shader.h"
 
+#include "glm/gtc/type_ptr.hpp"
 #include "kEn/core/assert.h"
 
 namespace kEn
@@ -100,12 +101,35 @@ namespace kEn
 		glUseProgram(0);
 	}
 
+	// <Uniforms>
+	void opengl_shader::set_bool(const std::string& name, bool value)
+	{
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform1i(location, value);
+	}
+
 	void opengl_shader::set_int(const std::string& name, int value)
 	{
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform1i(location, value);
 	}
 
 	void opengl_shader::set_int_array(const std::string& name, int* values, uint32_t count)
 	{
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform1iv(location, count, values);
+	}
+
+	void opengl_shader::set_uint(const std::string& name, uint32_t value)
+	{
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform1ui(location, value);
+	}
+
+	void opengl_shader::set_uint_array(const std::string& name, uint32_t* values, uint32_t count)
+	{
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform1uiv(location, count, values);
 	}
 
 	void opengl_shader::set_float(const std::string& name, float value)
@@ -122,6 +146,8 @@ namespace kEn
 
 	void opengl_shader::set_float3(const std::string& name, const glm::vec3& value)
 	{
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform3f(location, value.x, value.y, value.z);
 	}
 
 	void opengl_shader::set_float4(const std::string& name, const glm::vec4& value)
@@ -130,7 +156,17 @@ namespace kEn
 		glUniform4f(location, value.x, value.y, value.z, value.w);
 	}
 
+	void opengl_shader::set_mat3(const std::string& name, const glm::mat3& value)
+	{
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniformMatrix3fv(location, 1, GL_FALSE, value_ptr(value));
+	}
+
 	void opengl_shader::set_mat4(const std::string& name, const glm::mat4& value)
 	{
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniformMatrix4fv(location, 1, GL_FALSE, value_ptr(value));
 	}
+
+	// </Uniforms>
 }

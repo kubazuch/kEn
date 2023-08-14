@@ -42,9 +42,17 @@ public:
 				
 				out vec3 v_Pos;
 
+				struct test {
+					float f;
+					vec3 pos;
+					int[4] es;
+				};
+
+				uniform test[3] lena;
+
 				void main() {
 					v_Pos = a_Position;
-					gl_Position = vec4(a_Position*2, 1.0);
+					gl_Position = vec4(a_Position*2 + lena[2].pos * lena[1].es[2] * lena[0].es[1], 1.0);
 				}
 			)";
 
@@ -232,8 +240,6 @@ public:
 		kEn::renderer::begin_scene();
 		{
 			shader_->bind();
-			//shader_->set_float("iTime", time_);
-			//shader_->set_float2("iMouse", kEn::input::get_mouse_pos());
 
 			kEn::renderer::submit(vertex_array_);
 		}

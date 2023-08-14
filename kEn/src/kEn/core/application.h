@@ -29,6 +29,8 @@ namespace kEn {
 		VIRTUAL_FIVE(application);
 	private:
 		void run();
+		void update(double delta);
+		void render();
 
 		bool on_window_close(window_close_event& e);
 		bool on_window_resize(window_resize_event& e);
@@ -40,6 +42,9 @@ namespace kEn {
 		bool running_ = true;
 		layer_stack layer_stack_;
 
+		bool vsync_ = true;
+		double time_ = 0.0;
+		int fps_ = 0, tps_ = 0;
 	private:
 		static application* instance_;
 		friend int ::main(int argc, char** argv);

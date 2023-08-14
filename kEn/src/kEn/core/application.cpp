@@ -44,18 +44,13 @@ namespace kEn
 	{
 		double previous = glfwGetTime(); //TODO: platform
 		double lag = 0.0;
-		double time = 0.0;
 
 		//TODO: TEMP
 		int frames = 0, ticks = 0;
-		int FPS = 0, TPS = 0;
 		double frame_counter = 0.0;
 
-		bool vsync = window_->vsync();
+		vsync_ = window_->vsync();
 
-		int tps = 120;
-
-		//TODO: CLEANUP, cause this is hack city
 		while (running_)
 		{
 			double current = glfwGetTime(); //TODO: platform
@@ -64,50 +59,58 @@ namespace kEn
 
 			lag += delta;
 			frame_counter += delta;
-
-			double mspt = 1.0 / tps;
-
-			while(lag >= mspt)
+			
+			while(lag >= KEN_TIME_PER_UPDATE)
 			{
-				if (vsync != window_->vsync())
-					window_->set_vsync(vsync);
-
-				for (layer* layer : layer_stack_)
-					layer->on_update(mspt, time);
+				update(KEN_TIME_PER_UPDATE);
 				
-				lag -= mspt;
-				time += mspt;
+				lag -= KEN_TIME_PER_UPDATE;
+				time_ += KEN_TIME_PER_UPDATE;
 				++ticks;
 			}
-
-			for (layer* layer : layer_stack_)
-				layer->on_render();
 
 			++frames;
 			if (frame_counter >= 1.0)
 			{
-				FPS = frames;
-				TPS = ticks;
+				fps_ = frames;
+				tps_ = ticks;
 				frames = 0;
 				ticks = 0;
 				frame_counter = 0;
 			}
 
-			imgui_layer_->begin();
+			render();
+		}
+	}
+
+	void application::update(double delta)
+	{
+		if (vsync_ != window_->vsync())
+			window_->set_vsync(vsync_);
+
+		for (layer* layer : layer_stack_)
+			layer->on_update(delta, time_);
+	}
+
+	void application::render()
+	{
+		for (layer* layer : layer_stack_)
+			layer->on_render();
+
+		imgui_layer_->begin();
+		{
 			for (layer* layer : layer_stack_)
 				layer->on_imgui();
 
 			ImGui::Begin("DEBUG");
-			ImGui::Text("FPS: %d", FPS);
-			ImGui::Text("TPS: %d", TPS);
-			ImGui::Checkbox("VSync", &vsync);
-			ImGui::SliderInt("Tickrate", &tps, 1, 240);
+			ImGui::Text("FPS: %d", fps_);
+			ImGui::Text("TPS: %d", tps_);
+			ImGui::Checkbox("VSync", &vsync_);
 			ImGui::End();
-
-			imgui_layer_->end();
-
-			window_->on_update();
 		}
+		imgui_layer_->end();
+
+		window_->on_update();
 	}
 
 	void application::window_event_handler(base_event& e)

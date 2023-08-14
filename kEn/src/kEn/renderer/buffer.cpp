@@ -1,7 +1,6 @@
 #include "kenpch.h"
 #include "buffer.h"
 
-#include "renderer.h"
 #include "renderer_api.h"
 #include "kEn/core/assert.h"
 #include "platform/opengl/opengl_buffer.h"

@@ -14,19 +14,30 @@ namespace kEn
 		void bind() const override;
 		void unbind() const override;
 
+		// <Uniforms>
+		void set_bool(const std::string& name, bool value) override;
+
 		void set_int(const std::string& name, int value) override;
 		void set_int_array(const std::string& name, int* values, uint32_t count) override;
+
+		void set_uint(const std::string& name, uint32_t value) override;
+		void set_uint_array(const std::string& name, uint32_t* values, uint32_t count) override;
+
 		void set_float(const std::string& name, float value) override;
 		void set_float2(const std::string& name, const glm::vec2& value) override;
 		void set_float3(const std::string& name, const glm::vec3& value) override;
 		void set_float4(const std::string& name, const glm::vec4& value) override;
+
+		void set_mat3(const std::string& name, const glm::mat3& value) override;
 		void set_mat4(const std::string& name, const glm::mat4& value) override;
+		// </Uniforms>
 
 		const std::string& get_name() override { return name_; }
 
 	private:
 		uint32_t renderer_id_;
 
+		std::unordered_map<std::string, GLint> uniform_locations_;
 		std::string name_;
 	};
 }
