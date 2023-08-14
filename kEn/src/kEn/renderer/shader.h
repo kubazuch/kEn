@@ -24,13 +24,14 @@ namespace kEn
 		virtual void set_float2(const std::string& name, const glm::vec2& value) = 0;
 		virtual void set_float3(const std::string& name, const glm::vec3& value) = 0;
 		virtual void set_float4(const std::string& name, const glm::vec4& value) = 0;
-		// </Uniforms>
 
 		virtual void set_mat3(const std::string& name, const glm::mat3& value) = 0;
 		virtual void set_mat4(const std::string& name, const glm::mat4& value) = 0;
+		// </Uniforms>
 
 		virtual const std::string& get_name() = 0;
 
 		static std::unique_ptr<shader> create(const std::string& name, const std::string& vertex_src, const std::string& fragment_src);
+		static std::unique_ptr<shader> create(const std::filesystem::path& path);
 	};
 }

@@ -9,6 +9,7 @@ namespace kEn
 	public:
 		opengl_shader(std::string name, const std::string& vertex_src,
 		              const std::string& fragment_src);
+		opengl_shader(const std::filesystem::path& path);
 		~opengl_shader() override;
 
 		void bind() const override;
@@ -35,9 +36,20 @@ namespace kEn
 		const std::string& get_name() override { return name_; }
 
 	private:
+		static GLuint create_shader(const std::string& source, GLint type);
+		void create_program(const std::string& vertex_src, const std::string& fragment_src);
+		void link_shader() const;
+		
+		inline GLint get_uniform_location(const std::string& name) const;
+
+	private:
+		static const std::filesystem::path shader_path;
+		static const std::filesystem::path vertex_ext;
+		static const std::filesystem::path fragment_ext;
+
 		uint32_t renderer_id_;
 
-		std::unordered_map<std::string, GLint> uniform_locations_;
+		mutable std::unordered_map<std::string, GLint> uniform_locations_;
 		std::string name_;
 	};
 }
