@@ -9,21 +9,24 @@ namespace kEn
 	{
 		switch (type)
 		{
-		case shader_data_types::float_:	return GL_FLOAT;
-		case shader_data_types::float2:	return GL_FLOAT;
-		case shader_data_types::float3:	return GL_FLOAT;
-		case shader_data_types::float4:	return GL_FLOAT;
-		case shader_data_types::mat3:	return GL_FLOAT;
-		case shader_data_types::mat4:	return GL_FLOAT;
-		case shader_data_types::int_:	return GL_INT;
-		case shader_data_types::int2:	return GL_INT;
-		case shader_data_types::int3:	return GL_INT;
-		case shader_data_types::int4:	return GL_INT;
-		case shader_data_types::bool_:	return GL_BOOL;
+		case shader_data_types::float_:	
+		case shader_data_types::float2:	
+		case shader_data_types::float3:	
+		case shader_data_types::float4:	
+		case shader_data_types::mat3:	
+		case shader_data_types::mat4:
+			return GL_FLOAT;
+		case shader_data_types::int_:	
+		case shader_data_types::int2:	
+		case shader_data_types::int3:	
+		case shader_data_types::int4:
+			return GL_INT;
+		case shader_data_types::bool_:	
+			return GL_BOOL;
+		default:
+			KEN_CORE_ASSERT(false, "Unknown shader data type!");
+			return 0;
 		}
-
-		KEN_CORE_ASSERT(false, "Unknown shader data type!");
-		return 0;
 	}
 
 	opengl_vertex_array::opengl_vertex_array()
