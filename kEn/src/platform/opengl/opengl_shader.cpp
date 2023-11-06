@@ -8,7 +8,6 @@
 
 namespace kEn
 {
-	const std::filesystem::path opengl_shader::shader_path("assets/shaders");
 	const std::filesystem::path opengl_shader::vertex_ext(".vert");
 	const std::filesystem::path opengl_shader::fragment_ext(".frag");
 

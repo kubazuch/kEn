@@ -43,7 +43,6 @@ namespace kEn
 		inline GLint get_uniform_location(const std::string& name) const;
 
 	private:
-		static const std::filesystem::path shader_path;
 		static const std::filesystem::path vertex_ext;
 		static const std::filesystem::path fragment_ext;
 

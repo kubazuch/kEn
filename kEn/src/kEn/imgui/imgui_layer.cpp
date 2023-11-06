@@ -45,9 +45,9 @@ namespace kEn
 
 	void imgui_layer::on_imgui()
 	{
-		static bool show = true;
-		if(show)
-			ImGui::ShowDemoWindow(&show); // Show demo window! :)
+		//static bool show = true;
+		//if(show)
+		//	ImGui::ShowDemoWindow(&show); // Show demo window! :)
 	}
 
 	void imgui_layer::begin()

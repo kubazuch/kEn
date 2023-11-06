@@ -1,16 +1,15 @@
 #include "kenpch.h"
-#include "shader.h"
-
+#include "texture.h"
+#include "renderer.h"
 #include "renderer_api.h"
-#include "kEn/core/assert.h"
-#include "platform/opengl/opengl_shader.h"
+
+#include "platform/opengl/opengl_texture.h"
 
 namespace kEn
 {
-	const std::filesystem::path shader::shader_path("assets/shaders");
+	const std::filesystem::path texture2D::texture_path("assets/textures");
 
-	std::unique_ptr<shader> shader::create(const std::string& name, const std::string& vertex_src,
-		const std::string& fragment_src)
+	std::shared_ptr<texture2D> texture2D::create(const texture_spec& spec)
 	{
 		switch (renderer_api::get_api())
 		{
@@ -18,14 +17,14 @@ namespace kEn
 			KEN_CORE_ASSERT(false, "Renderer has no api!");
 			return nullptr;
 		case renderer_api::api::opengl:
-			return std::make_unique<opengl_shader>(name, vertex_src, fragment_src);
+			return std::make_shared<opengl_texture2D>(spec);
 		}
 
 		KEN_CORE_ASSERT(false, "Unknown api!");
 		return nullptr;
 	}
 
-	std::unique_ptr<shader> shader::create(const std::filesystem::path& path)
+	std::shared_ptr<texture2D> texture2D::create(const std::filesystem::path& path)
 	{
 		switch (renderer_api::get_api())
 		{
@@ -33,7 +32,7 @@ namespace kEn
 			KEN_CORE_ASSERT(false, "Renderer has no api!");
 			return nullptr;
 		case renderer_api::api::opengl:
-			return std::make_unique<opengl_shader>(path);
+			return std::make_shared<opengl_texture2D>(texture_path / path);
 		}
 
 		KEN_CORE_ASSERT(false, "Unknown api!");

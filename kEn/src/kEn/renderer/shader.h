@@ -31,6 +31,7 @@ namespace kEn
 
 		virtual const std::string& get_name() = 0;
 
+		static const std::filesystem::path shader_path;
 		static std::unique_ptr<shader> create(const std::string& name, const std::string& vertex_src, const std::string& fragment_src);
 		static std::unique_ptr<shader> create(const std::filesystem::path& path);
 	};
