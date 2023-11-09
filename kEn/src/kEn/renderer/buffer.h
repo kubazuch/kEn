@@ -124,6 +124,14 @@ namespace kEn
 		static std::shared_ptr<vertex_buffer> create(float* vertices, uint32_t size);
 	};
 
+	class mutable_vertex_buffer : public vertex_buffer
+	{
+	public:
+		virtual void modify_data(std::function<void(void*)> fn) const = 0;
+
+		static std::shared_ptr<mutable_vertex_buffer> create(float* vertices, uint32_t size);
+	};
+
 	class index_buffer
 	{
 	public:

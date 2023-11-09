@@ -33,6 +33,41 @@ namespace kEn
 	}
 
 	/*
+	 *		MUTABLE VERTEX BUFFER
+	 */
+
+	opengl_mutable_vertex_buffer::opengl_mutable_vertex_buffer(float* vertices, uint32_t size)
+		: renderer_id_(0)
+	{
+		glCreateBuffers(1, &renderer_id_);
+		glBindBuffer(GL_ARRAY_BUFFER, renderer_id_);
+		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_DYNAMIC_DRAW);
+	}
+
+	opengl_mutable_vertex_buffer::~opengl_mutable_vertex_buffer()
+	{
+		glDeleteBuffers(1, &renderer_id_);
+	}
+
+	void opengl_mutable_vertex_buffer::bind() const
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, renderer_id_);
+	}
+
+	void opengl_mutable_vertex_buffer::unbind() const
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+	void opengl_mutable_vertex_buffer::modify_data(std::function<void(void*)> fn) const
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, renderer_id_);
+		void* ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+		fn(ptr);
+		glUnmapBuffer(GL_ARRAY_BUFFER);
+	}
+
+	/*
 	 *		INDEX BUFFER
 	 */
 
