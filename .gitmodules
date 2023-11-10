@@ -11,3 +11,6 @@
 [submodule "kEn/vendor/glm"]
 	path = kEn/vendor/glm
 	url = https://github.com/g-truc/glm
+[submodule "kEn/vendor/ImGuizmo"]
+	path = kEn/vendor/ImGuizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo.git
