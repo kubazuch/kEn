@@ -7,9 +7,9 @@ namespace kEn
 {
 	std::unique_ptr<renderer::scene_data> renderer::scene_data_ = std::make_unique<renderer::scene_data>();
 
-	void renderer::begin_scene(camera& camera)
+	void renderer::begin_scene(std::shared_ptr<camera> camera)
 	{
-		scene_data_->VP_matrix = camera.view_projection_matrix();
+		scene_data_->VP_matrix = camera->view_projection_matrix();
 	}
 
 	void renderer::end_scene()

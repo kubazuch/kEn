@@ -6,12 +6,11 @@
 
 namespace kEn
 {
-
 	class renderer
 	{
 	public:
 
-		static void begin_scene(camera& camera);
+		static void begin_scene(std::shared_ptr<camera> camera);
 		static void end_scene();
 
 		static void submit(const std::shared_ptr<shader> shader, const std::shared_ptr<vertex_array>& vertex_array, const transform& transform);

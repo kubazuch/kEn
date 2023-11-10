@@ -3,11 +3,15 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#include "kEn/event/application_events.h"
+
 namespace kEn
 {
 	class camera
 	{
 	public:
+		virtual ~camera() = default;
+
 		const glm::vec3& position() const { return position_; }
 		void set_position(const glm::vec3& position) { position_ = position; recalculate_view(); }
 
@@ -17,6 +21,8 @@ namespace kEn
 		const glm::mat4& projection_matrix() const { return projection_matrix_; }
 		const glm::mat4& view_matrix() const { return view_matrix_; }
 		const glm::mat4& view_projection_matrix() const { return view_projection_matrix_; }
+
+		virtual bool on_window_resize(window_resize_event& event) = 0;
 
 	private:
 		void recalculate_view();
@@ -36,6 +42,10 @@ namespace kEn
 		orthographic_camera(float left, float right, float bottom, float top);
 
 		void set_projection(float left, float right, float bottom, float top);
+
+		bool on_window_resize(window_resize_event& event) override;
+	private:
+		float left_, right_, bottom_, top_;
 	};
 
 	class perspective_camera : public camera
@@ -44,5 +54,9 @@ namespace kEn
 		perspective_camera(float fov, float aspect, float zNear, float zFar);
 
 		void set_projection(float fov, float aspect, float zNear, float zFar);
+
+		bool on_window_resize(window_resize_event& event) override;
+	private:
+		float fov_, aspect_, zNear_, zFar_;
 	};
 }
