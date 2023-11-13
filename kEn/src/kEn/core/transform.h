@@ -15,14 +15,16 @@ namespace kEn
 		const transform& get_parent() const { return *parent_; }
 
 		glm::mat4 local_to_parent_matrix() const;
-		glm::mat4 local_to_world_matrix() const;
+		glm::mat4& local_to_world_matrix() const;
 		glm::mat4 world_to_local_matrix() const;
+		void model_matrix_updated();
 
 		void rotate(const glm::vec3& axis, float angle);
 		void rotate(const glm::quat& rotation);
 		void look_at(const glm::vec3& point, const glm::vec3& up);
 
 		glm::vec3 pos() const { return pos_; }
+		glm::vec3& pos() { return pos_; }
 		glm::vec3 transformed_pos() const { return parent_ ? glm::vec3(parent_->local_to_world_matrix() * glm::vec4(pos_, 1.f)): pos_; }
 		void set_pos(const glm::vec3& pos) { pos_ = pos; set_dirty(); }
 

@@ -1,6 +1,9 @@
 #include "kenpch.h"
 #include "transform.h"
 
+#include "glm/gtx/matrix_decompose.hpp"
+#include "glm/gtx/string_cast.hpp"
+
 namespace kEn
 {
 	transform::transform()
@@ -50,7 +53,7 @@ namespace kEn
 		return glm::translate(glm::mat4(1.0f), pos_) * glm::mat4_cast(rot_) * glm::scale(glm::mat4(1.0f), scale_);
 	}
 
-	glm::mat4 transform::local_to_world_matrix() const
+	glm::mat4& transform::local_to_world_matrix() const
 	{
 		if (!dirty_) return model_mat_;
 		
@@ -71,21 +74,35 @@ namespace kEn
 		return inv_model_mat_;
 	}
 
+	void transform::model_matrix_updated()
+	{
+		glm::vec3 skew;
+		glm::vec4 perspective;
+
+		inverse_dirty_ = true;
+
+		glm::mat4 local_mat_ = model_mat_;
+		if (parent_)
+			local_mat_ = parent_->world_to_local_matrix() * local_mat_;
+
+		glm::decompose(local_mat_, scale_, rot_, pos_, skew, perspective);
+	}
+
 	void transform::rotate(const glm::vec3& axis, float angle)
 	{
 		rot_ = glm::rotate(rot_, angle, axis);
-		dirty_ = true;
+		set_dirty();
 	}
 
 	void transform::rotate(const glm::quat& rotation)
 	{
 		rot_ = glm::normalize(rotation * rot_);
-		dirty_ = true;
+		set_dirty();
 	}
 
 	void transform::look_at(const glm::vec3& point, const glm::vec3& up)
 	{
 		rot_ = glm::quatLookAt(point - pos_, up);
-		dirty_ = true;
+		set_dirty();
 	}
 }

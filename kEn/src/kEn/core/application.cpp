@@ -134,6 +134,6 @@ namespace kEn
 	bool application::on_window_resize(window_resize_event& e)
 	{
 		render_command::set_viewport(0, 0, e.width(), e.height());
-		return false;
+		return e.height() == 0;
 	}
 }
