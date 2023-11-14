@@ -5,7 +5,7 @@
 
 namespace kEn
 {
-	std::unique_ptr<renderer::scene_data> renderer::scene_data_ = std::make_unique<renderer::scene_data>();
+	std::unique_ptr<renderer::scene_data> renderer::scene_data_ = std::make_unique<scene_data>();
 
 	void renderer::begin_scene(std::shared_ptr<camera> camera)
 	{
