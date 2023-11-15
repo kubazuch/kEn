@@ -16,7 +16,7 @@ namespace kEn
 	{
 	}
 
-	void renderer::submit(const std::shared_ptr<shader> shader, const std::shared_ptr<vertex_array>& vertex_array, const transform& transform)
+	void renderer::submit(const std::shared_ptr<shader> shader, const vertex_array& vertex_array, const transform& transform)
 	{
 		shader->bind();
 		shader->set_mat4("u_VP", scene_data_->VP_matrix);

@@ -23,7 +23,8 @@ namespace kEn
 		virtual void set_clear_color(const glm::vec4& color) = 0;
 		virtual void clear() = 0;
 
-		virtual void draw_indexed(const std::shared_ptr<vertex_array>& vertex_array, uint32_t index_count = 0) = 0;
+		virtual void draw_indexed(const vertex_array& vertex_array, uint32_t index_count = 0) = 0;
+		virtual void set_wireframe(bool wireframe) = 0;
 
 		static api get_api() { return api_; }
 		static std::unique_ptr<renderer_api> create();

@@ -13,7 +13,7 @@ namespace kEn
 		static void begin_scene(std::shared_ptr<camera> camera);
 		static void end_scene();
 
-		static void submit(const std::shared_ptr<shader> shader, const std::shared_ptr<vertex_array>& vertex_array, const transform& transform);
+		static void submit(const std::shared_ptr<shader> shader, const vertex_array& vertex_array, const transform& transform);
 	private:
 		struct scene_data
 		{

@@ -14,6 +14,7 @@ namespace kEn
 		void set_clear_color(const glm::vec4& color) override;
 		void clear() override;
 
-		void draw_indexed(const std::shared_ptr<kEn::vertex_array>& vertex_array, uint32_t index_count) override;
+		void draw_indexed(const vertex_array& vertex_array, uint32_t index_count) override;
+		void set_wireframe(bool wireframe) override;
 	};
 }

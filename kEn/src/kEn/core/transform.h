@@ -1,5 +1,6 @@
 #pragma once
 
+#include <list>
 #include "glm/glm.hpp"
 #include "glm/gtx/quaternion.hpp"
 

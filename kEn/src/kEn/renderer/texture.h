@@ -1,6 +1,7 @@
 #pragma once
 
 #include "kEn/core/core.h"
+#include <filesystem>
 
 namespace kEn
 {
