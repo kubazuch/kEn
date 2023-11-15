@@ -88,8 +88,9 @@ namespace kEn
 		if (vsync_ != window_->vsync())
 			window_->set_vsync(vsync_);
 
-		for (layer* layer : layer_stack_)
-			layer->on_update(delta, time_);
+		if (!minimized_)
+			for (layer* layer : layer_stack_)
+				layer->on_update(delta, time_);
 	}
 
 	void application::render()
@@ -133,6 +134,13 @@ namespace kEn
 
 	bool application::on_window_resize(window_resize_event& e)
 	{
+		if(e.width() == 0 || e.height() == 0)
+		{
+			minimized_ = true;
+			return true;
+		}
+
+		minimized_ = false;
 		render_command::set_viewport(0, 0, e.width(), e.height());
 		return e.height() == 0;
 	}

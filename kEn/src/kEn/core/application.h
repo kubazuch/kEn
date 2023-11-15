@@ -40,6 +40,7 @@ namespace kEn {
 		std::unique_ptr<event_dispatcher> dispatcher_;
 		imgui_layer* imgui_layer_;
 		bool running_ = true;
+		bool minimized_ = false;
 		layer_stack layer_stack_;
 
 		bool vsync_ = true;
