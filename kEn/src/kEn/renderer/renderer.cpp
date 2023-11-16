@@ -16,11 +16,11 @@ namespace kEn
 	{
 	}
 
-	void renderer::submit(const std::shared_ptr<shader> shader, const vertex_array& vertex_array, const transform& transform)
+	void renderer::submit(shader& shader, const vertex_array& vertex_array, const transform& transform)
 	{
-		shader->bind();
-		shader->set_mat4("u_VP", scene_data_->VP_matrix);
-		shader->set_mat4("u_M", transform.local_to_world_matrix());
+		shader.bind();
+		shader.set_mat4("u_VP", scene_data_->VP_matrix);
+		shader.set_mat4("u_M", transform.local_to_world_matrix());
 
 		render_command::draw_indexed(vertex_array);
 	}
