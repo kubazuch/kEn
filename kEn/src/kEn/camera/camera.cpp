@@ -32,10 +32,9 @@ namespace kEn
 		left_ = -aspect; right_ = aspect;
 		projection_matrix_ = glm::ortho(left_, right_, bottom_, top_, -1.0f, 1.0f);
 		view_projection_matrix_ = projection_matrix_ * view_matrix_;
-		return true;
+
+		return false;
 	}
-
-
 
 	perspective_camera::perspective_camera(float fov, float aspect, float zNear, float zFar)
 		: camera(), fov_(fov), aspect_(aspect), zNear_(zNear), zFar_(zFar)
@@ -58,6 +57,6 @@ namespace kEn
 		projection_matrix_ = glm::perspective(fov_, aspect_, zNear_, zFar_);
 		view_projection_matrix_ = projection_matrix_ * view_matrix_;
 
-		return true;
+		return false;
 	}
 }
