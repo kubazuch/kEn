@@ -37,5 +37,17 @@ namespace kEn
 	float input::get_mouse_y()
 	{
 		return get_mouse_pos().y;
-	}	
+	}
+
+	void input::set_cursor_visible(bool visible)
+	{
+		auto* window = static_cast<GLFWwindow*>(application::instance().main_window().native_window());
+		glfwSetInputMode(window, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
+	}
+
+	void input::set_mouse_pos(glm::vec2 pos)
+	{
+		auto* window = static_cast<GLFWwindow*>(application::instance().main_window().native_window());
+		glfwSetCursorPos(window, pos.x, pos.y);
+	}
 }
