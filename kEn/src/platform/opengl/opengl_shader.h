@@ -9,7 +9,7 @@ namespace kEn
 	public:
 		opengl_shader(std::string name, const std::string& vertex_src,
 		              const std::string& fragment_src);
-		opengl_shader(const std::filesystem::path& path);
+		opengl_shader(const std::filesystem::path& path, shader_config config);
 		~opengl_shader() override;
 
 		void bind() const override;
@@ -45,6 +45,9 @@ namespace kEn
 	private:
 		static const std::filesystem::path vertex_ext;
 		static const std::filesystem::path fragment_ext;
+		static const std::filesystem::path geometry_ext;
+		static const std::filesystem::path tess_control_ext;
+		static const std::filesystem::path tess_eval_ext;
 
 		uint32_t renderer_id_;
 

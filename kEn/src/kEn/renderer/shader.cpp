@@ -25,7 +25,7 @@ namespace kEn
 		return nullptr;
 	}
 
-	std::unique_ptr<shader> shader::create(const std::filesystem::path& path)
+	std::unique_ptr<shader> shader::create(const std::filesystem::path& path, shader_config config)
 	{
 		switch (renderer_api::get_api())
 		{
@@ -33,7 +33,7 @@ namespace kEn
 			KEN_CORE_ASSERT(false, "Renderer has no api!");
 			return nullptr;
 		case renderer_api::api::opengl:
-			return std::make_unique<opengl_shader>(path);
+			return std::make_unique<opengl_shader>(path, config);
 		}
 
 		KEN_CORE_ASSERT(false, "Unknown api!");

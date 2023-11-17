@@ -60,6 +60,17 @@ namespace kEn
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 	}
 
+	void opengl_renderer_api::draw_patches(const vertex_array& vertex_array, uint32_t vertex_count)
+	{
+		vertex_array.bind();
+		glDrawArrays(GL_PATCHES, 0, vertex_count);
+	}
+
+	void opengl_renderer_api::set_tessellation_patch_vertices(uint32_t count)
+	{
+		glPatchParameteri(GL_PATCH_VERTICES, count);
+	}
+
 	void opengl_renderer_api::set_wireframe(bool wireframe)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);

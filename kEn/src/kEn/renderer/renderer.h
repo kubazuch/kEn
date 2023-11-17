@@ -14,6 +14,7 @@ namespace kEn
 		static void end_scene();
 
 		static void submit(shader& shader, const vertex_array& vertex_array, const transform& transform);
+		static void submit_tessellated(shader& shader, const vertex_array& vertex_array, const uint32_t& count, const transform& transform);
 	private:
 		struct scene_data
 		{

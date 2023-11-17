@@ -12,7 +12,10 @@ namespace kEn
 		static void clear() { renderer_api_->clear(); }
 
 		static void draw_indexed(const vertex_array& vertex_array, uint32_t index_count = 0) { renderer_api_->draw_indexed(vertex_array, index_count); }
+		static void draw_patches(const vertex_array& vertex_array, uint32_t vertex_count = 0) { renderer_api_->draw_patches(vertex_array, vertex_count); }
+		static void set_tessellation_patch_vertices(uint32_t count = 4) { renderer_api_->set_tessellation_patch_vertices(count); }
 		static void set_wireframe(bool wireframe) { renderer_api_->set_wireframe(wireframe); }
+
 	private:
 		static std::unique_ptr<renderer_api> renderer_api_;
 	};

@@ -3,6 +3,13 @@
 
 namespace kEn
 {
+	struct shader_config
+	{
+		bool geometry = false;
+		bool tessellation = false;
+		bool compute = false;
+	};
+
 	class shader
 	{
 	public:
@@ -33,6 +40,6 @@ namespace kEn
 
 		static const std::filesystem::path shader_path;
 		static std::unique_ptr<shader> create(const std::string& name, const std::string& vertex_src, const std::string& fragment_src);
-		static std::unique_ptr<shader> create(const std::filesystem::path& path);
+		static std::unique_ptr<shader> create(const std::filesystem::path& path, shader_config config = shader_config());
 	};
 }

@@ -24,4 +24,13 @@ namespace kEn
 
 		render_command::draw_indexed(vertex_array);
 	}
+
+	void renderer::submit_tessellated(shader& shader, const vertex_array& vertex_array, const uint32_t& count, const transform& transform)
+	{
+		shader.bind();
+		shader.set_mat4("u_VP", scene_data_->VP_matrix);
+		shader.set_mat4("u_M", transform.local_to_world_matrix());
+
+		render_command::draw_patches(vertex_array, count);
+	}
 }

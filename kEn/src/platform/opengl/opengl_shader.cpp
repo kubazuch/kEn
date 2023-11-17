@@ -10,19 +10,21 @@ namespace kEn
 {
 	const std::filesystem::path opengl_shader::vertex_ext(".vert");
 	const std::filesystem::path opengl_shader::fragment_ext(".frag");
-
+	const std::filesystem::path opengl_shader::geometry_ext(".geom");
+	const std::filesystem::path opengl_shader::tess_control_ext(".tesc");
+	const std::filesystem::path opengl_shader::tess_eval_ext(".tese");
 
 	GLuint opengl_shader::create_shader(const std::string& src, GLint type)
 	{
 		const GLuint shader = glCreateShader(type);
 
-		if(shader == 0)
+		if (shader == 0)
 		{
 			KEN_CORE_ERROR("Shader construction failed!");
 			//TODO: maybe throw sth??
 			return 0;
 		}
-		
+
 		const GLchar* source = src.c_str();
 		glShaderSource(shader, 1, &source, nullptr);
 		glCompileShader(shader);
@@ -116,26 +118,123 @@ namespace kEn
 		glDeleteShader(fragment_shader);
 	}
 
-	opengl_shader::opengl_shader(const std::filesystem::path& path)
+	opengl_shader::opengl_shader(const std::filesystem::path& path, shader_config config)
 	{
 		auto shader_src_path = shader_path / path;
 		name_ = shader_src_path.stem().string();
 
+		GLuint vertex_shader = 0, fragment_shader = 0;
+		GLuint geometry_shader = 0;
+		GLuint tess_control_shader = 0, tess_evaluation_shader = 0;
+
+		// Vertex
+		std::stringstream vertex_src;
 		shader_src_path.replace_extension(vertex_ext);
 		std::ifstream vertex(shader_src_path);
+		vertex_src << vertex.rdbuf();
+		vertex_shader = create_shader(vertex_src.str(), GL_VERTEX_SHADER);
+		if (vertex_shader == 0)
+			throw std::exception("Unable to create vertex shader");
+
+		// Fragment
+		std::stringstream fragment_src;
 		shader_src_path.replace_extension(fragment_ext);
 		std::ifstream fragment(shader_src_path);
-
-		std::stringstream vertex_src, fragment_src;
-
-		vertex_src << vertex.rdbuf();
 		fragment_src << fragment.rdbuf();
+		fragment_shader = create_shader(fragment_src.str(), GL_FRAGMENT_SHADER);
+		if (fragment_shader == 0)
+		{
+			glDeleteShader(vertex_shader);
+			throw std::exception("Unable to create fragment shader");
+		}
 
-		create_program(vertex_src.str(), fragment_src.str());
+		// Geometry
+		if (config.geometry)
+		{
+			std::stringstream geometry_src;
+			shader_src_path.replace_extension(geometry_ext);
+			std::ifstream geometry(shader_src_path);
+			geometry_src << geometry.rdbuf();
+
+			geometry_shader = create_shader(geometry_src.str(), GL_GEOMETRY_SHADER);
+			if (geometry_shader == 0)
+			{
+				glDeleteShader(vertex_shader);
+				glDeleteShader(fragment_shader);
+				throw std::exception("Unable to create geometry shader");
+			}
+		}
+
+		// Tessellation
+		if (config.tessellation)
+		{
+			std::stringstream tess_control_src, tess_evaluation_src;
+			shader_src_path.replace_extension(tess_control_ext);
+			std::ifstream control(shader_src_path);
+			tess_control_src << control.rdbuf();
+
+			shader_src_path.replace_extension(tess_eval_ext);
+			std::ifstream eval(shader_src_path);
+			tess_evaluation_src << eval.rdbuf();
+
+			tess_control_shader = create_shader(tess_control_src.str(), GL_TESS_CONTROL_SHADER);
+			if (tess_control_shader == 0)
+			{
+				glDeleteShader(vertex_shader);
+				glDeleteShader(fragment_shader);
+				glDeleteShader(geometry_shader);
+				throw std::exception("Unable to create tessellation control shader");
+			}
+
+			tess_evaluation_shader = create_shader(tess_evaluation_src.str(), GL_TESS_EVALUATION_SHADER);
+			if (tess_evaluation_shader == 0)
+			{
+				glDeleteShader(vertex_shader);
+				glDeleteShader(fragment_shader);
+				glDeleteShader(geometry_shader);
+				glDeleteShader(tess_control_shader);
+				throw std::exception("Unable to create tessellation evaluation shader");
+			}
+		}
+
+		renderer_id_ = glCreateProgram();
+
+		glAttachShader(renderer_id_, vertex_shader);
+		glAttachShader(renderer_id_, fragment_shader);
+		if (config.geometry)
+			glAttachShader(renderer_id_, geometry_shader);
+
+		if (config.tessellation)
+		{
+			glAttachShader(renderer_id_, tess_control_shader);
+			glAttachShader(renderer_id_, tess_evaluation_shader);
+		}
+
+		link_shader();
+
+		glDetachShader(renderer_id_, vertex_shader);
+		glDetachShader(renderer_id_, fragment_shader);
+		if (config.geometry)
+			glDetachShader(renderer_id_, geometry_shader);
+		if (config.tessellation)
+		{
+			glDetachShader(renderer_id_, tess_control_shader);
+			glDetachShader(renderer_id_, tess_evaluation_shader);
+		}
+
+		glDeleteShader(vertex_shader);
+		glDeleteShader(fragment_shader);
+		if (config.geometry)
+			glDeleteShader(geometry_shader);
+		if (config.tessellation)
+		{
+			glDeleteShader(tess_control_shader);
+			glDeleteShader(tess_evaluation_shader);
+		}
 	}
 
 	opengl_shader::opengl_shader(std::string name, const std::string& vertex_src,
-	                             const std::string& fragment_src)
+		const std::string& fragment_src)
 		: name_(std::move(name))
 	{
 		create_program(vertex_src, fragment_src);
@@ -164,7 +263,7 @@ namespace kEn
 			return it->second;
 
 		const GLint location = glGetUniformLocation(renderer_id_, name.c_str());
-		if(location == -1)
+		if (location == -1)
 		{
 			KEN_CORE_ERROR("Unable to find uniform '{0}' in shader '{1}'", name, name_);
 			//TODO: maybe throw sth??

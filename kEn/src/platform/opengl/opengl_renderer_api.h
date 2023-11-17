@@ -15,6 +15,8 @@ namespace kEn
 		void clear() override;
 
 		void draw_indexed(const vertex_array& vertex_array, uint32_t index_count) override;
+		void draw_patches(const vertex_array& vertex_array, uint32_t vertex_count) override;
+		void set_tessellation_patch_vertices(uint32_t count = 4) override;
 		void set_wireframe(bool wireframe) override;
 	};
 }
