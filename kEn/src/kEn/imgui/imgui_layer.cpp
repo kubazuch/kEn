@@ -8,6 +8,8 @@
 #include "ImGuizmo.h"
 #include "GLFW/glfw3.h"
 #include "kEn/core/application.h"
+#include "kEn/event/key_events.h"
+#include "kEn/event/mouse_events.h"
 
 namespace kEn
 {
@@ -51,6 +53,32 @@ namespace kEn
 		//	ImGui::ShowDemoWindow(&show); // Show demo window! :)
 	}
 
+	void imgui_layer::on_event(base_event& event)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		event_dispatcher dispatcher;
+
+		auto on_mouse_event = [&](base_event&)
+			{
+				return io.WantCaptureMouse;
+			};
+
+		auto on_keyboard_event = [&](base_event&)
+			{
+				return io.WantCaptureKeyboard;
+			};
+
+		dispatcher.subscribe<mouse_button_pressed_event>(on_mouse_event);
+		dispatcher.subscribe<mouse_button_released_event>(on_mouse_event);
+		dispatcher.subscribe<mouse_move_event>(on_mouse_event);
+		dispatcher.subscribe<mouse_scroll_event>(on_mouse_event);
+		dispatcher.subscribe<key_pressed_event>(on_keyboard_event);
+		dispatcher.subscribe<key_released_event>(on_keyboard_event);
+		dispatcher.subscribe<key_typed_event>(on_keyboard_event);
+
+		dispatcher.dispatch(event);
+	}
+
 	void imgui_layer::begin()
 	{
 		// (Your code calls glfwPollEvents())
@@ -74,7 +102,7 @@ namespace kEn
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		// (Your code calls glfwSwapBuffers() etc.)
 
-		if(io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
 			GLFWwindow* context = glfwGetCurrentContext();
 			ImGui::UpdatePlatformWindows();
