@@ -13,6 +13,7 @@ namespace kEn
 
 		void set_clear_color(const glm::vec4& color) override;
 		void clear() override;
+		void clear_depth() override;
 
 		void draw_indexed(const vertex_array& vertex_array, uint32_t index_count) override;
 		void draw_patches(const vertex_array& vertex_array, uint32_t vertex_count) override;

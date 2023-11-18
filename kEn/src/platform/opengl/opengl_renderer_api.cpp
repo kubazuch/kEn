@@ -52,6 +52,11 @@ namespace kEn
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
+	void opengl_renderer_api::clear_depth()
+	{
+		glClear(GL_DEPTH_BUFFER_BIT);
+	}
+
 	void opengl_renderer_api::draw_indexed(const vertex_array& vertex_array, uint32_t index_count)
 	{
 		vertex_array.bind();

@@ -22,6 +22,7 @@ namespace kEn
 		virtual void set_viewport(uint32_t x, uint32_t y, uint32_t w, uint32_t h) = 0;
 		virtual void set_clear_color(const glm::vec4& color) = 0;
 		virtual void clear() = 0;
+		virtual void clear_depth() = 0;
 
 		virtual void draw_indexed(const vertex_array& vertex_array, uint32_t index_count = 0) = 0;
 		virtual void draw_patches(const vertex_array& vertex_array, uint32_t vertex_count = 0) = 0;
