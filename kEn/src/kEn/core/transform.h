@@ -22,7 +22,9 @@ namespace kEn
 
 		void rotate(const glm::vec3& axis, float angle);
 		void rotate(const glm::quat& rotation);
+		void rotate_local(const glm::quat& rotation);
 		void look_at(const glm::vec3& point, const glm::vec3& up);
+		void fma(const glm::vec3& axis, float amount);
 
 		glm::vec3 pos() const { return pos_; }
 		glm::vec3& pos() { return pos_; }
@@ -35,6 +37,10 @@ namespace kEn
 
 		glm::vec3 scale() const { return scale_; }
 		void set_scale(const glm::vec3& scale) { scale_ = scale; set_dirty(); }
+
+		glm::vec3 front() const;
+		glm::vec3 right() const;
+		glm::vec3 up() const;
 
 		transform(const transform&) = delete;
 		transform(transform&&) = delete;

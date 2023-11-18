@@ -4,6 +4,7 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include "kEn/event/application_events.h"
+#include "kEn/core/transform.h"
 
 namespace kEn
 {
@@ -12,11 +13,15 @@ namespace kEn
 	public:
 		virtual ~camera() = default;
 
-		const glm::vec3& position() const { return position_; }
-		void set_position(const glm::vec3& position) { position_ = position; recalculate_view(); }
+		const transform& get_transform() const { return transform_; }
 
-		const glm::quat& rotation() const { return rotation_; }
-		void set_rotation(const glm::quat& rotation) { rotation_ = rotation; recalculate_view(); }
+		void set_pos(const glm::vec3& position) { transform_.set_pos(position); recalculate_view(); }
+		void set_rot(const glm::quat& rotation) { transform_.set_rot(rotation); recalculate_view(); }
+		void rotate(const glm::vec3& axis, float angle) { transform_.rotate(axis, angle); recalculate_view(); }
+		void rotate(const glm::quat& rotation) { transform_.rotate(rotation); recalculate_view(); }
+		void rotate_local(const glm::quat& rotation) { transform_.rotate_local(rotation); recalculate_view(); }
+		void look_at(const glm::vec3& point, const glm::vec3& up) { transform_.look_at(point, up); recalculate_view(); }
+		void fma(const glm::vec3& axis, float amount) { transform_.fma(axis, amount); recalculate_view(); }
 
 		const glm::mat4& projection_matrix() const { return projection_matrix_; }
 		const glm::mat4& view_matrix() const { return view_matrix_; }
@@ -32,8 +37,7 @@ namespace kEn
 		glm::mat4 view_matrix_;
 		glm::mat4 view_projection_matrix_;
 
-		glm::vec3 position_ = { 0.0f, 0.0f, 0.0f };
-		glm::quat rotation_ = { 1.0f, 0.0f, 0.0f, 0.0f };
+		transform transform_;
 	};
 
 	class orthographic_camera : public camera

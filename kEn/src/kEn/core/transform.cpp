@@ -68,6 +68,7 @@ namespace kEn
 	glm::mat4 transform::world_to_local_matrix() const
 	{
 		if (!inverse_dirty_) return inv_model_mat_;
+		if (dirty_) local_to_world_matrix();
 
 		inv_model_mat_ = glm::inverse(model_mat_);
 		inverse_dirty_ = false;
@@ -100,9 +101,36 @@ namespace kEn
 		set_dirty();
 	}
 
+	void transform::rotate_local(const glm::quat& rotation)
+	{
+		rot_ = glm::normalize(rot_ * rotation);
+		set_dirty();
+	}
+
 	void transform::look_at(const glm::vec3& point, const glm::vec3& up)
 	{
 		rot_ = glm::quatLookAt(point - pos_, up);
 		set_dirty();
+	}
+
+	void transform::fma(const glm::vec3& axis, float amount)
+	{
+		pos_ += amount * axis;
+		set_dirty();
+	}
+
+	glm::vec3 transform::right() const
+	{
+		return rot_ * glm::vec3(1, 0, 0);
+	}
+
+	glm::vec3 transform::front() const
+	{
+		return rot_ * glm::vec3(0, 0, 1);
+	}
+
+	glm::vec3 transform::up() const
+	{
+		return rot_ * glm::vec3(0, 1, 0);
 	}
 }

@@ -5,9 +5,7 @@ namespace kEn
 {
 	void camera::recalculate_view()
 	{
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position()) * glm::mat4_cast(rotation_);
-
-		view_matrix_ = glm::inverse(transform);
+		view_matrix_ = transform_.world_to_local_matrix();
 		view_projection_matrix_ = projection_matrix_ * view_matrix_;
 	}
 
