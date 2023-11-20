@@ -89,9 +89,25 @@ namespace kEn
 			glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+			if(channels == 4)
+			{
+				glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+			}
+			else if(channels == 2)
+			{
+				glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
+			}
+			else
+			{
+				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+			}
 			glTextureSubImage2D(renderer_id_, 0, 0, 0, width, height, data_f, GL_UNSIGNED_BYTE, data);
 
 			stbi_image_free(data);
+		}
+		else
+		{
+			KEN_CORE_CRITICAL("stb_image load error: {0}", stbi_failure_reason());
 		}
 	}
 

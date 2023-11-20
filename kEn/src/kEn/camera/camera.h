@@ -15,6 +15,7 @@ namespace kEn
 
 		const transform& get_transform() const { return transform_; }
 
+		void set_parent(transform* parent) { transform_.set_parent(parent); recalculate_view(); }
 		void set_pos(const glm::vec3& position) { transform_.set_pos(position); recalculate_view(); }
 		void set_rot(const glm::quat& rotation) { transform_.set_rot(rotation); recalculate_view(); }
 		void rotate(const glm::vec3& axis, float angle) { transform_.rotate(axis, angle); recalculate_view(); }
@@ -29,7 +30,6 @@ namespace kEn
 
 		virtual bool on_window_resize(window_resize_event& event) = 0;
 
-	private:
 		void recalculate_view();
 
 	protected:

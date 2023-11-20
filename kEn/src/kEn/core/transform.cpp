@@ -109,7 +109,7 @@ namespace kEn
 
 	void transform::look_at(const glm::vec3& point, const glm::vec3& up)
 	{
-		rot_ = glm::quatLookAt(point - pos_, up);
+		rot_ = glm::quatLookAt(glm::normalize(point - pos_), up);
 		set_dirty();
 	}
 
