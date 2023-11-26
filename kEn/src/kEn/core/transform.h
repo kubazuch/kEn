@@ -3,6 +3,7 @@
 #include <list>
 #include "glm/glm.hpp"
 #include "glm/gtx/quaternion.hpp"
+#include "kEn/core/lazy_variable.h"
 
 namespace kEn
 {
@@ -26,16 +27,22 @@ namespace kEn
 		void look_at(const glm::vec3& point, const glm::vec3& up);
 		void fma(const glm::vec3& axis, float amount);
 
-		glm::vec3 pos() const { return pos_; }
-		glm::vec3& pos() { return pos_; }
-		glm::vec3 transformed_pos() const { return parent_ ? glm::vec3(parent_->local_to_world_matrix() * glm::vec4(pos_, 1.f)): pos_; }
+		//glm::vec3 pos() const { return pos_; }
+		//glm::vec3& pos() { return pos_.get(); }
+		const lazy_variable<glm::vec3>& pos() const { return pos_; }
+		lazy_variable<glm::vec3>& pos() { return pos_; }
+		glm::vec3 transformed_pos() const { return parent_ ? glm::vec3(parent_->local_to_world_matrix() * glm::vec4(pos_.get(), 1.f)): pos_; }
 		void set_pos(const glm::vec3& pos) { pos_ = pos; set_dirty(); }
 
-		glm::quat rot() const { return rot_; }
-		glm::quat transformed_rot() const { return parent_ ? parent_->transformed_rot() * rot_ : rot_; }
+		// glm::quat rot() const { return rot_; }
+		const lazy_variable<glm::quat>& rot() const { return rot_; }
+		lazy_variable<glm::quat>& rot() { return rot_; }
+		glm::quat transformed_rot() const { return parent_ ? parent_->transformed_rot() * rot_.get() : rot_; }
 		void set_rot(const glm::quat& rot) { rot_ = rot; set_dirty(); }
 
-		glm::vec3 scale() const { return scale_; }
+		//glm::vec3 scale() const { return scale_; }
+		const lazy_variable<glm::vec3>& scale() const { return scale_; }
+		lazy_variable<glm::vec3>& scale() { return scale_; }
 		void set_scale(const glm::vec3& scale) { scale_ = scale; set_dirty(); }
 
 		glm::vec3 front() const;
@@ -53,9 +60,9 @@ namespace kEn
 		transform* parent_;
 		std::list<transform*> children_;
 
-		glm::vec3 pos_;
-		glm::quat rot_;
-		glm::vec3 scale_;
+		lazy_variable<glm::vec3> pos_;
+		lazy_variable<glm::quat> rot_;
+		lazy_variable<glm::vec3> scale_;
 
 		mutable bool dirty_ = false;
 		mutable glm::mat4 model_mat_ = glm::mat4(1);

@@ -1,6 +1,9 @@
 #pragma once
 #include <glm/glm.hpp>
 
+#include "light.h"
+#include "material.h"
+
 namespace kEn
 {
 	struct shader_config
@@ -34,6 +37,9 @@ namespace kEn
 
 		virtual void set_mat3(const std::string& name, const glm::mat3& value) = 0;
 		virtual void set_mat4(const std::string& name, const glm::mat4& value) = 0;
+
+		virtual void set_material(const std::string& name, const material& value) { value.load(name, *this); }
+		virtual void set_light(const std::string& name, const base_light& value) { value.load(name, *this); }
 		// </Uniforms>
 
 		virtual const std::string& get_name() = 0;

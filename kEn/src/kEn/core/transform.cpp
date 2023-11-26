@@ -7,7 +7,7 @@
 namespace kEn
 {
 	transform::transform()
-		: parent_(nullptr), pos_(0.0f, 0.0f, 0.0f), rot_(1.0f, 0.0f, 0.0f, 0.0f), scale_(1.0f, 1.0f, 1.0f)
+		: parent_(nullptr), pos_({0.0f, 0.0f, 0.0f}), rot_({1.0f, 0.0f, 0.0f, 0.0f}), scale_({1.0f, 1.0f, 1.0f})
 	{
 	}
 
@@ -50,7 +50,7 @@ namespace kEn
 
 	glm::mat4 transform::local_to_parent_matrix() const
 	{
-		return glm::translate(glm::mat4(1.0f), pos_) * glm::mat4_cast(rot_) * glm::scale(glm::mat4(1.0f), scale_);
+		return glm::translate(glm::mat4(1.0f), pos_.get()) * glm::mat4_cast(rot_.get()) * glm::scale(glm::mat4(1.0f), scale_.get());
 	}
 
 	glm::mat4& transform::local_to_world_matrix() const
@@ -86,51 +86,59 @@ namespace kEn
 		if (parent_)
 			local_mat_ = parent_->world_to_local_matrix() * local_mat_;
 
-		glm::decompose(local_mat_, scale_, rot_, pos_, skew, perspective);
+		glm::decompose(local_mat_, scale_.get(), rot_.get(), pos_.get(), skew, perspective);
+		pos_.set_dirty();
+		rot_.set_dirty();
+		scale_.set_dirty();
 	}
 
 	void transform::rotate(const glm::vec3& axis, float angle)
 	{
-		rot_ = glm::rotate(rot_, angle, axis);
+		rot_ = glm::rotate(rot_.get(), angle, axis);
+		rot_.set_dirty();
 		set_dirty();
 	}
 
 	void transform::rotate(const glm::quat& rotation)
 	{
-		rot_ = glm::normalize(rotation * rot_);
+		rot_ = glm::normalize(rotation * rot_.get());
+		rot_.set_dirty();
 		set_dirty();
 	}
 
 	void transform::rotate_local(const glm::quat& rotation)
 	{
-		rot_ = glm::normalize(rot_ * rotation);
+		rot_ = glm::normalize(rot_.get() * rotation);
+		rot_.set_dirty();
 		set_dirty();
 	}
 
 	void transform::look_at(const glm::vec3& point, const glm::vec3& up)
 	{
-		rot_ = glm::quatLookAt(glm::normalize(point - pos_), up);
+		rot_ = glm::quatLookAt(glm::normalize(point - pos_.get()), up);
+		rot_.set_dirty();
 		set_dirty();
 	}
 
 	void transform::fma(const glm::vec3& axis, float amount)
 	{
-		pos_ += amount * axis;
+		pos_.get() += amount * axis;
+		pos_.set_dirty();
 		set_dirty();
 	}
 
 	glm::vec3 transform::right() const
 	{
-		return rot_ * glm::vec3(1, 0, 0);
+		return rot_.get() * glm::vec3(1, 0, 0);
 	}
 
 	glm::vec3 transform::front() const
 	{
-		return rot_ * glm::vec3(0, 0, 1);
+		return rot_.get() * glm::vec3(0, 0, 1);
 	}
 
 	glm::vec3 transform::up() const
 	{
-		return rot_ * glm::vec3(0, 1, 0);
+		return rot_.get() * glm::vec3(0, 1, 0);
 	}
 }

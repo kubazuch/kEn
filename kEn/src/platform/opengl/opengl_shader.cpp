@@ -13,6 +13,67 @@ namespace kEn
 	const std::filesystem::path opengl_shader::geometry_ext(".geom");
 	const std::filesystem::path opengl_shader::tess_control_ext(".tesc");
 	const std::filesystem::path opengl_shader::tess_eval_ext(".tese");
+	const std::regex opengl_shader::include_regex("#include\\s+\"(.+)\"");
+
+	std::string opengl_shader::read_shader_src_internal(const std::filesystem::path& filePath, std::unordered_set<std::filesystem::path>& included, bool internal)
+	{
+		if (included.find(filePath) != included.end())
+		{
+			if(!internal)
+				KEN_CORE_WARN("Circular dependency or already loaded package detected in file {0}!", filePath);
+			return "";
+		}
+
+		included.insert(filePath);
+
+		std::unique_ptr<std::istream> stream;
+		if (internal)
+		{
+			auto it = internal_libs.find(filePath.string());
+			stream = std::make_unique<std::stringstream>(it->second);
+		}
+		else
+		{
+			auto file = std::make_unique<std::ifstream>(filePath);
+			if (!file->is_open()) {
+				std::cerr << "Error opening file: " << filePath << std::endl;
+				return "";
+			}
+
+			stream = std::move(file);
+		}
+
+		std::stringstream buffer;
+		std::string line;
+		while (std::getline(*stream, line)) {
+			std::smatch includeMatch;
+			if (std::regex_match(line, includeMatch, include_regex)) {
+				std::string includeFileName = includeMatch[1].str();
+				std::string includedSource;
+				if (auto it = internal_libs.find(includeFileName); it != internal_libs.end())
+				{
+					includedSource = read_shader_src_internal(includeFileName, included, true);
+				}
+				else
+				{
+					includedSource = read_shader_src_internal(shader_path / includeFileName, included);
+				}
+				buffer << includedSource << "\n";
+			}
+			else
+			{
+				buffer << line << "\n";
+			}
+		}
+
+		return buffer.str();
+	}
+
+	std::string opengl_shader::read_shader_src(const std::filesystem::path& file)
+	{
+		std::unordered_set<std::filesystem::path> includedFiles;
+		return read_shader_src_internal(file, includedFiles);
+	}
 
 	GLuint opengl_shader::create_shader(const std::string& src, GLint type)
 	{
@@ -128,20 +189,15 @@ namespace kEn
 		GLuint tess_control_shader = 0, tess_evaluation_shader = 0;
 
 		// Vertex
-		std::stringstream vertex_src;
+
 		shader_src_path.replace_extension(vertex_ext);
-		std::ifstream vertex(shader_src_path);
-		vertex_src << vertex.rdbuf();
-		vertex_shader = create_shader(vertex_src.str(), GL_VERTEX_SHADER);
+		vertex_shader = create_shader(read_shader_src(shader_src_path), GL_VERTEX_SHADER);
 		if (vertex_shader == 0)
 			throw std::exception("Unable to create vertex shader");
 
 		// Fragment
-		std::stringstream fragment_src;
 		shader_src_path.replace_extension(fragment_ext);
-		std::ifstream fragment(shader_src_path);
-		fragment_src << fragment.rdbuf();
-		fragment_shader = create_shader(fragment_src.str(), GL_FRAGMENT_SHADER);
+		fragment_shader = create_shader(read_shader_src(shader_src_path), GL_FRAGMENT_SHADER);
 		if (fragment_shader == 0)
 		{
 			glDeleteShader(vertex_shader);
@@ -151,12 +207,8 @@ namespace kEn
 		// Geometry
 		if (config.geometry)
 		{
-			std::stringstream geometry_src;
 			shader_src_path.replace_extension(geometry_ext);
-			std::ifstream geometry(shader_src_path);
-			geometry_src << geometry.rdbuf();
-
-			geometry_shader = create_shader(geometry_src.str(), GL_GEOMETRY_SHADER);
+			geometry_shader = create_shader(read_shader_src(shader_src_path), GL_GEOMETRY_SHADER);
 			if (geometry_shader == 0)
 			{
 				glDeleteShader(vertex_shader);
@@ -168,16 +220,8 @@ namespace kEn
 		// Tessellation
 		if (config.tessellation)
 		{
-			std::stringstream tess_control_src, tess_evaluation_src;
 			shader_src_path.replace_extension(tess_control_ext);
-			std::ifstream control(shader_src_path);
-			tess_control_src << control.rdbuf();
-
-			shader_src_path.replace_extension(tess_eval_ext);
-			std::ifstream eval(shader_src_path);
-			tess_evaluation_src << eval.rdbuf();
-
-			tess_control_shader = create_shader(tess_control_src.str(), GL_TESS_CONTROL_SHADER);
+			tess_control_shader = create_shader(read_shader_src(shader_src_path), GL_TESS_CONTROL_SHADER);
 			if (tess_control_shader == 0)
 			{
 				glDeleteShader(vertex_shader);
@@ -186,7 +230,8 @@ namespace kEn
 				throw std::exception("Unable to create tessellation control shader");
 			}
 
-			tess_evaluation_shader = create_shader(tess_evaluation_src.str(), GL_TESS_EVALUATION_SHADER);
+			shader_src_path.replace_extension(tess_eval_ext);
+			tess_evaluation_shader = create_shader(read_shader_src(shader_src_path), GL_TESS_EVALUATION_SHADER);
 			if (tess_evaluation_shader == 0)
 			{
 				glDeleteShader(vertex_shader);
@@ -342,4 +387,82 @@ namespace kEn
 	}
 
 	// </Uniforms>
+
+	const std::unordered_map<std::string, std::string> opengl_shader::internal_libs = {
+		{"material",
+R"(struct material {
+	float ka;
+	float kd;
+	float ks;
+	float m;
+
+	vec3 color;
+};)"},
+		{"light",
+R"(#include "material"
+struct attenuation {
+	float constant;
+	float linear;
+	float quadratic;
+};
+
+struct directional_light {
+	vec3 color;
+
+	vec3 dir;
+}; 
+
+struct point_light {
+	vec3 color;
+
+	attenuation atten;
+
+	vec3 pos;
+}; 
+
+struct spot_light {
+	vec3 color;
+
+	attenuation atten;
+
+	vec3 pos;
+	vec3 dir;
+	float cutoff;
+}; 
+
+uniform bool u_UseBlinn = false;
+
+float calc_attenuation(attenuation atten, float dist) {
+	return 1.0 / (atten.constant + dist * (atten.linear + dist * atten.quadratic));
+}
+
+vec2 calc_light(vec3 light_dir, vec3 normal, vec3 view_dir) {
+	float diff = max(dot(normal, light_dir), 0.0);
+
+	vec3 reflect_dir = reflect(-light_dir, normal);
+	float spec = max(dot(view_dir, reflect_dir), 0.0);
+	
+	return vec2(diff, spec);
+}
+
+vec2 calc_light_blinn(vec3 light_dir, vec3 normal, vec3 view_dir) {
+	float diff = max(dot(normal, light_dir), 0.0);
+
+	vec3 halfway_dir = normalize(light_dir + view_dir);
+	float spec = max(dot(normal, halfway_dir), 0.0);
+	
+	return vec2(diff, spec);
+}
+
+vec3 calc_point_light(point_light light, material mat, vec3 ambient_color, vec3 normal, vec3 frag_pos, vec3 camera_pos) {
+	vec2 factors = u_UseBlinn ? calc_light_blinn(normalize(light.pos - frag_pos), normal, camera_pos) : calc_light(normalize(light.pos - frag_pos), normal, camera_pos);
+
+	vec3 ambient = mat.ka * ambient_color;
+	vec3 diffuse = mat.kd * factors.x * light.color;
+	vec3 specular = mat.ks * pow(factors.y, u_UseBlinn ? 4*mat.m : mat.m) * light.color;
+
+	return (ambient + diffuse + specular) * mat.color;
+}
+)"},
+	};
 }

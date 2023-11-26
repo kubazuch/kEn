@@ -1,6 +1,11 @@
 #pragma once
+#include <filesystem>
+#include <regex>
+#include <unordered_set>
+
 #include "kEn/renderer/shader.h"
 #include <glad/glad.h>
+#include "glm/gtc/type_ptr.hpp"
 
 namespace kEn
 {
@@ -36,6 +41,9 @@ namespace kEn
 		const std::string& get_name() override { return name_; }
 
 	private:
+		std::string read_shader_src_internal(const  std::filesystem::path& filePath,
+		                                std::unordered_set<std::filesystem::path>& included, bool internal = false);
+		std::string read_shader_src(const std::filesystem::path& file);
 		static GLuint create_shader(const std::string& source, GLint type);
 		void create_program(const std::string& vertex_src, const std::string& fragment_src);
 		void link_shader() const;
@@ -48,10 +56,13 @@ namespace kEn
 		static const std::filesystem::path geometry_ext;
 		static const std::filesystem::path tess_control_ext;
 		static const std::filesystem::path tess_eval_ext;
+		static const std::regex include_regex;
+		static const std::unordered_map<std::string, std::string> internal_libs;
 
 		uint32_t renderer_id_;
 
 		mutable std::unordered_map<std::string, GLint> uniform_locations_;
+		
 		std::string name_;
 	};
 }
