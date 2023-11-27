@@ -74,6 +74,11 @@ namespace kEn
 				internal_f = GL_RGB8;
 				data_f = GL_RGB;
 			}
+			else if (channels == 1)
+			{
+				internal_f = GL_R8;
+				data_f = GL_RED;
+			}
 
 			KEN_CORE_INFO("Loaded texture with {} channels", channels);
 

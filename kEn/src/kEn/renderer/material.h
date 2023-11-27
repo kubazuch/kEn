@@ -13,9 +13,13 @@ namespace kEn
 
 		void set_texture(const std::shared_ptr<texture>& texture);
 		void set_normal_texture(const std::shared_ptr<texture>& texture);
+		void set_ao_texture(const std::shared_ptr<texture>& texture);
+		void set_height_texture(const std::shared_ptr<texture>& texture);
 
 		std::shared_ptr<kEn::texture> texture() const { return texture_; }
 		std::shared_ptr<kEn::texture> normal_texture() const { return normal_texture_; }
+		std::shared_ptr<kEn::texture> ao_texture() const { return ao_texture_; }
+		std::shared_ptr<kEn::texture> height_texture() const { return height_texture_; }
 
 		void bind() const;
 
@@ -33,5 +37,7 @@ namespace kEn
 	private:
 		std::shared_ptr<kEn::texture> texture_;
 		std::shared_ptr<kEn::texture> normal_texture_;
+		std::shared_ptr<kEn::texture> ao_texture_;
+		std::shared_ptr<kEn::texture> height_texture_;
 	};
 }

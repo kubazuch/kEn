@@ -44,10 +44,24 @@ void kEn::material::set_normal_texture(const std::shared_ptr<kEn::texture>& text
 	normal_texture_ = texture;
 }
 
+void kEn::material::set_ao_texture(const std::shared_ptr<kEn::texture>& texture)
+{
+	ao_texture_ = texture;
+}
+
+void kEn::material::set_height_texture(const std::shared_ptr<kEn::texture>& texture)
+{
+	height_texture_ = texture;
+}
+
 void kEn::material::bind() const
 {
 	if (texture_)
 		texture_->bind();
 	if (normal_texture_)
 		normal_texture_->bind(1);
+	if (ao_texture_)
+		ao_texture_->bind(2);
+	if (height_texture_)
+		height_texture_->bind(3);
 }
