@@ -45,6 +45,10 @@ namespace kEn
 		lazy_variable<glm::vec3>& scale() { return scale_; }
 		void set_scale(const glm::vec3& scale) { scale_ = scale; set_dirty(); }
 
+		glm::vec3 local_front() const;
+		glm::vec3 local_right() const;
+		glm::vec3 local_up() const;
+
 		glm::vec3 front() const;
 		glm::vec3 right() const;
 		glm::vec3 up() const;

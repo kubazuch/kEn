@@ -127,18 +127,37 @@ namespace kEn
 		set_dirty();
 	}
 
-	glm::vec3 transform::right() const
+	glm::vec3 transform::local_right() const
 	{
 		return rot_.get() * glm::vec3(1, 0, 0);
 	}
 
-	glm::vec3 transform::front() const
+	glm::vec3 transform::local_front() const
 	{
 		return rot_.get() * glm::vec3(0, 0, 1);
 	}
 
-	glm::vec3 transform::up() const
+	glm::vec3 transform::local_up() const
 	{
 		return rot_.get() * glm::vec3(0, 1, 0);
+	}
+
+	glm::vec3 transform::right() const
+	{
+		glm::vec3 local = local_right();
+
+		return parent_ ? parent_->local_to_world_matrix() * glm::vec4(local, 0.0f) : local;
+	}
+
+	glm::vec3 transform::front() const
+	{
+		glm::vec3 local = local_front();
+		return parent_ ? parent_->local_to_world_matrix() * glm::vec4(local, 0.0f) : local;
+	}
+
+	glm::vec3 transform::up() const
+	{
+		glm::vec3 local = local_up();
+		return parent_ ? parent_->local_to_world_matrix() * glm::vec4(local, 0.0f) : local;
 	}
 }

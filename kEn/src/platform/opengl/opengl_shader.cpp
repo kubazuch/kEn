@@ -428,6 +428,7 @@ struct spot_light {
 	vec3 pos;
 	vec3 dir;
 	float cutoff;
+	float outerCutoff;
 }; 
 
 uniform bool u_UseBlinn = false;
@@ -454,14 +455,41 @@ vec2 calc_light_blinn(vec3 light_dir, vec3 normal, vec3 view_dir) {
 	return vec2(diff, spec);
 }
 
-vec3 calc_point_light(point_light light, material mat, vec3 ambient_color, vec3 normal, vec3 frag_pos, vec3 camera_pos) {
-	vec2 factors = u_UseBlinn ? calc_light_blinn(normalize(light.pos - frag_pos), normal, camera_pos) : calc_light(normalize(light.pos - frag_pos), normal, camera_pos);
+vec3 calc_point_light(point_light light, material mat, vec3 normal, vec3 frag_pos, vec3 view_dir) {
+	vec2 factors = u_UseBlinn ? calc_light_blinn(normalize(light.pos - frag_pos), normal, view_dir) : calc_light(normalize(light.pos - frag_pos), normal, view_dir);
 
-	vec3 ambient = mat.ka * ambient_color;
 	vec3 diffuse = mat.kd * factors.x * light.color;
 	vec3 specular = mat.ks * pow(factors.y, u_UseBlinn ? 4*mat.m : mat.m) * light.color;
 
-	return (ambient + diffuse + specular) * mat.color;
+	return (diffuse + specular) * mat.color * calc_attenuation(light.atten, length(light.pos - frag_pos));
+}
+
+vec3 calc_dir_light(directional_light light, material mat, vec3 normal, vec3 view_dir) {
+	vec2 factors = u_UseBlinn ? calc_light_blinn(normalize(-light.dir), normal, view_dir) : calc_light(normalize(-light.dir), normal, view_dir);
+
+	vec3 diffuse = mat.kd * factors.x * light.color;
+	vec3 specular = mat.ks * pow(factors.y, u_UseBlinn ? 4*mat.m : mat.m) * light.color;
+
+	return (diffuse + specular) * mat.color;
+}
+
+vec3 calc_spot_light(spot_light light, material mat, vec3 normal, vec3 frag_pos, vec3 view_dir) {
+	vec3 light_dir = normalize(light.pos - frag_pos);
+
+	float theta = dot(light_dir, normalize(-light.dir));
+	float epsilon = light.cutoff - light.outerCutoff;
+	float intensity;
+	if(epsilon == 0)
+		intensity = theta > light.cutoff ? 1 : 0;
+	else
+		intensity = clamp((theta - light.outerCutoff) / epsilon, 0.0, 1.0);    
+
+	vec2 factors = u_UseBlinn ? calc_light_blinn(normalize(light.pos - frag_pos), normal, view_dir) : calc_light(normalize(light.pos - frag_pos), normal, view_dir);
+
+	vec3 diffuse = mat.kd * factors.x * light.color;
+	vec3 specular = mat.ks * pow(factors.y, u_UseBlinn ? 4*mat.m : mat.m) * light.color;
+
+	return (diffuse + specular) * mat.color * calc_attenuation(light.atten, length(light.pos - frag_pos)) * intensity;
 }
 )"},
 	};
