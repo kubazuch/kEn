@@ -10,17 +10,17 @@ namespace kEn
 {
 	inline void attenuation::load(const std::string& name, shader& shader) const
 	{
-		if (constant.is_dirty())
+		//if (constant.is_dirty())
 		{
 			shader.set_float(name + ".constant", constant);
 			constant.clear_dirty();
 		}
-		if (linear.is_dirty())
+		//if (linear.is_dirty())
 		{
 			shader.set_float(name + ".linear", linear);
 			linear.clear_dirty();
 		}
-		if (quadratic.is_dirty())
+		//if (quadratic.is_dirty())
 		{
 			shader.set_float(name + ".quadratic", quadratic);
 			quadratic.clear_dirty();
@@ -50,7 +50,7 @@ namespace kEn
 
 	void directional_light::load(const std::string& name, shader& shader) const
 	{
-		if (color.is_dirty())
+		//if (color.is_dirty())
 		{
 			shader.set_float3(name + ".color", color);
 			color.clear_dirty();
@@ -99,7 +99,7 @@ namespace kEn
 
 	void point_light::load(const std::string& name, shader& shader) const
 	{
-		if (color.is_dirty())
+		//if (color.is_dirty())
 		{
 			shader.set_float3(name + ".color", color);
 			color.clear_dirty();
@@ -161,7 +161,7 @@ namespace kEn
 
 	void spot_light::load(const std::string& name, shader& shader) const
 	{
-		if (color.is_dirty())
+		//if (color.is_dirty())
 		{
 			shader.set_float3(name + ".color", color);
 			color.clear_dirty();
@@ -172,13 +172,13 @@ namespace kEn
 		shader.set_float3(name + ".pos", transform.transformed_pos());
 		shader.set_float3(name + ".dir", glm::normalize(transform.front()));
 
-		if (inner_cutoff_angle.is_dirty())
+		//if (inner_cutoff_angle.is_dirty())
 		{
 			shader.set_float(name + ".cutoff", glm::cos(inner_cutoff_angle));
 			inner_cutoff_angle.clear_dirty();
 		}
 
-		if (outer_cutoff_angle.is_dirty())
+		//if (outer_cutoff_angle.is_dirty())
 		{
 			shader.set_float(name + ".outerCutoff", glm::cos(outer_cutoff_angle));
 			outer_cutoff_angle.clear_dirty();
