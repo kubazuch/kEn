@@ -7,8 +7,8 @@ project "ImGui"
 	cppdialect "C++17"
     staticruntime "off"
 
-	targetdir ("%{prj.name}/bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("%{prj.name}/bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("%{wks.location}/obj/" .. outputdir .. "/%{prj.name}")
 
 	files
 	{
