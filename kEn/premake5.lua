@@ -30,13 +30,15 @@ project "kEn"
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.imguizmo}"
+		"%{IncludeDir.imguizmo}",
+		"%{IncludeDir.assimp}"
 	}
 
 	links {
 		"GLFW",
 		"Glad",
 		"imgui",
+		"assimp",
 		"opengl32.lib"
 	}
 

@@ -9,7 +9,7 @@ namespace kEn
 	 *		VERTEX BUFFER
 	 */
 
-	opengl_vertex_buffer::opengl_vertex_buffer(float* vertices, uint32_t size)
+	opengl_vertex_buffer::opengl_vertex_buffer(void* vertices, uint32_t size)
 		: renderer_id_(0)
 	{
 		glCreateBuffers(1, &renderer_id_);
@@ -36,7 +36,7 @@ namespace kEn
 	 *		MUTABLE VERTEX BUFFER
 	 */
 
-	opengl_mutable_vertex_buffer::opengl_mutable_vertex_buffer(float* vertices, uint32_t size)
+	opengl_mutable_vertex_buffer::opengl_mutable_vertex_buffer(void* vertices, uint32_t size)
 		: renderer_id_(0)
 	{
 		glCreateBuffers(1, &renderer_id_);

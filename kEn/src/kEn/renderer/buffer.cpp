@@ -3,11 +3,13 @@
 
 #include "renderer_api.h"
 #include "kEn/core/assert.h"
+#include "mesh/vertex.h"
 #include "platform/opengl/opengl_buffer.h"
 
 namespace kEn
 {
-	std::shared_ptr<vertex_buffer> vertex_buffer::create(float* vertices, uint32_t size)
+
+	std::shared_ptr<vertex_buffer> vertex_buffer::create(void* vertices, uint32_t size)
 	{
 		switch(renderer_api::get_api())
 		{
@@ -22,7 +24,7 @@ namespace kEn
 		return nullptr;
 	}
 
-	std::shared_ptr<mutable_vertex_buffer> mutable_vertex_buffer::create(float* vertices, uint32_t size)
+	std::shared_ptr<mutable_vertex_buffer> mutable_vertex_buffer::create(void* vertices, uint32_t size)
 	{
 		switch (renderer_api::get_api())
 		{

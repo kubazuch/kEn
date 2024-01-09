@@ -35,6 +35,7 @@ namespace kEn
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_LINE_SMOOTH);
+		glEnable(GL_MULTISAMPLE);
 	}
 
 	void opengl_renderer_api::set_viewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
@@ -52,9 +53,13 @@ namespace kEn
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void opengl_renderer_api::clear_depth()
+	void opengl_renderer_api::depth_testing(bool enabled)
 	{
-		glClear(GL_DEPTH_BUFFER_BIT);
+		if (enabled)
+			glEnable(GL_DEPTH_TEST);
+		else
+			glDisable(GL_DEPTH_TEST);
+		// glClear(GL_DEPTH_BUFFER_BIT);
 	}
 
 	void opengl_renderer_api::draw_indexed(const vertex_array& vertex_array, uint32_t index_count)

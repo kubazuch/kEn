@@ -3,6 +3,13 @@
 #include "kEn/core/core.h"
 #include <filesystem>
 
+#define TEXTURE_TYPES(X)	\
+	X(ambient_occlusion, aiTextureType_AMBIENT_OCCLUSION)	\
+	X(diffuse, aiTextureType_DIFFUSE)				\
+	X(height, aiTextureType_HEIGHT)				\
+	X(normal, aiTextureType_NORMALS)				\
+	X(specular, aiTextureType_SPECULAR)
+
 namespace kEn
 {
 	enum class image_format
@@ -21,6 +28,28 @@ namespace kEn
 		image_format format = image_format::RGBA8;
 	};
 
+	using texture_type_t = uint8_t;
+
+	namespace texture_type
+	{
+#		define ENUM_ENTRY(name, x)	name,
+#		define CASE_ENTRY(name, x)	case name: return #name;
+
+		enum : texture_type_t {
+			TEXTURE_TYPES(ENUM_ENTRY)
+		};
+
+		inline const char* name_of(const texture_type_t type)
+		{
+			switch(type)
+			{
+			TEXTURE_TYPES(CASE_ENTRY)
+			default:
+				return "INVALID";
+			}
+		}
+	}
+
 	class texture
 	{
 	public:
@@ -37,6 +66,12 @@ namespace kEn
 		virtual void bind(uint32_t slot = 0) const = 0;
 		virtual bool is_loaded() const = 0;
 		virtual bool operator==(const texture& other) const = 0;
+
+		void set_type(texture_type_t type) { type_ = type; }
+		texture_type_t type() const { return type_;	}
+
+	private:
+		texture_type_t type_ = texture_type::diffuse;
 	};
 
 	class texture2D : public texture

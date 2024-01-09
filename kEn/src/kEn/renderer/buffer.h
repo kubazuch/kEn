@@ -121,7 +121,7 @@ namespace kEn
 		virtual const buffer_layout& layout() const = 0;
 		virtual void set_layout(const buffer_layout& layout) = 0;
 
-		static std::shared_ptr<vertex_buffer> create(float* vertices, uint32_t size);
+		static std::shared_ptr<vertex_buffer> create(void* vertices, uint32_t size);
 	};
 
 	class mutable_vertex_buffer : public vertex_buffer
@@ -129,7 +129,7 @@ namespace kEn
 	public:
 		virtual void modify_data(std::function<void(void*)> fn) const = 0;
 
-		static std::shared_ptr<mutable_vertex_buffer> create(float* vertices, uint32_t size);
+		static std::shared_ptr<mutable_vertex_buffer> create(void* vertices, uint32_t size);
 	};
 
 	class index_buffer

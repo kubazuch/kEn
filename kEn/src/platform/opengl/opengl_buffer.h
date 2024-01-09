@@ -7,7 +7,7 @@ namespace kEn
 	class opengl_vertex_buffer : public vertex_buffer
 	{
 	public:
-		opengl_vertex_buffer(float* vertices, uint32_t size);
+		opengl_vertex_buffer(void* vertices, uint32_t size);
 		~opengl_vertex_buffer() override;
 
 		void bind() const override;
@@ -24,7 +24,7 @@ namespace kEn
 	class opengl_mutable_vertex_buffer final : public mutable_vertex_buffer
 	{
 	public:
-		opengl_mutable_vertex_buffer(float* vertices, uint32_t size);
+		opengl_mutable_vertex_buffer(void* vertices, uint32_t size);
 		~opengl_mutable_vertex_buffer() override;
 
 		void bind() const override;

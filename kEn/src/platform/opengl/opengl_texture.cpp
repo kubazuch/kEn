@@ -86,10 +86,11 @@ namespace kEn
 			data_format_ = data_f;
 
 			glCreateTextures(GL_TEXTURE_2D, 1, &renderer_id_);
-			glTextureStorage2D(renderer_id_, 1, internal_format_, width_, height_);
+			glTextureStorage2D(renderer_id_, 4, internal_format_, width_, height_);
 
-			glTextureParameteri(renderer_id_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTextureParameteri(renderer_id_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			//TODO: texture_spec this!
+			glTextureParameteri(renderer_id_, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTextureParameteri(renderer_id_, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 			glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -107,6 +108,8 @@ namespace kEn
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 			}
 			glTextureSubImage2D(renderer_id_, 0, 0, 0, width, height, data_f, GL_UNSIGNED_BYTE, data);
+
+			glGenerateTextureMipmap(renderer_id_);
 
 			stbi_image_free(data);
 		}

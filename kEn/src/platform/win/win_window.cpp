@@ -49,6 +49,7 @@ namespace kEn
 		if(renderer_api::get_api() == renderer_api::api::opengl)
 			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 #endif
+		glfwWindowHint(GLFW_SAMPLES, 16);
 
 		window_ptr = glfwCreateWindow(static_cast<int>(data_.width), static_cast<int>(data_.height), data_.title.c_str(), nullptr, nullptr);
 		++GLFW_window_count;

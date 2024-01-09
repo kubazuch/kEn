@@ -8,6 +8,7 @@ namespace kEn
 	class obj_model
 	{
 	public:
+		[[deprecated("obj_model is deprecated! Please use model")]]
 		obj_model(const std::filesystem::path& path);
 
 
