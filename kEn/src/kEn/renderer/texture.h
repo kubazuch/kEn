@@ -2,6 +2,7 @@
 
 #include "kEn/core/core.h"
 #include <filesystem>
+#include <optional>
 
 #define TEXTURE_TYPES(X)	\
 	X(ambient_occlusion, aiTextureType_AMBIENT_OCCLUSION)	\
@@ -12,6 +13,8 @@
 
 namespace kEn
 {
+	class texture;
+
 	enum class image_format
 	{
 		none = 0,
@@ -23,9 +26,35 @@ namespace kEn
 
 	struct texture_spec
 	{
-		uint32_t width = 1;
-		uint32_t height = 1;
-		image_format format = image_format::RGBA8;
+		enum class filter
+		{
+			LINEAR,
+			NEAREST
+		};
+
+		enum class wrap
+		{
+			REPEAT,
+			CLAMP,
+			MIRRORED_REPEAT
+		};
+
+		std::optional<uint32_t> width;
+		std::optional<uint32_t> height;
+		std::optional<image_format> format;
+
+		uint32_t mipmap_levels = 1;
+
+		filter min_filter = filter::LINEAR;
+		filter mag_filter = filter::LINEAR;
+		wrap x_wrap = wrap::REPEAT;
+		wrap y_wrap = wrap::REPEAT;
+
+		texture_spec& set_mipmap_levels(uint32_t l) { mipmap_levels = l; return *this; }
+		texture_spec& set_min_filter(filter f) { min_filter = f; return *this; }
+		texture_spec& set_mag_filter(filter f) { mag_filter = f; return *this; }
+		texture_spec& set_x_wrap(wrap f) { x_wrap = f; return *this; }
+		texture_spec& set_y_wrap(wrap f) { y_wrap = f; return *this; }
 	};
 
 	using texture_type_t = uint8_t;
@@ -66,20 +95,22 @@ namespace kEn
 		virtual void bind(uint32_t slot = 0) const = 0;
 		virtual bool is_loaded() const = 0;
 		virtual bool operator==(const texture& other) const = 0;
-
-		void set_type(texture_type_t type) { type_ = type; }
-		texture_type_t type() const { return type_;	}
-
-	private:
-		texture_type_t type_ = texture_type::diffuse;
 	};
 
 	class texture2D : public texture
 	{
 	public:
+		void set_type(texture_type_t type) { type_ = type; }
+		texture_type_t type() const { return type_; }
+	private:
+		texture_type_t type_ = texture_type::diffuse;
+	public:
 		static std::shared_ptr<texture2D> create(const texture_spec& spec);
-		static std::shared_ptr<texture2D> create(const std::filesystem::path& path);
+		static std::shared_ptr<texture2D> create(const std::filesystem::path& path, const texture_spec& spec = texture_spec());
 
 		static const std::filesystem::path texture_path;
+
+	private:
+		static std::unordered_map<std::filesystem::path, std::shared_ptr<texture2D>> loaded_resources_;
 	};
 }

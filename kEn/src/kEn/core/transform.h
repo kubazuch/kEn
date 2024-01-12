@@ -3,7 +3,7 @@
 #include <list>
 #include "glm/glm.hpp"
 #include "glm/gtx/quaternion.hpp"
-#include "kEn/core/lazy_variable.h"
+#include "kEn/lang/lazy_variable.h"
 
 namespace kEn
 {

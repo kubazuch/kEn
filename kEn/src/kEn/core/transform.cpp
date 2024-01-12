@@ -134,7 +134,7 @@ namespace kEn
 
 	glm::vec3 transform::local_front() const
 	{
-		return rot_.get() * glm::vec3(0, 0, 1);
+		return rot_.get() * glm::vec3(0, 0, -1);
 	}
 
 	glm::vec3 transform::local_up() const

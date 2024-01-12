@@ -7,7 +7,7 @@
 
 namespace kEn
 {
-	std::map<std::filesystem::path, std::shared_ptr<texture2D>> kEn::model::loaded_textures;
+	std::unordered_map<std::filesystem::path, std::shared_ptr<model>> model::loaded_resources_;
 
 	void model::render(shader& shader)
 	{
@@ -15,7 +15,7 @@ namespace kEn
 			mesh.render(shader);
 	}
 
-	void model::load_model(const std::filesystem::path& path)
+	void model::load_model(const std::filesystem::path& path, const texture_spec& spec)
 	{
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(path.string(), aiProcess_Triangulate | aiProcess_GenNormals);
@@ -28,24 +28,24 @@ namespace kEn
 
 		directory = path.parent_path();
 
-		process_node(scene->mRootNode, scene);
+		process_node(scene->mRootNode, scene, spec);
 	}
 
-	void model::process_node(aiNode* node, const aiScene* scene)
+	void model::process_node(aiNode* node, const aiScene* scene, const texture_spec& spec)
 	{
 		for(unsigned int i = 0; i < node->mNumMeshes; ++i)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-			meshes.push_back(process_mesh(mesh, scene));
+			meshes.push_back(process_mesh(mesh, scene, spec));
 		}
 	
 		for(unsigned int i = 0; i < node->mNumChildren; ++i)
 		{
-			process_node(node->mChildren[i], scene);
+			process_node(node->mChildren[i], scene, spec);
 		}
 	}
 
-	mesh model::process_mesh(aiMesh* mesh, const aiScene* scene)
+	mesh model::process_mesh(aiMesh* mesh, const aiScene* scene, const texture_spec& spec)
 	{
 		std::vector<vertex> vertices;
 		std::vector<uint32_t> indices;
@@ -98,13 +98,13 @@ namespace kEn
 
 		// Texture
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-		load_material_textures(material, kEn::texture_type::diffuse, textures);
+		load_material_textures(material, kEn::texture_type::diffuse, textures, spec);
 		// TODO: other types
 
 		return { vertices, indices, textures };
 	}
 
-	void model::load_material_textures(aiMaterial* mat, const texture_type_t type, std::vector<std::shared_ptr<texture2D>>& textures) const
+	void model::load_material_textures(aiMaterial* mat, const texture_type_t type, std::vector<std::shared_ptr<texture2D>>& textures, const texture_spec& spec) const
 	{
 		aiTextureType ai_type = texture_type::to_assimp(type);
 		for(unsigned int i = 0; i < mat->GetTextureCount(ai_type); ++i)
@@ -113,18 +113,9 @@ namespace kEn
 			mat->GetTexture(ai_type, i, &str);
 
 			auto path = directory / str.C_Str();
-			auto it = loaded_textures.find(path);
-			if(it != loaded_textures.end())
-			{
-				textures.push_back(it->second);
-				continue;
-			}
-
-			std::shared_ptr<texture2D> texture = texture2D::create(path);
+			std::shared_ptr<texture2D> texture = texture2D::create(path, spec);
 			texture->set_type(type);
 			textures.push_back(texture);
-
-			loaded_textures[path] = texture;
 		}
 	}
 

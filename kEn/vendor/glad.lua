@@ -4,8 +4,8 @@ project "Glad"
     language "C"
     staticruntime "off"
     
-	targetdir ("%{prj.name}/bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("%{prj.name}/obj/" .. outputdir .. "/%{prj.name}")
+	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("%{wks.location}/obj/" .. outputdir .. "/%{prj.name}")
 	
 	files {
 		"%{prj.name}/include/glad/glad.h",
