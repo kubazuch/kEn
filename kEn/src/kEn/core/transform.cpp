@@ -6,8 +6,8 @@
 
 namespace kEn
 {
-	transform::transform()
-		: parent_(nullptr), pos_({0.0f, 0.0f, 0.0f}), rot_({1.0f, 0.0f, 0.0f, 0.0f}), scale_({1.0f, 1.0f, 1.0f})
+	transform::transform(glm::vec3 pos, glm::quat rot, glm::vec3 scale)
+		: pos_(pos), rot_(rot), scale_(scale)
 	{
 	}
 
@@ -15,11 +15,11 @@ namespace kEn
 	{
 		for (const auto child : children_)
 		{
-			child->set_parent(nullptr);
+			child.get().parent_.reset();
 		}
 
-		if (parent_)
-			set_parent(nullptr);
+		if (parent_.has_value())
+			unset_parent();
 	}
 
 	void transform::set_dirty()
@@ -31,26 +31,33 @@ namespace kEn
 
 		for(const auto child : children_)
 		{
-			child->set_dirty();
+			child.get().set_dirty();
 		}
 	}
 
-	void transform::set_parent(transform* parent)
+	void transform::unset_parent()
 	{
-		if (parent_)
-			parent_->children_.remove(this);
+		if(parent_.has_value())
+			std::erase_if(parent_.value().get().children_, [this](auto ref) { return std::addressof(ref.get()) == this; });
+
+		parent_.reset();
+	}
+
+	void transform::set_parent(transform& parent)
+	{
+		if (parent_.has_value())
+			std::erase_if(parent_.value().get().children_, [this](auto ref) { return std::addressof(ref.get()) == this; });
 
 		parent_ = parent;
 
-		if (parent_)
-			parent_->children_.push_back(this);
+		parent.children_.emplace_back(*this);
 
 		set_dirty();
 	}
 
 	glm::mat4 transform::local_to_parent_matrix() const
 	{
-		return glm::translate(glm::mat4(1.0f), pos_.get()) * glm::mat4_cast(rot_.get()) * glm::scale(glm::mat4(1.0f), scale_.get());
+		return glm::translate(glm::mat4(1.0f), pos_) * glm::mat4_cast(rot_) * glm::scale(glm::mat4(1.0f), scale_);
 	}
 
 	glm::mat4& transform::local_to_world_matrix() const
@@ -59,7 +66,7 @@ namespace kEn
 		
 		model_mat_ = local_to_parent_matrix();
 		if(parent_)
-			model_mat_ = parent_->local_to_world_matrix() * model_mat_;
+			model_mat_ = parent_.value().get().local_to_world_matrix() * model_mat_;
 
 		dirty_ = false;
 		return model_mat_;
@@ -84,80 +91,76 @@ namespace kEn
 
 		glm::mat4 local_mat_ = model_mat_;
 		if (parent_)
-			local_mat_ = parent_->world_to_local_matrix() * local_mat_;
+			local_mat_ = parent_.value().get().world_to_local_matrix() * local_mat_;
 
-		glm::decompose(local_mat_, scale_.get(), rot_.get(), pos_.get(), skew, perspective);
-		pos_.set_dirty();
-		rot_.set_dirty();
-		scale_.set_dirty();
+		glm::decompose(local_mat_, scale_, rot_, pos_, skew, perspective);
 	}
 
 	void transform::rotate(const glm::vec3& axis, float angle)
 	{
-		rot_ = glm::rotate(rot_.get(), angle, axis);
-		rot_.set_dirty();
+		rot_ = glm::rotate(rot_, angle, axis);
 		set_dirty();
 	}
 
 	void transform::rotate(const glm::quat& rotation)
 	{
-		rot_ = glm::normalize(rotation * rot_.get());
-		rot_.set_dirty();
+		rot_ = glm::normalize(rotation * rot_);
 		set_dirty();
 	}
 
 	void transform::rotate_local(const glm::quat& rotation)
 	{
-		rot_ = glm::normalize(rot_.get() * rotation);
-		rot_.set_dirty();
+		rot_ = glm::normalize(rot_ * rotation);
 		set_dirty();
 	}
 
 	void transform::look_at(const glm::vec3& point, const glm::vec3& up)
 	{
-		rot_ = glm::quatLookAt(glm::normalize(point - pos_.get()), up);
-		rot_.set_dirty();
+		const glm::vec3 local_point = parent_.has_value() ? glm::vec3(parent_.value().get().world_to_local_matrix() * glm::vec4(point, 1.f)) : point;
+		glm::vec3 direction = local_point - pos_;
+		direction = glm::normalize(direction);
+		rot_ = glm::quatLookAt(direction, up);
+
 		set_dirty();
 	}
 
 	void transform::fma(const glm::vec3& axis, float amount)
 	{
-		pos_.get() += amount * axis;
-		pos_.set_dirty();
+		pos_ += amount * axis;
 		set_dirty();
 	}
 
 	glm::vec3 transform::local_right() const
 	{
-		return rot_.get() * glm::vec3(1, 0, 0);
+		return rot_ * glm::vec3(1, 0, 0);
 	}
 
 	glm::vec3 transform::local_front() const
 	{
-		return rot_.get() * glm::vec3(0, 0, -1);
+		return rot_ * glm::vec3(0, 0, -1);
 	}
 
 	glm::vec3 transform::local_up() const
 	{
-		return rot_.get() * glm::vec3(0, 1, 0);
+		return rot_ * glm::vec3(0, 1, 0);
 	}
 
 	glm::vec3 transform::right() const
 	{
 		glm::vec3 local = local_right();
 
-		return parent_ ? parent_->local_to_world_matrix() * glm::vec4(local, 0.0f) : local;
+		return parent_ ? parent_.value().get().local_to_world_matrix() * glm::vec4(local, 0.0f) : local;
 	}
 
 	glm::vec3 transform::front() const
 	{
 		glm::vec3 local = local_front();
-		return parent_ ? parent_->local_to_world_matrix() * glm::vec4(local, 0.0f) : local;
+		return parent_ ? parent_.value().get().local_to_world_matrix() * glm::vec4(local, 0.0f) : local;
 	}
 
 	glm::vec3 transform::up() const
 	{
 		glm::vec3 local = local_up();
-		return parent_ ? parent_->local_to_world_matrix() * glm::vec4(local, 0.0f) : local;
+		return parent_ ? parent_.value().get().local_to_world_matrix() * glm::vec4(local, 0.0f) : local;
 	}
 }

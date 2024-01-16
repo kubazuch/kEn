@@ -1,8 +1,8 @@
 #pragma once
 #include "shader.h"
 #include "vertex_array.h"
-#include "kEn/camera/camera.h"
 #include "kEn/core/transform.h"
+#include "scene/core_components.h"
 
 namespace kEn
 {
@@ -19,6 +19,7 @@ namespace kEn
 		struct scene_data
 		{
 			glm::mat4 VP_matrix;
+			glm::vec3 camera_pos;
 		};
 
 		static std::unique_ptr<scene_data> scene_data_;

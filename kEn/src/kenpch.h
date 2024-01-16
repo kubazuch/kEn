@@ -16,7 +16,6 @@
 
 #include "kEn/core/core.h"
 #include "kEn/core/log.h"
-#include "kEn/lang/lazy_variable.h"
 
 #ifdef KEN_PLATFORM_WIN
 #	include <Windows.h>

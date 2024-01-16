@@ -100,11 +100,6 @@ namespace kEn
 	class texture2D : public texture
 	{
 	public:
-		void set_type(texture_type_t type) { type_ = type; }
-		texture_type_t type() const { return type_; }
-	private:
-		texture_type_t type_ = texture_type::diffuse;
-	public:
 		static std::shared_ptr<texture2D> create(const texture_spec& spec);
 		static std::shared_ptr<texture2D> create(const std::filesystem::path& path, const texture_spec& spec = texture_spec());
 

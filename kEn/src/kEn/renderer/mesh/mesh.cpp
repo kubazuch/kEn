@@ -2,6 +2,7 @@
 #include "mesh.h"
 
 #include <map>
+#include <utility>
 
 #include "kEn/renderer/renderer.h"
 #include "kEn/renderer/render_command.h"
@@ -14,8 +15,8 @@ namespace kEn
 		{shader_data_types::float2, "a_TexCoord"}
 	};
 
-	mesh::mesh(const std::vector<vertex>& vertices, const std::vector<uint32_t>& indices, const std::vector<std::shared_ptr<texture2D>>& textures)
-		: vertices(vertices), indices(indices), textures(textures)
+	mesh::mesh(const std::vector<vertex>& vertices, const std::vector<uint32_t>& indices, kEn::material material)
+		: vertices(vertices), indices(indices), material(std::move(material))
 	{
 		setup_mesh();
 	}
@@ -32,25 +33,11 @@ namespace kEn
 		vao_->set_index_buffer(ebo);
 	}
 
-	void mesh::render(shader& shader)
+	void mesh::render(shader& shader, const transform& transform) const
 	{
-		std::map<texture_type_t, unsigned int> ids;
-
-		shader.bind();
-		for(int i = 0; i < textures.size(); i++)
-		{
-			texture_type_t type = textures[i]->type();
-			unsigned int id = ids[type]++;
-			shader.set_int("u_Material." + std::string(texture_type::name_of(type)) + std::to_string(id), i);
-			textures[i]->bind(i);
-		}
-
-		vao_->bind();
-		transform trans;
-		trans.set_scale(glm::vec3(0.01f));
-		trans.set_pos(glm::vec3(0, -1, 0));
-		renderer::submit(shader, *vao_, trans);
-		vao_->unbind();
+		shader.set_material("u_Material", material);
+		material.bind();
+		renderer::submit(shader, *vao_, transform);
 	}
 
 }

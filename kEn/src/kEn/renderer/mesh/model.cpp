@@ -9,10 +9,18 @@ namespace kEn
 {
 	std::unordered_map<std::filesystem::path, std::shared_ptr<model>> model::loaded_resources_;
 
-	void model::render(shader& shader)
+	std::shared_ptr<model> model::load(const std::filesystem::path& path, const texture_spec& spec)
+	{
+		if (const auto it = loaded_resources_.find(path); it != loaded_resources_.end())
+			return it->second;
+
+		return loaded_resources_[path] = std::make_shared<model>(path, spec);
+	}
+
+	void model::render(shader& shader, const transform& transform) const
 	{
 		for (auto& mesh : meshes)
-			mesh.render(shader);
+			mesh.render(shader, transform);
 	}
 
 	void model::load_model(const std::filesystem::path& path, const texture_spec& spec)
@@ -47,11 +55,8 @@ namespace kEn
 
 	mesh model::process_mesh(aiMesh* mesh, const aiScene* scene, const texture_spec& spec)
 	{
-		std::vector<vertex> vertices;
-		std::vector<uint32_t> indices;
-		std::vector<std::shared_ptr<texture2D>> textures;
-
 		// Vertices
+		std::vector<vertex> vertices;
 		for(unsigned int i = 0; i < mesh->mNumVertices; ++i)
 		{
 			vertex v;
@@ -89,6 +94,7 @@ namespace kEn
 		}
 
 		// Indices
+		std::vector<uint32_t> indices;
 		for(unsigned int i = 0; i < mesh->mNumFaces; ++i)
 		{
 			aiFace face = mesh->mFaces[i];
@@ -96,15 +102,16 @@ namespace kEn
 				indices.push_back(face.mIndices[j]);
 		}
 
-		// Texture
-		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-		load_material_textures(material, kEn::texture_type::diffuse, textures, spec);
+		// Material
+		kEn::material material;
+		aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
+		load_material_textures(mat, kEn::texture_type::diffuse, material, spec);
 		// TODO: other types
 
-		return { vertices, indices, textures };
+		return { vertices, indices, material };
 	}
 
-	void model::load_material_textures(aiMaterial* mat, const texture_type_t type, std::vector<std::shared_ptr<texture2D>>& textures, const texture_spec& spec) const
+	void model::load_material_textures(aiMaterial* mat, const texture_type_t type, kEn::material& material, const texture_spec& spec) const
 	{
 		aiTextureType ai_type = texture_type::to_assimp(type);
 		for(unsigned int i = 0; i < mat->GetTextureCount(ai_type); ++i)
@@ -114,10 +121,7 @@ namespace kEn
 
 			auto path = directory / str.C_Str();
 			std::shared_ptr<texture2D> texture = texture2D::create(path, spec);
-			texture->set_type(type);
-			textures.push_back(texture);
+			material.set_texture(type, texture, i);
 		}
 	}
-
-
 }

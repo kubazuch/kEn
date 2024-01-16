@@ -308,6 +308,7 @@ namespace kEn
 			return it->second;
 
 		const GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		uniform_locations_[name] = location;
 		if (location == -1)
 		{
 			KEN_CORE_ERROR("Unable to find uniform '{0}' in shader '{1}'", name, name_);
@@ -316,74 +317,73 @@ namespace kEn
 		}
 
 		KEN_CORE_DEBUG("Adding new uniform location for '{0}' = {1}", name, location);
-		uniform_locations_[name] = location;
 		return location;
 	}
 
 	void opengl_shader::set_bool(const std::string& name, bool value)
 	{
 		GLint location = get_uniform_location(name);
-		glUniform1i(location, value);
+		glProgramUniform1i(renderer_id_, location, value);
 	}
 
 	void opengl_shader::set_int(const std::string& name, int value)
 	{
 		GLint location = get_uniform_location(name);
-		glUniform1i(location, value);
+		glProgramUniform1i(renderer_id_, location, value);
 	}
 
 	void opengl_shader::set_int_array(const std::string& name, int* values, uint32_t count)
 	{
 		GLint location = get_uniform_location(name);
-		glUniform1iv(location, count, values);
+		glProgramUniform1iv(renderer_id_, location, count, values);
 	}
 
 	void opengl_shader::set_uint(const std::string& name, uint32_t value)
 	{
 		GLint location = get_uniform_location(name);
-		glUniform1ui(location, value);
+		glProgramUniform1ui(renderer_id_, location, value);
 	}
 
 	void opengl_shader::set_uint_array(const std::string& name, uint32_t* values, uint32_t count)
 	{
 		GLint location = get_uniform_location(name);
-		glUniform1uiv(location, count, values);
+		glProgramUniform1uiv(renderer_id_, location, count, values);
 	}
 
 	void opengl_shader::set_float(const std::string& name, float value)
 	{
 		GLint location = get_uniform_location(name);
-		glUniform1f(location, value);
+		glProgramUniform1f(renderer_id_, location, value);
 	}
 
 	void opengl_shader::set_float2(const std::string& name, const glm::vec2& value)
 	{
 		GLint location = get_uniform_location(name);
-		glUniform2f(location, value.x, value.y);
+		glProgramUniform2f(renderer_id_, location, value.x, value.y);
 	}
 
 	void opengl_shader::set_float3(const std::string& name, const glm::vec3& value)
 	{
 		GLint location = get_uniform_location(name);
-		glUniform3f(location, value.x, value.y, value.z);
+		glProgramUniform3f(renderer_id_, location, value.x, value.y, value.z);
 	}
 
 	void opengl_shader::set_float4(const std::string& name, const glm::vec4& value)
 	{
 		GLint location = get_uniform_location(name);
-		glUniform4f(location, value.x, value.y, value.z, value.w);
+		glProgramUniform4f(renderer_id_, location, value.x, value.y, value.z, value.w);
 	}
 
 	void opengl_shader::set_mat3(const std::string& name, const glm::mat3& value)
 	{
 		GLint location = get_uniform_location(name);
-		glUniformMatrix3fv(location, 1, GL_FALSE, value_ptr(value));
+		glProgramUniformMatrix3fv(renderer_id_, location, 1, GL_FALSE, value_ptr(value));
 	}
 
 	void opengl_shader::set_mat4(const std::string& name, const glm::mat4& value)
 	{
 		GLint location = get_uniform_location(name);
-		glUniformMatrix4fv(location, 1, GL_FALSE, value_ptr(value));
+		glProgramUniformMatrix4fv(renderer_id_, location, 1, GL_FALSE, value_ptr(value));
 	}
 
 	// </Uniforms>

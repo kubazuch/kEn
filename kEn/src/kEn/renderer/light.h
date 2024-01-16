@@ -9,9 +9,9 @@ namespace kEn
 
 	struct attenuation
 	{
-		lazy_variable<float> constant = 1.0f;
-		lazy_variable<float> linear = 0.0f;
-		lazy_variable<float> quadratic = 0.0f;
+		float constant = 1.0f;
+		float linear = 0.0f;
+		float quadratic = 0.0f;
 
 		inline void load(const std::string& name, shader& shader) const;
 	};
@@ -29,7 +29,7 @@ namespace kEn
 
 		friend class shader;
 	public:
-		lazy_variable<glm::vec3> color = glm::vec3{ 1.f };
+		glm::vec3 color = glm::vec3{ 1.f };
 		transform transform;
 	};
 
@@ -69,7 +69,7 @@ namespace kEn
 		friend class shader;
 	public:
 		attenuation atten;
-		lazy_variable<float> inner_cutoff_angle = 0.1f;
-		lazy_variable<float> outer_cutoff_angle = 0.1f;
+		float inner_cutoff_angle = 0.1f;
+		float outer_cutoff_angle = 0.1f;
 	};
 }

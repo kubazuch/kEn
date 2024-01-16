@@ -1,67 +1,65 @@
 #include "kenpch.h"
 #include "material.h"
+
+#include <ranges>
+
 #include "shader.h"
 
-void kEn::material::load(const std::string& name, shader& shader) const
+namespace kEn
 {
-	if (ambient_factor.is_dirty())
+	void material::set_texture(texture_type_t type, const std::shared_ptr<kEn::texture>& texture, int id)
+	{
+		auto& texs = textures_[type];
+		if (id < texs.size())
+		{
+			texs[id] = texture;
+			return;
+		}
+
+		if (id == texs.size())
+		{
+			texs.push_back(texture);
+			return;
+		}
+
+		throw std::exception("Textures should be added in order!");
+	}
+
+	const std::shared_ptr<texture>& material::texture(texture_type_t type, int id)
+	{
+		return textures_[type][id];
+	}
+
+	void material::load(shader& shader, const std::string& name) const
 	{
 		shader.set_float(name + ".ka", ambient_factor);
-		ambient_factor.clear_dirty();
-	}
-
-	if (diffuse_factor.is_dirty())
-	{
 		shader.set_float(name + ".kd", diffuse_factor);
-		diffuse_factor.clear_dirty();
-	}
-
-	if (specular_factor.is_dirty())
-	{
 		shader.set_float(name + ".ks", specular_factor);
-		specular_factor.clear_dirty();
-	}
-
-	if (shininess_factor.is_dirty())
-	{
 		shader.set_float(name + ".m", shininess_factor);
-		shininess_factor.clear_dirty();
-	}
-	if (color.is_dirty())
-	{
 		shader.set_float3(name + ".color", color);
-		color.clear_dirty();
+
+		int texture_id = 0;
+		for (const auto& [type, textures] : textures_)
+		{
+			for (int i = 0; i < textures.size(); i++)
+			{
+				shader.set_int("u_Material." + std::string(texture_type::name_of(type)) + std::to_string(i), i);
+				texture_id++;
+			}
+		}
 	}
-}
 
-void kEn::material::set_texture(const std::shared_ptr<kEn::texture>& texture)
-{
-	texture_ = texture;
-}
+	void material::bind() const
+	{
+		int texture_id = 0;
+		for(const auto& textures : textures_ | std::views::values)
+		{
+			for (const auto& texture : textures)
+			{
+				texture->bind(texture_id);
+				texture_id++;
+			}
+		}
+	}
 
-void kEn::material::set_normal_texture(const std::shared_ptr<kEn::texture>& texture)
-{
-	normal_texture_ = texture;
-}
-
-void kEn::material::set_ao_texture(const std::shared_ptr<kEn::texture>& texture)
-{
-	ao_texture_ = texture;
-}
-
-void kEn::material::set_height_texture(const std::shared_ptr<kEn::texture>& texture)
-{
-	height_texture_ = texture;
-}
-
-void kEn::material::bind() const
-{
-	if (texture_)
-		texture_->bind();
-	if (normal_texture_)
-		normal_texture_->bind(1);
-	if (ao_texture_)
-		ao_texture_->bind(2);
-	if (height_texture_)
-		height_texture_->bind(3);
 }
