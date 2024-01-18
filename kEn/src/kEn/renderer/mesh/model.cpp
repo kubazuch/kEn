@@ -5,6 +5,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "imgui.h"
+
 namespace kEn
 {
 	std::unordered_map<std::filesystem::path, std::shared_ptr<model>> model::loaded_resources_;
@@ -19,14 +21,14 @@ namespace kEn
 
 	void model::render(shader& shader, const transform& transform) const
 	{
-		for (auto& mesh : meshes)
+		for (auto& mesh : meshes_)
 			mesh.render(shader, transform);
 	}
 
 	void model::load_model(const std::filesystem::path& path, const texture_spec& spec)
 	{
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(path.string(), aiProcess_Triangulate | aiProcess_GenNormals);
+		const aiScene* scene = importer.ReadFile(path.string(), aiProcess_Triangulate | aiProcess_GenSmoothNormals);
 
 		if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
@@ -34,7 +36,7 @@ namespace kEn
 			return;
 		}
 
-		directory = path.parent_path();
+		directory_ = path.parent_path();
 
 		process_node(scene->mRootNode, scene, spec);
 	}
@@ -44,7 +46,11 @@ namespace kEn
 		for(unsigned int i = 0; i < node->mNumMeshes; ++i)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-			meshes.push_back(process_mesh(mesh, scene, spec));
+			kEn::mesh processed = process_mesh(mesh, scene, spec);
+			if (processed.material.transparent)
+				meshes_.push_back(std::move(processed));
+			else
+				meshes_.push_front(std::move(processed));
 		}
 	
 		for(unsigned int i = 0; i < node->mNumChildren; ++i)
@@ -53,8 +59,9 @@ namespace kEn
 		}
 	}
 
-	mesh model::process_mesh(aiMesh* mesh, const aiScene* scene, const texture_spec& spec)
+	mesh model::process_mesh(aiMesh* mesh, const aiScene* scene, texture_spec spec)
 	{
+
 		// Vertices
 		std::vector<vertex> vertices;
 		for(unsigned int i = 0; i < mesh->mNumVertices; ++i)
@@ -103,12 +110,29 @@ namespace kEn
 		}
 
 		// Material
-		kEn::material material;
 		aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
+
+		kEn::material material;
+		aiColor3D color;
+		mat->Get(AI_MATKEY_COLOR_AMBIENT, color);
+		material.ambient_factor = color.r;
+		mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+		material.diffuse_factor = color.r;
+		mat->Get(AI_MATKEY_COLOR_SPECULAR, color);
+		material.specular_factor = color.r;
+		mat->Get(AI_MATKEY_SHININESS, material.shininess_factor);
+		material.shininess_factor = glm::max(material.shininess_factor, 1.f);
+
+		if (mat->GetTextureCount(aiTextureType_OPACITY) > 0)
+		{
+			spec.mipmap_levels = 1;
+			material.transparent = true;
+		}
+
 		load_material_textures(mat, kEn::texture_type::diffuse, material, spec);
 		// TODO: other types
 
-		return { vertices, indices, material };
+		return { mesh->mName.C_Str(), vertices, indices, material };
 	}
 
 	void model::load_material_textures(aiMaterial* mat, const texture_type_t type, kEn::material& material, const texture_spec& spec) const
@@ -119,9 +143,26 @@ namespace kEn
 			aiString str;
 			mat->GetTexture(ai_type, i, &str);
 
-			auto path = directory / str.C_Str();
+			auto path = directory_ / str.C_Str();
 			std::shared_ptr<texture2D> texture = texture2D::create(path, spec);
 			material.set_texture(type, texture, i);
 		}
+	}
+
+	void model::imgui()
+	{
+		if(ImGui::CollapsingHeader("Meshes"))
+		{
+			ImGui::BeginChild("Meshes", ImVec2(0,0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeY);
+			for (int i = 0; i < meshes_.size(); ++i)
+			{
+				ImGui::PushID(i);
+				meshes_[i].imgui();
+				ImGui::PopID();
+			}
+			ImGui::EndChild();
+		}
+
+		ImGui::Text("Yippee!!");
 	}
 }

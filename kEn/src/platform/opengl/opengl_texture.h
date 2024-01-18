@@ -22,6 +22,8 @@ namespace kEn
 		void bind(uint32_t slot) const override;
 		bool is_loaded() const override { return is_loaded_; }
 		bool operator==(const texture& other) const override { return renderer_id_ == other.renderer_id(); }
+
+		void imgui() override;
 	private:
 		texture_spec spec_;
 		std::filesystem::path path_;

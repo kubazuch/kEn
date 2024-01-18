@@ -34,6 +34,8 @@ namespace kEn
 
 	private:
 		float sensitivity_;
+		float pitch_ = 0, yaw_ = 0;
+		bool update_ = false;
 		glm::vec2 window_center_;
 	};
 

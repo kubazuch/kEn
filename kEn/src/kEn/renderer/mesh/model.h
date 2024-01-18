@@ -1,4 +1,5 @@
 #pragma once
+#include <deque>
 #include <map>
 #include <assimp/material.h>
 #include <assimp/scene.h>
@@ -32,13 +33,16 @@ namespace kEn
 
 		void render(shader& shader, const transform& transform) const;
 
+		std::deque<mesh> meshes_;
+
+		void imgui();
+
 	private:
-		std::vector<mesh> meshes;
-		std::filesystem::path directory;
+		std::filesystem::path directory_;
 
 		void load_model(const std::filesystem::path& path, const texture_spec& spec);
 		void process_node(aiNode* node, const aiScene* scene, const texture_spec& spec);
-		mesh process_mesh(aiMesh* mesh, const aiScene* scene, const texture_spec& spec);
+		mesh process_mesh(aiMesh* mesh, const aiScene* scene, texture_spec spec);
 		void load_material_textures(aiMaterial* mat, const texture_type_t type, kEn::material& material, const texture_spec& spec) const;
 
 	public:

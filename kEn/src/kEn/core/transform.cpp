@@ -7,7 +7,7 @@
 namespace kEn
 {
 	transform::transform(glm::vec3 pos, glm::quat rot, glm::vec3 scale)
-		: pos_(pos), rot_(rot), scale_(scale)
+		: pos_(pos), rot_(rot), scale_(scale), dirty_(true), inverse_dirty_(true)
 	{
 	}
 

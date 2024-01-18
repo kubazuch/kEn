@@ -4,6 +4,7 @@
 #include <map>
 #include <utility>
 
+#include "imgui.h"
 #include "kEn/renderer/renderer.h"
 #include "kEn/renderer/render_command.h"
 
@@ -15,8 +16,8 @@ namespace kEn
 		{shader_data_types::float2, "a_TexCoord"}
 	};
 
-	mesh::mesh(const std::vector<vertex>& vertices, const std::vector<uint32_t>& indices, kEn::material material)
-		: vertices(vertices), indices(indices), material(std::move(material))
+	mesh::mesh(const std::string& name, const std::vector<vertex>& vertices, const std::vector<uint32_t>& indices, kEn::material material)
+		: name(name), vertices(vertices), indices(indices), material(std::move(material))
 	{
 		setup_mesh();
 	}
@@ -40,4 +41,11 @@ namespace kEn
 		renderer::submit(shader, *vao_, transform);
 	}
 
+	void mesh::imgui()
+	{
+		if(ImGui::CollapsingHeader(name.c_str()))
+		{
+			material.imgui();
+		}
+	}
 }

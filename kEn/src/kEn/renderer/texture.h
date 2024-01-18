@@ -66,6 +66,7 @@ namespace kEn
 
 		enum : texture_type_t {
 			TEXTURE_TYPES(ENUM_ENTRY)
+			last
 		};
 
 		inline const char* name_of(const texture_type_t type)
@@ -104,6 +105,8 @@ namespace kEn
 		static std::shared_ptr<texture2D> create(const std::filesystem::path& path, const texture_spec& spec = texture_spec());
 
 		static const std::filesystem::path texture_path;
+
+		virtual void imgui() = 0;
 
 	private:
 		static std::unordered_map<std::filesystem::path, std::shared_ptr<texture2D>> loaded_resources_;

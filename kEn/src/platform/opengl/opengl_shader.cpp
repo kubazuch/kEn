@@ -390,13 +390,16 @@ namespace kEn
 
 	const std::unordered_map<std::string, std::string> opengl_shader::internal_libs = {
 		{"material",
-R"(struct material {
+R"(const int MAX_TEXTURES = 5;
+
+struct material {
 	float ka;
 	float kd;
 	float ks;
 	float m;
 
-	vec3 color;
+	int diffuse_count;
+	sampler2D diffuse[MAX_TEXTURES];
 };)"},
 		{"light",
 R"(#include "material"
@@ -461,7 +464,7 @@ vec3 calc_point_light(point_light light, material mat, vec3 normal, vec3 frag_po
 	vec3 diffuse = mat.kd * factors.x * light.color;
 	vec3 specular = mat.ks * pow(factors.y, u_UseBlinn ? 4*mat.m : mat.m) * light.color;
 
-	return (diffuse + specular) * mat.color * calc_attenuation(light.atten, length(light.pos - frag_pos));
+	return (diffuse + specular) * calc_attenuation(light.atten, length(light.pos - frag_pos));
 }
 
 vec3 calc_dir_light(directional_light light, material mat, vec3 normal, vec3 view_dir) {
@@ -470,7 +473,7 @@ vec3 calc_dir_light(directional_light light, material mat, vec3 normal, vec3 vie
 	vec3 diffuse = mat.kd * factors.x * light.color;
 	vec3 specular = mat.ks * pow(factors.y, u_UseBlinn ? 4*mat.m : mat.m) * light.color;
 
-	return (diffuse + specular) * mat.color;
+	return (diffuse + specular);
 }
 
 vec3 calc_spot_light(spot_light light, material mat, vec3 normal, vec3 frag_pos, vec3 view_dir) {
@@ -489,7 +492,7 @@ vec3 calc_spot_light(spot_light light, material mat, vec3 normal, vec3 frag_pos,
 	vec3 diffuse = mat.kd * factors.x * light.color;
 	vec3 specular = mat.ks * pow(factors.y, u_UseBlinn ? 4*mat.m : mat.m) * light.color;
 
-	return (diffuse + specular) * mat.color * calc_attenuation(light.atten, length(light.pos - frag_pos)) * intensity;
+	return (diffuse + specular) * calc_attenuation(light.atten, length(light.pos - frag_pos)) * intensity;
 }
 )"},
 	};

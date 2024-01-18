@@ -4,6 +4,7 @@
 #include <stb_image.h>
 
 #include "imgui.h"
+#include "glm/ext/scalar_common.hpp"
 #include "kEn/core/assert.h"
 #include "kEn/renderer/texture.h"
 
@@ -164,4 +165,13 @@ namespace kEn
 	{
 		glBindTextureUnit(slot, renderer_id_);
 	}
+
+	void opengl_texture2D::imgui()
+	{
+		float height = glm::max(glm::min((float) spec_.height.value(), 250.f), 100.f);
+		float width = ( (float)spec_.width.value() ) / (float)spec_.height.value() * height;
+
+		ImGui::Image((ImTextureID)renderer_id_, ImVec2{ width, height}, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
+	}
+
 }

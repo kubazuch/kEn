@@ -9,12 +9,15 @@ namespace kEn
 	class mesh
 	{
 	public:
+		const std::string name;
 		std::vector<vertex> vertices;
 		std::vector<uint32_t> indices;
 		kEn::material material;
 
-		mesh(const std::vector<vertex>& vertices, const std::vector<uint32_t>& indices, kEn::material material);
+		mesh(const std::string& name, const std::vector<vertex>& vertices, const std::vector<uint32_t>& indices, kEn::material material);
 		void render(shader& shader, const transform& transform) const;
+
+		void imgui();
 
 	private:
 		std::unique_ptr<vertex_array> vao_;

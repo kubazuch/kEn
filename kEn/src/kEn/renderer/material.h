@@ -13,11 +13,13 @@ namespace kEn
 	public:
 		material() = default;
 
-		void set_texture(texture_type_t type, const std::shared_ptr<texture>& texture, int id = 0);
-		const std::shared_ptr<texture>& texture(texture_type_t type, int id = 0);
+		void set_texture(texture_type_t type, const std::shared_ptr<texture2D>& texture, int id = 0);
+		const std::shared_ptr<texture2D>& texture(texture_type_t type, int id = 0);
 
 		void load(shader& shader, const std::string& name = "u_Material") const;
 		void bind() const;
+
+		void imgui();
 
 	private:
 		friend class shader;
@@ -27,8 +29,9 @@ namespace kEn
 		float diffuse_factor = 0.5f;
 		float specular_factor = 0.5f;
 		float shininess_factor = 50.f;
-		glm::vec3 color = glm::vec3{ 1.f };
+
+		bool transparent = false;
 	private:
-		std::unordered_map<texture_type_t, std::vector<std::shared_ptr<kEn::texture>>> textures_;
+		std::unordered_map<texture_type_t, std::vector<std::shared_ptr<kEn::texture2D>>> textures_;
 	};
 }

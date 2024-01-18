@@ -29,26 +29,43 @@ namespace kEn
 
 	void free_look_component::update(float delta)
 	{
+		if(kEn::input::is_key_pressed(kEn::key::escape))
+		{
+			kEn::input::set_cursor_visible(true);
+			update_ = false;
+		}
+
+		if(kEn::input::is_key_pressed(kEn::key::f))
+		{
+			kEn::input::set_mouse_pos(window_center_);
+			kEn::input::set_cursor_visible(false);
+			update_ = true;
+		}
+
+		if (!update_)
+			return;
+
 		glm::vec2 delta_pos = kEn::input::get_mouse_pos() - window_center_;
 		bool rotY = delta_pos.x != 0;
 		bool rotX = delta_pos.y != 0;
 
-
 		if (rotY)
 		{
-			glm::quat rot({ 0, -glm::radians(delta_pos.x) * sensitivity_, 0 });
-			transform().rotate(rot);
+			yaw_ -= glm::radians(delta_pos.x) * sensitivity_;
 		}
 
 		if (rotX)
 		{
-			glm::quat rot({ -glm::radians(delta_pos.y) * sensitivity_, 0, 0 });
-			transform().rotate_local(rot);
+			pitch_ -= glm::radians(delta_pos.y) * sensitivity_;
+			pitch_ = glm::clamp(pitch_, -glm::pi<float>() / 2.f + 0.01f, glm::pi<float>() / 2.f - 0.01f);
 		}
 
 		if (rotX || rotY)
 		{
 			kEn::input::set_mouse_pos(window_center_);
+			glm::quat qPitch = glm::angleAxis(pitch_, glm::vec3(1, 0, 0));
+			glm::quat qYaw = glm::angleAxis(yaw_, glm::vec3(0, 1, 0));
+			transform().set_local_rot(qYaw * qPitch);
 		}
 	}
 
