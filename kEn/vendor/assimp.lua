@@ -10,10 +10,12 @@ project "assimp"
 
 	files
 	{
-		"%{prj.name}/code/AssetLib/Obj/**.h",
-		"%{prj.name}/code/AssetLib/Obj/**.cpp",
 		"%{prj.name}/code/Common/**.h",
 		"%{prj.name}/code/Common/**.cpp",
+		"%{prj.name}/code/AssetLib/Obj/**.h",
+		"%{prj.name}/code/AssetLib/Obj/**.cpp",
+		"%{prj.name}/code/AssetLib/FBX/**.h",
+		"%{prj.name}/code/AssetLib/FBX/**.cpp",
 		"%{prj.name}/code/PostProcessing/**.h",
 		"%{prj.name}/code/PostProcessing/**.cpp",
 		"%{prj.name}/code/Material/**.h",
@@ -63,7 +65,7 @@ project "assimp"
 		"ASSIMP_BUILD_NO_NDO_IMPORTER",
 		"ASSIMP_BUILD_NO_IFC_IMPORTER",
 		"ASSIMP_BUILD_NO_XGL_IMPORTER",
-		"ASSIMP_BUILD_NO_FBX_IMPORTER",
+		--"ASSIMP_BUILD_NO_FBX_IMPORTER",
 		"ASSIMP_BUILD_NO_ASSBIN_IMPORTER",
 		"ASSIMP_BUILD_NO_GLTF_IMPORTER",
 		"ASSIMP_BUILD_NO_C4D_IMPORTER",
@@ -116,6 +118,10 @@ project "assimp"
 		"%{prj.name}/contrib/rapidjson/include",
 		"%{prj.name}/contrib/pugixml/src",
 		"%{prj.name}/contrib/unzip",
+	}
+	
+	links {
+		"%{prj.location }/contrib/zlib/Release/zlibstatic.lib",
 	}
 
 	filter "system:windows"
