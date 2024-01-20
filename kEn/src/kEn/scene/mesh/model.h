@@ -28,7 +28,7 @@ namespace kEn
 	public:
 		explicit model(const std::filesystem::path& path, const texture_spec& spec = texture_spec())
 		{
-			load_model(path, spec);
+			load_model(model_path / path, spec);
 		}
 
 		void render(shader& shader, const transform& transform) const;
@@ -46,7 +46,7 @@ namespace kEn
 		void load_material_textures(aiMaterial* mat, const texture_type_t type, kEn::material& material, const texture_spec& spec) const;
 
 	public:
-		static const std::filesystem::path texture_path;
+		static const std::filesystem::path model_path;
 
 		static std::shared_ptr<model> load(const std::filesystem::path& path, const texture_spec& spec = texture_spec());
 

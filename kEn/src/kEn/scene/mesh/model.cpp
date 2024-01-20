@@ -10,6 +10,7 @@
 namespace kEn
 {
 	std::unordered_map<std::filesystem::path, std::shared_ptr<model>> model::loaded_resources_;
+	const std::filesystem::path model::model_path("assets/models");
 
 	std::shared_ptr<model> model::load(const std::filesystem::path& path, const texture_spec& spec)
 	{
@@ -110,6 +111,7 @@ namespace kEn
 		}
 
 		// Material
+
 		aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
 
 		kEn::material material;
@@ -122,6 +124,8 @@ namespace kEn
 		material.specular_factor = color.r;
 		mat->Get(AI_MATKEY_SHININESS, material.shininess_factor);
 		material.shininess_factor = glm::max(material.shininess_factor, 1.f);
+		mat->Get(AI_MATKEY_COLOR_EMISSIVE, color);
+		material.emissive = color.r > 0;
 
 		if (mat->GetTextureCount(aiTextureType_OPACITY) > 0)
 		{
@@ -144,14 +148,14 @@ namespace kEn
 			mat->GetTexture(ai_type, i, &str);
 
 			auto path = directory_ / str.C_Str();
-			std::shared_ptr<texture2D> texture = texture2D::create(path, spec);
+			std::shared_ptr<texture2D> texture = texture2D::create(absolute(path), spec);
 			material.set_texture(type, texture, i);
 		}
 	}
 
 	void model::imgui()
 	{
-		if(ImGui::CollapsingHeader("Meshes"))
+		if(ImGui::TreeNode("Meshes"))
 		{
 			ImGui::BeginChild("Meshes", ImVec2(0,0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeY);
 			for (int i = 0; i < meshes_.size(); ++i)
@@ -161,8 +165,7 @@ namespace kEn
 				ImGui::PopID();
 			}
 			ImGui::EndChild();
+			ImGui::TreePop();
 		}
-
-		ImGui::Text("Yippee!!");
 	}
 }

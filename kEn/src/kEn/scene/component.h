@@ -1,11 +1,12 @@
 #pragma once
 
+#include "kEn/core/transform.h"
 #include "kEn/event/event.h"
-#include "kEn/renderer/shader.h"
 
 namespace kEn
 {
 	class game_object;
+	class shader;
 
 	class game_component
 	{
@@ -17,6 +18,9 @@ namespace kEn
 		virtual void update(float delta) = 0;
 		virtual void render(shader& shader) = 0;
 		virtual void on_event(base_event& event) { dispatcher_.dispatch(event); }
+
+		const game_object& parent() const { return parent_.value(); }
+		game_object& parent() { return parent_.value(); }
 
 		const kEn::transform& transform() const;
 		kEn::transform& transform();

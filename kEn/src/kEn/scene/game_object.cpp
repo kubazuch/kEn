@@ -2,7 +2,7 @@
 #include "game_object.h"
 
 #include "kEn/renderer/renderer.h"
-#include "kEn/renderer/mesh/obj_model.h"
+#include "kEn/scene/mesh/obj_model.h"
 
 namespace kEn
 {
@@ -78,7 +78,7 @@ namespace kEn
 		render(shader);
 
 		for (const auto child : children_) 
-			child.get().render(shader);
+			child.get().render_all(shader);
 	}
 
 	void game_object::update(double delta)
@@ -94,7 +94,7 @@ namespace kEn
 		update(delta);
 
 		for (const auto child : children_)
-			child.get().update(delta);
+			child.get().update_all(delta);
 	}
 
 	void game_object::on_event(base_event& event)

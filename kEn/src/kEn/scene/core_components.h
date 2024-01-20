@@ -1,8 +1,8 @@
 #pragma once
 #include "component.h"
-#include "kEn/camera/camera.h"
+#include "kEn/scene/camera/camera.h"
 #include "kEn/event/application_events.h"
-#include "kEn/renderer/mesh/model.h"
+#include "kEn/scene/mesh/model.h"
 
 namespace kEn
 {

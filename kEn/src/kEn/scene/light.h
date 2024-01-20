@@ -1,4 +1,5 @@
 #pragma once
+#include "component.h"
 #include "glm/vec3.hpp"
 #include "kEn/core/transform.h"
 #include "kEn/core/core.h"
@@ -16,21 +17,22 @@ namespace kEn
 		inline void load(const std::string& name, shader& shader) const;
 	};
 	
-	class base_light
+	class base_light : public game_component
 	{
 	public:
 		base_light() = default;
 		virtual ~base_light() = default;
 		virtual void imgui(bool subsection) = 0;
 
-		VIRTUAL_FIVE(base_light);
-	protected:
-		virtual void load(const std::string& name, shader& shader) const = 0;
+		[[nodiscard]] std::shared_ptr<game_component> clone() const = 0;
+		void update(float delta) override {}
+		void render(shader& shader) override {}
 
-		friend class shader;
+		VIRTUAL_FIVE(base_light);
+
+		virtual void load(const std::string& name, shader& shader) const = 0;
 	public:
 		glm::vec3 color = glm::vec3{ 1.f };
-		transform transform;
 	};
 
 	class directional_light : public base_light
@@ -38,11 +40,9 @@ namespace kEn
 	public:
 		void imgui(bool subsection = true) override;
 
-	private:
-		void load(const std::string& name, shader& shader) const override;
+		[[nodiscard]] std::shared_ptr<game_component> clone() const override;
 
-	private:
-		friend class shader;
+		void load(const std::string& name, shader& shader) const override;
 	};
 
 	class point_light : public base_light
@@ -50,10 +50,9 @@ namespace kEn
 	public:
 		void imgui(bool subsection = true) override;
 
-	private:
-		void load(const std::string& name, shader& shader) const override;
+		[[nodiscard]] std::shared_ptr<game_component> clone() const override;
 
-		friend class shader;
+		void load(const std::string& name, shader& shader) const override;
 	public:
 		attenuation atten;
 	};
@@ -63,10 +62,9 @@ namespace kEn
 	public:
 		void imgui(bool subsection = true) override;
 
-	private:
-		void load(const std::string& name, shader& shader) const override;
+		[[nodiscard]] std::shared_ptr<game_component> clone() const override;
 
-		friend class shader;
+		void load(const std::string& name, shader& shader) const override;
 	public:
 		attenuation atten;
 		float inner_cutoff_angle = 0.1f;

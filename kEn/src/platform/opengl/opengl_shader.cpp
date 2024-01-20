@@ -398,6 +398,8 @@ struct material {
 	float ks;
 	float m;
 
+	bool emissive;
+
 	int diffuse_count;
 	sampler2D diffuse[MAX_TEXTURES];
 };)"},
@@ -433,6 +435,8 @@ struct spot_light {
 	float cutoff;
 	float outerCutoff;
 }; 
+
+const int MAX_LIGHTS = 15;
 
 uniform bool u_UseBlinn = false;
 

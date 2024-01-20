@@ -3,7 +3,6 @@
 
 #include "renderer_api.h"
 #include "kEn/core/assert.h"
-#include "mesh/vertex.h"
 #include "platform/opengl/opengl_buffer.h"
 
 namespace kEn

@@ -31,6 +31,7 @@ namespace kEn
 		float shininess_factor = 50.f;
 
 		bool transparent = false;
+		bool emissive = false;
 	private:
 		std::unordered_map<texture_type_t, std::vector<std::shared_ptr<kEn::texture2D>>> textures_;
 	};

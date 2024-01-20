@@ -37,6 +37,7 @@ namespace kEn
 		shader.set_float(name + ".kd", diffuse_factor);
 		shader.set_float(name + ".ks", specular_factor);
 		shader.set_float(name + ".m", shininess_factor);
+		shader.set_bool(name + ".emissive", emissive);
 
 		int texture_id = 0;
 		for (const auto& [type, textures] : textures_)

@@ -5,7 +5,7 @@
 
 #include "kEn/event/application_events.h"
 #include "kEn/core/transform.h"
-#include "kEn/renderer/scene/component.h"
+#include "kEn/scene/component.h"
 
 namespace kEn
 {

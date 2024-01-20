@@ -1,7 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 
-#include "light.h"
+#include "kEn/scene/light.h"
 #include "material.h"
 
 namespace kEn
@@ -45,7 +45,7 @@ namespace kEn
 		virtual const std::string& get_name() = 0;
 
 		static const std::filesystem::path shader_path;
-		static std::unique_ptr<shader> create(const std::string& name, const std::string& vertex_src, const std::string& fragment_src);
-		static std::unique_ptr<shader> create(const std::filesystem::path& path, shader_config config = shader_config());
+		static std::shared_ptr<shader> create(const std::string& name, const std::string& vertex_src, const std::string& fragment_src);
+		static std::shared_ptr<shader> create(const std::filesystem::path& path, shader_config config = shader_config());
 	};
 }
