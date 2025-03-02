@@ -1,0 +1,12 @@
+BasedOnStyle: Google
+# Force pointer to align on the type for C++
+DerivePointerAlignment: false
+PointerAlignment: Left
+UseTab: "Never"
+ColumnLimit: 120
+MaxEmptyLinesToKeep: 1
+
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: false 
+  AcrossComments: false

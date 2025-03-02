@@ -1,7 +1,7 @@
 #include "kenpch.h"
 #include "opengl_framebuffer.h"
 
-#include "glad/glad.h"
+#include "glad/gl.h"
 #include "kEn/core/assert.h"
 
 namespace kEn

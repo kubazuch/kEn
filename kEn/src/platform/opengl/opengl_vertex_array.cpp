@@ -1,7 +1,7 @@
 #include "kenpch.h"
 #include "opengl_vertex_array.h"
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 namespace kEn
 {

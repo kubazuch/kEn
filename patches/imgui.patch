@@ -1,0 +1,106 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 00000000..fe754340
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,16 @@
++cmake_minimum_required(VERSION 3.20)
++
++project(imgui)
++message(STATUS "Configuring " ${PROJECT_NAME})
++
++set(CMAKE_CXX_STANDARD 11)
++set(CMAKE_DISABLE_IN_SOURCE_BUILD TRUE)
++
++file(GLOB IMGUI_SOURCE_FILES
++  "src/imgui/*.cpp"
++  "src/imgui/imgui_stdlib.cpp"
++  )
++
++add_library(${PROJECT_NAME} STATIC ${IMGUI_SOURCE_FILES})
++target_link_libraries(${PROJECT_NAME} PUBLIC glfw)
++target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC src)
+diff --git a/imconfig.h b/src/imgui/imconfig.h
+similarity index 100%
+rename from imconfig.h
+rename to src/imgui/imconfig.h
+diff --git a/imgui.cpp b/src/imgui/imgui.cpp
+similarity index 100%
+rename from imgui.cpp
+rename to src/imgui/imgui.cpp
+diff --git a/imgui.h b/src/imgui/imgui.h
+similarity index 100%
+rename from imgui.h
+rename to src/imgui/imgui.h
+diff --git a/imgui_demo.cpp b/src/imgui/imgui_demo.cpp
+similarity index 100%
+rename from imgui_demo.cpp
+rename to src/imgui/imgui_demo.cpp
+diff --git a/imgui_draw.cpp b/src/imgui/imgui_draw.cpp
+similarity index 100%
+rename from imgui_draw.cpp
+rename to src/imgui/imgui_draw.cpp
+diff --git a/backends/imgui_impl_glfw.cpp b/src/imgui/imgui_impl_glfw.cpp
+similarity index 100%
+rename from backends/imgui_impl_glfw.cpp
+rename to src/imgui/imgui_impl_glfw.cpp
+diff --git a/backends/imgui_impl_glfw.h b/src/imgui/imgui_impl_glfw.h
+similarity index 100%
+rename from backends/imgui_impl_glfw.h
+rename to src/imgui/imgui_impl_glfw.h
+diff --git a/backends/imgui_impl_opengl3.cpp b/src/imgui/imgui_impl_opengl3.cpp
+similarity index 100%
+rename from backends/imgui_impl_opengl3.cpp
+rename to src/imgui/imgui_impl_opengl3.cpp
+diff --git a/backends/imgui_impl_opengl3.h b/src/imgui/imgui_impl_opengl3.h
+similarity index 100%
+rename from backends/imgui_impl_opengl3.h
+rename to src/imgui/imgui_impl_opengl3.h
+diff --git a/backends/imgui_impl_opengl3_loader.h b/src/imgui/imgui_impl_opengl3_loader.h
+similarity index 100%
+rename from backends/imgui_impl_opengl3_loader.h
+rename to src/imgui/imgui_impl_opengl3_loader.h
+diff --git a/imgui_internal.h b/src/imgui/imgui_internal.h
+similarity index 100%
+rename from imgui_internal.h
+rename to src/imgui/imgui_internal.h
+diff --git a/misc/cpp/imgui_stdlib.cpp b/src/imgui/imgui_stdlib.cpp
+similarity index 100%
+rename from misc/cpp/imgui_stdlib.cpp
+rename to src/imgui/imgui_stdlib.cpp
+diff --git a/misc/cpp/imgui_stdlib.h b/src/imgui/imgui_stdlib.h
+similarity index 100%
+rename from misc/cpp/imgui_stdlib.h
+rename to src/imgui/imgui_stdlib.h
+diff --git a/imgui_tables.cpp b/src/imgui/imgui_tables.cpp
+similarity index 100%
+rename from imgui_tables.cpp
+rename to src/imgui/imgui_tables.cpp
+diff --git a/imgui_widgets.cpp b/src/imgui/imgui_widgets.cpp
+similarity index 100%
+rename from imgui_widgets.cpp
+rename to src/imgui/imgui_widgets.cpp
+diff --git a/imstb_rectpack.h b/src/imgui/imstb_rectpack.h
+similarity index 100%
+rename from imstb_rectpack.h
+rename to src/imgui/imstb_rectpack.h
+diff --git a/imstb_textedit.h b/src/imgui/imstb_textedit.h
+similarity index 100%
+rename from imstb_textedit.h
+rename to src/imgui/imstb_textedit.h
+diff --git a/imstb_truetype.h b/src/imgui/imstb_truetype.h
+similarity index 100%
+rename from imstb_truetype.h
+rename to src/imgui/imstb_truetype.h
+diff --git a/backends/vulkan/generate_spv.sh b/src/imgui/vulkan/generate_spv.sh
+similarity index 100%
+rename from backends/vulkan/generate_spv.sh
+rename to src/imgui/vulkan/generate_spv.sh
+diff --git a/backends/vulkan/glsl_shader.frag b/src/imgui/vulkan/glsl_shader.frag
+similarity index 100%
+rename from backends/vulkan/glsl_shader.frag
+rename to src/imgui/vulkan/glsl_shader.frag
+diff --git a/backends/vulkan/glsl_shader.vert b/src/imgui/vulkan/glsl_shader.vert
+similarity index 100%
+rename from backends/vulkan/glsl_shader.vert
+rename to src/imgui/vulkan/glsl_shader.vert

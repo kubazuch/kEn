@@ -4,7 +4,7 @@
 #include <unordered_set>
 
 #include "kEn/renderer/shader.h"
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include "glm/gtc/type_ptr.hpp"
 
 namespace kEn

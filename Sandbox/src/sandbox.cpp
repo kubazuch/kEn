@@ -3,8 +3,10 @@
 
 #include <imgui/imgui.h>
 
-#include "kEn/camera/camera.h"
-#include "kEn/core/transform.h"
+#include <kEn/scene/camera/camera.h>
+#include <kEn/core/transform.h>
+#include <memory>
+#include "kEn/scene/game_object.h"
 
 class fizzbuzz_layer : public kEn::layer
 {
@@ -12,8 +14,9 @@ public:
 	fizzbuzz_layer() : layer("FizzBuzz")
 	{
 		//camera_ = kEn::orthographic_camera(-1.f, 1.f, -1.f, 1.f);
-		camera_ = kEn::perspective_camera(glm::radians(70.f), 1.0f, 0.01f, 100.f);
-		camera_.set_position({ 0,0,2 });
+		camera_ = std::make_shared<kEn::perspective_camera>(glm::radians(70.f), 1.0f, 0.01f, 100.f);
+		object_ = std::make_shared<kEn::game_object>(glm::vec3{ 0,0,2 });
+		object_->add_component(camera_);
 
 		float vertices[4 * (3 + 4)] = {
 				-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
@@ -49,7 +52,7 @@ public:
 		shader_->set_float("iTime", time);
 		//camera_.set_rotation(glm::rotate(camera_.rotation(), (float) delta, { 0, 1.0f, 0.0f }));
 		transform_.rotate({ 0, 1, 0 }, (float) delta);
-		transform_.set_pos({ 0, 0, sin(time)});
+		transform_.set_local_pos({ 0, 0, sin(time)});
 	}
 
 	void on_render() override
@@ -59,7 +62,7 @@ public:
 
 		kEn::renderer::begin_scene(camera_);
 		{
-			kEn::renderer::submit(shader_, vertex_array_, transform_);
+			kEn::renderer::submit(*shader_, *vertex_array_, transform_);
 		}
 		kEn::renderer::end_scene();
 	}
@@ -87,7 +90,8 @@ public:
 private:
 	float time_ = 0;
 
-	kEn::camera camera_;
+	std::shared_ptr<kEn::game_object> object_;
+	std::shared_ptr<kEn::camera> camera_;
 	kEn::transform transform_;
 
 	std::shared_ptr<kEn::vertex_array> vertex_array_;

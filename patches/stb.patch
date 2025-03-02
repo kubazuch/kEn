@@ -1,0 +1,11 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..c582540
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,5 @@
++cmake_minimum_required(VERSION 3.10)
++project(stb LANGUAGES C)
++
++add_library(stb INTERFACE)
++target_include_directories(stb SYSTEM INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})

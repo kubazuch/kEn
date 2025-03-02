@@ -1,0 +1,13 @@
+diff --git a/glm/CMakeLists.txt b/glm/CMakeLists.txt
+index 178d23ab..7c4e9456 100644
+--- a/glm/CMakeLists.txt
++++ b/glm/CMakeLists.txt
+@@ -45,7 +45,7 @@ source_group("SIMD Files" FILES ${SIMD_HEADER})
+ add_library(glm-header-only INTERFACE)
+ add_library(glm::glm-header-only ALIAS glm-header-only)
+ 
+-target_include_directories(glm-header-only INTERFACE
++target_include_directories(glm-header-only SYSTEM INTERFACE
+ 	"$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>"
+ 	"$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+ )

@@ -17,6 +17,6 @@
 #include "kEn/core/core.h"
 #include "kEn/core/log.h"
 
-#ifdef KEN_PLATFORM_WIN
+#ifdef _WIN32
 #	include <Windows.h>
 #endif

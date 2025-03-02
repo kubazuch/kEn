@@ -3,7 +3,7 @@
 
 #include <stb_image.h>
 
-#include "imgui.h"
+#include "imgui/imgui.h"
 #include "glm/ext/scalar_common.hpp"
 #include "kEn/core/assert.h"
 #include "kEn/renderer/texture.h"

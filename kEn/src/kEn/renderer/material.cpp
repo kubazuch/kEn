@@ -3,7 +3,7 @@
 
 #include <ranges>
 
-#include "imgui.h"
+#include <imgui/imgui.h>
 #include "shader.h"
 
 namespace kEn

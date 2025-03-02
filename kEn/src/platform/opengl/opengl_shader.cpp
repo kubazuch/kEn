@@ -20,7 +20,7 @@ namespace kEn
 		if (included.find(filePath) != included.end())
 		{
 			if(!internal)
-				KEN_CORE_WARN("Circular dependency or already loaded package detected in file {0}!", filePath);
+				KEN_CORE_WARN("Circular dependency or already loaded package detected in file {0}!", filePath.string());
 			return "";
 		}
 

@@ -2,7 +2,7 @@
 #include "application.h"
 #include "log.h"
 
-#ifdef KEN_PLATFORM_WIN
+#ifdef _WIN32
 
 extern kEn::application* kEn::create_application();
 

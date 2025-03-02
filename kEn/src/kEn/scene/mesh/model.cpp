@@ -5,7 +5,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "imgui.h"
+#include "imgui/imgui.h"
 
 namespace kEn
 {

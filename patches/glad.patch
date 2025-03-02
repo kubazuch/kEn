@@ -1,0 +1,24 @@
+diff --git a/cmake/GladConfig.cmake b/cmake/GladConfig.cmake
+index c16b75c..787dc89 100644
+--- a/cmake/GladConfig.cmake
++++ b/cmake/GladConfig.cmake
+@@ -273,6 +273,7 @@ function(glad_add_library TARGET)
+         )
+ 
+     target_include_directories("${TARGET}"
++        SYSTEM
+         PUBLIC
+             "${GLAD_DIR}/include"
+         )
+diff --git a/example/c/egl_x11/CMakeLists.txt b/example/c/egl_x11/CMakeLists.txt
+index 501bb58..6e90ac7 100644
+--- a/example/c/egl_x11/CMakeLists.txt
++++ b/example/c/egl_x11/CMakeLists.txt
+@@ -11,6 +11,7 @@ add_executable(egl_x11
+     egl_x11.c
+     )
+ target_include_directories(egl_x11
++    SYSTEM
+     PUBLIC
+         ${X11_INCLUDE_DIR}
+     )

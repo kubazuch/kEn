@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #include "assert.h"
-#include "imgui.h"
+#include <imgui/imgui.h>
 #include "kEn/event/application_events.h"
 #include "kEn/renderer/renderer.h"
 #include "kEn/renderer/render_command.h"

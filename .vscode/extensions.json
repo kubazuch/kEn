@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "twxs.cmake",
+    "ms-vscode.cmake-tools",
+    "xaver.clang-format",
+    "llvm-vs-code-extensions.vscode-clangd",
+    "streetsidesoftware.code-spell-checker",
+    "cheshirekow.cmake-format",
+    "ms-vscode.cpptools",
+  ]
+}

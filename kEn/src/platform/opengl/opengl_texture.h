@@ -2,7 +2,7 @@
 
 #include "kEn/renderer/texture.h"
 #include <filesystem>
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 namespace kEn
 {
