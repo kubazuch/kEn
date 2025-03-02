@@ -14,7 +14,10 @@ file(GLOB_RECURSE SOURCES
 if (WIN32)
     add_definitions(-D_WIN32_WINNT=0x0601)  # Target Windows 7 or later (modify as needed)
     add_definitions(-DUNICODE -D_UNICODE)   # Enable Unicode support
+    add_compile_definitions()
 endif()
+
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /D_KEN_DEBUG")
 
 add_library(${PROJECT_NAME} ${SOURCES})
 
@@ -33,4 +36,4 @@ target_link_options(${PROJECT_NAME} PRIVATE ${PROJ_SHARED_LINKER_FLAGS})
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC GLM_ENABLE_EXPERIMENTAL)
 
-target_precompile_headers(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/kenpch.h")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/kenpch.hpp")

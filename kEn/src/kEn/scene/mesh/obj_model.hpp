@@ -1,0 +1,26 @@
+#pragma once
+#include <glm/glm.hpp>
+#include <kEn/renderer/buffer.hpp>
+#include <kEn/renderer/vertex_array.hpp>
+
+namespace kEn {
+
+class obj_model {
+ public:
+  [[deprecated("obj_model is deprecated! Please use model")]]
+  obj_model(const std::filesystem::path& path);
+
+  std::shared_ptr<vertex_array> vertex_array_;
+
+ public:
+  static buffer_layout obj_layout;
+  static const std::filesystem::path model_path;
+};
+
+struct obj_vertex {
+  glm::vec3 pos;
+  glm::vec2 tex_coord;
+  glm::vec3 normal;
+};
+
+}  // namespace kEn
