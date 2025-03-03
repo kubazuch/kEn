@@ -6,30 +6,30 @@
 
 namespace kEn {
 
-class model_component : public game_component {
+class ModelComponent : public GameComponent {
  public:
-  explicit model_component(const std::shared_ptr<model>& model) : model_(model) {}
+  explicit ModelComponent(const std::shared_ptr<Model>& model) : model_(model) {}
 
-  void update(float delta) override {}
-  void render(shader& shader) override;
-  [[nodiscard]] std::shared_ptr<game_component> clone() const override;
+  void update(float) override {}
+  void render(Shader& shader) override;
+  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
  private:
-  std::shared_ptr<model> model_;
+  std::shared_ptr<Model> model_;
 };
 
-class free_look_component : public game_component {
+class FreeLookComponent : public GameComponent {
  public:
-  free_look_component(float sensitivity);
+  explicit FreeLookComponent(float sensitivity);
 
   void update(float delta) override;
-  void render(shader& shader) override {}
-  [[nodiscard]] std::shared_ptr<game_component> clone() const override;
+  void render(Shader&) override {}
+  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
   float sensitivity() const { return sensitivity_; }
   void set_sensitivity(float sensitivity) { sensitivity_ = sensitivity; }
 
-  bool on_window_resize(const kEn::window_resize_event& event);
+  bool on_window_resize(const kEn::WindowResizeEvent& event);
 
  private:
   float sensitivity_;
@@ -38,13 +38,13 @@ class free_look_component : public game_component {
   glm::vec2 window_center_;
 };
 
-class free_move_component : public game_component {
+class FreeMoveComponent : public GameComponent {
  public:
-  explicit free_move_component(float speed, bool world_y = true) : speed_(speed), world_y_(world_y) {}
+  explicit FreeMoveComponent(float speed, bool world_y = true) : speed_(speed), world_y_(world_y) {}
 
   void update(float delta) override;
-  void render(shader& shader) override {}
-  [[nodiscard]] std::shared_ptr<game_component> clone() const override;
+  void render(Shader&) override {}
+  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
   float speed() const { return speed_; }
   void set_speed(float speed) { speed_ = speed; }
@@ -54,19 +54,19 @@ class free_move_component : public game_component {
   bool world_y_;
 };
 
-class look_at_component : public game_component {
+class LookAtComponent : public GameComponent {
  public:
-  look_at_component(const game_object& target) : target_(target) {}
+  explicit LookAtComponent(const GameObject& target) : target_(target) {}
 
-  void set_target(const game_object& target);
-  const game_object& target() const { return target_; }
+  void set_target(const GameObject& target);
+  const GameObject& target() const { return target_; }
 
   void update(float delta) override;
-  void render(shader& shader) override {}
-  [[nodiscard]] std::shared_ptr<game_component> clone() const override;
+  void render(Shader&) override {}
+  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
  private:
-  std::reference_wrapper<const game_object> target_;
+  std::reference_wrapper<const GameObject> target_;
 };
 
 }  // namespace kEn

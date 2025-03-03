@@ -3,9 +3,9 @@
 #include <platform/win/win_window.hpp>
 
 namespace kEn {
-class opengl_context final : public graphics_context {
+class OpenglContext final : public GraphicsContext {
  public:
-  opengl_context(void* window);
+  explicit OpenglContext(void* window);
 
   void init() override;
   void swap_buffers() override;

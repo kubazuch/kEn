@@ -19,7 +19,8 @@
   X(button_middle, 2)
 
 namespace kEn {
-using mouse_code = uint16_t;
+
+using MouseCode = uint16_t;
 
 namespace mouse {
 #define ENUM_ENTRY(id, code) id = (code),
@@ -28,9 +29,9 @@ namespace mouse {
     return #id;
 #define NO_CASE_ENTRY(id, code)
 
-enum : mouse_code { MOUSE_CODES(ENUM_ENTRY, ENUM_ENTRY) };
+enum : MouseCode { MOUSE_CODES(ENUM_ENTRY, ENUM_ENTRY) };
 
-inline const char* name_of(const mouse_code key) {
+inline const char* name_of(const MouseCode key) {
   switch (key) {
     MOUSE_CODES(CASE_ENTRY, NO_CASE_ENTRY)
     default:

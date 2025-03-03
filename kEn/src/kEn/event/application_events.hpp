@@ -5,16 +5,16 @@
 
 namespace kEn {
 
-class window_close_event : public event<window_close_event> {
+class WindowCloseEvent : public Event<WindowCloseEvent> {
  public:
-  window_close_event() = default;
+  WindowCloseEvent() = default;
 
   const char* name() const override { return "WindowCloseEvent"; }
 };
 
-class window_resize_event : public event<window_resize_event> {
+class WindowResizeEvent : public Event<WindowResizeEvent> {
  public:
-  window_resize_event(unsigned int width, unsigned int height) : width_(width), height_(height) {}
+  WindowResizeEvent(unsigned int width, unsigned int height) : width_(width), height_(height) {}
 
   unsigned int width() const { return width_; }
   unsigned int height() const { return height_; }

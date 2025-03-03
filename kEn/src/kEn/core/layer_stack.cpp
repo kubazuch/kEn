@@ -2,25 +2,25 @@
 #include <kenpch.hpp>
 
 namespace kEn {
-layer_stack::~layer_stack() {
-  for (layer* layer : layers_) {
+LayerStack::~LayerStack() {
+  for (Layer* layer : layers_) {
     layer->on_detach();
     delete layer;
   }
 }
 
-void layer_stack::push_layer(layer* layer) {
+void LayerStack::push_layer(Layer* layer) {
   layers_.emplace(layers_.begin() + last_layer_index_, layer);
   ++last_layer_index_;
   layer->on_attach();
 }
 
-void layer_stack::push_overlay(layer* overlay) {
+void LayerStack::push_overlay(Layer* overlay) {
   layers_.emplace_back(overlay);
   overlay->on_attach();
 }
 
-void layer_stack::pop_layer(layer* layer) {
+void LayerStack::pop_layer(Layer* layer) {
   const auto it = std::find(layers_.begin(), layers_.begin() + last_layer_index_, layer);
   if (it != layers_.begin() + last_layer_index_) {
     layer->on_detach();
@@ -29,7 +29,7 @@ void layer_stack::pop_layer(layer* layer) {
   }
 }
 
-void layer_stack::pop_overlay(layer* overlay) {
+void LayerStack::pop_overlay(Layer* overlay) {
   const auto it = std::find(layers_.begin() + last_layer_index_, layers_.end(), overlay);
   if (it != layers_.end()) {
     overlay->on_detach();

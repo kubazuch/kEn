@@ -7,14 +7,14 @@
 
 namespace kEn {
 
-class transform {
+class Transform {
  public:
-  transform(glm::vec3 pos = glm::vec3(), glm::quat rot = {1, 0, 0, 0}, glm::vec3 scale = {1, 1, 1});
-  ~transform();
+  explicit Transform(glm::vec3 pos = glm::vec3(), glm::quat rot = {1, 0, 0, 0}, glm::vec3 scale = {1, 1, 1});
+  ~Transform();
 
-  void set_parent(transform& parent);
+  void set_parent(Transform& parent);
   void unset_parent();
-  const transform& get_parent() const { return *parent_; }
+  const Transform& get_parent() const { return *parent_; }
 
   glm::mat4 local_to_parent_matrix() const;
   glm::mat4& local_to_world_matrix() const;
@@ -30,7 +30,7 @@ class transform {
   const glm::vec3& local_pos() const { return pos_; }
   glm::vec3& local_pos() { return pos_; }
   glm::vec3 pos() const {
-    return parent_.has_value() ? glm::vec3(parent_.value().get().local_to_world_matrix() * glm::vec4(pos_, 1.f)) : pos_;
+    return parent_.has_value() ? glm::vec3(parent_.value().get().local_to_world_matrix() * glm::vec4(pos_, 1.F)) : pos_;
   }
   void set_local_pos(const glm::vec3& pos) {
     pos_ = pos;
@@ -66,14 +66,14 @@ class transform {
 
   void set_dirty();
 
-  transform(const transform&)                     = delete;
-  transform(transform&&)                          = delete;
-  transform& operator=(const transform&) noexcept = delete;
-  transform& operator=(transform&&) noexcept      = delete;
+  Transform(const Transform&)                     = delete;
+  Transform(Transform&&)                          = delete;
+  Transform& operator=(const Transform&) noexcept = delete;
+  Transform& operator=(Transform&&) noexcept      = delete;
 
  private:
-  std::optional<std::reference_wrapper<transform>> parent_;
-  std::vector<std::reference_wrapper<transform>> children_;
+  std::optional<std::reference_wrapper<Transform>> parent_;
+  std::vector<std::reference_wrapper<Transform>> children_;
 
   glm::vec3 pos_;
   glm::quat rot_;

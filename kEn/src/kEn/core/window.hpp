@@ -7,21 +7,21 @@
 
 namespace kEn {
 
-struct window_properties {
+struct WindowProperties {
   std::string title;
   unsigned int width;
   unsigned int height;
 
-  window_properties(std::string title = "kEngine", unsigned int width = 1280, unsigned int height = 720)
+  explicit WindowProperties(std::string title = "kEngine", unsigned int width = 1280, unsigned int height = 720)
       : title(std::move(title)), width(width), height(height) {}
 };
 
-class window {
+class Window {
  public:
-  using handler_t = std::function<void(base_event&)>;
+  using handler_t = std::function<void(BaseEvent&)>;
 
-  window()          = default;
-  virtual ~window() = default;
+  Window()          = default;
+  virtual ~Window() = default;
 
   virtual void on_update() = 0;
 
@@ -34,9 +34,9 @@ class window {
 
   virtual void* native_window() const = 0;
 
-  static window* create(const window_properties& props = window_properties());
+  static Window* create(const WindowProperties& props = WindowProperties());
 
-  VIRTUAL_FIVE(window);
+  VIRTUAL_FIVE(Window);
 };
 
 }  // namespace kEn

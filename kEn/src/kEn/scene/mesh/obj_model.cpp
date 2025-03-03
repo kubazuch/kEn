@@ -3,23 +3,26 @@
 #include <kenpch.hpp>
 #include <string>
 
+#include "kEn/renderer/buffer.hpp"
+#include "kEn/renderer/vertex_array.hpp"
+
 namespace kEn {
 
-const std::filesystem::path obj_model::model_path("assets/models");
+const std::filesystem::path ObjModel::kModelPath("assets/models");
 
-buffer_layout obj_model::obj_layout = {{shader_data_types::float3, "a_Position"},
-                                       {shader_data_types::float3, "a_Normal"},
-                                       {shader_data_types::float2, "a_TexCoord"}};
+BufferLayout ObjModel::obj_layout_ = {{shader_data_types::float3, "a_Position"},
+                                      {shader_data_types::float3, "a_Normal"},
+                                      {shader_data_types::float2, "a_TexCoord"}};
 
-obj_model::obj_model(const std::filesystem::path& path) {
-  vertex_array_ = vertex_array::create();
+ObjModel::ObjModel(const std::filesystem::path& path) {
+  vertex_array_ = VertexArray::create();
 
-  std::ifstream file(model_path / path);
+  std::ifstream file(kModelPath / path);
   std::vector<glm::vec3> positions;
   std::vector<glm::vec2> texture_coords;
   std::vector<glm::vec3> normals;
 
-  std::vector<obj_vertex> final_vertices;
+  std::vector<ObjVertex> final_vertices;
   std::vector<unsigned int> final_indices;
 
   std::string curline;
@@ -72,7 +75,7 @@ obj_model::obj_model(const std::filesystem::path& path) {
     if (first == "f") {
       std::string tok;
       std::vector<std::string> v;
-      std::vector<obj_vertex> vertices;
+      std::vector<ObjVertex> vertices;
       iss >> tok;
       v.push_back(tok);
       iss >> tok;
@@ -82,7 +85,7 @@ obj_model::obj_model(const std::filesystem::path& path) {
 
       bool normal = false;
       for (int i = 0; i < 3; i++) {
-        obj_vertex vert;
+        ObjVertex vert{};
         std::vector<std::string> is;
         std::istringstream iss2(v[i]);
         std::string w;
@@ -115,20 +118,20 @@ obj_model::obj_model(const std::filesystem::path& path) {
       }
 
       if (!normal) {
-        glm::vec3 A    = vertices[0].pos - vertices[1].pos;
-        glm::vec3 B    = vertices[2].pos - vertices[1].pos;
-        glm::vec3 norm = glm::cross(A, B);
+        glm::vec3 a    = vertices[0].pos - vertices[1].pos;
+        glm::vec3 b    = vertices[2].pos - vertices[1].pos;
+        glm::vec3 norm = glm::cross(a, b);
 
         for (int i = 0; i < 3; i++) {
           vertices[i].normal = norm;
         }
       }
 
-      int id0 = final_vertices.size();
+      size_t id0 = final_vertices.size();
       for (int i = 0; i < 3; i++) {
         final_vertices.push_back(vertices[i]);
 
-        unsigned int ind = id0 + i;
+        size_t ind = id0 + i;
         final_indices.push_back(ind);
       }
     }
@@ -136,10 +139,10 @@ obj_model::obj_model(const std::filesystem::path& path) {
 
   file.close();
 
-  const int stride    = obj_layout.stride() / sizeof(float);
-  const auto vertices = new float[stride * final_vertices.size()];
+  const auto stride   = obj_layout_.stride() / sizeof(float);
+  const auto vertices = std::make_unique<float[]>(stride * final_vertices.size());
 
-  int offset = 0;
+  uint32_t offset = 0;
   for (auto vertex : final_vertices) {
     vertices[offset + 0] = vertex.pos.x;
     vertices[offset + 1] = vertex.pos.y;
@@ -155,14 +158,12 @@ obj_model::obj_model(const std::filesystem::path& path) {
     offset += stride;
   }
 
-  auto vertex_buffer = vertex_buffer::create(vertices, obj_layout.stride() * final_vertices.size());
-  vertex_buffer->set_layout(obj_layout);
-  auto index_buffer = index_buffer::create(final_indices.data(), final_indices.size());
+  auto vertex_buffer = VertexBuffer::create(vertices.get(), obj_layout_.stride() * final_vertices.size());
+  vertex_buffer->set_layout(obj_layout_);
+  auto index_buffer = IndexBuffer::create(final_indices.data(), final_indices.size());
 
   vertex_array_->add_vertex_buffer(vertex_buffer);
   vertex_array_->set_index_buffer(index_buffer);
-
-  delete[] vertices;
 }
 
 }  // namespace kEn

@@ -5,19 +5,19 @@
 
 namespace kEn {
 
-class key_event {
+class KeyEvent {
  public:
-  key_code key() const { return key_; }
+  KeyCode key() const { return key_; }
 
  protected:
-  explicit key_event(const key_code code) : key_(code) {}
+  explicit KeyEvent(const KeyCode code) : key_(code) {}
 
-  key_code key_;
+  KeyCode key_;
 };
 
-class key_pressed_event : public event<key_pressed_event>, public key_event {
+class KeyPressedEvent : public Event<KeyPressedEvent>, public KeyEvent {
  public:
-  key_pressed_event(const key_code code, bool repeat = false) : key_event(code), is_repeat_(repeat) {}
+  explicit KeyPressedEvent(const KeyCode code, bool repeat = false) : KeyEvent(code), is_repeat_(repeat) {}
 
   bool is_repeat() const { return is_repeat_; }
 
@@ -32,9 +32,9 @@ class key_pressed_event : public event<key_pressed_event>, public key_event {
   bool is_repeat_;
 };
 
-class key_released_event : public event<key_released_event>, public key_event {
+class KeyReleasedEvent : public Event<KeyReleasedEvent>, public KeyEvent {
  public:
-  key_released_event(const key_code code) : key_event(code) {}
+  explicit KeyReleasedEvent(const KeyCode code) : KeyEvent(code) {}
 
   const char* name() const override { return "KeyReleasedEvent"; }
   std::string to_string() const override {
@@ -44,9 +44,9 @@ class key_released_event : public event<key_released_event>, public key_event {
   }
 };
 
-class key_typed_event : public event<key_typed_event>, public key_event {
+class KeyTypedEvent : public Event<KeyTypedEvent>, public KeyEvent {
  public:
-  key_typed_event(const key_code code) : key_event(code) {}
+  explicit KeyTypedEvent(const KeyCode code) : KeyEvent(code) {}
 
   const char* name() const override { return "KeyTypedEvent"; }
   std::string to_string() const override {

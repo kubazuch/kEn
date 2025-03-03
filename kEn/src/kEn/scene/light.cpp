@@ -8,13 +8,13 @@
 
 namespace kEn {
 
-inline void attenuation::load(const std::string& name, shader& shader) const {
+inline void Attenuation::load(const std::string& name, Shader& shader) const {
   shader.set_float(name + ".constant", constant);
   shader.set_float(name + ".linear", linear);
   shader.set_float(name + ".quadratic", quadratic);
 }
 
-void directional_light::imgui(bool subsection) {
+void DirectionalLight::imgui(bool subsection) {
   if (subsection) {
     if (ImGui::TreeNode("Directional light")) {
       imgui(false);
@@ -30,14 +30,14 @@ void directional_light::imgui(bool subsection) {
   ImGui::InputFloat3("Dir##light", glm::value_ptr(front));
 }
 
-void directional_light::load(const std::string& name, shader& shader) const {
+void DirectionalLight::load(const std::string& name, Shader& shader) const {
   shader.set_float3(name + ".color", color);
   shader.set_float3(name + ".dir", transform().front());
 }
 
-std::shared_ptr<game_component> directional_light::clone() const { return std::make_shared<directional_light>(); }
+std::shared_ptr<GameComponent> DirectionalLight::clone() const { return std::make_shared<DirectionalLight>(); }
 
-void point_light::imgui(bool subsection) {
+void PointLight::imgui(bool subsection) {
   if (subsection) {
     if (ImGui::TreeNode("Point light")) {
       imgui(false);
@@ -49,7 +49,7 @@ void point_light::imgui(bool subsection) {
 
   if (ImGui::ColorEdit3("Color##light", glm::value_ptr(color))) {
   }
-  if (ImGui::DragFloat3("Pos##light", glm::value_ptr(transform().local_pos()), 0.01f)) {
+  if (ImGui::DragFloat3("Pos##light", glm::value_ptr(transform().local_pos()), 0.01F)) {
     transform().set_local_pos(transform().local_pos());
   }
 
@@ -63,7 +63,7 @@ void point_light::imgui(bool subsection) {
   }
 }
 
-void point_light::load(const std::string& name, shader& shader) const {
+void PointLight::load(const std::string& name, Shader& shader) const {
   shader.set_float3(name + ".color", color);
 
   atten.load(name + ".atten", shader);
@@ -71,13 +71,13 @@ void point_light::load(const std::string& name, shader& shader) const {
   shader.set_float3(name + ".pos", transform().pos());
 }
 
-std::shared_ptr<game_component> point_light::clone() const {
-  auto ptr   = std::make_shared<point_light>();
+std::shared_ptr<GameComponent> PointLight::clone() const {
+  auto ptr   = std::make_shared<PointLight>();
   ptr->atten = atten;
   return ptr;
 }
 
-void spot_light::imgui(bool subsection) {
+void SpotLight::imgui(bool subsection) {
   if (subsection) {
     if (ImGui::TreeNode("Point light")) {
       imgui(false);
@@ -89,7 +89,7 @@ void spot_light::imgui(bool subsection) {
 
   if (ImGui::ColorEdit3("Color##light", glm::value_ptr(color))) {
   }
-  if (ImGui::DragFloat3("Pos##light", glm::value_ptr(transform().local_pos()), 0.01f)) {
+  if (ImGui::DragFloat3("Pos##light", glm::value_ptr(transform().local_pos()), 0.01F)) {
     transform().set_local_pos(transform().local_pos());
   }
 
@@ -109,7 +109,7 @@ void spot_light::imgui(bool subsection) {
   }
 }
 
-void spot_light::load(const std::string& name, shader& shader) const {
+void SpotLight::load(const std::string& name, Shader& shader) const {
   shader.set_float3(name + ".color", color);
 
   atten.load(name + ".atten", shader);
@@ -120,8 +120,8 @@ void spot_light::load(const std::string& name, shader& shader) const {
   shader.set_float(name + ".outerCutoff", glm::cos(outer_cutoff_angle));
 }
 
-std::shared_ptr<game_component> spot_light::clone() const {
-  auto ptr                = std::make_shared<spot_light>();
+std::shared_ptr<GameComponent> SpotLight::clone() const {
+  auto ptr                = std::make_shared<SpotLight>();
   ptr->atten              = atten;
   ptr->inner_cutoff_angle = inner_cutoff_angle;
   ptr->outer_cutoff_angle = outer_cutoff_angle;

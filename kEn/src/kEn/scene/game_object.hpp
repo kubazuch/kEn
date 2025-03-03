@@ -8,32 +8,32 @@
 
 namespace kEn {
 
-class game_object {
+class GameObject {
  public:
-  game_object(glm::vec3 pos = glm::vec3(), glm::quat rot = {1, 0, 0, 0}, glm::vec3 scale = {1, 1, 1});
-  ~game_object();
+  explicit GameObject(glm::vec3 pos = glm::vec3(), glm::quat rot = {1, 0, 0, 0}, glm::vec3 scale = {1, 1, 1});
+  ~GameObject();
 
-  game_object& add_child(game_object& child);
-  game_object& add_children(std::initializer_list<std::reference_wrapper<game_object>> children);
-  game_object& add_component(std::shared_ptr<game_component> to_add);
-  game_object& add_components(std::initializer_list<std::shared_ptr<game_component>> components);
+  GameObject& add_child(GameObject& child);
+  GameObject& add_children(std::initializer_list<std::reference_wrapper<GameObject>> children);
+  GameObject& add_component(std::shared_ptr<GameComponent> to_add);
+  GameObject& add_components(std::initializer_list<std::shared_ptr<GameComponent>> components);
 
-  void render(shader& shader) const;
-  void render_all(shader& shader) const;
+  void render(Shader& shader) const;
+  void render_all(Shader& shader) const;
   void update(double delta);
   void update_all(double delta);
-  void on_event(base_event& event);
+  void on_event(BaseEvent& event);
 
-  kEn::transform& transform() { return transform_; }
-  const kEn::transform& transform() const { return transform_; }
+  kEn::Transform& transform() { return transform_; }
+  const kEn::Transform& transform() const { return transform_; }
 
  protected:
-  kEn::transform transform_;
+  kEn::Transform transform_;
 
  private:
-  std::optional<std::reference_wrapper<game_object>> parent_;
-  std::vector<std::reference_wrapper<game_object>> children_;
-  std::vector<std::shared_ptr<game_component>> components_;
+  std::optional<std::reference_wrapper<GameObject>> parent_;
+  std::vector<std::reference_wrapper<GameObject>> children_;
+  std::vector<std::shared_ptr<GameComponent>> components_;
 };
 
 }  // namespace kEn

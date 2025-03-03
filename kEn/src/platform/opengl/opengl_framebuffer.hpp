@@ -5,10 +5,10 @@
 
 namespace kEn {
 
-class opengl_framebuffer : public framebuffer {
+class OpenglFramebuffer : public Framebuffer {
  public:
-  opengl_framebuffer(const framebuffer_spec& spec);
-  virtual ~opengl_framebuffer();
+  explicit OpenglFramebuffer(const FramebufferSpec& spec);
+  virtual ~OpenglFramebuffer();
 
   void invalidate();
 
@@ -25,14 +25,14 @@ class opengl_framebuffer : public framebuffer {
     return color_attachments_[id];
   }
 
-  const framebuffer_spec& get_spec() const override { return spec_; }
+  const FramebufferSpec& get_spec() const override { return spec_; }
 
  private:
   uint32_t renderer_id_ = 0;
-  framebuffer_spec spec_;
+  FramebufferSpec spec_;
 
-  std::vector<framebuffer_texture_spec> color_attachment_specs_;
-  framebuffer_texture_spec depth_attachment_spec_ = framebuffer_texture_format::none;
+  std::vector<FramebufferTextureSpec> color_attachment_specs_;
+  FramebufferTextureSpec depth_attachment_spec_ = FramebufferTextureFormat::None;
 
   std::vector<uint32_t> color_attachments_;
   uint32_t depth_attachment_ = 0;

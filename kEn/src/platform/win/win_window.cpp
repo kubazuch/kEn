@@ -6,6 +6,8 @@
 #include <kenpch.hpp>
 #include <platform/win/win_window.hpp>
 
+#include "kEn/renderer/graphics_context.hpp"
+
 namespace kEn {
 
 static uint8_t GLFW_window_count = 0;
@@ -14,138 +16,144 @@ static void api_error_callback(int error_code, const char* description) {
   KEN_CORE_ERROR("GLFW Error #{0}: {1}", error_code, description);
 }
 
-void windows_window::api_init() {
+void WindowsWindow::api_init() {
   const int status = glfwInit();
   KEN_CORE_ASSERT(status, "GLFW init failed!");
 
   glfwSetErrorCallback(api_error_callback);
 }
 
-void windows_window::api_shutdown() { glfwTerminate(); }
+void WindowsWindow::api_shutdown() { glfwTerminate(); }
 
-window* window::create(const window_properties& props) { return new windows_window(props); }
+Window* Window::create(const WindowProperties& props) { return new WindowsWindow(props); }
 
-windows_window::windows_window(const window_properties& properties) {
+WindowsWindow::WindowsWindow(const WindowProperties& properties) {
   data_.title  = properties.title;
   data_.width  = properties.width;
   data_.height = properties.height;
 
   KEN_CORE_DEBUG("Creating window {0} ({1} x {2})", properties.title, properties.width, properties.height);
 
-  if (GLFW_window_count == 0) api_init();
+  if (GLFW_window_count == 0) {
+    api_init();
+  }
 
 #ifdef _KEN_DEBUG
-  if (renderer_api::get_api() == renderer_api::api::opengl) glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+  if (RendererApi::get_api() == RendererApi::Api::OpenGL) {
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+  }
 #endif
   glfwWindowHint(GLFW_SAMPLES, 4);
 
-  window_ptr = glfwCreateWindow(static_cast<int>(data_.width), static_cast<int>(data_.height), data_.title.c_str(),
-                                nullptr, nullptr);
+  window_ptr_ = glfwCreateWindow(static_cast<int>(data_.width), static_cast<int>(data_.height), data_.title.c_str(),
+                                 nullptr, nullptr);
   ++GLFW_window_count;
 
-  context_ = graphics_context::create(window_ptr);
+  context_ = GraphicsContext::create(window_ptr_);
   context_->init();
 
-  glfwSetWindowUserPointer(window_ptr, &data_);
-  windows_window::set_vsync(true);
+  glfwSetWindowUserPointer(window_ptr_, &data_);
+  WindowsWindow::set_vsync(true);
 
   set_glfw_callbacks();
 }
 
-void windows_window::set_glfw_callbacks() const {
+void WindowsWindow::set_glfw_callbacks() const {
   // events purr!
-  glfwSetWindowCloseCallback(window_ptr, [](GLFWwindow* window) {
-    const data& win_data = *static_cast<data*>(glfwGetWindowUserPointer(window));
-    window_close_event event;
+  glfwSetWindowCloseCallback(window_ptr_, [](GLFWwindow* window) {
+    const Data& win_data = *static_cast<Data*>(glfwGetWindowUserPointer(window));
+    WindowCloseEvent event;
     win_data.handler(event);
   });
 
-  glfwSetWindowSizeCallback(window_ptr, [](GLFWwindow* window, int width, int height) {
-    data& win_data  = *static_cast<data*>(glfwGetWindowUserPointer(window));
+  glfwSetWindowSizeCallback(window_ptr_, [](GLFWwindow* window, int width, int height) {
+    Data& win_data  = *static_cast<Data*>(glfwGetWindowUserPointer(window));
     win_data.width  = width;
     win_data.height = height;
 
-    window_resize_event event(width, height);
+    WindowResizeEvent event(width, height);
     win_data.handler(event);
   });
 
-  glfwSetKeyCallback(window_ptr, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-    const data& win_data = *static_cast<data*>(glfwGetWindowUserPointer(window));
+  glfwSetKeyCallback(window_ptr_, [](GLFWwindow* window, int key, int /*scancode*/, int action, int /*mods*/) {
+    const Data& win_data = *static_cast<Data*>(glfwGetWindowUserPointer(window));
 
     switch (action) {
       case GLFW_PRESS: {
-        key_pressed_event event(static_cast<key_code>(key), false);
+        KeyPressedEvent event(static_cast<KeyCode>(key), false);
         win_data.handler(event);
         break;
       }
       case GLFW_REPEAT: {
-        key_pressed_event event(static_cast<key_code>(key), true);
+        KeyPressedEvent event(static_cast<KeyCode>(key), true);
         win_data.handler(event);
         break;
       }
       case GLFW_RELEASE: {
-        key_released_event event(static_cast<key_code>(key));
+        KeyReleasedEvent event(static_cast<KeyCode>(key));
         win_data.handler(event);
         break;
       }
     }
   });
 
-  glfwSetCharCallback(window_ptr, [](GLFWwindow* window, unsigned int keycode) {
-    const data& win_data = *static_cast<data*>(glfwGetWindowUserPointer(window));
-    key_typed_event event(static_cast<key_code>(keycode));
+  glfwSetCharCallback(window_ptr_, [](GLFWwindow* window, unsigned int keycode) {
+    const Data& win_data = *static_cast<Data*>(glfwGetWindowUserPointer(window));
+    KeyTypedEvent event(static_cast<KeyCode>(keycode));
     win_data.handler(event);
   });
 
-  glfwSetMouseButtonCallback(window_ptr, [](GLFWwindow* window, int button, int action, int mods) {
-    const data& win_data = *static_cast<data*>(glfwGetWindowUserPointer(window));
+  glfwSetMouseButtonCallback(window_ptr_, [](GLFWwindow* window, int button, int action, int /*mods*/) {
+    const Data& win_data = *static_cast<Data*>(glfwGetWindowUserPointer(window));
 
     switch (action) {
       case GLFW_PRESS: {
-        mouse_button_pressed_event event(static_cast<mouse_code>(button));
+        MouseButtonPressedEvent event(static_cast<MouseCode>(button));
         win_data.handler(event);
         break;
       }
       case GLFW_RELEASE: {
-        mouse_button_released_event event(static_cast<mouse_code>(button));
+        MouseButtonReleasedEvent event(static_cast<MouseCode>(button));
         win_data.handler(event);
         break;
       }
     }
   });
 
-  glfwSetScrollCallback(window_ptr, [](GLFWwindow* window, double x_offset, double y_offset) {
-    const data& win_data = *static_cast<data*>(glfwGetWindowUserPointer(window));
+  glfwSetScrollCallback(window_ptr_, [](GLFWwindow* window, double x_offset, double y_offset) {
+    const Data& win_data = *static_cast<Data*>(glfwGetWindowUserPointer(window));
 
-    mouse_scroll_event event(static_cast<float>(x_offset), static_cast<float>(y_offset));
+    MouseScrollEvent event(static_cast<float>(x_offset), static_cast<float>(y_offset));
     win_data.handler(event);
   });
 
-  glfwSetCursorPosCallback(window_ptr, [](GLFWwindow* window, double x, double y) {
-    const data& win_data = *static_cast<data*>(glfwGetWindowUserPointer(window));
+  glfwSetCursorPosCallback(window_ptr_, [](GLFWwindow* window, double x, double y) {
+    const Data& win_data = *static_cast<Data*>(glfwGetWindowUserPointer(window));
 
-    mouse_move_event event(static_cast<float>(x), static_cast<float>(y));
+    MouseMoveEvent event(static_cast<float>(x), static_cast<float>(y));
     win_data.handler(event);
   });
 }
 
-windows_window::~windows_window() {
-  glfwDestroyWindow(window_ptr);
+WindowsWindow::~WindowsWindow() {
+  glfwDestroyWindow(window_ptr_);
   --GLFW_window_count;
 
-  if (GLFW_window_count == 0) api_shutdown();
+  if (GLFW_window_count == 0) {
+    api_shutdown();
+  }
 }
 
-void windows_window::on_update() {
+void WindowsWindow::on_update() {
   glfwPollEvents();
   context_->swap_buffers();
 }
 
-void windows_window::set_vsync(const bool enabled) {
+void WindowsWindow::set_vsync(const bool enabled) {
   glfwSwapInterval(enabled ? 1 : 0);
   data_.vsync = enabled;
 }
 
-bool windows_window::vsync() const { return data_.vsync; }
+bool WindowsWindow::vsync() const { return data_.vsync; }
 
 }  // namespace kEn

@@ -8,45 +8,45 @@
 
 namespace kEn {
 
-class camera : public game_component {
+class Camera : public GameComponent {
  public:
-  virtual ~camera() = default;
+  virtual ~Camera() = default;
 
   glm::mat4 projection_matrix() const { return projection_matrix_; }
   glm::mat4 view_matrix() const { return transform().world_to_local_matrix(); }
   glm::mat4 view_projection_matrix() const { return projection_matrix_ * view_matrix(); }
 
-  [[nodiscard]] std::shared_ptr<game_component> clone() const override = 0;
-  void update(float delta) override {}
-  void render(shader& shader) override {}
+  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override = 0;
+  void update(float) override {}
+  void render(Shader&) override {}
 
-  virtual bool on_window_resize(window_resize_event& event) = 0;
+  virtual bool on_window_resize(WindowResizeEvent& event) = 0;
 
  protected:
   glm::mat4 projection_matrix_;
 };
 
-class orthographic_camera : public camera {
+class OrthographicCamera : public Camera {
  public:
-  orthographic_camera(float left, float right, float bottom, float top);
+  OrthographicCamera(float left, float right, float bottom, float top);
   void set_projection(float left, float right, float bottom, float top);
 
-  [[nodiscard]] std::shared_ptr<game_component> clone() const override;
+  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
-  bool on_window_resize(window_resize_event& event) override;
+  bool on_window_resize(WindowResizeEvent& event) override;
 
  private:
   float left_, right_, bottom_, top_;
 };
 
-class perspective_camera : public camera {
+class PerspectiveCamera : public Camera {
  public:
-  perspective_camera(float fov, float aspect, float zNear, float zFar);
+  PerspectiveCamera(float fov, float aspect, float zNear, float zFar);
   void set_projection(float fov, float aspect, float zNear, float zFar);
 
-  [[nodiscard]] std::shared_ptr<game_component> clone() const override;
+  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
-  bool on_window_resize(window_resize_event& event) override;
+  bool on_window_resize(WindowResizeEvent& event) override;
 
  private:
   float fov_, aspect_, zNear_, zFar_;

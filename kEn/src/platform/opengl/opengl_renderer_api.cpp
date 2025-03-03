@@ -3,12 +3,15 @@
 #include <kenpch.hpp>
 #include <platform/opengl/opengl_renderer_api.hpp>
 
+#include "kEn/renderer/renderer_api.hpp"
+#include "kEn/renderer/vertex_array.hpp"
+
 namespace kEn {
 
-renderer_api::api renderer_api::api_ = api::opengl;
+RendererApi::Api RendererApi::api_ = Api::OpenGL;
 
-void gl_message_callback(unsigned src, unsigned type, unsigned id, unsigned lvl, int len, const char* msg,
-                         const void* params) {
+void gl_message_callback(unsigned /*src*/, unsigned /*type*/, unsigned /*id*/, unsigned lvl, int /*len*/,
+                         const char* msg, const void* /*params*/) {
   switch (lvl) {
     case GL_DEBUG_SEVERITY_HIGH:
       KEN_CORE_CRITICAL(msg);
@@ -27,7 +30,7 @@ void gl_message_callback(unsigned src, unsigned type, unsigned id, unsigned lvl,
   KEN_CORE_ASSERT(false, "Unknown message severity!");
 }
 
-void opengl_renderer_api::init() {
+void OpenglRendererApi::init() {
 #ifdef _KEN_DEBUG
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -48,39 +51,39 @@ void opengl_renderer_api::init() {
   glFrontFace(GL_CCW);
 }
 
-void opengl_renderer_api::set_viewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
-  glViewport(x, y, width, height);
+void OpenglRendererApi::set_viewport(size_t x, size_t y, size_t width, size_t height) {
+  glViewport(static_cast<GLint>(x), static_cast<GLint>(y), static_cast<GLsizei>(width), static_cast<GLsizei>(height));
 }
 
-void opengl_renderer_api::set_clear_color(const glm::vec4& color) { glClearColor(color.r, color.g, color.b, color.a); }
+void OpenglRendererApi::set_clear_color(const glm::vec4& color) { glClearColor(color.r, color.g, color.b, color.a); }
 
-void opengl_renderer_api::clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
+void OpenglRendererApi::clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
-void opengl_renderer_api::depth_testing(bool enabled) {
-  if (enabled)
+void OpenglRendererApi::depth_testing(bool enabled) {
+  if (enabled) {
     glEnable(GL_DEPTH_TEST);
-  else
+  } else {
     glDisable(GL_DEPTH_TEST);
-  // glClear(GL_DEPTH_BUFFER_BIT);
+  }
 }
 
-void opengl_renderer_api::draw_indexed(const vertex_array& vertex_array, uint32_t index_count) {
+void OpenglRendererApi::draw_indexed(const VertexArray& vertex_array, size_t index_count) {
   vertex_array.bind();
   uint32_t count = index_count ? index_count : vertex_array.index_buffer()->get_count();
 
-  glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+  glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(count), GL_UNSIGNED_INT, nullptr);
 }
 
-void opengl_renderer_api::draw_patches(const vertex_array& vertex_array, uint32_t vertex_count) {
+void OpenglRendererApi::draw_patches(const VertexArray& vertex_array, size_t vertex_count) {
   vertex_array.bind();
-  glDrawArrays(GL_PATCHES, 0, vertex_count);
+  glDrawArrays(GL_PATCHES, 0, static_cast<GLsizei>(vertex_count));
 }
 
-void opengl_renderer_api::set_tessellation_patch_vertices(uint32_t count) {
-  glPatchParameteri(GL_PATCH_VERTICES, count);
+void OpenglRendererApi::set_tessellation_patch_vertices(size_t count) {
+  glPatchParameteri(GL_PATCH_VERTICES, static_cast<GLsizei>(count));
 }
 
-void opengl_renderer_api::set_wireframe(bool wireframe) {
+void OpenglRendererApi::set_wireframe(bool wireframe) {
   glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
 }
 

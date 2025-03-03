@@ -4,8 +4,8 @@
 
 namespace kEn {
 
-const kEn::transform& game_component::transform() const { return parent_.value().get().transform(); }
+const kEn::Transform& GameComponent::transform() const { return parent_.value().get().transform(); }
 
-kEn::transform& game_component::transform() { return parent_.value().get().transform(); }
+kEn::Transform& GameComponent::transform() { return parent_.value().get().transform(); }
 
 }  // namespace kEn

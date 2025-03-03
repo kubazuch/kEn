@@ -11,11 +11,11 @@ namespace kEn {
 
 namespace utils {
 
-static GLenum ken_image_format_to_gl_data(image_format format) {
+static GLenum ken_image_format_to_gl_data(ImageFormat format) {
   switch (format) {
-    case image_format::RGB8:
+    case ImageFormat::RGB8:
       return GL_RGB;
-    case image_format::RGBA8:
+    case ImageFormat::RGBA8:
       return GL_RGBA;
   }
 
@@ -23,11 +23,11 @@ static GLenum ken_image_format_to_gl_data(image_format format) {
   return 0;
 }
 
-static GLenum ken_image_format_to_gl_internal(image_format format) {
+static GLenum ken_image_format_to_gl_internal(ImageFormat format) {
   switch (format) {
-    case image_format::RGB8:
+    case ImageFormat::RGB8:
       return GL_RGB8;
-    case image_format::RGBA8:
+    case ImageFormat::RGBA8:
       return GL_RGBA8;
   }
 
@@ -35,23 +35,23 @@ static GLenum ken_image_format_to_gl_internal(image_format format) {
   return 0;
 }
 
-static GLenum ken_filter_to_gl(texture_spec::filter filter, bool mipmap = false) {
+static GLint ken_filter_to_gl(TextureSpec::filter filter, bool mipmap = false) {
   switch (filter) {
-    case texture_spec::filter::NEAREST:
-      return mipmap ? GL_NEAREST_MIPMAP_LINEAR : GL_NEAREST;
-    case texture_spec::filter::LINEAR:
+    case TextureSpec::filter::Nearest:
+      return static_cast<GLint>(mipmap ? GL_NEAREST_MIPMAP_LINEAR : GL_NEAREST);
+    case TextureSpec::filter::Linear:
     default:
-      return mipmap ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR;
+      return static_cast<GLint>(mipmap ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
   }
 }
 
-static GLenum ken_wrap_to_gl(texture_spec::wrap wrap) {
+static GLint ken_wrap_to_gl(TextureSpec::wrap wrap) {
   switch (wrap) {
-    case texture_spec::wrap::CLAMP:
+    case TextureSpec::wrap::Clamp:
       return GL_CLAMP_TO_EDGE;
-    case texture_spec::wrap::MIRRORED_REPEAT:
+    case TextureSpec::wrap::MirroredRepeat:
       return GL_MIRRORED_REPEAT;
-    case texture_spec::wrap::REPEAT:
+    case TextureSpec::wrap::Repeat:
     default:
       return GL_REPEAT;
   }
@@ -59,12 +59,14 @@ static GLenum ken_wrap_to_gl(texture_spec::wrap wrap) {
 
 }  // namespace utils
 
-opengl_texture2D::opengl_texture2D(const texture_spec& specification) : spec_(specification) {
-  internal_format_ = utils::ken_image_format_to_gl_internal(specification.format.value());
-  data_format_     = utils::ken_image_format_to_gl_data(specification.format.value());
-
+OpenglTexture2D::OpenglTexture2D(const TextureSpec& specification)
+    : spec_(specification),
+      renderer_id_(0),
+      internal_format_(utils::ken_image_format_to_gl_internal(specification.format.value())),
+      data_format_(utils::ken_image_format_to_gl_data(specification.format.value())) {
   glCreateTextures(GL_TEXTURE_2D, 1, &renderer_id_);
-  glTextureStorage2D(renderer_id_, 1, internal_format_, spec_.width.value(), spec_.height.value());
+  glTextureStorage2D(renderer_id_, 1, internal_format_, static_cast<GLsizei>(spec_.width.value()),
+                     static_cast<GLsizei>(spec_.height.value()));
 
   glTextureParameteri(renderer_id_, GL_TEXTURE_MIN_FILTER, utils::ken_filter_to_gl(specification.min_filter));
   glTextureParameteri(renderer_id_, GL_TEXTURE_MAG_FILTER, utils::ken_filter_to_gl(specification.mag_filter));
@@ -72,9 +74,11 @@ opengl_texture2D::opengl_texture2D(const texture_spec& specification) : spec_(sp
   glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_T, utils::ken_wrap_to_gl(specification.y_wrap));
 }
 
-opengl_texture2D::opengl_texture2D(const std::filesystem::path& path, const texture_spec& spec)
-    : spec_(spec), path_(path) {
-  int width, height, channels;
+OpenglTexture2D::OpenglTexture2D(const std::filesystem::path& path, const TextureSpec& spec)
+    : spec_(spec), path_(path), renderer_id_(0) {
+  int width    = 0;
+  int height   = 0;
+  int channels = 0;
   stbi_set_flip_vertically_on_load(1);
   stbi_uc* data = stbi_load(path.string().c_str(), &width, &height, &channels, 0);
 
@@ -83,19 +87,20 @@ opengl_texture2D::opengl_texture2D(const std::filesystem::path& path, const text
     spec_.width  = width;
     spec_.height = height;
 
-    GLenum internal_f = 0, data_f = 0;
+    GLenum internal_f = 0;
+    GLenum data_f     = 0;
     if (channels == 4) {
       internal_f   = GL_RGBA8;
       data_f       = GL_RGBA;
-      spec_.format = image_format::RGBA8;
+      spec_.format = ImageFormat::RGBA8;
     } else if (channels == 3) {
       internal_f   = GL_RGB8;
       data_f       = GL_RGB;
-      spec_.format = image_format::RGB8;
+      spec_.format = ImageFormat::RGB8;
     } else if (channels == 1) {
       internal_f   = GL_R8;
       data_f       = GL_RED;
-      spec_.format = image_format::R8;
+      spec_.format = ImageFormat::R8;
     }
 
     KEN_CORE_INFO("Loaded texture with {} channels", channels);
@@ -104,7 +109,8 @@ opengl_texture2D::opengl_texture2D(const std::filesystem::path& path, const text
     data_format_     = data_f;
 
     glCreateTextures(GL_TEXTURE_2D, 1, &renderer_id_);
-    glTextureStorage2D(renderer_id_, spec_.mipmap_levels, internal_format_, spec_.width.value(), spec_.height.value());
+    glTextureStorage2D(renderer_id_, static_cast<GLsizei>(spec_.mipmap_levels), internal_format_,
+                       static_cast<GLsizei>(spec_.width.value()), static_cast<GLsizei>(spec_.height.value()));
 
     glTextureParameteri(renderer_id_, GL_TEXTURE_MIN_FILTER,
                         utils::ken_filter_to_gl(spec.min_filter, spec.mipmap_levels > 1));
@@ -130,22 +136,22 @@ opengl_texture2D::opengl_texture2D(const std::filesystem::path& path, const text
   }
 }
 
-opengl_texture2D::~opengl_texture2D() { glDeleteTextures(1, &renderer_id_); }
+OpenglTexture2D::~OpenglTexture2D() { glDeleteTextures(1, &renderer_id_); }
 
-void opengl_texture2D::set_data(void* data, uint32_t size) {
+void OpenglTexture2D::set_data(void* data, uint32_t size) {
   uint32_t bpp = data_format_ == GL_RGBA ? 4 : 3;
   KEN_CORE_ASSERT(size == spec_.width.value() * spec_.height.value() * bpp, "Data must be entire texture!");
-  glTextureSubImage2D(renderer_id_, 0, 0, 0, spec_.width.value(), spec_.height.value(), data_format_, GL_UNSIGNED_BYTE,
-                      data);
+  glTextureSubImage2D(renderer_id_, 0, 0, 0, static_cast<GLsizei>(spec_.width.value()),
+                      static_cast<GLsizei>(spec_.height.value()), data_format_, GL_UNSIGNED_BYTE, data);
 }
 
-void opengl_texture2D::bind(uint32_t slot) const { glBindTextureUnit(slot, renderer_id_); }
+void OpenglTexture2D::bind(uint32_t slot) const { glBindTextureUnit(slot, renderer_id_); }
 
-void opengl_texture2D::imgui() {
-  float height = glm::max(glm::min((float)spec_.height.value(), 250.f), 100.f);
-  float width  = ((float)spec_.width.value()) / (float)spec_.height.value() * height;
+void OpenglTexture2D::imgui() {
+  float height = glm::max(glm::min(static_cast<float>(spec_.height.value()), 250.F), 100.F);
+  float width  = static_cast<float>(spec_.width.value()) / static_cast<float>(spec_.height.value()) * height;
 
-  ImGui::Image((ImTextureID)renderer_id_, ImVec2{width, height}, ImVec2{0.0f, 1.0f}, ImVec2{1.0f, 0.0f});
+  ImGui::Image(static_cast<ImTextureID>(renderer_id_), ImVec2{width, height}, ImVec2{0.0F, 1.0F}, ImVec2{1.0F, 0.0F});
 }
 
 }  // namespace kEn

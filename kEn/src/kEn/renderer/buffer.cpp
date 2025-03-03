@@ -6,42 +6,43 @@
 
 namespace kEn {
 
-std::shared_ptr<vertex_buffer> vertex_buffer::create(void* vertices, uint32_t size) {
-  switch (renderer_api::get_api()) {
-    case renderer_api::api::none:
+std::shared_ptr<VertexBuffer> VertexBuffer::create(void* vertices, size_t size) {
+  switch (RendererApi::get_api()) {
+    case RendererApi::Api::None:
       KEN_CORE_ASSERT(false, "Renderer has no api!");
       return nullptr;
-    case renderer_api::api::opengl:
-      return std::make_shared<opengl_vertex_buffer>(vertices, size);
+    case RendererApi::Api::OpenGL:
+      return std::make_shared<OpenglVertexBuffer>(vertices, size);
   }
 
   KEN_CORE_ASSERT(false, "Unknown api!");
   return nullptr;
 }
 
-std::shared_ptr<mutable_vertex_buffer> mutable_vertex_buffer::create(void* vertices, uint32_t size) {
-  switch (renderer_api::get_api()) {
-    case renderer_api::api::none:
+std::shared_ptr<MutableVertexBuffer> MutableVertexBuffer::create(void* vertices, size_t size) {
+  switch (RendererApi::get_api()) {
+    case RendererApi::Api::None:
       KEN_CORE_ASSERT(false, "Renderer has no api!");
       return nullptr;
-    case renderer_api::api::opengl:
-      return std::make_shared<opengl_mutable_vertex_buffer>(vertices, size);
+    case RendererApi::Api::OpenGL:
+      return std::make_shared<OpenglMutableVertexBuffer>(vertices, size);
   }
 
   KEN_CORE_ASSERT(false, "Unknown api!");
   return nullptr;
 }
 
-std::shared_ptr<index_buffer> index_buffer::create(uint32_t* indices, uint32_t size) {
-  switch (renderer_api::get_api()) {
-    case renderer_api::api::none:
+std::shared_ptr<IndexBuffer> IndexBuffer::create(uint32_t* indices, size_t size) {
+  switch (RendererApi::get_api()) {
+    case RendererApi::Api::None:
       KEN_CORE_ASSERT(false, "Renderer has no api!");
       return nullptr;
-    case renderer_api::api::opengl:
-      return std::make_shared<opengl_index_buffer>(indices, size);
+    case RendererApi::Api::OpenGL:
+      return std::make_shared<OpenglIndexBuffer>(indices, size);
   }
 
   KEN_CORE_ASSERT(false, "Unknown api!");
   return nullptr;
 }
+
 }  // namespace kEn

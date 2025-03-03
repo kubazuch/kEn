@@ -4,19 +4,19 @@
 
 namespace kEn {
 
-class mouse_button_event {
+class MouseButtonEvent {
  public:
-  mouse_code button() const { return button_; }
+  MouseCode button() const { return button_; }
 
  protected:
-  mouse_button_event(const mouse_code button) : button_(button) {}
+  explicit MouseButtonEvent(const MouseCode button) : button_(button) {}
 
-  mouse_code button_;
+  MouseCode button_;
 };
 
-class mouse_button_pressed_event : public mouse_button_event, public event<mouse_button_pressed_event> {
+class MouseButtonPressedEvent : public MouseButtonEvent, public Event<MouseButtonPressedEvent> {
  public:
-  mouse_button_pressed_event(mouse_code button) : mouse_button_event(button) {}
+  explicit MouseButtonPressedEvent(MouseCode button) : MouseButtonEvent(button) {}
 
   const char* name() const override { return "MouseButtonPressedEvent"; }
   std::string to_string() const override {
@@ -26,9 +26,9 @@ class mouse_button_pressed_event : public mouse_button_event, public event<mouse
   }
 };
 
-class mouse_button_released_event : public mouse_button_event, public event<mouse_button_released_event> {
+class MouseButtonReleasedEvent : public MouseButtonEvent, public Event<MouseButtonReleasedEvent> {
  public:
-  mouse_button_released_event(mouse_code button) : mouse_button_event(button) {}
+  explicit MouseButtonReleasedEvent(MouseCode button) : MouseButtonEvent(button) {}
 
   const char* name() const override { return "MouseButtonReleasedEvent"; }
   std::string to_string() const override {
@@ -38,9 +38,9 @@ class mouse_button_released_event : public mouse_button_event, public event<mous
   }
 };
 
-class mouse_scroll_event : public event<mouse_scroll_event> {
+class MouseScrollEvent : public Event<MouseScrollEvent> {
  public:
-  mouse_scroll_event(const float x_offset, const float y_offset) : x_offset_(x_offset), y_offset_(y_offset) {}
+  MouseScrollEvent(const float x_offset, const float y_offset) : x_offset_(x_offset), y_offset_(y_offset) {}
 
   float x_offset() const { return x_offset_; }
   float y_offset() const { return y_offset_; }
@@ -56,9 +56,9 @@ class mouse_scroll_event : public event<mouse_scroll_event> {
   float x_offset_, y_offset_;
 };
 
-class mouse_move_event : public event<mouse_move_event> {
+class MouseMoveEvent : public Event<MouseMoveEvent> {
  public:
-  mouse_move_event(const float x, const float y) : x_pos_(x), y_pos_(y) {}
+  MouseMoveEvent(const float x, const float y) : x_pos_(x), y_pos_(y) {}
 
   float x() const { return x_pos_; }
   float y() const { return y_pos_; }

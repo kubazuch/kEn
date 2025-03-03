@@ -134,9 +134,11 @@
   X(menu, 348)
 
 namespace kEn {
-using key_code = uint16_t;
+
+using KeyCode = uint16_t;
 
 namespace key {
+
 #define ENUM_ENTRY(id, code) id = code,
 #define NAMED_ENUM_ENTRY(id, code, name) id = code,
 
@@ -147,16 +149,18 @@ namespace key {
   case code:                             \
     return name;
 
-enum : key_code { KEY_CODES(ENUM_ENTRY, NAMED_ENUM_ENTRY) };
+enum : KeyCode { KEY_CODES(ENUM_ENTRY, NAMED_ENUM_ENTRY) };
 
-inline const char* name_of(const key_code key) {
+inline const char* name_of(const KeyCode key) {
   switch (key) {
     KEY_CODES(CASE_ENTRY, NAMED_CASE_ENTRY)
     default:
       return "INVALID";
   }
 }
+
 }  // namespace key
+
 }  // namespace kEn
 
 #undef KEY_CODES

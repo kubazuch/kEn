@@ -4,21 +4,23 @@
 #include <kenpch.hpp>
 #include <platform/opengl/opengl_shader.hpp>
 
+#include "kEn/renderer/shader.hpp"
+
 namespace kEn {
 
-const std::filesystem::path opengl_shader::vertex_ext(".vert");
-const std::filesystem::path opengl_shader::fragment_ext(".frag");
-const std::filesystem::path opengl_shader::geometry_ext(".geom");
-const std::filesystem::path opengl_shader::tess_control_ext(".tesc");
-const std::filesystem::path opengl_shader::tess_eval_ext(".tese");
-const std::regex opengl_shader::include_regex("#include\\s+\"(.+)\"");
+const std::filesystem::path OpenglShader::kVertexExt(".vert");
+const std::filesystem::path OpenglShader::kFragmentExt(".frag");
+const std::filesystem::path OpenglShader::kGeometryExt(".geom");
+const std::filesystem::path OpenglShader::kTessControlExt(".tesc");
+const std::filesystem::path OpenglShader::kTessEvalExt(".tese");
+const std::regex OpenglShader::kIncludeRegex("#include\\s+\"(.+)\"");
 
-std::string opengl_shader::read_shader_src_internal(const std::filesystem::path& filePath,
-                                                    std::unordered_set<std::filesystem::path>& included,
-                                                    bool internal) {
+std::string OpenglShader::read_shader_src_internal(const std::filesystem::path& filePath,
+                                                   std::unordered_set<std::filesystem::path>& included, bool internal) {
   if (included.find(filePath) != included.end()) {
-    if (!internal)
+    if (!internal) {
       KEN_CORE_WARN("Circular dependency or already loaded package detected in file {0}!", filePath.string());
+    }
     return "";
   }
 
@@ -26,7 +28,7 @@ std::string opengl_shader::read_shader_src_internal(const std::filesystem::path&
 
   std::unique_ptr<std::istream> stream;
   if (internal) {
-    auto it = internal_libs.find(filePath.string());
+    auto it = kInternalLibs.find(filePath.string());
     stream  = std::make_unique<std::stringstream>(it->second);
   } else {
     auto file = std::make_unique<std::ifstream>(filePath);
@@ -41,16 +43,16 @@ std::string opengl_shader::read_shader_src_internal(const std::filesystem::path&
   std::stringstream buffer;
   std::string line;
   while (std::getline(*stream, line)) {
-    std::smatch includeMatch;
-    if (std::regex_match(line, includeMatch, include_regex)) {
-      std::string includeFileName = includeMatch[1].str();
-      std::string includedSource;
-      if (auto it = internal_libs.find(includeFileName); it != internal_libs.end()) {
-        includedSource = read_shader_src_internal(includeFileName, included, true);
+    std::smatch include_match;
+    if (std::regex_match(line, include_match, kIncludeRegex)) {
+      std::string include_file_name = include_match[1].str();
+      std::string included_source;
+      if (auto it = kInternalLibs.find(include_file_name); it != kInternalLibs.end()) {
+        included_source = read_shader_src_internal(include_file_name, included, true);
       } else {
-        includedSource = read_shader_src_internal(shader_path / includeFileName, included);
+        included_source = read_shader_src_internal(kShaderPath / include_file_name, included);
       }
-      buffer << includedSource << "\n";
+      buffer << included_source << "\n";
     } else {
       buffer << line << "\n";
     }
@@ -59,17 +61,16 @@ std::string opengl_shader::read_shader_src_internal(const std::filesystem::path&
   return buffer.str();
 }
 
-std::string opengl_shader::read_shader_src(const std::filesystem::path& file) {
-  std::unordered_set<std::filesystem::path> includedFiles;
-  return read_shader_src_internal(file, includedFiles);
+std::string OpenglShader::read_shader_src(const std::filesystem::path& file) {
+  std::unordered_set<std::filesystem::path> included_files;
+  return read_shader_src_internal(file, included_files);
 }
 
-GLuint opengl_shader::create_shader(const std::string& src, GLint type) {
+GLuint OpenglShader::create_shader(const std::string& src, GLenum type) {
   const GLuint shader = glCreateShader(type);
 
   if (shader == 0) {
     KEN_CORE_ERROR("Shader construction failed!");
-    // TODO: maybe throw sth??
     return 0;
   }
 
@@ -97,7 +98,7 @@ GLuint opengl_shader::create_shader(const std::string& src, GLint type) {
   return shader;
 }
 
-void opengl_shader::link_shader() const {
+void OpenglShader::link_shader() const {
   glLinkProgram(renderer_id_);
 
   GLint status = 0;
@@ -133,7 +134,7 @@ void opengl_shader::link_shader() const {
   }
 }
 
-void opengl_shader::create_program(const std::string& vertex_src, const std::string& fragment_src) {
+void OpenglShader::create_program(const std::string& vertex_src, const std::string& fragment_src) {
   GLuint vertex_shader = create_shader(vertex_src, GL_VERTEX_SHADER);
   if (vertex_shader == 0) {
     return;
@@ -159,22 +160,27 @@ void opengl_shader::create_program(const std::string& vertex_src, const std::str
   glDeleteShader(fragment_shader);
 }
 
-opengl_shader::opengl_shader(const std::filesystem::path& path, shader_config config) {
-  auto shader_src_path = shader_path / path;
-  name_                = shader_src_path.stem().string();
+OpenglShader::OpenglShader(const std::filesystem::path& path, ShaderConfig config) {
+  auto shader_src_path = kShaderPath / path;
 
-  GLuint vertex_shader = 0, fragment_shader = 0;
-  GLuint geometry_shader     = 0;
-  GLuint tess_control_shader = 0, tess_evaluation_shader = 0;
+  name_ = shader_src_path.stem().string();
+
+  GLuint vertex_shader          = 0;
+  GLuint fragment_shader        = 0;
+  GLuint geometry_shader        = 0;
+  GLuint tess_control_shader    = 0;
+  GLuint tess_evaluation_shader = 0;
 
   // Vertex
 
-  shader_src_path.replace_extension(vertex_ext);
+  shader_src_path.replace_extension(kVertexExt);
   vertex_shader = create_shader(read_shader_src(shader_src_path), GL_VERTEX_SHADER);
-  if (vertex_shader == 0) throw std::exception("Unable to create vertex shader");
+  if (vertex_shader == 0) {
+    throw std::exception("Unable to create vertex shader");
+  }
 
   // Fragment
-  shader_src_path.replace_extension(fragment_ext);
+  shader_src_path.replace_extension(kFragmentExt);
   fragment_shader = create_shader(read_shader_src(shader_src_path), GL_FRAGMENT_SHADER);
   if (fragment_shader == 0) {
     glDeleteShader(vertex_shader);
@@ -183,7 +189,7 @@ opengl_shader::opengl_shader(const std::filesystem::path& path, shader_config co
 
   // Geometry
   if (config.geometry) {
-    shader_src_path.replace_extension(geometry_ext);
+    shader_src_path.replace_extension(kGeometryExt);
     geometry_shader = create_shader(read_shader_src(shader_src_path), GL_GEOMETRY_SHADER);
     if (geometry_shader == 0) {
       glDeleteShader(vertex_shader);
@@ -194,7 +200,7 @@ opengl_shader::opengl_shader(const std::filesystem::path& path, shader_config co
 
   // Tessellation
   if (config.tessellation) {
-    shader_src_path.replace_extension(tess_control_ext);
+    shader_src_path.replace_extension(kTessControlExt);
     tess_control_shader = create_shader(read_shader_src(shader_src_path), GL_TESS_CONTROL_SHADER);
     if (tess_control_shader == 0) {
       glDeleteShader(vertex_shader);
@@ -203,7 +209,7 @@ opengl_shader::opengl_shader(const std::filesystem::path& path, shader_config co
       throw std::exception("Unable to create tessellation control shader");
     }
 
-    shader_src_path.replace_extension(tess_eval_ext);
+    shader_src_path.replace_extension(kTessEvalExt);
     tess_evaluation_shader = create_shader(read_shader_src(shader_src_path), GL_TESS_EVALUATION_SHADER);
     if (tess_evaluation_shader == 0) {
       glDeleteShader(vertex_shader);
@@ -218,7 +224,9 @@ opengl_shader::opengl_shader(const std::filesystem::path& path, shader_config co
 
   glAttachShader(renderer_id_, vertex_shader);
   glAttachShader(renderer_id_, fragment_shader);
-  if (config.geometry) glAttachShader(renderer_id_, geometry_shader);
+  if (config.geometry) {
+    glAttachShader(renderer_id_, geometry_shader);
+  }
 
   if (config.tessellation) {
     glAttachShader(renderer_id_, tess_control_shader);
@@ -229,7 +237,9 @@ opengl_shader::opengl_shader(const std::filesystem::path& path, shader_config co
 
   glDetachShader(renderer_id_, vertex_shader);
   glDetachShader(renderer_id_, fragment_shader);
-  if (config.geometry) glDetachShader(renderer_id_, geometry_shader);
+  if (config.geometry) {
+    glDetachShader(renderer_id_, geometry_shader);
+  }
   if (config.tessellation) {
     glDetachShader(renderer_id_, tess_control_shader);
     glDetachShader(renderer_id_, tess_evaluation_shader);
@@ -237,34 +247,37 @@ opengl_shader::opengl_shader(const std::filesystem::path& path, shader_config co
 
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);
-  if (config.geometry) glDeleteShader(geometry_shader);
+  if (config.geometry) {
+    glDeleteShader(geometry_shader);
+  }
   if (config.tessellation) {
     glDeleteShader(tess_control_shader);
     glDeleteShader(tess_evaluation_shader);
   }
 }
 
-opengl_shader::opengl_shader(std::string name, const std::string& vertex_src, const std::string& fragment_src)
-    : name_(std::move(name)) {
+OpenglShader::OpenglShader(std::string name, const std::string& vertex_src, const std::string& fragment_src)
+    : renderer_id_(0), name_(std::move(name)) {
   create_program(vertex_src, fragment_src);
 }
 
-opengl_shader::~opengl_shader() { glDeleteProgram(renderer_id_); }
+OpenglShader::~OpenglShader() { glDeleteProgram(renderer_id_); }
 
-void opengl_shader::bind() const { glUseProgram(renderer_id_); }
+void OpenglShader::bind() const { glUseProgram(renderer_id_); }
 
-void opengl_shader::unbind() const { glUseProgram(0); }
+void OpenglShader::unbind() const { glUseProgram(0); }
 
 // <Uniforms>
-GLint opengl_shader::get_uniform_location(const std::string& name) const {
+GLint OpenglShader::get_uniform_location(const std::string& name) const {
   auto it = uniform_locations_.find(name);
-  if (it != uniform_locations_.end()) return it->second;
+  if (it != uniform_locations_.end()) {
+    return it->second;
+  }
 
   const GLint location     = glGetUniformLocation(renderer_id_, name.c_str());
   uniform_locations_[name] = location;
   if (location == -1) {
     KEN_CORE_ERROR("Unable to find uniform '{0}' in shader '{1}'", name, name_);
-    // TODO: maybe throw sth??
     return -1;
   }
 
@@ -272,64 +285,64 @@ GLint opengl_shader::get_uniform_location(const std::string& name) const {
   return location;
 }
 
-void opengl_shader::set_bool(const std::string& name, bool value) {
+void OpenglShader::set_bool(const std::string& name, bool value) {
+  GLint location = get_uniform_location(name);
+  glProgramUniform1i(renderer_id_, location, static_cast<GLint>(value));
+}
+
+void OpenglShader::set_int(const std::string& name, int value) {
   GLint location = get_uniform_location(name);
   glProgramUniform1i(renderer_id_, location, value);
 }
 
-void opengl_shader::set_int(const std::string& name, int value) {
+void OpenglShader::set_int_array(const std::string& name, int* values, size_t count) {
   GLint location = get_uniform_location(name);
-  glProgramUniform1i(renderer_id_, location, value);
+  glProgramUniform1iv(renderer_id_, location, static_cast<GLsizei>(count), values);
 }
 
-void opengl_shader::set_int_array(const std::string& name, int* values, uint32_t count) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform1iv(renderer_id_, location, count, values);
-}
-
-void opengl_shader::set_uint(const std::string& name, uint32_t value) {
+void OpenglShader::set_uint(const std::string& name, uint32_t value) {
   GLint location = get_uniform_location(name);
   glProgramUniform1ui(renderer_id_, location, value);
 }
 
-void opengl_shader::set_uint_array(const std::string& name, uint32_t* values, uint32_t count) {
+void OpenglShader::set_uint_array(const std::string& name, uint32_t* values, size_t count) {
   GLint location = get_uniform_location(name);
-  glProgramUniform1uiv(renderer_id_, location, count, values);
+  glProgramUniform1uiv(renderer_id_, location, static_cast<GLsizei>(count), values);
 }
 
-void opengl_shader::set_float(const std::string& name, float value) {
+void OpenglShader::set_float(const std::string& name, float value) {
   GLint location = get_uniform_location(name);
   glProgramUniform1f(renderer_id_, location, value);
 }
 
-void opengl_shader::set_float2(const std::string& name, const glm::vec2& value) {
+void OpenglShader::set_float2(const std::string& name, const glm::vec2& value) {
   GLint location = get_uniform_location(name);
   glProgramUniform2f(renderer_id_, location, value.x, value.y);
 }
 
-void opengl_shader::set_float3(const std::string& name, const glm::vec3& value) {
+void OpenglShader::set_float3(const std::string& name, const glm::vec3& value) {
   GLint location = get_uniform_location(name);
   glProgramUniform3f(renderer_id_, location, value.x, value.y, value.z);
 }
 
-void opengl_shader::set_float4(const std::string& name, const glm::vec4& value) {
+void OpenglShader::set_float4(const std::string& name, const glm::vec4& value) {
   GLint location = get_uniform_location(name);
   glProgramUniform4f(renderer_id_, location, value.x, value.y, value.z, value.w);
 }
 
-void opengl_shader::set_mat3(const std::string& name, const glm::mat3& value) {
+void OpenglShader::set_mat3(const std::string& name, const glm::mat3& value) {
   GLint location = get_uniform_location(name);
   glProgramUniformMatrix3fv(renderer_id_, location, 1, GL_FALSE, value_ptr(value));
 }
 
-void opengl_shader::set_mat4(const std::string& name, const glm::mat4& value) {
+void OpenglShader::set_mat4(const std::string& name, const glm::mat4& value) {
   GLint location = get_uniform_location(name);
   glProgramUniformMatrix4fv(renderer_id_, location, 1, GL_FALSE, value_ptr(value));
 }
 
 // </Uniforms>
 
-const std::unordered_map<std::string, std::string> opengl_shader::internal_libs = {
+const std::unordered_map<std::string, std::string> OpenglShader::kInternalLibs = {
     {"material",
      R"(const int MAX_TEXTURES = 5;
 

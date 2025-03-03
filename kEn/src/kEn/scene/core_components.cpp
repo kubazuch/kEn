@@ -6,82 +6,86 @@
 
 namespace kEn {
 
-void model_component::render(shader& shader) {
-  if (!parent_.has_value()) return;
+void ModelComponent::render(Shader& shader) {
+  if (!parent_.has_value()) {
+    return;
+  }
   model_->render(shader, transform());
 }
 
-std::shared_ptr<game_component> model_component::clone() const { return std::make_shared<model_component>(model_); }
+std::shared_ptr<GameComponent> ModelComponent::clone() const { return std::make_shared<ModelComponent>(model_); }
 
-free_look_component::free_look_component(float sensitivity) : sensitivity_(sensitivity) {
-  dispatcher_.subscribe<window_resize_event>(KEN_EVENT_SUBSCRIBER(on_window_resize));
-  const window& main = kEn::application::instance().main_window();
+FreeLookComponent::FreeLookComponent(float sensitivity) : sensitivity_(sensitivity), window_center_() {
+  dispatcher_.subscribe<WindowResizeEvent>(KEN_EVENT_SUBSCRIBER(on_window_resize));
+  const Window& main = kEn::Application::instance().main_window();
   window_center_     = {main.width() / 2, main.height() / 2};
 }
 
-void free_look_component::update(float delta) {
-  if (kEn::input::is_key_pressed(kEn::key::escape)) {
-    kEn::input::set_cursor_visible(true);
+void FreeLookComponent::update(float) {
+  if (kEn::Input::is_key_pressed(kEn::key::escape)) {
+    kEn::Input::set_cursor_visible(true);
     update_ = false;
   }
 
-  if (kEn::input::is_key_pressed(kEn::key::f)) {
-    kEn::input::set_mouse_pos(window_center_);
-    kEn::input::set_cursor_visible(false);
+  if (kEn::Input::is_key_pressed(kEn::key::f)) {
+    kEn::Input::set_mouse_pos(window_center_);
+    kEn::Input::set_cursor_visible(false);
     update_ = true;
   }
 
-  if (!update_) return;
+  if (!update_) {
+    return;
+  }
 
-  glm::vec2 delta_pos = kEn::input::get_mouse_pos() - window_center_;
-  bool rotY           = delta_pos.x != 0;
-  bool rotX           = delta_pos.y != 0;
+  auto delta_pos = kEn::Input::get_mouse_pos() - window_center_;
+  bool rot_y     = delta_pos.x != 0;
+  bool rot_x     = delta_pos.y != 0;
 
-  if (rotY) {
+  if (rot_y) {
     yaw_ -= glm::radians(delta_pos.x) * sensitivity_;
   }
 
-  if (rotX) {
+  if (rot_x) {
     pitch_ -= glm::radians(delta_pos.y) * sensitivity_;
-    pitch_ = glm::clamp(pitch_, -glm::pi<float>() / 2.f + 0.01f, glm::pi<float>() / 2.f - 0.01f);
+    pitch_ = glm::clamp(pitch_, -glm::pi<float>() / 2.F + 0.01F, glm::pi<float>() / 2.F - 0.01F);
   }
 
-  if (rotX || rotY) {
-    kEn::input::set_mouse_pos(window_center_);
-    glm::quat qPitch = glm::angleAxis(pitch_, glm::vec3(1, 0, 0));
-    glm::quat qYaw   = glm::angleAxis(yaw_, glm::vec3(0, 1, 0));
-    transform().set_local_rot(qYaw * qPitch);
+  if (rot_x || rot_y) {
+    kEn::Input::set_mouse_pos(window_center_);
+    glm::quat q_pitch = glm::angleAxis(pitch_, glm::vec3(1, 0, 0));
+    glm::quat q_yaw   = glm::angleAxis(yaw_, glm::vec3(0, 1, 0));
+    transform().set_local_rot(q_yaw * q_pitch);
   }
 }
 
-std::shared_ptr<game_component> free_look_component::clone() const {
-  return std::make_shared<free_look_component>(sensitivity_);
+std::shared_ptr<GameComponent> FreeLookComponent::clone() const {
+  return std::make_shared<FreeLookComponent>(sensitivity_);
 }
 
-bool free_look_component::on_window_resize(const kEn::window_resize_event& event) {
+bool FreeLookComponent::on_window_resize(const kEn::WindowResizeEvent& event) {
   window_center_ = glm::vec2(event.width() / 2, event.height() / 2);
   return false;
 }
 
-void free_move_component::update(float delta) {
-  float move_amount = kEn::input::is_key_pressed(kEn::key::left_control) ? 3.f * delta * speed_ : delta * speed_;
-  glm::vec3 direction{0.f};
-  if (kEn::input::is_key_pressed(kEn::key::up) || kEn::input::is_key_pressed(kEn::key::w)) {
+void FreeMoveComponent::update(float delta) {
+  float move_amount = kEn::Input::is_key_pressed(kEn::key::left_control) ? 3.F * delta * speed_ : delta * speed_;
+  glm::vec3 direction{0.F};
+  if (kEn::Input::is_key_pressed(kEn::key::up) || kEn::Input::is_key_pressed(kEn::key::w)) {
     direction += transform().local_front();
   }
-  if (kEn::input::is_key_pressed(kEn::key::down) || kEn::input::is_key_pressed(kEn::key::s)) {
+  if (kEn::Input::is_key_pressed(kEn::key::down) || kEn::Input::is_key_pressed(kEn::key::s)) {
     direction -= transform().local_front();
   }
-  if (kEn::input::is_key_pressed(kEn::key::right) || kEn::input::is_key_pressed(kEn::key::d)) {
+  if (kEn::Input::is_key_pressed(kEn::key::right) || kEn::Input::is_key_pressed(kEn::key::d)) {
     direction += transform().local_right();
   }
-  if (kEn::input::is_key_pressed(kEn::key::left) || kEn::input::is_key_pressed(kEn::key::a)) {
+  if (kEn::Input::is_key_pressed(kEn::key::left) || kEn::Input::is_key_pressed(kEn::key::a)) {
     direction -= transform().local_right();
   }
-  if (kEn::input::is_key_pressed(kEn::key::space) || kEn::input::is_key_pressed(kEn::key::q)) {
+  if (kEn::Input::is_key_pressed(kEn::key::space) || kEn::Input::is_key_pressed(kEn::key::q)) {
     direction += world_y_ ? glm::vec3(0, 1, 0) : transform().local_up();
   }
-  if (kEn::input::is_key_pressed(kEn::key::left_shift) || kEn::input::is_key_pressed(kEn::key::e)) {
+  if (kEn::Input::is_key_pressed(kEn::key::left_shift) || kEn::Input::is_key_pressed(kEn::key::e)) {
     direction -= world_y_ ? glm::vec3(0, 1, 0) : transform().local_up();
   }
 
@@ -90,16 +94,14 @@ void free_move_component::update(float delta) {
   }
 }
 
-std::shared_ptr<game_component> free_move_component::clone() const {
-  return std::make_shared<free_move_component>(speed_, world_y_);
+std::shared_ptr<GameComponent> FreeMoveComponent::clone() const {
+  return std::make_shared<FreeMoveComponent>(speed_, world_y_);
 }
 
-void look_at_component::set_target(const game_object& target) { target_ = target; }
+void LookAtComponent::set_target(const GameObject& target) { target_ = target; }
 
-void look_at_component::update(float delta) { transform().look_at(target_.get().transform().pos()); }
+void LookAtComponent::update(float) { transform().look_at(target_.get().transform().pos()); }
 
-std::shared_ptr<game_component> look_at_component::clone() const {
-  return std::make_shared<look_at_component>(target_);
-}
+std::shared_ptr<GameComponent> LookAtComponent::clone() const { return std::make_shared<LookAtComponent>(target_); }
 
 }  // namespace kEn

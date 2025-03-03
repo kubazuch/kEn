@@ -4,30 +4,30 @@
 
 namespace kEn {
 
-enum class framebuffer_texture_format { none = 0, RGBA8, RED_INT, DEPTH24STENCIL8, depth = DEPTH24STENCIL8 };
+enum class FramebufferTextureFormat { None = 0, RGBA8, RED_INT, DEPTH24STENCIL8, Depth = DEPTH24STENCIL8 };
 
-struct framebuffer_texture_spec {
-  framebuffer_texture_spec() = default;
-  framebuffer_texture_spec(framebuffer_texture_format format) : texture_format(format) {}
+struct FramebufferTextureSpec {
+  FramebufferTextureSpec() = default;
+  FramebufferTextureSpec(FramebufferTextureFormat format) : texture_format(format) {}
 
-  framebuffer_texture_format texture_format = framebuffer_texture_format::none;
+  FramebufferTextureFormat texture_format = FramebufferTextureFormat::None;
 };
 
-struct framebuffer_attachment_spec {
-  framebuffer_attachment_spec() = default;
-  framebuffer_attachment_spec(std::initializer_list<framebuffer_texture_spec> attachments) : attachments(attachments) {}
+struct FramebufferAttachmentSpec {
+  FramebufferAttachmentSpec() = default;
+  FramebufferAttachmentSpec(std::initializer_list<FramebufferTextureSpec> attachments) : attachments(attachments) {}
 
-  std::vector<framebuffer_texture_spec> attachments;
+  std::vector<FramebufferTextureSpec> attachments;
 };
 
-struct framebuffer_spec {
-  uint32_t width, height;
-  framebuffer_attachment_spec attachments;
+struct FramebufferSpec {
+  uint32_t width{}, height{};
+  FramebufferAttachmentSpec attachments;
 };
 
-class framebuffer {
+class Framebuffer {
  public:
-  virtual ~framebuffer() = default;
+  virtual ~Framebuffer() = default;
 
   virtual void bind()   = 0;
   virtual void unbind() = 0;
@@ -37,11 +37,11 @@ class framebuffer {
 
   virtual void clear_attachment(uint32_t attachment_id, int value) = 0;
 
-  virtual uint32_t get_color_attachment_renderer_id(uint32_t id = 0) const = 0;
+  virtual uint32_t get_color_attachment_renderer_id(uint32_t id) const = 0;
 
-  virtual const framebuffer_spec& get_spec() const = 0;
+  virtual const FramebufferSpec& get_spec() const = 0;
 
-  static std::shared_ptr<framebuffer> create(const framebuffer_spec& spec);
+  static std::shared_ptr<Framebuffer> create(const FramebufferSpec& spec);
 };
 
 }  // namespace kEn

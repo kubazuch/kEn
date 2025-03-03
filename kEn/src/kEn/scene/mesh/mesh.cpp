@@ -1,42 +1,43 @@
 #include <imgui/imgui.h>
 
+#include <kEn/renderer/buffer.hpp>
+#include <kEn/renderer/material.hpp>
 #include <kEn/renderer/render_command.hpp>
 #include <kEn/renderer/renderer.hpp>
 #include <kEn/scene/mesh/mesh.hpp>
 #include <kenpch.hpp>
-#include <map>
 #include <utility>
 
 namespace kEn {
 
-buffer_layout mesh::vertex_layout = {{shader_data_types::float3, "a_Position"},
+BufferLayout Mesh::vertex_layout_ = {{shader_data_types::float3, "a_Position"},
                                      {shader_data_types::float3, "a_Normal"},
                                      {shader_data_types::float2, "a_TexCoord"}};
 
-mesh::mesh(const std::string& name, const std::vector<vertex>& vertices, const std::vector<uint32_t>& indices,
-           kEn::material material)
+Mesh::Mesh(std::string_view name, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices,
+           kEn::Material material)
     : name(name), vertices(vertices), indices(indices), material(std::move(material)) {
   setup_mesh();
 }
 
-void mesh::setup_mesh() {
-  vao_ = vertex_array::create();
+void Mesh::setup_mesh() {
+  vao_ = VertexArray::create();
 
-  std::shared_ptr<vertex_buffer> vbo = vertex_buffer::create(this->vertices.data(), vertices.size() * sizeof(vertex));
-  vbo->set_layout(vertex_layout);
+  std::shared_ptr<VertexBuffer> vbo = VertexBuffer::create(this->vertices.data(), vertices.size() * sizeof(Vertex));
+  vbo->set_layout(vertex_layout_);
   vao_->add_vertex_buffer(vbo);
 
-  std::shared_ptr<index_buffer> ebo = index_buffer::create(indices.data(), indices.size());
+  std::shared_ptr<IndexBuffer> ebo = IndexBuffer::create(indices.data(), indices.size());
   vao_->set_index_buffer(ebo);
 }
 
-void mesh::render(shader& shader, const transform& transform) const {
+void Mesh::render(Shader& shader, const Transform& transform) const {
   shader.set_material("u_Material", material);
   material.bind();
-  renderer::submit(shader, *vao_, transform);
+  Renderer::submit(shader, *vao_, transform);
 }
 
-void mesh::imgui() {
+void Mesh::imgui() {
   if (ImGui::CollapsingHeader(name.c_str())) {
     material.imgui();
   }

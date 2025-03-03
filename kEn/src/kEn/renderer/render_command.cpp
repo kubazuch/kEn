@@ -1,6 +1,7 @@
 #include <kEn/renderer/render_command.hpp>
+#include <kEn/renderer/renderer_api.hpp>
 #include <kenpch.hpp>
 
 namespace kEn {
-std::unique_ptr<renderer_api> render_command::renderer_api_ = renderer_api::create();
+std::unique_ptr<RendererApi> RenderCommand::renderer_api_ = RendererApi::create();
 }

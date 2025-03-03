@@ -3,7 +3,7 @@
 
 namespace kEn {
 
-struct vertex {
+struct Vertex {
   glm::vec3 pos;
   glm::vec3 normal;
   glm::vec2 texture_coord;

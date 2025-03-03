@@ -4,43 +4,43 @@
 
 namespace kEn {
 
-class opengl_vertex_buffer : public vertex_buffer {
+class OpenglVertexBuffer : public VertexBuffer {
  public:
-  opengl_vertex_buffer(void* vertices, uint32_t size);
-  ~opengl_vertex_buffer() override;
+  OpenglVertexBuffer(void* vertices, uint32_t size);
+  ~OpenglVertexBuffer() override;
 
   void bind() const override;
   void unbind() const override;
 
-  const buffer_layout& layout() const override { return layout_; }
-  void set_layout(const buffer_layout& layout) override { layout_ = layout; }
+  const BufferLayout& layout() const override { return layout_; }
+  void set_layout(const BufferLayout& layout) override { layout_ = layout; }
 
  private:
   uint32_t renderer_id_;
-  buffer_layout layout_;
+  BufferLayout layout_;
 };
 
-class opengl_mutable_vertex_buffer final : public mutable_vertex_buffer {
+class OpenglMutableVertexBuffer final : public MutableVertexBuffer {
  public:
-  opengl_mutable_vertex_buffer(void* vertices, uint32_t size);
-  ~opengl_mutable_vertex_buffer() override;
+  OpenglMutableVertexBuffer(void* vertices, uint32_t size);
+  ~OpenglMutableVertexBuffer() override;
 
   void bind() const override;
   void unbind() const override;
   void modify_data(std::function<void(void*)> fn) const override;
 
-  const buffer_layout& layout() const override { return layout_; }
-  void set_layout(const buffer_layout& layout) override { layout_ = layout; }
+  const BufferLayout& layout() const override { return layout_; }
+  void set_layout(const BufferLayout& layout) override { layout_ = layout; }
 
  private:
   uint32_t renderer_id_;
-  buffer_layout layout_;
+  BufferLayout layout_;
 };
 
-class opengl_index_buffer final : public index_buffer {
+class OpenglIndexBuffer final : public IndexBuffer {
  public:
-  opengl_index_buffer(uint32_t* indices, uint32_t count);
-  ~opengl_index_buffer() override;
+  OpenglIndexBuffer(uint32_t* indices, uint32_t count);
+  ~OpenglIndexBuffer() override;
 
   void bind() const override;
   void unbind() const override;

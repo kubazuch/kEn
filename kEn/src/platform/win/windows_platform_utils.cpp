@@ -27,7 +27,7 @@ std::string file_dialog::open_file(const char* filter, int filter_index) {
   CHAR currentDir[256] = {0};
   ZeroMemory(&ofn, sizeof(OPENFILENAME));
   ofn.lStructSize = sizeof(OPENFILENAME);
-  ofn.hwndOwner   = glfwGetWin32Window((GLFWwindow*)application::instance().main_window().native_window());
+  ofn.hwndOwner   = glfwGetWin32Window((GLFWwindow*)Application::instance().main_window().native_window());
   ofn.lpstrFile   = szFile;
   ofn.nMaxFile    = sizeof(szFile);
   if (GetCurrentDirectoryA(256, currentDir)) ofn.lpstrInitialDir = currentDir;
@@ -56,7 +56,7 @@ std::string file_dialog::save_file(const char* filter, int filter_index) {
   CHAR currentDir[256] = {0};
   ZeroMemory(&ofn, sizeof(OPENFILENAME));
   ofn.lStructSize = sizeof(OPENFILENAME);
-  ofn.hwndOwner   = glfwGetWin32Window((GLFWwindow*)application::instance().main_window().native_window());
+  ofn.hwndOwner   = glfwGetWin32Window((GLFWwindow*)Application::instance().main_window().native_window());
   ofn.lpstrFile   = szFile;
   ofn.nMaxFile    = sizeof(szFile);
   if (GetCurrentDirectoryA(256, currentDir)) ofn.lpstrInitialDir = currentDir;

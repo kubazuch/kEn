@@ -12,46 +12,46 @@ int main(int argc, char** argv);
 
 namespace kEn {
 
-class application {
+class Application {
  public:
-  application();
-  virtual ~application() = default;
+  Application();
+  virtual ~Application() = default;
 
-  void window_event_handler(base_event& e);
+  void window_event_handler(BaseEvent& e);
 
-  void push_layer(layer* layer);
-  void push_overlay(layer* overlay);
+  void push_layer(Layer* layer);
+  void push_overlay(Layer* overlay);
 
-  window& main_window() const { return *window_; }
-  static application& instance() { return *instance_; }
+  Window& main_window() const { return *window_; }
+  static Application& instance() { return *instance_; }
 
-  VIRTUAL_FIVE(application);
+  VIRTUAL_FIVE(Application);
 
  private:
   void run();
   void update(double delta);
   void render();
 
-  bool on_window_close(window_close_event& e);
-  bool on_window_resize(window_resize_event& e);
+  bool on_window_close(WindowCloseEvent& e);
+  bool on_window_resize(WindowResizeEvent& e);
 
  private:
-  std::unique_ptr<window> window_;
-  std::unique_ptr<event_dispatcher> dispatcher_;
-  imgui_layer* imgui_layer_;
+  std::unique_ptr<Window> window_;
+  std::unique_ptr<EventDispatcher> dispatcher_;
+  ImguiLayer* imgui_layer_;
   bool running_   = true;
   bool minimized_ = false;
-  layer_stack layer_stack_;
+  LayerStack layer_stack_;
 
   bool vsync_  = true;
   double time_ = 0.0;
   int fps_ = 0, tps_ = 0;
 
  private:
-  static application* instance_;
+  static Application* instance_;
   friend int ::main(int argc, char** argv);
 };
 
 // Client must define this!
-application* create_application();
+Application* create_application();
 }  // namespace kEn

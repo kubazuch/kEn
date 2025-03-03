@@ -6,67 +6,67 @@
 
 namespace kEn {
 
-class shader;
+class Shader;
 
-struct attenuation {
-  float constant  = 1.0f;
-  float linear    = 0.0f;
-  float quadratic = 0.0f;
+struct Attenuation {
+  float constant  = 1.0F;
+  float linear    = 0.0F;
+  float quadratic = 0.0F;
 
-  inline void load(const std::string& name, shader& shader) const;
+  inline void load(const std::string& name, Shader& shader) const;
 };
 
-class base_light : public game_component {
+class BaseLight : public GameComponent {
  public:
-  base_light()                        = default;
-  virtual ~base_light()               = default;
+  BaseLight()                         = default;
+  virtual ~BaseLight()                = default;
   virtual void imgui(bool subsection) = 0;
 
-  [[nodiscard]] std::shared_ptr<game_component> clone() const = 0;
-  void update(float delta) override {}
-  void render(shader& shader) override {}
+  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override = 0;
+  void update(float) override {}
+  void render(Shader&) override {}
 
-  VIRTUAL_FIVE(base_light);
+  VIRTUAL_FIVE(BaseLight);
 
-  virtual void load(const std::string& name, shader& shader) const = 0;
+  virtual void load(const std::string& name, Shader& shader) const = 0;
 
  public:
-  glm::vec3 color = glm::vec3{1.f};
+  glm::vec3 color = glm::vec3{1.F};
 };
 
-class directional_light : public base_light {
+class DirectionalLight : public BaseLight {
  public:
-  void imgui(bool subsection = true) override;
+  void imgui(bool subsection) override;
 
-  [[nodiscard]] std::shared_ptr<game_component> clone() const override;
+  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
-  void load(const std::string& name, shader& shader) const override;
+  void load(const std::string& name, Shader& shader) const override;
 };
 
-class point_light : public base_light {
+class PointLight : public BaseLight {
  public:
-  void imgui(bool subsection = true) override;
+  void imgui(bool subsection) override;
 
-  [[nodiscard]] std::shared_ptr<game_component> clone() const override;
+  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
-  void load(const std::string& name, shader& shader) const override;
+  void load(const std::string& name, Shader& shader) const override;
 
  public:
-  attenuation atten;
+  Attenuation atten;
 };
 
-class spot_light : public base_light {
+class SpotLight : public BaseLight {
  public:
-  void imgui(bool subsection = true) override;
+  void imgui(bool subsection) override;
 
-  [[nodiscard]] std::shared_ptr<game_component> clone() const override;
+  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
-  void load(const std::string& name, shader& shader) const override;
+  void load(const std::string& name, Shader& shader) const override;
 
  public:
-  attenuation atten;
-  float inner_cutoff_angle = 0.1f;
-  float outer_cutoff_angle = 0.1f;
+  Attenuation atten;
+  float inner_cutoff_angle = 0.1F;
+  float outer_cutoff_angle = 0.1F;
 };
 
 }  // namespace kEn

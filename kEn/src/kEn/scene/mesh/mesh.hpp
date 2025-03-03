@@ -1,5 +1,6 @@
 #pragma once
 #include <kEn/core/transform.hpp>
+#include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
 #include <kEn/renderer/vertex_array.hpp>
@@ -7,26 +8,26 @@
 
 namespace kEn {
 
-class mesh {
+class Mesh {
  public:
-  const std::string name;
-  std::vector<vertex> vertices;
+  std::string name;
+  std::vector<Vertex> vertices;
   std::vector<uint32_t> indices;
-  kEn::material material;
+  kEn::Material material;
 
-  mesh(const std::string& name, const std::vector<vertex>& vertices, const std::vector<uint32_t>& indices,
-       kEn::material material);
-  void render(shader& shader, const transform& transform) const;
+  Mesh(std::string_view name, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices,
+       kEn::Material material);
+  void render(Shader& shader, const Transform& transform) const;
 
   void imgui();
 
  private:
-  std::unique_ptr<vertex_array> vao_;
+  std::unique_ptr<VertexArray> vao_;
   void setup_mesh();
 
  public:
-  static buffer_layout vertex_layout;
-  static const std::filesystem::path model_path;
+  static BufferLayout vertex_layout_;
+  static const std::filesystem::path kModelPath;
 };
 
 }  // namespace kEn

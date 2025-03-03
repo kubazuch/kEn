@@ -9,7 +9,7 @@
 
 namespace kEn {
 
-class log {
+class Log {
  public:
   static void init();
 
@@ -23,23 +23,23 @@ class log {
 }  // namespace kEn
 
 // Core macros
-#define KEN_CORE_TRACE(...) ::kEn::log::core_logger()->trace(__VA_ARGS__)
-#define KEN_CORE_INFO(...) ::kEn::log::core_logger()->info(__VA_ARGS__)
-#define KEN_CORE_WARN(...) ::kEn::log::core_logger()->warn(__VA_ARGS__)
-#define KEN_CORE_ERROR(...) ::kEn::log::core_logger()->error(__VA_ARGS__)
-#define KEN_CORE_CRITICAL(...) ::kEn::log::core_logger()->critical(__VA_ARGS__)
+#define KEN_CORE_TRACE(...) ::kEn::Log::core_logger()->trace(__VA_ARGS__)
+#define KEN_CORE_INFO(...) ::kEn::Log::core_logger()->info(__VA_ARGS__)
+#define KEN_CORE_WARN(...) ::kEn::Log::core_logger()->warn(__VA_ARGS__)
+#define KEN_CORE_ERROR(...) ::kEn::Log::core_logger()->error(__VA_ARGS__)
+#define KEN_CORE_CRITICAL(...) ::kEn::Log::core_logger()->critical(__VA_ARGS__)
 
 // Client macros
-#define KEN_TRACE(...) ::kEn::log::client_logger()->trace(__VA_ARGS__)
-#define KEN_INFO(...) ::kEn::log::client_logger()->info(__VA_ARGS__)
-#define KEN_WARN(...) ::kEn::log::client_logger()->warn(__VA_ARGS__)
-#define KEN_ERROR(...) ::kEn::log::client_logger()->error(__VA_ARGS__)
-#define KEN_CRITICAL(...) ::kEn::log::client_logger()->critical(__VA_ARGS__)
+#define KEN_TRACE(...) ::kEn::Log::client_logger()->trace(__VA_ARGS__)
+#define KEN_INFO(...) ::kEn::Log::client_logger()->info(__VA_ARGS__)
+#define KEN_WARN(...) ::kEn::Log::client_logger()->warn(__VA_ARGS__)
+#define KEN_ERROR(...) ::kEn::Log::client_logger()->error(__VA_ARGS__)
+#define KEN_CRITICAL(...) ::kEn::Log::client_logger()->critical(__VA_ARGS__)
 
 // Debug
 #ifdef _KEN_DEBUG
-#define KEN_CORE_DEBUG(...) ::kEn::log::core_logger()->debug(__VA_ARGS__)
-#define KEN_DEBUG(...) ::kEn::log::client_logger()->debug(__VA_ARGS__)
+#define KEN_CORE_DEBUG(...) ::kEn::Log::core_logger()->debug(__VA_ARGS__)
+#define KEN_DEBUG(...) ::kEn::Log::client_logger()->debug(__VA_ARGS__)
 #else
 #define KEN_CORE_DEBUG(...)
 #define KEN_DEBUG(...)

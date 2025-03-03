@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string_view>
+
 #define SHADER_FLOAT_SIZE 4
 #define SHADER_INT_SIZE 4
 #define SHADER_BOOL_SIZE 1
@@ -33,7 +35,7 @@ namespace shader_data_types {
   case id:                           \
     return comps;
 
-enum : shader_data_type { none = 0, DATA_TYPES(ENUM_ENTRY) };
+enum : shader_data_type { None = 0, DATA_TYPES(ENUM_ENTRY) };
 
 inline uint32_t get_size(shader_data_type type) {
   switch (type) { DATA_TYPES(SIZE_ENTRY) }
@@ -54,76 +56,76 @@ inline uint32_t get_component_count(shader_data_type type) {
 #undef COMPS_ENTRY
 }  // namespace shader_data_types
 
-struct buffer_element {
+struct BufferElement {
   std::string name;
-  shader_data_type type;
-  uint32_t size;
-  size_t offset;
-  bool normalized;
+  shader_data_type type{};
+  uint32_t size{};
+  size_t offset{};
+  bool normalized{};
 
-  buffer_element() = default;
+  BufferElement() = default;
 
-  buffer_element(shader_data_type type, std::string name, bool normalized = false)
-      : name(std::move(name)), type(type), size(shader_data_types::get_size(type)), offset(0), normalized(normalized) {}
+  BufferElement(shader_data_type type, std::string_view name, bool normalized = false)
+      : name(name), type(type), size(shader_data_types::get_size(type)), offset(0), normalized(normalized) {}
 };
 
-class buffer_layout {
+class BufferLayout {
  public:
-  buffer_layout() = default;
+  BufferLayout() = default;
 
-  buffer_layout(std::initializer_list<buffer_element> elements) : elements_(elements) {
+  BufferLayout(std::initializer_list<BufferElement> elements) : elements_(elements) {
     size_t offset = 0;
     for (auto& element : elements_) {
       element.offset = offset;
       offset += element.size;
     }
 
-    stride_ = static_cast<uint32_t>(offset);
+    stride_ = offset;
   }
 
-  uint32_t stride() const { return stride_; }
-  const std::vector<buffer_element>& elements() const { return elements_; }
+  size_t stride() const { return stride_; }
+  const std::vector<BufferElement>& elements() const { return elements_; }
 
-  std::vector<buffer_element>::iterator begin() { return elements_.begin(); }
-  std::vector<buffer_element>::iterator end() { return elements_.end(); }
-  std::vector<buffer_element>::const_iterator begin() const { return elements_.begin(); }
-  std::vector<buffer_element>::const_iterator end() const { return elements_.end(); }
+  std::vector<BufferElement>::iterator begin() { return elements_.begin(); }
+  std::vector<BufferElement>::iterator end() { return elements_.end(); }
+  std::vector<BufferElement>::const_iterator begin() const { return elements_.begin(); }
+  std::vector<BufferElement>::const_iterator end() const { return elements_.end(); }
 
  private:
-  std::vector<buffer_element> elements_;
-  uint32_t stride_ = 0;
+  std::vector<BufferElement> elements_;
+  size_t stride_ = 0;
 };
 
-class vertex_buffer {
+class VertexBuffer {
  public:
-  virtual ~vertex_buffer() = default;
+  virtual ~VertexBuffer() = default;
 
   virtual void bind() const   = 0;
   virtual void unbind() const = 0;
 
-  virtual const buffer_layout& layout() const          = 0;
-  virtual void set_layout(const buffer_layout& layout) = 0;
+  virtual const BufferLayout& layout() const          = 0;
+  virtual void set_layout(const BufferLayout& layout) = 0;
 
-  static std::shared_ptr<vertex_buffer> create(void* vertices, uint32_t size);
+  static std::shared_ptr<VertexBuffer> create(void* vertices, size_t size);
 };
 
-class mutable_vertex_buffer : public vertex_buffer {
+class MutableVertexBuffer : public VertexBuffer {
  public:
   virtual void modify_data(std::function<void(void*)> fn) const = 0;
 
-  static std::shared_ptr<mutable_vertex_buffer> create(void* vertices, uint32_t size);
+  static std::shared_ptr<MutableVertexBuffer> create(void* vertices, size_t size);
 };
 
-class index_buffer {
+class IndexBuffer {
  public:
-  virtual ~index_buffer() = default;
+  virtual ~IndexBuffer() = default;
 
   virtual void bind() const   = 0;
   virtual void unbind() const = 0;
 
   virtual uint32_t get_count() const = 0;
 
-  static std::shared_ptr<index_buffer> create(uint32_t* indices, uint32_t size);
+  static std::shared_ptr<IndexBuffer> create(uint32_t* indices, size_t size);
 };
 
 }  // namespace kEn

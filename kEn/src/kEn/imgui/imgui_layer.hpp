@@ -3,17 +3,17 @@
 
 namespace kEn {
 
-class imgui_layer : public layer {
+class ImguiLayer : public Layer {
  public:
-  imgui_layer();
-  ~imgui_layer() override = default;
+  ImguiLayer();
+  ~ImguiLayer() override = default;
 
   void on_attach() override;
   void on_detach() override;
   void on_update(double, double) override {}
   void on_render() override {}
   void on_imgui() override;
-  void on_event(base_event& event) override;
+  void on_event(BaseEvent& event) override;
 
   void begin();
   void end();

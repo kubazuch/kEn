@@ -5,19 +5,19 @@
 
 namespace kEn {
 
-class obj_model {
+class ObjModel {
  public:
   [[deprecated("obj_model is deprecated! Please use model")]]
-  obj_model(const std::filesystem::path& path);
+  explicit ObjModel(const std::filesystem::path& path);
 
-  std::shared_ptr<vertex_array> vertex_array_;
+  std::shared_ptr<VertexArray> vertex_array_;
 
  public:
-  static buffer_layout obj_layout;
-  static const std::filesystem::path model_path;
+  static BufferLayout obj_layout_;
+  static const std::filesystem::path kModelPath;
 };
 
-struct obj_vertex {
+struct ObjVertex {
   glm::vec3 pos;
   glm::vec2 tex_coord;
   glm::vec3 normal;

@@ -12,10 +12,10 @@
 
 namespace kEn {
 
-imgui_layer::imgui_layer() : layer("ImGuiLayer") {}
+ImguiLayer::ImguiLayer() : Layer("ImGuiLayer") {}
 
 // https://github.com/ocornut/imgui/wiki/Getting-Started#example-if-you-are-using-glfw--openglwebgl
-void imgui_layer::on_attach() {
+void ImguiLayer::on_attach() {
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
@@ -28,45 +28,45 @@ void imgui_layer::on_attach() {
   ImGui::StyleColorsDark();
 
   // Setup Platform/Renderer backends
-  application& app   = application::instance();
+  Application& app   = Application::instance();
   GLFWwindow* window = static_cast<GLFWwindow*>(app.main_window().native_window());
   ImGui_ImplGlfw_InitForOpenGL(
       window, true);  // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
   ImGui_ImplOpenGL3_Init("#version 410");
 }
 
-void imgui_layer::on_detach() {
+void ImguiLayer::on_detach() {
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
 }
 
-void imgui_layer::on_imgui() {
+void ImguiLayer::on_imgui() {
   // static bool show = true;
   // if(show)
   // 	ImGui::ShowDemoWindow(&show); // Show demo window! :)
 }
 
-void imgui_layer::on_event(base_event& event) {
+void ImguiLayer::on_event(BaseEvent& event) {
   ImGuiIO& io = ImGui::GetIO();
-  event_dispatcher dispatcher;
+  EventDispatcher dispatcher;
 
-  auto on_mouse_event = [&](base_event&) { return io.WantCaptureMouse; };
+  auto on_mouse_event = [&](BaseEvent&) { return io.WantCaptureMouse; };
 
-  auto on_keyboard_event = [&](base_event&) { return io.WantCaptureKeyboard; };
+  auto on_keyboard_event = [&](BaseEvent&) { return io.WantCaptureKeyboard; };
 
-  dispatcher.subscribe<mouse_button_pressed_event>(on_mouse_event);
-  dispatcher.subscribe<mouse_button_released_event>(on_mouse_event);
-  dispatcher.subscribe<mouse_move_event>(on_mouse_event);
-  dispatcher.subscribe<mouse_scroll_event>(on_mouse_event);
-  dispatcher.subscribe<key_pressed_event>(on_keyboard_event);
-  dispatcher.subscribe<key_released_event>(on_keyboard_event);
-  dispatcher.subscribe<key_typed_event>(on_keyboard_event);
+  dispatcher.subscribe<MouseButtonPressedEvent>(on_mouse_event);
+  dispatcher.subscribe<MouseButtonReleasedEvent>(on_mouse_event);
+  dispatcher.subscribe<MouseMoveEvent>(on_mouse_event);
+  dispatcher.subscribe<MouseScrollEvent>(on_mouse_event);
+  dispatcher.subscribe<KeyPressedEvent>(on_keyboard_event);
+  dispatcher.subscribe<KeyReleasedEvent>(on_keyboard_event);
+  dispatcher.subscribe<KeyTypedEvent>(on_keyboard_event);
 
   dispatcher.dispatch(event);
 }
 
-void imgui_layer::begin() {
+void ImguiLayer::begin() {  // NOLINT
   // (Your code calls glfwPollEvents())
   // ...
   // Start the Dear ImGui frame
@@ -76,11 +76,11 @@ void imgui_layer::begin() {
   ImGuizmo::BeginFrame();
 }
 
-void imgui_layer::end() {
+void ImguiLayer::end() {  // NOLINT
   // Rendering
   // (Your code clears your framebuffer, renders your other stuff etc.)
   ImGuiIO& io      = ImGui::GetIO();
-  application& app = application::instance();
+  Application& app = Application::instance();
   io.DisplaySize =
       ImVec2(static_cast<float>(app.main_window().width()), static_cast<float>(app.main_window().height()));
 

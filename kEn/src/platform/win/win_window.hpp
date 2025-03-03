@@ -8,10 +8,10 @@
 
 namespace kEn {
 
-class windows_window : public window {
+class WindowsWindow : public Window {
  public:
-  windows_window(const window_properties& properties);
-  virtual ~windows_window() override;
+  explicit WindowsWindow(const WindowProperties& properties);
+  virtual ~WindowsWindow() override;
 
   void on_update() override;
 
@@ -23,9 +23,9 @@ class windows_window : public window {
   void set_vsync(bool enabled) override;
   bool vsync() const override;
 
-  void* native_window() const override { return window_ptr; }
+  void* native_window() const override { return window_ptr_; }
 
-  VIRTUAL_FIVE(windows_window);
+  VIRTUAL_FIVE(WindowsWindow);
 
  private:
   static void api_init();
@@ -34,10 +34,10 @@ class windows_window : public window {
  private:
   void set_glfw_callbacks() const;
 
-  GLFWwindow* window_ptr;
-  std::unique_ptr<graphics_context> context_;
+  GLFWwindow* window_ptr_;
+  std::unique_ptr<GraphicsContext> context_;
 
-  struct data {
+  struct Data {
     std::string title;
     unsigned int width, height;
 
@@ -46,7 +46,7 @@ class windows_window : public window {
     handler_t handler;
   };
 
-  data data_;
+  Data data_;
 };
 
 }  // namespace kEn
