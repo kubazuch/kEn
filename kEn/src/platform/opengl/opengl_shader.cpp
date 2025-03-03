@@ -1,10 +1,9 @@
 #include <filesystem>
 #include <glm/gtc/type_ptr.hpp>
 #include <kEn/core/assert.hpp>
+#include <kEn/renderer/shader.hpp>
 #include <kenpch.hpp>
 #include <platform/opengl/opengl_shader.hpp>
-
-#include "kEn/renderer/shader.hpp"
 
 namespace kEn {
 

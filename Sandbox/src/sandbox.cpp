@@ -3,13 +3,12 @@
 #include <kEn.hpp>
 #include <kEn/core/assert.hpp>
 #include <kEn/core/transform.hpp>
+#include <kEn/renderer/buffer.hpp>
+#include <kEn/renderer/render_command.hpp>
+#include <kEn/renderer/vertex_array.hpp>
 #include <kEn/scene/camera/camera.hpp>
 #include <kEn/scene/game_object.hpp>
 #include <memory>
-
-#include "kEn/renderer/buffer.hpp"
-#include "kEn/renderer/render_command.hpp"
-#include "kEn/renderer/vertex_array.hpp"
 
 class FizzbuzzLayer : public kEn::Layer {
  public:

@@ -1,10 +1,9 @@
 #include <fstream>
+#include <kEn/renderer/buffer.hpp>
+#include <kEn/renderer/vertex_array.hpp>
 #include <kEn/scene/mesh/obj_model.hpp>
 #include <kenpch.hpp>
 #include <string>
-
-#include "kEn/renderer/buffer.hpp"
-#include "kEn/renderer/vertex_array.hpp"
 
 namespace kEn {
 
