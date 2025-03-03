@@ -5,6 +5,9 @@
 
 namespace kEn {
 
+using namespace std::chrono_literals;
+using duration_t = std::chrono::nanoseconds;
+
 class Layer {
  public:
   explicit Layer(std::string_view name = "Layer");
@@ -12,7 +15,7 @@ class Layer {
 
   virtual void on_attach() {}
   virtual void on_detach() {}
-  virtual void on_update(double /*delta*/, double /*time*/) {}
+  virtual void on_update(duration_t /*delta*/, duration_t /*time*/) {}
   virtual void on_render(/*TODO: renderer*/) {}
   virtual void on_imgui() {}
   virtual void on_event(BaseEvent& /*event*/) {}

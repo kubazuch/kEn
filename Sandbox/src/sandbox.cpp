@@ -1,5 +1,6 @@
 #include <imgui/imgui.h>
 
+#include <chrono>
 #include <kEn.hpp>
 #include <kEn/core/assert.hpp>
 #include <kEn/core/transform.hpp>
@@ -47,12 +48,15 @@ class FizzbuzzLayer : public kEn::Layer {
     shader_ = kEn::Shader::create("test");
   }
 
-  void on_update(double delta, double time) override {
+  void on_update(kEn::duration_t delta, kEn::duration_t time) override {
+    const float seconds_delta = std::chrono::duration<float>(delta).count();
+    const float seconds_time = std::chrono::duration<float>(time).count();
+
     shader_->bind();
-    shader_->set_float("iTime", time);
+    shader_->set_float("iTime", seconds_time);
     // camera_.set_rotation(glm::rotate(camera_.rotation(), (float) delta, { 0, 1.0F, 0.0F }));
-    transform_.rotate({0, 1, 0}, static_cast<float>(delta));
-    transform_.set_local_pos({0, 0, sin(time)});
+    transform_.rotate({0, 1, 0}, seconds_delta);
+    transform_.set_local_pos({0, 0, sin(seconds_time)});
   }
 
   void on_render() override {

@@ -10,7 +10,7 @@ class ImguiLayer : public Layer {
 
   void on_attach() override;
   void on_detach() override;
-  void on_update(double, double) override {}
+  void on_update(duration_t, duration_t) override {}
   void on_render() override {}
   void on_imgui() override;
   void on_event(BaseEvent& event) override;

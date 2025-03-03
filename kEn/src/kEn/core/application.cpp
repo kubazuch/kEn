@@ -33,46 +33,48 @@ void Application::push_layer(Layer* layer) { layer_stack_.push_layer(layer); }
 void Application::push_overlay(Layer* overlay) { layer_stack_.push_overlay(overlay); }
 
 void Application::run() {
-  double previous = glfwGetTime();  // TODO(): platform
-  double lag      = 0.0;
+  using clock = std::chrono::high_resolution_clock;
+  duration_t lag(0ns);
+  duration_t second(0ns);
+  auto previous_time = clock::now();
 
-  // TODO(): TEMP
-  int frames           = 0;
-  int ticks            = 0;
-  double frame_counter = 0.0;
+  size_t frames = 0;
+  size_t ticks  = 0;
 
   vsync_ = window_->vsync();
 
   while (running_) {
-    double current = glfwGetTime();  // TODO(): platform
-    double delta   = current - previous;
-    previous       = current;
+    auto current_time = clock::now();
+    auto delta        = current_time - previous_time;
+    previous_time     = current_time;
 
-    lag += delta;
-    frame_counter += delta;
+    lag += std::chrono::duration_cast<duration_t>(delta);
+    second += std::chrono::duration_cast<duration_t>(delta);
 
-    while (lag >= KEN_TIME_PER_UPDATE) {
-      update(KEN_TIME_PER_UPDATE);
+    while (lag >= kTickTime) {
+      update(kTickTime);
 
-      lag -= KEN_TIME_PER_UPDATE;
-      time_ += KEN_TIME_PER_UPDATE;
+      lag -= kTickTime;
+      time_ += kTickTime;
       ++ticks;
     }
 
     ++frames;
-    if (frame_counter >= 1.0) {
-      fps_          = frames;
-      tps_          = ticks;
-      frames        = 0;
-      ticks         = 0;
-      frame_counter = 0;
+    if (second > 1s) {
+      uint16_t seconds = static_cast<uint16_t>(std::chrono::duration_cast<std::chrono::seconds>(second).count());
+
+      fps_   = static_cast<uint16_t>(frames / seconds);
+      tps_   = static_cast<uint16_t>(ticks / seconds);
+      frames = 0;
+      ticks  = 0;
+      second = 0ns;
     }
 
     render();
   }
 }
 
-void Application::update(double delta) {
+void Application::update(duration_t delta) {
   if (vsync_ != window_->vsync()) {
     window_->set_vsync(vsync_);
   }
