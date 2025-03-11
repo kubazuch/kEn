@@ -1,7 +1,8 @@
 #pragma once
-#include <glm/glm.hpp>
 #include <kEn/renderer/material.hpp>
 #include <kEn/scene/light.hpp>
+#include <mEn.hpp>
+
 
 namespace kEn {
 
@@ -28,12 +29,12 @@ class Shader {
   virtual void set_uint_array(const std::string& name, uint32_t* values, size_t count) = 0;
 
   virtual void set_float(const std::string& name, float value)             = 0;
-  virtual void set_float2(const std::string& name, const glm::vec2& value) = 0;
-  virtual void set_float3(const std::string& name, const glm::vec3& value) = 0;
-  virtual void set_float4(const std::string& name, const glm::vec4& value) = 0;
+  virtual void set_float2(const std::string& name, const mEn::Vec2& value) = 0;
+  virtual void set_float3(const std::string& name, const mEn::Vec3& value) = 0;
+  virtual void set_float4(const std::string& name, const mEn::Vec4& value) = 0;
 
-  virtual void set_mat3(const std::string& name, const glm::mat3& value) = 0;
-  virtual void set_mat4(const std::string& name, const glm::mat4& value) = 0;
+  virtual void set_mat3(const std::string& name, const mEn::Mat3& value) = 0;
+  virtual void set_mat4(const std::string& name, const mEn::Mat4& value) = 0;
 
   virtual void set_material(const std::string& name, const Material& value) { value.load(*this, name); }
   virtual void set_light(const std::string& name, const BaseLight& value) { value.load(name, *this); }

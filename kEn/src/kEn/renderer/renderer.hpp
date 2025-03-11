@@ -3,6 +3,7 @@
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/vertex_array.hpp>
 #include <kEn/scene/camera/camera.hpp>
+#include <mEn.hpp>
 
 namespace kEn {
 
@@ -16,7 +17,7 @@ class Renderer {
     scene_data_->directional_lights.push_back(light);
   }
   static void add_light(const std::shared_ptr<SpotLight>& light) { scene_data_->spot_lights.push_back(light); }
-  static void set_ambient(const glm::vec3& ambient) { scene_data_->ambient = ambient; }
+  static void set_ambient(const mEn::Vec3& ambient) { scene_data_->ambient = ambient; }
   static void set_fog(float fog) { scene_data_->fog = fog; }
   static void prepare(Shader& shader);
 
@@ -26,12 +27,12 @@ class Renderer {
 
  private:
   struct SceneData {
-    glm::mat4 VP_matrix;
-    glm::vec3 camera_pos;
+    mEn::Mat4 VP_matrix;
+    mEn::Vec3 camera_pos;
     std::vector<std::shared_ptr<PointLight>> point_lights;
     std::vector<std::shared_ptr<DirectionalLight>> directional_lights;
     std::vector<std::shared_ptr<SpotLight>> spot_lights;
-    glm::vec3 ambient;
+    mEn::Vec3 ambient;
     float fog;
   };
 

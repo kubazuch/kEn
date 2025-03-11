@@ -3,6 +3,7 @@
 #include <kEn/scene/camera/camera.hpp>
 #include <kEn/scene/component.hpp>
 #include <kEn/scene/mesh/model.hpp>
+#include <mEn/vec2.hpp>
 
 namespace kEn {
 
@@ -35,7 +36,7 @@ class FreeLookComponent : public GameComponent {
   float sensitivity_;
   float pitch_ = 0, yaw_ = 0;
   bool update_ = false;
-  glm::vec2 window_center_;
+  mEn::Vec2 window_center_;
 };
 
 class FreeMoveComponent : public GameComponent {

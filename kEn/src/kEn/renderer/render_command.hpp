@@ -1,4 +1,5 @@
 #pragma once
+#include <mEn/vec4.hpp>
 #include <kEn/renderer/renderer_api.hpp>
 
 namespace kEn {
@@ -7,7 +8,7 @@ class RenderCommand {
  public:
   static void init() { renderer_api_->init(); }
   static void set_viewport(uint32_t x, uint32_t y, uint32_t w, uint32_t h) { renderer_api_->set_viewport(x, y, w, h); }
-  static void set_clear_color(const glm::vec4& color) { renderer_api_->set_clear_color(color); }
+  static void set_clear_color(const mEn::Vec4& color) { renderer_api_->set_clear_color(color); }
   static void clear() { renderer_api_->clear(); }
 
   static void depth_testing(bool enabled = true) { renderer_api_->depth_testing(enabled); }

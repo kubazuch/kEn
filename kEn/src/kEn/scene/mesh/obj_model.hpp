@@ -1,7 +1,8 @@
 #pragma once
-#include <glm/glm.hpp>
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/vertex_array.hpp>
+#include <mEn.hpp>
+
 
 namespace kEn {
 
@@ -18,9 +19,9 @@ class ObjModel {
 };
 
 struct ObjVertex {
-  glm::vec3 pos;
-  glm::vec2 tex_coord;
-  glm::vec3 normal;
+  mEn::Vec3 pos;
+  mEn::Vec2 tex_coord;
+  mEn::Vec3 normal;
 };
 
 }  // namespace kEn

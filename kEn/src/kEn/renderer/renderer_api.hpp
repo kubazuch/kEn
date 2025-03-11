@@ -1,7 +1,7 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <kEn/renderer/vertex_array.hpp>
+#include <mEn/vec4.hpp>
 
 namespace kEn {
 
@@ -14,7 +14,7 @@ class RendererApi {
 
   virtual void init()                                               = 0;
   virtual void set_viewport(size_t x, size_t y, size_t w, size_t h) = 0;
-  virtual void set_clear_color(const glm::vec4& color)              = 0;
+  virtual void set_clear_color(const mEn::Vec4& color)              = 0;
   virtual void clear()                                              = 0;
   virtual void depth_testing(bool enabled)                          = 0;
 

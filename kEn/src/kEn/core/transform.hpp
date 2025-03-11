@@ -1,7 +1,6 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <glm/gtx/quaternion.hpp>
+#include <mEn.hpp>
 #include <optional>
 #include <vector>
 
@@ -9,60 +8,60 @@ namespace kEn {
 
 class Transform {
  public:
-  explicit Transform(glm::vec3 pos = glm::vec3(), glm::quat rot = {1, 0, 0, 0}, glm::vec3 scale = {1, 1, 1});
+  explicit Transform(mEn::Vec3 pos = mEn::Vec3(), mEn::Quat rot = {1, 0, 0, 0}, mEn::Vec3 scale = {1, 1, 1});
   ~Transform();
 
   void set_parent(Transform& parent);
   void unset_parent();
   const Transform& get_parent() const { return *parent_; }
 
-  glm::mat4 local_to_parent_matrix() const;
-  glm::mat4& local_to_world_matrix() const;
-  glm::mat4 world_to_local_matrix() const;
+  mEn::Mat4 local_to_parent_matrix() const;
+  mEn::Mat4& local_to_world_matrix() const;
+  mEn::Mat4 world_to_local_matrix() const;
   void model_matrix_updated();
 
-  void rotate(const glm::vec3& axis, float angle);
-  void rotate(const glm::quat& rotation);
-  void rotate_local(const glm::quat& rotation);
-  void look_at(const glm::vec3& point, const glm::vec3& up = glm::vec3(0, 1, 0));
-  void fma(const glm::vec3& axis, float amount);
+  void rotate(const mEn::Vec3& axis, float angle);
+  void rotate(const mEn::Quat& rotation);
+  void rotate_local(const mEn::Quat& rotation);
+  void look_at(const mEn::Vec3& point, const mEn::Vec3& up = mEn::Vec3(0, 1, 0));
+  void fma(const mEn::Vec3& axis, float amount);
 
-  const glm::vec3& local_pos() const { return pos_; }
-  glm::vec3& local_pos() { return pos_; }
-  glm::vec3 pos() const {
-    return parent_.has_value() ? glm::vec3(parent_.value().get().local_to_world_matrix() * glm::vec4(pos_, 1.F)) : pos_;
+  const mEn::Vec3& local_pos() const { return pos_; }
+  mEn::Vec3& local_pos() { return pos_; }
+  mEn::Vec3 pos() const {
+    return parent_.has_value() ? mEn::Vec3(parent_.value().get().local_to_world_matrix() * mEn::Vec4(pos_, 1.F)) : pos_;
   }
-  void set_local_pos(const glm::vec3& pos) {
+  void set_local_pos(const mEn::Vec3& pos) {
     pos_ = pos;
     set_dirty();
   }
 
-  const glm::quat& local_rot() const { return rot_; }
-  glm::quat& local_rot() { return rot_; }
-  glm::quat rot() const { return parent_.has_value() ? parent_.value().get().rot() * rot_ : rot_; }
-  void set_local_rot(const glm::quat& rot) {
+  const mEn::Quat& local_rot() const { return rot_; }
+  mEn::Quat& local_rot() { return rot_; }
+  mEn::Quat rot() const { return /*TODO parent_.has_value() ? parent_.value().get().rot() * rot_ :*/ rot_; }
+  void set_local_rot(const mEn::Quat& rot) {
     rot_ = rot;
     set_dirty();
   }
 
-  const glm::vec3& local_scale() const { return scale_; }
-  glm::vec3& local_scale() { return scale_; }
-  void set_local_scale(const glm::vec3& scale) {
+  const mEn::Vec3& local_scale() const { return scale_; }
+  mEn::Vec3& local_scale() { return scale_; }
+  void set_local_scale(const mEn::Vec3& scale) {
     scale_ = scale;
     set_dirty();
   }
   void set_local_scale(float scale) {
-    scale_ = glm::vec3(scale);
+    scale_ = mEn::Vec3(scale);
     set_dirty();
   }
 
-  glm::vec3 local_front() const;
-  glm::vec3 local_right() const;
-  glm::vec3 local_up() const;
+  mEn::Vec3 local_front() const;
+  mEn::Vec3 local_right() const;
+  mEn::Vec3 local_up() const;
 
-  glm::vec3 front() const;
-  glm::vec3 right() const;
-  glm::vec3 up() const;
+  mEn::Vec3 front() const;
+  mEn::Vec3 right() const;
+  mEn::Vec3 up() const;
 
   void set_dirty();
 
@@ -75,15 +74,15 @@ class Transform {
   std::optional<std::reference_wrapper<Transform>> parent_;
   std::vector<std::reference_wrapper<Transform>> children_;
 
-  glm::vec3 pos_;
-  glm::quat rot_;
-  glm::vec3 scale_;
+  mEn::Vec3 pos_;
+  mEn::Quat rot_;
+  mEn::Vec3 scale_;
 
   mutable bool dirty_          = false;
-  mutable glm::mat4 model_mat_ = glm::mat4(1);
+  mutable mEn::Mat4 model_mat_ = mEn::Mat4(1);
 
   mutable bool inverse_dirty_      = false;
-  mutable glm::mat4 inv_model_mat_ = glm::mat4(1);
+  mutable mEn::Mat4 inv_model_mat_ = mEn::Mat4(1);
 };
 
 }  // namespace kEn

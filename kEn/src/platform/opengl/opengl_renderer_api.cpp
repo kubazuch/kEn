@@ -54,7 +54,7 @@ void OpenglRendererApi::set_viewport(size_t x, size_t y, size_t width, size_t he
   glViewport(static_cast<GLint>(x), static_cast<GLint>(y), static_cast<GLsizei>(width), static_cast<GLsizei>(height));
 }
 
-void OpenglRendererApi::set_clear_color(const glm::vec4& color) { glClearColor(color.r, color.g, color.b, color.a); }
+void OpenglRendererApi::set_clear_color(const mEn::Vec4& color) { glClearColor(color.r, color.g, color.b, color.a); }
 
 void OpenglRendererApi::clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 

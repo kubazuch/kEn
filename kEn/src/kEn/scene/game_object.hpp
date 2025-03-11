@@ -1,6 +1,4 @@
 #pragma once
-#include <glm/gtx/quaternion.hpp>
-#include <glm/vec3.hpp>
 #include <kEn/core/transform.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/scene/component.hpp>
@@ -10,7 +8,7 @@ namespace kEn {
 
 class GameObject {
  public:
-  explicit GameObject(glm::vec3 pos = glm::vec3(), glm::quat rot = {1, 0, 0, 0}, glm::vec3 scale = {1, 1, 1});
+  explicit GameObject(mEn::Vec3 pos = mEn::Vec3(), mEn::Quat rot = {1, 0, 0, 0}, mEn::Vec3 scale = {1, 1, 1});
   ~GameObject();
 
   GameObject& add_child(GameObject& child);

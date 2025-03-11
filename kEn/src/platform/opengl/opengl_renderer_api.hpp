@@ -11,7 +11,7 @@ class OpenglRendererApi : public kEn::RendererApi {
   void init() override;
   void set_viewport(size_t x, size_t y, size_t w, size_t h) override;
 
-  void set_clear_color(const glm::vec4& color) override;
+  void set_clear_color(const mEn::Vec4& color) override;
   void clear() override;
   void depth_testing(bool enabled) override;
 

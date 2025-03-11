@@ -1,5 +1,4 @@
 #include <filesystem>
-#include <glm/gtc/type_ptr.hpp>
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kenpch.hpp>
@@ -314,27 +313,27 @@ void OpenglShader::set_float(const std::string& name, float value) {
   glProgramUniform1f(renderer_id_, location, value);
 }
 
-void OpenglShader::set_float2(const std::string& name, const glm::vec2& value) {
+void OpenglShader::set_float2(const std::string& name, const mEn::Vec2& value) {
   GLint location = get_uniform_location(name);
   glProgramUniform2f(renderer_id_, location, value.x, value.y);
 }
 
-void OpenglShader::set_float3(const std::string& name, const glm::vec3& value) {
+void OpenglShader::set_float3(const std::string& name, const mEn::Vec3& value) {
   GLint location = get_uniform_location(name);
   glProgramUniform3f(renderer_id_, location, value.x, value.y, value.z);
 }
 
-void OpenglShader::set_float4(const std::string& name, const glm::vec4& value) {
+void OpenglShader::set_float4(const std::string& name, const mEn::Vec4& value) {
   GLint location = get_uniform_location(name);
   glProgramUniform4f(renderer_id_, location, value.x, value.y, value.z, value.w);
 }
 
-void OpenglShader::set_mat3(const std::string& name, const glm::mat3& value) {
+void OpenglShader::set_mat3(const std::string& name, const mEn::Mat3& value) {
   GLint location = get_uniform_location(name);
   glProgramUniformMatrix3fv(renderer_id_, location, 1, GL_FALSE, value_ptr(value));
 }
 
-void OpenglShader::set_mat4(const std::string& name, const glm::mat4& value) {
+void OpenglShader::set_mat4(const std::string& name, const mEn::Mat4& value) {
   GLint location = get_uniform_location(name);
   glProgramUniformMatrix4fv(renderer_id_, location, 1, GL_FALSE, value_ptr(value));
 }

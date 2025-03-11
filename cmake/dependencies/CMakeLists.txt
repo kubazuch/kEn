@@ -103,26 +103,6 @@ list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "fetched")
 
 # ##############################################################################
-# GLM
-# ##############################################################################
-if(BUILD_GLM)
-  message(CHECK_START "Fetching GLM")
-  list(APPEND CMAKE_MESSAGE_INDENT "  ")
-
-  FetchContent_Declare(
-    glm
-    GIT_REPOSITORY "https://github.com/g-truc/glm.git"
-    GIT_TAG "1.0.1"
-    PATCH_COMMAND git apply --ignore-whitespace
-                  "${CMAKE_CURRENT_LIST_DIR}/../../patches/glm.patch"
-    UPDATE_DISCONNECTED 1)
-  FetchContent_MakeAvailable(glm)
-
-  list(POP_BACK CMAKE_MESSAGE_INDENT)
-  message(CHECK_PASS "fetched")
-endif()
-
-# ##############################################################################
 # nlohmann/json
 # ##############################################################################
 message(CHECK_START "Fetching nlohmann/json")

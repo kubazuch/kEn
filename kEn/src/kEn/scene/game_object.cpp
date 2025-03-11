@@ -4,7 +4,7 @@
 #include <kenpch.hpp>
 
 namespace kEn {
-GameObject::GameObject(glm::vec3 pos, glm::quat rot, glm::vec3 scale) : transform_(pos, rot, scale) {}
+GameObject::GameObject(mEn::Vec3 pos, mEn::Quat rot, mEn::Vec3 scale) : transform_(pos, rot, scale) {}
 
 GameObject::~GameObject() {
   for (const auto child : children_) {

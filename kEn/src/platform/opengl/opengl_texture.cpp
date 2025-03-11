@@ -1,11 +1,12 @@
 #include <imgui/imgui.h>
 #include <stb_image.h>
 
-#include <glm/ext/scalar_common.hpp>
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/texture.hpp>
 #include <kenpch.hpp>
+#include <mEn/functions.hpp>
 #include <platform/opengl/opengl_texture.hpp>
+
 
 namespace kEn {
 
@@ -148,7 +149,7 @@ void OpenglTexture2D::set_data(void* data, uint32_t size) {
 void OpenglTexture2D::bind(uint32_t slot) const { glBindTextureUnit(slot, renderer_id_); }
 
 void OpenglTexture2D::imgui() {
-  float height = glm::max(glm::min(static_cast<float>(spec_.height.value()), 250.F), 100.F);
+  float height = mEn::fmax(mEn::fmin(static_cast<float>(spec_.height.value()), 250.F), 100.F);
   float width  = static_cast<float>(spec_.width.value()) / static_cast<float>(spec_.height.value()) * height;
 
   ImGui::Image(static_cast<ImTextureID>(renderer_id_), ImVec2{width, height}, ImVec2{0.0F, 1.0F}, ImVec2{1.0F, 0.0F});
