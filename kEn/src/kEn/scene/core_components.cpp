@@ -41,7 +41,7 @@ void FreeLookComponent::update(float) {
   bool rot_y     = delta_pos.x != 0;
   bool rot_x     = delta_pos.y != 0;
 
-  // TODO
+  // TODO(mEn): implement
   // if (rot_y) {
   //   yaw_ -= mEn::radians(delta_pos.x) * sensitivity_;
   // }
@@ -91,8 +91,7 @@ void FreeMoveComponent::update(float delta) {
   }
 
   if (direction.x || direction.y || direction.z) {
-    // TODO
-    // transform().fma(mEn::normalize(direction), move_amount);
+    transform().fma(mEn::normalize(direction), move_amount);
   }
 }
 
