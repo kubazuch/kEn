@@ -24,8 +24,8 @@ namespace mEn {
 template <typename T>
 struct mat<4, T> {
   using value_t = T;
-  using col_t = vec<4, T>;
-  using row_t = vec<4, T>;
+  using col_t   = vec<4, T>;
+  using row_t   = vec<4, T>;
 
  private:
   col_t value_[4];

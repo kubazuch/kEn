@@ -38,7 +38,7 @@ class Transform {
 
   const mEn::Quat& local_rot() const { return rot_; }
   mEn::Quat& local_rot() { return rot_; }
-  mEn::Quat rot() const { return /*TODO parent_.has_value() ? parent_.value().get().rot() * rot_ :*/ rot_; }
+  mEn::Quat rot() const { return parent_.has_value() ? parent_.value().get().rot() * rot_ : rot_; }
   void set_local_rot(const mEn::Quat& rot) {
     rot_ = rot;
     set_dirty();

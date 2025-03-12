@@ -3,7 +3,6 @@
 #include <kEn/renderer/vertex_array.hpp>
 #include <mEn.hpp>
 
-
 namespace kEn {
 
 class ObjModel {

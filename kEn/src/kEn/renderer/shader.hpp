@@ -3,7 +3,6 @@
 #include <kEn/scene/light.hpp>
 #include <mEn.hpp>
 
-
 namespace kEn {
 
 struct ShaderConfig {

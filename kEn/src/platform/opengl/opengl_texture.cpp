@@ -7,7 +7,6 @@
 #include <mEn/functions.hpp>
 #include <platform/opengl/opengl_texture.hpp>
 
-
 namespace kEn {
 
 namespace utils {

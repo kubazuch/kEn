@@ -16,6 +16,7 @@
 // Quaternions
 #include <mEn/quat.hpp>
 
+// Functions
 #include <mEn/functions.hpp>
 
 #endif
