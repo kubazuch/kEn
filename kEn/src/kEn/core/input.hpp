@@ -4,7 +4,6 @@
 #include <kEn/core/mouse_codes.hpp>
 #include <mEn/vec2.hpp>
 
-
 namespace kEn {
 
 class Input {

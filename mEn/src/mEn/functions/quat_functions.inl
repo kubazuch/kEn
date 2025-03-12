@@ -1,9 +1,10 @@
 #pragma once
 
 #include <cmath>
+#include <limits>
 
-#include "vec_functions.hpp"
 #include "quat_functions.hpp"
+#include "vec_functions.hpp"
 
 namespace mEn {
 
@@ -22,6 +23,57 @@ inline Quat normalize(const Quat& q) {
   float inv_len = 1.0F / len;
   return Quat(q.w * inv_len, q.x * inv_len, q.y * inv_len, q.z * inv_len);
 }
+
+inline Quat quatLookAt(const Vec3& direction, const Vec3& up) {
+  Mat3 ret;
+
+  ret[2]     = -direction;
+  Vec3 right = cross(up, ret[2]);
+  ret[0]     = right * (1.0F / sqrt(fmax(1e-5F, dot(right, right))));
+  ret[1]     = cross(ret[2], ret[0]);
+
+  return quat_cast(ret);
+}
+
+inline Quat mix(const Quat& q, const Quat& p, float t) {
+  const float cos = dot(p, q);
+
+  if (cos > 1.0F - std::numeric_limits<float>::epsilon()) {
+    return Quat((1.0F - t) * q.w + t * p.w,  //
+                (1.0F - t) * q.x + t * p.x,  //
+                (1.0F - t) * q.y + t * p.y,  //
+                (1.0F - t) * q.z + t * p.z);
+  }
+
+  float angle = std::acos(cos);
+  return (sin((1.0F - t) * angle) * q + sin(t * angle) * p) / sin(angle);
+}
+
+inline constexpr Quat lerp(const Quat& q, const Quat& p, float t) { return (1.0F - t) * q + t * p; }
+
+inline Quat slerp(const Quat& q, const Quat& p, float t) {
+  Quat r    = p;
+  float cos = dot(p, q);
+
+  if (cos < 0.0F) {
+    r   = -p;
+    cos = -cos;
+  }
+
+  if (cos > 1.0F - std::numeric_limits<float>::epsilon()) {
+    return Quat((1.0F - t) * q.w + t * r.w,  //
+                (1.0F - t) * q.x + t * r.x,  //
+                (1.0F - t) * q.y + t * r.y,  //
+                (1.0F - t) * q.z + t * r.z);
+  }
+
+  float angle = std::acos(cos);
+  return (sin((1.0F - t) * angle) * q + sin(t * angle) * r) / sin(angle);
+}
+
+inline constexpr Quat conjugate(const Quat& q) { return Quat(q.w, -q.x, -q.y, -q.z); }
+
+inline constexpr Quat inverse(const Quat& q) { return conjugate(q) / dot(q, q); }
 
 inline constexpr Quat cross(const Quat& u, const Quat& v) {
   return Quat(u.w * v.w - u.x * v.x - u.y * v.y - u.z * v.z,  //
@@ -89,16 +141,5 @@ inline Quat quat_cast(const Mat3& m) {
 }
 
 inline Quat quat_cast(const Mat4& m) { return quat_cast(Mat3(m)); }
-
-inline Quat quatLookAt(const Vec3& direction, const Vec3& up) {
-  Mat3 ret;
-
-  ret[2]     = -direction;
-  Vec3 right = cross(up, ret[2]);
-  ret[0]     = right * (1.0F / sqrt(fmax(1e-5F, dot(right, right))));
-  ret[1]     = cross(ret[2], ret[0]);
-
-  return quat_cast(ret);
-}
 
 }  // namespace mEn

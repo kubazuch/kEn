@@ -203,7 +203,7 @@ inline constexpr vec<4, T> operator-(const vec<4, T>& v) {
   return vec<4, T>(-v.x, -v.y, -v.z, -v.w);
 }
 
-// Binary arithmetic operatorstemplate <typename T>
+// Binary arithmetic operators
 template <typename T>
 inline constexpr vec<4, T> operator+(const vec<4, T>& v, T scalar) {
   return vec<4, T>(v.x + scalar, v.y + scalar, v.z + scalar, v.w + scalar);
