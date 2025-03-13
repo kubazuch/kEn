@@ -1,4 +1,8 @@
+#include <GLFW/glfw3.h>
+
 #include <kEn/core/assert.hpp>
+#include <kEn/core/mod_keys.hpp>
+#include <kEn/core/mouse_codes.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/key_events.hpp>
 #include <kEn/event/mouse_events.hpp>
@@ -74,22 +78,23 @@ void WindowsWindow::set_glfw_callbacks() const {
     win_data.handler(event);
   });
 
-  glfwSetKeyCallback(window_ptr_, [](GLFWwindow* window, int key, int /*scancode*/, int action, int /*mods*/) {
-    const Data& win_data = *static_cast<Data*>(glfwGetWindowUserPointer(window));
+  glfwSetKeyCallback(window_ptr_, [](GLFWwindow* window, int key, int /*scancode*/, int action, int mods) {
+    Data& win_data       = *static_cast<Data*>(glfwGetWindowUserPointer(window));
+    win_data.active_mods = mods;
 
     switch (action) {
       case GLFW_PRESS: {
-        KeyPressedEvent event(static_cast<KeyCode>(key), false);
+        KeyPressedEvent event(static_cast<KeyCode>(key), static_cast<ModKeys>(mods), false);
         win_data.handler(event);
         break;
       }
       case GLFW_REPEAT: {
-        KeyPressedEvent event(static_cast<KeyCode>(key), true);
+        KeyPressedEvent event(static_cast<KeyCode>(key), static_cast<ModKeys>(mods), true);
         win_data.handler(event);
         break;
       }
       case GLFW_RELEASE: {
-        KeyReleasedEvent event(static_cast<KeyCode>(key));
+        KeyReleasedEvent event(static_cast<KeyCode>(key), static_cast<ModKeys>(mods));
         win_data.handler(event);
         break;
       }
@@ -102,18 +107,28 @@ void WindowsWindow::set_glfw_callbacks() const {
     win_data.handler(event);
   });
 
-  glfwSetMouseButtonCallback(window_ptr_, [](GLFWwindow* window, int button, int action, int /*mods*/) {
-    const Data& win_data = *static_cast<Data*>(glfwGetWindowUserPointer(window));
+  glfwSetMouseButtonCallback(window_ptr_, [](GLFWwindow* window, int button, int action, int mods) {
+    Data& win_data       = *static_cast<Data*>(glfwGetWindowUserPointer(window));
+    win_data.active_mods = mods;
+
+    double dx, dy;  // NOLINT
+    glfwGetCursorPos(window, &dx, &dy);
+    auto x = static_cast<float>(dx);
+    auto y = static_cast<float>(dy);
 
     switch (action) {
       case GLFW_PRESS: {
-        MouseButtonPressedEvent event(static_cast<MouseCode>(button));
+        MouseButtonPressedEvent event(x, y, static_cast<MouseCode>(button), static_cast<ModKeys>(mods));
         win_data.handler(event);
+        win_data.dragging[button]    = true;
+        win_data.drag_from_x[button] = x;
+        win_data.drag_from_y[button] = y;
         break;
       }
       case GLFW_RELEASE: {
-        MouseButtonReleasedEvent event(static_cast<MouseCode>(button));
+        MouseButtonReleasedEvent event(x, y, static_cast<MouseCode>(button), static_cast<ModKeys>(mods));
         win_data.handler(event);
+        win_data.dragging[button] = false;
         break;
       }
     }
@@ -126,11 +141,22 @@ void WindowsWindow::set_glfw_callbacks() const {
     win_data.handler(event);
   });
 
-  glfwSetCursorPosCallback(window_ptr_, [](GLFWwindow* window, double x, double y) {
+  glfwSetCursorPosCallback(window_ptr_, [](GLFWwindow* window, double dx, double dy) {
     const Data& win_data = *static_cast<Data*>(glfwGetWindowUserPointer(window));
 
-    MouseMoveEvent event(static_cast<float>(x), static_cast<float>(y));
+    auto x = static_cast<float>(dx);
+    auto y = static_cast<float>(dy);
+
+    MouseMoveEvent event(x, y);
     win_data.handler(event);
+
+    for (int i = 0; i < GLFW_MOUSE_BUTTON_LAST; ++i) {
+      if (win_data.dragging[i]) {
+        MouseDragEvent event(win_data.drag_from_x[i], win_data.drag_from_y[i], x, y, static_cast<MouseCode>(i),
+                             win_data.active_mods);
+        win_data.handler(event);
+      }
+    }
   });
 }
 

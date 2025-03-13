@@ -21,6 +21,7 @@ class Renderer {
   static void set_fog(float fog) { scene_data_->fog = fog; }
   static void prepare(Shader& shader);
 
+  static void submit(Shader& shader, const VertexArray& vertex_array);
   static void submit(Shader& shader, const VertexArray& vertex_array, const Transform& transform);
   static void submit_tessellated(Shader& shader, const VertexArray& vertex_array, const uint32_t& count,
                                  const Transform& transform);

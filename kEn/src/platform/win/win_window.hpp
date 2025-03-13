@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #include <kEn/core/core.hpp>
+#include <kEn/core/mod_keys.hpp>
 #include <kEn/core/window.hpp>
 #include <kEn/renderer/graphics_context.hpp>
 
@@ -42,6 +43,11 @@ class WindowsWindow : public Window {
     unsigned int width, height;
 
     bool vsync;
+
+    bool dragging[GLFW_MOUSE_BUTTON_LAST];
+    float drag_from_x[GLFW_MOUSE_BUTTON_LAST];
+    float drag_from_y[GLFW_MOUSE_BUTTON_LAST];
+    ModKeys active_mods;
 
     handler_t handler;
   };

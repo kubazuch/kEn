@@ -26,6 +26,8 @@ namespace mEn {
 
 [[nodiscard]] constexpr Quat inverse(const Quat& q);
 
+[[nodiscard]] Quat rotate(const Quat& q, float angle, const Vec3& axis);
+
 // Cast
 [[nodiscard]] constexpr Mat3 mat3_cast(const Quat& q);
 

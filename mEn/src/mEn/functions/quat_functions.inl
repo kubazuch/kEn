@@ -75,6 +75,21 @@ inline constexpr Quat conjugate(const Quat& q) { return Quat(q.w, -q.x, -q.y, -q
 
 inline constexpr Quat inverse(const Quat& q) { return conjugate(q) / dot(q, q); }
 
+inline Quat rotate(const Quat& q, float angle, const Vec3& axis) {
+  Vec3 normalized = axis;
+
+  float len = length(normalized);
+  if (abs(len - 1.0F) > 0.001F) {
+    float inv = 1.0F / len;
+    normalized *= inv;
+  }
+
+  return q * Quat(cos(0.5F * angle),                 //
+                  sin(0.5F * angle) * normalized.x,  //
+                  sin(0.5F * angle) * normalized.y,  //
+                  sin(0.5F * angle) * normalized.z);
+}
+
 inline constexpr Quat cross(const Quat& u, const Quat& v) {
   return Quat(u.w * v.w - u.x * v.x - u.y * v.y - u.z * v.z,  //
               u.w * v.x + u.x * v.w + u.y * v.z - u.z * v.y,  //

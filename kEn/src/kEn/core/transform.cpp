@@ -51,8 +51,7 @@ void Transform::set_parent(Transform& parent) {
 }
 
 mEn::Mat4 Transform::local_to_parent_matrix() const {
-  // TODO(mEn): mEn::translate(mEn::Mat4(1.0F), pos_) * mEn::mat4_cast(rot_) * mEn::scale(mEn::Mat4(1.0F), scale_);
-  return mEn::Mat4(1.0F);
+  return mEn::translate(mEn::Mat4(1.0F), pos_) * mEn::mat4_cast(rot_) * mEn::scale(mEn::Mat4(1.0F), scale_);
 }
 
 mEn::Mat4& Transform::local_to_world_matrix() const {
@@ -97,7 +96,7 @@ void Transform::model_matrix_updated() {
 }
 
 void Transform::rotate(const mEn::Vec3& axis, float angle) {
-  // TODO(mEn): rot_ = mEn::rotate(rot_, angle, axis);
+  rot_ = mEn::rotate(rot_, angle, axis);
   set_dirty();
 }
 

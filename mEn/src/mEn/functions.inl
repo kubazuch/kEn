@@ -14,6 +14,11 @@ inline constexpr T fmax(T a, T b) {
 }
 
 template <typename T>
+inline constexpr T clamp(T val, T minVal, T maxVal) {
+  return fmin(fmax(val, minVal), maxVal);
+}
+
+template <typename T>
 inline const T* value_ptr(const vec<2, T>& vec) {
   return &vec.x;
 }

@@ -15,6 +15,8 @@ template <typename T>
 [[nodiscard]] constexpr T fmin(T a, T b);
 template <typename T>
 [[nodiscard]] constexpr T fmax(T a, T b);
+template <typename T>
+[[nodiscard]] constexpr T clamp(T val, T minVal, T maxVal);
 
 template <typename T>
 [[nodiscard]] const typename T::type* value_ptr(const T& value);
@@ -35,4 +37,6 @@ using std::sin;
 }  // namespace mEn
 
 #include "functions.inl"
+#include "functions/mat_functions.hpp"
+#include "functions/quat_functions.hpp"
 #include "functions/vec_functions.hpp"
