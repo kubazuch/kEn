@@ -78,8 +78,10 @@ struct Quat {
 
 // Boolean operators
 [[nodiscard]] constexpr bool operator==(const Quat& q1, const Quat& q2);
-template <typename T>
 [[nodiscard]] constexpr bool operator!=(const Quat& q1, const Quat& q2);
+
+// Ostream
+std::ostream& operator<<(std::ostream& os, const Quat& q);
 
 }  // namespace mEn
 

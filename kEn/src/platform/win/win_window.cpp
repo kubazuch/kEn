@@ -118,7 +118,7 @@ void WindowsWindow::set_glfw_callbacks() const {
 
     switch (action) {
       case GLFW_PRESS: {
-        MouseButtonPressedEvent event(x, y, static_cast<MouseCode>(button), static_cast<ModKeys>(mods));
+        MouseButtonPressedEvent event({x, y}, static_cast<MouseCode>(button), static_cast<ModKeys>(mods));
         win_data.handler(event);
         win_data.dragging[button]    = true;
         win_data.drag_from_x[button] = x;
@@ -126,7 +126,7 @@ void WindowsWindow::set_glfw_callbacks() const {
         break;
       }
       case GLFW_RELEASE: {
-        MouseButtonReleasedEvent event(x, y, static_cast<MouseCode>(button), static_cast<ModKeys>(mods));
+        MouseButtonReleasedEvent event({x, y}, static_cast<MouseCode>(button), static_cast<ModKeys>(mods));
         win_data.handler(event);
         win_data.dragging[button] = false;
         break;
@@ -137,22 +137,19 @@ void WindowsWindow::set_glfw_callbacks() const {
   glfwSetScrollCallback(window_ptr_, [](GLFWwindow* window, double x_offset, double y_offset) {
     const Data& win_data = *static_cast<Data*>(glfwGetWindowUserPointer(window));
 
-    MouseScrollEvent event(static_cast<float>(x_offset), static_cast<float>(y_offset));
+    MouseScrollEvent event({x_offset, y_offset});
     win_data.handler(event);
   });
 
-  glfwSetCursorPosCallback(window_ptr_, [](GLFWwindow* window, double dx, double dy) {
+  glfwSetCursorPosCallback(window_ptr_, [](GLFWwindow* window, double x, double y) {
     const Data& win_data = *static_cast<Data*>(glfwGetWindowUserPointer(window));
 
-    auto x = static_cast<float>(dx);
-    auto y = static_cast<float>(dy);
-
-    MouseMoveEvent event(x, y);
+    MouseMoveEvent event({x, y});
     win_data.handler(event);
 
     for (int i = 0; i < GLFW_MOUSE_BUTTON_LAST; ++i) {
       if (win_data.dragging[i]) {
-        MouseDragEvent event(win_data.drag_from_x[i], win_data.drag_from_y[i], x, y, static_cast<MouseCode>(i),
+        MouseDragEvent event({win_data.drag_from_x[i], win_data.drag_from_y[i]}, {x, y}, static_cast<MouseCode>(i),
                              win_data.active_mods);
         win_data.handler(event);
       }

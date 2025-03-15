@@ -162,4 +162,9 @@ inline constexpr bool operator==(const Quat& q1, const Quat& q2) {
 
 inline constexpr bool operator!=(const Quat& q1, const Quat& q2) { return !(q1 == q2); }
 
+// Ostream
+inline std::ostream& operator<<(std::ostream& os, const Quat& q) {
+  return os << "(" << q.w << "; " << q.x << ", " << q.y << ", " << q.z << ")";
+}
+
 }  // namespace mEn

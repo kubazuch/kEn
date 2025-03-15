@@ -70,7 +70,7 @@ void Application::run() {
       second = 0ns;
     }
 
-    render();
+    render(delta);
   }
 }
 
@@ -86,15 +86,15 @@ void Application::update(duration_t delta) {
   }
 }
 
-void Application::render() {
+void Application::render(duration_t delta) {
   for (Layer* layer : layer_stack_) {
-    layer->on_render();
+    layer->on_render(delta);
   }
 
   imgui_layer_->begin();
   {
     for (Layer* layer : layer_stack_) {
-      layer->on_imgui();
+      layer->on_imgui(delta);
     }
 
     ImGui::Begin("DEBUG");

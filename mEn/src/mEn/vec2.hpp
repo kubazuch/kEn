@@ -111,6 +111,10 @@ template <typename T>
 template <typename T>
 [[nodiscard]] constexpr bool operator!=(const vec<2, T>& v1, const vec<2, T>& v2);
 
+// Ostream
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const vec<2, T>& v);
+
 using Vec2 = vec<2, float>;
 
 }  // namespace mEn

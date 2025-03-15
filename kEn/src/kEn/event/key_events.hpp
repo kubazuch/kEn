@@ -25,40 +25,32 @@ class KeyPressedEvent : public Event<KeyPressedEvent>, public KeyEvent {
 
   bool is_repeat() const { return is_repeat_; }
 
-  const char* name() const override { return "KeyPressedEvent"; }
-  std::string to_string() const override {
-    std::stringstream ss;
-    ss << name() << ": " << key_ << " (" << key::name_of(key_) << "), mod keys: " << mod_key::active(mod_keys_)
-       << ", repeating = " << is_repeat_;
-    return ss.str();
-  }
-
  private:
   bool is_repeat_;
 };
 
+inline std::ostream& operator<<(std::ostream& os, const KeyPressedEvent& e) {
+  return os << "KeyPressedEvent: " << e.key() << " (" << key::name_of(e.key())
+            << "), mod keys: " << mod_key::active(e.mod_keys()) << ", repeating = " << e.is_repeat();
+}
+
 class KeyReleasedEvent : public Event<KeyReleasedEvent>, public KeyEvent {
  public:
   KeyReleasedEvent(const KeyCode& code, const ModKeys& mod) : KeyEvent(code, mod) {}
-
-  const char* name() const override { return "KeyReleasedEvent"; }
-  std::string to_string() const override {
-    std::stringstream ss;
-    ss << name() << ": " << key_ << " (" << key::name_of(key_) << "), mod keys: " << mod_key::active(mod_keys_);
-    return ss.str();
-  }
 };
+
+inline std::ostream& operator<<(std::ostream& os, const KeyReleasedEvent& e) {
+  return os << "KeyReleasedEvent: " << e.key() << " (" << key::name_of(e.key())
+            << "), mod keys: " << mod_key::active(e.mod_keys());
+}
 
 class KeyTypedEvent : public Event<KeyTypedEvent>, public KeyEvent {
  public:
   explicit KeyTypedEvent(const KeyCode& code) : KeyEvent(code, 0) {}
-
-  const char* name() const override { return "KeyTypedEvent"; }
-  std::string to_string() const override {
-    std::stringstream ss;
-    ss << name() << ": " << key_ << " (" << static_cast<char>(key_) << ")";
-    return ss.str();
-  }
 };
+
+inline std::ostream& operator<<(std::ostream& os, const KeyTypedEvent& e) {
+  return os << "KeyTypedEvent: " << e.key() << " (" << static_cast<char>(e.key()) << ")";
+}
 
 }  // namespace kEn

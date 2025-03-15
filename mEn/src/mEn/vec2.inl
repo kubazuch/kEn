@@ -225,4 +225,10 @@ inline constexpr bool operator!=(const vec<2, T>& v1, const vec<2, T>& v2) {
   return !(v1 == v2);
 }
 
+// Ostream
+template <typename T>
+inline std::ostream& operator<<(std::ostream& os, const vec<2, T>& v) {
+  return os << "(" << v.x << ", " << v.y << ")";
+}
+
 }  // namespace mEn
