@@ -1,77 +1,98 @@
 #pragma once
+#include <kEn/core/mod_keys.hpp>
 #include <kEn/core/mouse_codes.hpp>
 #include <kEn/event/event.hpp>
+#include <mEn/vec2.hpp>
 
 namespace kEn {
 
 class MouseButtonEvent {
  public:
   MouseCode button() const { return button_; }
+  ModKeys mod_keys() const { return mod_keys_; }
 
  protected:
-  explicit MouseButtonEvent(const MouseCode button) : button_(button) {}
+  MouseButtonEvent(const MouseCode& button, const ModKeys& mod) : button_(button), mod_keys_(mod) {}
 
   MouseCode button_;
+  ModKeys mod_keys_;
 };
 
 class MouseButtonPressedEvent : public MouseButtonEvent, public Event<MouseButtonPressedEvent> {
  public:
-  explicit MouseButtonPressedEvent(MouseCode button) : MouseButtonEvent(button) {}
+  MouseButtonPressedEvent(const mEn::Vec2& pos, const MouseCode& button, const ModKeys& mod)
+      : MouseButtonEvent(button, mod), pos_(pos) {}
 
-  const char* name() const override { return "MouseButtonPressedEvent"; }
-  std::string to_string() const override {
-    std::stringstream ss;
-    ss << name() << ": " << button_ << " (" << mouse::name_of(button_) << ")";
-    return ss.str();
-  }
+  const mEn::Vec2& pos() const { return pos_; }
+
+ private:
+  mEn::Vec2 pos_;
 };
+
+inline std::ostream& operator<<(std::ostream& os, const MouseButtonPressedEvent& e) {
+  return os << "MouseButtonPressedEvent: " << e.pos() << ", button " << e.button() << " (" << mouse::name_of(e.button())
+            << "), mod keys: " << mod_key::active(e.mod_keys());
+}
 
 class MouseButtonReleasedEvent : public MouseButtonEvent, public Event<MouseButtonReleasedEvent> {
  public:
-  explicit MouseButtonReleasedEvent(MouseCode button) : MouseButtonEvent(button) {}
+  MouseButtonReleasedEvent(const mEn::Vec2& pos, const MouseCode& button, const ModKeys& mod)
+      : MouseButtonEvent(button, mod), pos_(pos) {}
 
-  const char* name() const override { return "MouseButtonReleasedEvent"; }
-  std::string to_string() const override {
-    std::stringstream ss;
-    ss << name() << ": " << button_ << " (" << mouse::name_of(button_) << ")";
-    return ss.str();
-  }
+  const mEn::Vec2& pos() const { return pos_; }
+
+ private:
+  mEn::Vec2 pos_;
 };
+
+inline std::ostream& operator<<(std::ostream& os, const MouseButtonReleasedEvent& e) {
+  return os << "MouseButtonReleasedEvent: " << e.pos() << ", button " << e.button() << " ("
+            << mouse::name_of(e.button()) << "), mod keys: " << mod_key::active(e.mod_keys());
+}
 
 class MouseScrollEvent : public Event<MouseScrollEvent> {
  public:
-  MouseScrollEvent(const float x_offset, const float y_offset) : x_offset_(x_offset), y_offset_(y_offset) {}
+  explicit MouseScrollEvent(const mEn::Vec2 offset) : offset_(offset) {}
 
-  float x_offset() const { return x_offset_; }
-  float y_offset() const { return y_offset_; }
-
-  const char* name() const override { return "MouseScrollEvent"; }
-  std::string to_string() const override {
-    std::stringstream ss;
-    ss << name() << ": " << x_offset_ << ", " << y_offset_;
-    return ss.str();
-  }
+  const mEn::Vec2& offset() const { return offset_; }
 
  private:
-  float x_offset_, y_offset_;
+  mEn::Vec2 offset_;
 };
+
+inline std::ostream& operator<<(std::ostream& os, const MouseScrollEvent& e) {
+  return os << "MouseScrollEvent: " << e.offset();
+}
 
 class MouseMoveEvent : public Event<MouseMoveEvent> {
  public:
-  MouseMoveEvent(const float x, const float y) : x_pos_(x), y_pos_(y) {}
+  explicit MouseMoveEvent(const mEn::Vec2 pos) : pos_(pos) {}
 
-  float x() const { return x_pos_; }
-  float y() const { return y_pos_; }
-
-  const char* name() const override { return "MouseMoveEvent"; }
-  std::string to_string() const override {
-    std::stringstream ss;
-    ss << name() << ": " << x_pos_ << ", " << y_pos_;
-    return ss.str();
-  }
+  const mEn::Vec2& pos() const { return pos_; }
 
  private:
-  float x_pos_, y_pos_;
+  mEn::Vec2 pos_;
 };
+
+inline std::ostream& operator<<(std::ostream& os, const MouseMoveEvent& e) {
+  return os << "MouseMoveEvent: " << e.pos();
+}
+
+class MouseDragEvent : public MouseButtonEvent, public Event<MouseDragEvent> {
+ public:
+  MouseDragEvent(const mEn::Vec2& from, const mEn::Vec2& to, const MouseCode& button, const ModKeys& mod)
+      : MouseButtonEvent(button, mod), from_(from), to_(to) {}
+
+  const mEn::Vec2& from() const { return from_; }
+  const mEn::Vec2& to() const { return to_; }
+
+ private:
+  mEn::Vec2 from_, to_;
+};
+
+inline std::ostream& operator<<(std::ostream& os, const MouseDragEvent& e) {
+  return os << "MouseDragEvent: from " << e.from() << " to " << e.to() << ", button " << e.button() << " ("
+            << mouse::name_of(e.button()) << "), mod keys: " << mod_key::active(e.mod_keys());
+}
 
 }  // namespace kEn

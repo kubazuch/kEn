@@ -1,8 +1,8 @@
 #pragma once
-#include <glm/vec3.hpp>
 #include <kEn/core/core.hpp>
 #include <kEn/core/transform.hpp>
 #include <kEn/scene/component.hpp>
+#include <mEn/vec3.hpp>
 
 namespace kEn {
 
@@ -31,7 +31,7 @@ class BaseLight : public GameComponent {
   virtual void load(const std::string& name, Shader& shader) const = 0;
 
  public:
-  glm::vec3 color = glm::vec3{1.F};
+  mEn::Vec3 color{1.F};
 };
 
 class DirectionalLight : public BaseLight {

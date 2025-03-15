@@ -18,7 +18,7 @@ bool Input::is_mouse_button_pressed(const MouseCode button) {
   return button_state == GLFW_PRESS;
 }
 
-glm::vec2 Input::get_mouse_pos() {
+mEn::Vec2 Input::get_mouse_pos() {
   auto* window = static_cast<GLFWwindow*>(Application::instance().main_window().native_window());
   double x     = 0.0;
   double y     = 0.0;
@@ -36,7 +36,7 @@ void Input::set_cursor_visible(bool visible) {
   glfwSetInputMode(window, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
 }
 
-void Input::set_mouse_pos(glm::vec2 pos) {
+void Input::set_mouse_pos(mEn::Vec2 pos) {
   auto* window = static_cast<GLFWwindow*>(Application::instance().main_window().native_window());
   glfwSetCursorPos(window, pos.x, pos.y);
 }

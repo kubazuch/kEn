@@ -1,5 +1,4 @@
 #pragma once
-#include <glm/vec3.hpp>
 #include <kEn/renderer/texture.hpp>
 #include <unordered_map>
 

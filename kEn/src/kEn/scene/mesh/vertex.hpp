@@ -1,12 +1,11 @@
 #pragma once
-#include <glm/glm.hpp>
 
 namespace kEn {
 
 struct Vertex {
-  glm::vec3 pos;
-  glm::vec3 normal;
-  glm::vec2 texture_coord;
+  mEn::Vec3 pos;
+  mEn::Vec3 normal;
+  mEn::Vec2 texture_coord;
 };
 
 }  // namespace kEn

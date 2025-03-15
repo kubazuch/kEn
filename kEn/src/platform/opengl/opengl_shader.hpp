@@ -2,8 +2,8 @@
 #include <glad/gl.h>
 
 #include <filesystem>
-#include <glm/gtc/type_ptr.hpp>
 #include <kEn/renderer/shader.hpp>
+#include <mEn.hpp>
 #include <regex>
 #include <unordered_set>
 
@@ -28,12 +28,12 @@ class OpenglShader final : public Shader {
   void set_uint_array(const std::string& name, uint32_t* values, size_t count) override;
 
   void set_float(const std::string& name, float value) override;
-  void set_float2(const std::string& name, const glm::vec2& value) override;
-  void set_float3(const std::string& name, const glm::vec3& value) override;
-  void set_float4(const std::string& name, const glm::vec4& value) override;
+  void set_float2(const std::string& name, const mEn::Vec2& value) override;
+  void set_float3(const std::string& name, const mEn::Vec3& value) override;
+  void set_float4(const std::string& name, const mEn::Vec4& value) override;
 
-  void set_mat3(const std::string& name, const glm::mat3& value) override;
-  void set_mat4(const std::string& name, const glm::mat4& value) override;
+  void set_mat3(const std::string& name, const mEn::Mat3& value) override;
+  void set_mat4(const std::string& name, const mEn::Mat4& value) override;
   // </Uniforms>
 
   const std::string& get_name() override { return name_; }

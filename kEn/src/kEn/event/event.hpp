@@ -1,42 +1,28 @@
 #pragma once
 
 #include <functional>
-#include <kEn/core/core.hpp>
-#include <string>
+#include <typeindex>
 
 #define KEN_EVENT_SUBSCRIBER(function) [this](auto& event) { return function(event); }
 
+// TODO: make more automatic using templates
 namespace kEn {
 
-class BaseEvent {
- public:
+struct BaseEvent {
   bool handled = false;
 
   BaseEvent()          = default;
   virtual ~BaseEvent() = default;
 
-  virtual const char* name() const = 0;
-  virtual std::string to_string() const { return name(); }
-  virtual std::size_t event_id() = 0;
+  virtual std::type_index event_id() const = 0;
 
   VIRTUAL_FIVE(BaseEvent);
-
- protected:
-  static std::size_t next_id() {
-    static std::size_t id = 0;
-    return id++;
-  }
 };
 
 template <typename EventType>
-class Event : public BaseEvent {
+struct Event : public BaseEvent {
  public:
-  std::size_t event_id() override { return id(); }
-
-  static std::size_t id() {
-    static auto id = BaseEvent::next_id();
-    return id;
-  }
+  std::type_index event_id() const override { return std::type_index(typeid(EventType)); }
 };
 
 class EventDispatcher {
@@ -46,15 +32,15 @@ class EventDispatcher {
 
   template <typename EventType, typename F>
   void subscribe(const F& callback_fn) {
-    const auto id = EventType::id();
-    subscribers_[id].push_back(CallbackWrapper<EventType>(callback_fn));
+    const auto id = std::type_index(typeid(EventType));
+    subscribers_.emplace(id, CallbackWrapper<EventType>(callback_fn));
   }
 
   template <typename EventType>
   bool dispatch(EventType& event) {
-    const auto id = EventType::id();
-    for (auto& callback : subscribers_[id]) {
-      event.handled |= callback(event);
+    const auto id = std::type_index(typeid(EventType));
+    for (auto [begin_it, end_it] = subscribers_.equal_range(id); begin_it != end_it; ++begin_it) {
+      event.handled |= begin_it->second(event);
       if (event.handled) {
         return true;
       }
@@ -65,8 +51,8 @@ class EventDispatcher {
 
   bool dispatch(BaseEvent& event) {
     const auto id = event.event_id();
-    for (auto& callback : subscribers_[id]) {
-      event.handled |= callback(event);
+    for (auto [begin_it, end_it] = subscribers_.equal_range(id); begin_it != end_it; ++begin_it) {
+      event.handled |= begin_it->second(event);
       if (event.handled) {
         return true;
       }
@@ -76,7 +62,7 @@ class EventDispatcher {
   }
 
  private:
-  std::unordered_map<std::size_t, std::vector<callback_t<BaseEvent>>> subscribers_;
+  std::unordered_multimap<std::type_index, callback_t<BaseEvent>> subscribers_;
 
   template <typename EventType>
   class CallbackWrapper {
@@ -90,7 +76,5 @@ class EventDispatcher {
     callback_t<EventType> callback_;
   };
 };
-
-inline std::ostream& operator<<(std::ostream& os, const BaseEvent& e) { return os << e.to_string(); }
 
 }  // namespace kEn

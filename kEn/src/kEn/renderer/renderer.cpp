@@ -35,6 +35,11 @@ void Renderer::prepare(Shader& shader) {
   }
 }
 
+void Renderer::submit(Shader& shader, const VertexArray& vertex_array) {
+  shader.bind();
+  RenderCommand::draw_indexed(vertex_array);
+}
+
 void Renderer::submit(Shader& shader, const VertexArray& vertex_array, const Transform& transform) {
   shader.set_mat4("u_VP", scene_data_->VP_matrix);
   shader.set_float3("u_CameraPos", scene_data_->camera_pos);
