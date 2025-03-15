@@ -55,7 +55,7 @@ class OpenglShader final : public Shader {
   static const std::filesystem::path kTessControlExt;
   static const std::filesystem::path kTessEvalExt;
   static const std::regex kIncludeRegex;
-  static const std::unordered_map<std::string, std::string> kInternalLibs;
+  static const std::unordered_map<std::string_view, std::string_view> kInternalLibs;
 
   uint32_t renderer_id_;
 
