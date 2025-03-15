@@ -1,7 +1,6 @@
 #pragma once
 #include <kEn/core/layer.hpp>
-
-#include "kEn/event/event.hpp"
+#include <kEn/event/event.hpp>
 
 namespace kEn {
 
