@@ -14,6 +14,12 @@ template <typename T>
 template <typename T>
 [[nodiscard]] mat<4, T> scale(const mat<4, T>& m, const vec<3, T>& v);
 
+template <typename T>
+[[nodiscard]] mat<4, T> ortho(T left, T right, T bottom, T top, T zNear, T zFar);
+
+template <typename T>
+[[nodiscard]] mat<4, T> perspective(T fov, T aspect, T zNear, T zFar);
+
 }  // namespace mEn
 
 #include "mat_functions.inl"

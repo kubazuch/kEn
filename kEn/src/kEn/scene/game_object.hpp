@@ -5,6 +5,7 @@
 #include <optional>
 
 namespace kEn {
+using duration_t = std::chrono::nanoseconds;
 
 class GameObject {
  public:
@@ -16,10 +17,10 @@ class GameObject {
   GameObject& add_component(std::shared_ptr<GameComponent> to_add);
   GameObject& add_components(std::initializer_list<std::shared_ptr<GameComponent>> components);
 
-  void render(Shader& shader) const;
-  void render_all(Shader& shader) const;
-  void update(double delta);
-  void update_all(double delta);
+  void render(Shader& shader, double alpha) const;
+  void render_all(Shader& shader, double alpha) const;
+  void update(duration_t delta, duration_t time);
+  void update_all(duration_t delta, duration_t time);
   void on_event(BaseEvent& event);
 
   kEn::Transform& transform() { return transform_; }

@@ -54,31 +54,31 @@ GameObject& GameObject::add_components(std::initializer_list<std::shared_ptr<Gam
   return *this;
 }
 
-void GameObject::render(Shader& shader) const {
+void GameObject::render(Shader& shader, double alpha) const {
   for (const auto& component : components_) {
-    component->render(shader);
+    component->render(shader, alpha);
   }
 }
 
-void GameObject::render_all(Shader& shader) const {
-  render(shader);
+void GameObject::render_all(Shader& shader, double alpha) const {
+  render(shader, alpha);
 
   for (const auto child : children_) {
-    child.get().render_all(shader);
+    child.get().render_all(shader, alpha);
   }
 }
 
-void GameObject::update(double delta) {
+void GameObject::update(duration_t delta, duration_t time) {
   for (auto& component : components_) {
-    component->update(delta);
+    component->update(delta, time);
   }
 }
 
-void GameObject::update_all(double delta) {
-  update(delta);
+void GameObject::update_all(duration_t delta, duration_t time) {
+  update(delta, time);
 
   for (const auto child : children_) {
-    child.get().update_all(delta);
+    child.get().update_all(delta, time);
   }
 }
 

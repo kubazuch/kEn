@@ -45,9 +45,9 @@ void OpenglRendererApi::init() {
   glEnable(GL_LINE_SMOOTH);
   glEnable(GL_MULTISAMPLE);
 
-  glEnable(GL_CULL_FACE);
-  glCullFace(GL_BACK);
-  glFrontFace(GL_CCW);
+  // glEnable(GL_CULL_FACE);
+  // glCullFace(GL_BACK);
+  // glFrontFace(GL_CCW);
 }
 
 void OpenglRendererApi::set_viewport(size_t x, size_t y, size_t width, size_t height) {

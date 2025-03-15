@@ -23,8 +23,8 @@ class BaseLight : public GameComponent {
   virtual void imgui(bool subsection) = 0;
 
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override = 0;
-  void update(float) override {}
-  void render(Shader&) override {}
+  void update(duration_t, duration_t) override {}
+  void render(Shader&, double) override {}
 
   VIRTUAL_FIVE(BaseLight);
 

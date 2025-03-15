@@ -37,14 +37,14 @@ namespace shader_data_types {
 
 enum : shader_data_type { None = 0, DATA_TYPES(ENUM_ENTRY) };
 
-inline uint32_t get_size(shader_data_type type) {
+inline constexpr uint32_t get_size(shader_data_type type) {
   switch (type) { DATA_TYPES(SIZE_ENTRY) }
 
   KEN_CORE_ASSERT(false, "Unknown shader data type!");
   return 0;
 }
 
-inline uint32_t get_component_count(shader_data_type type) {
+inline constexpr uint32_t get_component_count(shader_data_type type) {
   switch (type) { DATA_TYPES(COMPS_ENTRY) }
 
   KEN_CORE_ASSERT(false, "Unknown shader data type!");
@@ -57,20 +57,17 @@ inline uint32_t get_component_count(shader_data_type type) {
 }  // namespace shader_data_types
 
 struct BufferElement {
-  std::string name;
+  std::string_view name;
   shader_data_type type{};
   uint32_t size{};
   size_t offset{};
   bool normalized{};
 
-  BufferElement() = default;
-
-  BufferElement(shader_data_type type, std::string_view name, bool normalized = false)
-      : name(name), type(type), size(shader_data_types::get_size(type)), offset(0), normalized(normalized) {}
+  constexpr BufferElement(shader_data_type type, std::string_view name, bool normalized = false)
+      : name(name), type(type), size(shader_data_types::get_size(type)), normalized(normalized) {}
 };
 
-class BufferLayout {
- public:
+struct BufferLayout {
   BufferLayout() = default;
 
   BufferLayout(std::initializer_list<BufferElement> elements) : elements_(elements) {
@@ -96,8 +93,7 @@ class BufferLayout {
   size_t stride_ = 0;
 };
 
-class VertexBuffer {
- public:
+struct VertexBuffer {
   virtual ~VertexBuffer() = default;
 
   virtual void bind() const   = 0;
@@ -109,15 +105,13 @@ class VertexBuffer {
   static std::shared_ptr<VertexBuffer> create(void* vertices, size_t size);
 };
 
-class MutableVertexBuffer : public VertexBuffer {
- public:
+struct MutableVertexBuffer : public VertexBuffer {
   virtual void modify_data(std::function<void(void*)> fn) const = 0;
 
   static std::shared_ptr<MutableVertexBuffer> create(void* vertices, size_t size);
 };
 
-class IndexBuffer {
- public:
+struct IndexBuffer {
   virtual ~IndexBuffer() = default;
 
   virtual void bind() const   = 0;

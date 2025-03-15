@@ -51,7 +51,7 @@ void ImguiLayer::on_detach() {
   ImGui::DestroyContext();
 }
 
-void ImguiLayer::on_imgui(duration_t) {
+void ImguiLayer::on_imgui() {
   // static bool show = true;
   // if(show)
   // 	ImGui::ShowDemoWindow(&show); // Show demo window! :)

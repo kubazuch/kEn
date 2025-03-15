@@ -16,8 +16,8 @@ class Layer {
   virtual void on_attach() {}
   virtual void on_detach() {}
   virtual void on_update(duration_t /*delta*/, duration_t /*time*/) {}
-  virtual void on_render(duration_t /*delta*/) {}
-  virtual void on_imgui(duration_t /*delta*/) {}
+  virtual void on_render(double /*alpha*/) {}
+  virtual void on_imgui() {}
   virtual void on_event(BaseEvent& /*event*/) {}
 
   const std::string& name() const { return debug_name_; }

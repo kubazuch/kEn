@@ -32,8 +32,8 @@ class Application {
 
  private:
   void run();
-  void update(duration_t delta);
-  void render(duration_t delta);
+  void update();
+  void render(double alpha);
 
   bool on_window_close(WindowCloseEvent& e);
   bool on_window_resize(WindowResizeEvent& e);

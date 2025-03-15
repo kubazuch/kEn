@@ -1,6 +1,7 @@
 #include <GLFW/glfw3.h>
 #include <imgui/imgui.h>
 
+#include <chrono>
 #include <kEn/core/application.hpp>
 #include <kEn/core/assert.hpp>
 #include <kEn/event/application_events.hpp>
@@ -52,7 +53,7 @@ void Application::run() {
     second += std::chrono::duration_cast<duration_t>(delta);
 
     while (lag >= kTickTime) {
-      update(kTickTime);
+      update();
 
       lag -= kTickTime;
       time_ += kTickTime;
@@ -70,31 +71,31 @@ void Application::run() {
       second = 0ns;
     }
 
-    render(delta);
+    render(std::chrono::duration<double>(lag).count() / std::chrono::duration<double>(kTickTime).count());
   }
 }
 
-void Application::update(duration_t delta) {
+void Application::update() {
   if (vsync_ != window_->vsync()) {
     window_->set_vsync(vsync_);
   }
 
   if (!minimized_) {
     for (Layer* layer : layer_stack_) {
-      layer->on_update(delta, time_);
+      layer->on_update(kTickTime, time_);
     }
   }
 }
 
-void Application::render(duration_t delta) {
+void Application::render(double alpha) {
   for (Layer* layer : layer_stack_) {
-    layer->on_render(delta);
+    layer->on_render(alpha);
   }
 
   imgui_layer_->begin();
   {
     for (Layer* layer : layer_stack_) {
-      layer->on_imgui(delta);
+      layer->on_imgui();
     }
 
     ImGui::Begin("DEBUG");

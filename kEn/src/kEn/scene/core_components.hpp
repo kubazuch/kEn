@@ -11,8 +11,8 @@ class ModelComponent : public GameComponent {
  public:
   explicit ModelComponent(const std::shared_ptr<Model>& model) : model_(model) {}
 
-  void update(float) override {}
-  void render(Shader& shader) override;
+  void update(duration_t, duration_t) override {}
+  void render(Shader& shader, double alpha) override;
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
  private:
@@ -23,8 +23,8 @@ class FreeLookComponent : public GameComponent {
  public:
   explicit FreeLookComponent(float sensitivity);
 
-  void update(float delta) override;
-  void render(Shader&) override {}
+  void update(duration_t delta, duration_t time) override;
+  void render(Shader&, double) override {}
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
   float sensitivity() const { return sensitivity_; }
@@ -43,8 +43,8 @@ class FreeMoveComponent : public GameComponent {
  public:
   explicit FreeMoveComponent(float speed, bool world_y = true) : speed_(speed), world_y_(world_y) {}
 
-  void update(float delta) override;
-  void render(Shader&) override {}
+  void update(duration_t delta, duration_t time) override;
+  void render(Shader&, double) override {}
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
   float speed() const { return speed_; }
@@ -62,8 +62,8 @@ class LookAtComponent : public GameComponent {
   void set_target(const GameObject& target);
   const GameObject& target() const { return target_; }
 
-  void update(float delta) override;
-  void render(Shader&) override {}
+  void update(duration_t delta, duration_t time) override;
+  void render(Shader&, double) override {}
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
  private:
