@@ -9,6 +9,8 @@ using Vec4 = ::glm::vec4;
 
 }
 #else
+#include <ostream>
+
 #include "common.hpp"
 
 namespace mEn {

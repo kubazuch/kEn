@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <kEn/core/core.hpp>
 #include <typeindex>
 
 #define KEN_EVENT_SUBSCRIBER(function) [this](auto& event) { return function(event); }

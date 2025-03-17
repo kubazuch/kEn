@@ -12,6 +12,8 @@ using ::glm::quatLookAt;
 
 }  // namespace mEn
 #else
+#include <ostream>
+
 #include "mat3.hpp"
 #include "mat4.hpp"
 #include "vec3.hpp"

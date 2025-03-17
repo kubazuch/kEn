@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <kEn/core/transform.hpp>
 #include <kEn/event/event.hpp>
 #include <memory>
