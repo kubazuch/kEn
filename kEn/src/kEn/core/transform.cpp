@@ -115,9 +115,18 @@ void Transform::look_at(const mEn::Vec3& point, const mEn::Vec3& up) {
       parent_.has_value() ? mEn::Vec3(parent_.value().get().world_to_local_matrix() * mEn::Vec4(point, 1.F)) : point;
   mEn::Vec3 direction = local_point - pos_;
   direction           = mEn::normalize(direction);
-  rot_                = mEn::quatLookAt(direction, up);
 
-  set_dirty();
+  mEn::Vec3 front = local_front();
+  if (std::abs(direction.x - front.x) > 1e-3F || std::abs(direction.y - front.y) > 1e-3F ||
+      std::abs(direction.z - front.z) > 1e-3F) {
+    if (std::abs(direction.x) > 1e-3F || std::abs(direction.z) > 1e-3F) {
+      rot_ = mEn::quatLookAt(direction, up);
+    } else {
+      rot_ = mEn::quatLookAt(direction, local_up());
+    }
+
+    set_dirty();
+  }
 }
 
 void Transform::fma(const mEn::Vec3& axis, float amount) {

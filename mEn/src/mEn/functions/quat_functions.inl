@@ -84,11 +84,10 @@ inline Quat rotate(const Quat& q, float angle, const Vec3& axis) {
     normalized *= inv;
   }
 
-  return q * Quat(cos(0.5F * angle),                 //
-                  sin(0.5F * angle) * normalized.x,  //
-                  sin(0.5F * angle) * normalized.y,  //
-                  sin(0.5F * angle) * normalized.z);
+  return q * Quat(cos(0.5F * angle), sin(0.5F * angle) * normalized);
 }
+
+inline Quat angleAxis(float angle, const Vec3& axis) { return Quat(cos(0.5F * angle), sin(0.5F * angle) * axis); }
 
 inline constexpr Quat cross(const Quat& u, const Quat& v) {
   return Quat(u.w * v.w - u.x * v.x - u.y * v.y - u.z * v.z,  //

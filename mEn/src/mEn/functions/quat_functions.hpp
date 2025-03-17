@@ -28,6 +28,8 @@ namespace mEn {
 
 [[nodiscard]] Quat rotate(const Quat& q, float angle, const Vec3& axis);
 
+[[nodiscard]] Quat angleAxis(float angle, const Vec3& axis);
+
 // Cast
 [[nodiscard]] constexpr Mat3 mat3_cast(const Quat& q);
 
