@@ -13,9 +13,12 @@ class Shader;
 
 class GameComponent {
  public:
-  GameComponent()                                                    = default;
-  virtual ~GameComponent()                                           = default;
+  GameComponent() = default;
+  virtual ~GameComponent() { on_detach(); }
   [[nodiscard]] virtual std::shared_ptr<GameComponent> clone() const = 0;
+
+  virtual void on_attach() {};
+  virtual void on_detach() {};
 
   virtual void update(duration_t delta, duration_t time) = 0;
   virtual void render(Shader& shader, double alpha)      = 0;

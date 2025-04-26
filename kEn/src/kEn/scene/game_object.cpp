@@ -15,6 +15,10 @@ GameObject::GameObject(mEn::Vec3 pos, mEn::Quat rot, mEn::Vec3 scale, std::strin
 }
 
 GameObject::~GameObject() {
+  for (const auto& component : components_) {
+    component->on_detach();
+  }
+
   for (const auto child : children_) {
     child.get().parent_.reset();
   }
@@ -51,6 +55,7 @@ GameObject& GameObject::add_children(std::initializer_list<std::reference_wrappe
 
 GameObject& GameObject::add_component(std::shared_ptr<GameComponent> to_add) {
   to_add->parent_ = *this;
+  to_add->on_attach();
 
   components_.push_back(std::move(to_add));
 
