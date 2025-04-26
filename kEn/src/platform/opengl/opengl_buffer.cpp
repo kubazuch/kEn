@@ -4,82 +4,47 @@
 #include <platform/opengl/opengl_buffer.hpp>
 
 namespace kEn {
-/*
- *		VERTEX BUFFER
- */
 
-OpenglVertexBuffer::OpenglVertexBuffer(void* vertices, uint32_t size) : renderer_id_(0) {
+constexpr GLenum get_buffer_type(BufferType type) {
+  switch (type) {
+    case BufferType::Vertex:
+      return GL_ARRAY_BUFFER;
+    case BufferType::Index:
+      return GL_ELEMENT_ARRAY_BUFFER;
+    default:
+      KEN_CORE_ASSERT(false, "Unknown buffer type!");
+      return 0;
+  }
+}
+
+OpenglBuffer::OpenglBuffer(const void* data, size_t size) : size_(size), renderer_id_(0) {
   glCreateBuffers(1, &renderer_id_);
-  glBindBuffer(GL_ARRAY_BUFFER, renderer_id_);
-  glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+  set_data_int(data, size);
 }
 
-OpenglVertexBuffer::~OpenglVertexBuffer() { glDeleteBuffers(1, &renderer_id_); }
+OpenglBuffer::~OpenglBuffer() { glDeleteBuffers(1, &renderer_id_); }
 
-void OpenglVertexBuffer::bind() const { glBindBuffer(GL_ARRAY_BUFFER, renderer_id_); }
+void OpenglBuffer::bind(BufferType type) const { glBindBuffer(get_buffer_type(type), renderer_id_); }
 
-void OpenglVertexBuffer::unbind() const { glBindBuffer(GL_ARRAY_BUFFER, 0); }
+void OpenglBuffer::unbind(BufferType type) const { glBindBuffer(get_buffer_type(type), 0); }
 
-/*
- *		MUTABLE VERTEX BUFFER
- */
-
-OpenglMutableVertexBuffer::OpenglMutableVertexBuffer(void* vertices, uint32_t size) : renderer_id_(0) {
-  glCreateBuffers(1, &renderer_id_);
-  glBindBuffer(GL_ARRAY_BUFFER, renderer_id_);
-  glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_DYNAMIC_DRAW);
+void OpenglBuffer::set_data_int(const void* data, size_t size) const {
+  glNamedBufferData(renderer_id_, static_cast<GLsizeiptr>(size), data, GL_STATIC_DRAW);
 }
 
-OpenglMutableVertexBuffer::~OpenglMutableVertexBuffer() { glDeleteBuffers(1, &renderer_id_); }
-
-void OpenglMutableVertexBuffer::bind() const { glBindBuffer(GL_ARRAY_BUFFER, renderer_id_); }
-
-void OpenglMutableVertexBuffer::unbind() const { glBindBuffer(GL_ARRAY_BUFFER, 0); }
-
-void OpenglMutableVertexBuffer::modify_data(std::function<void(void*)> fn) const {
-  glBindBuffer(GL_ARRAY_BUFFER, renderer_id_);
-  void* ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+void OpenglMutableBuffer::modify_data(std::function<void(void*)> fn) const {
+  void* ptr = glMapNamedBuffer(renderer_id_, GL_WRITE_ONLY);
   fn(ptr);
-  glUnmapBuffer(GL_ARRAY_BUFFER);
+  glUnmapNamedBuffer(renderer_id_);
 }
 
-/*
- *		INDEX BUFFER
- */
-
-OpenglIndexBuffer::OpenglIndexBuffer(uint32_t* indices, uint32_t count) : renderer_id_(0), count_(count) {
-  glGenBuffers(1, &renderer_id_);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id_);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(count * sizeof(uint32_t)), indices, GL_STATIC_DRAW);
+void OpenglMutableBuffer::set_data(const void* data, size_t size) {
+  size_ = size;
+  set_data_int(data, size);
 }
 
-OpenglIndexBuffer::~OpenglIndexBuffer() { glDeleteBuffers(1, &renderer_id_); }
-
-void OpenglIndexBuffer::bind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id_); }
-
-void OpenglIndexBuffer::unbind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
-
-/*
- *		MUTABLE VERTEX BUFFER
- */
-
-OpenglMutableIndexBuffer::OpenglMutableIndexBuffer(uint32_t* indices, uint32_t count) : renderer_id_(0), count_(count) {
-  glGenBuffers(1, &renderer_id_);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id_);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(count * sizeof(uint32_t)), indices, GL_DYNAMIC_DRAW);
-}
-
-OpenglMutableIndexBuffer::~OpenglMutableIndexBuffer() { glDeleteBuffers(1, &renderer_id_); }
-
-void OpenglMutableIndexBuffer::bind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id_); }
-
-void OpenglMutableIndexBuffer::unbind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
-
-void OpenglMutableIndexBuffer::modify_data(std::function<void(void*)> fn) const {
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id_);
-  void* ptr = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
-  fn(ptr);
-  glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+void OpenglMutableBuffer::set_data_int(const void* data, size_t size) const {
+  glNamedBufferData(renderer_id_, static_cast<GLsizeiptr>(size), data, GL_DYNAMIC_DRAW);
 }
 
 }  // namespace kEn

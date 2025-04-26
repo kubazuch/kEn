@@ -23,11 +23,11 @@ Mesh::Mesh(std::string_view name, const std::vector<Vertex>& vertices, const std
 void Mesh::setup_mesh() {
   vao_ = VertexArray::create();
 
-  std::shared_ptr<VertexBuffer> vbo = VertexBuffer::create(this->vertices.data(), vertices.size() * sizeof(Vertex));
+  std::shared_ptr<Buffer> vbo = Buffer::create(this->vertices.data(), vertices.size() * sizeof(Vertex));
   vbo->set_layout(vertex_layout_);
   vao_->add_vertex_buffer(vbo);
 
-  std::shared_ptr<IndexBuffer> ebo = IndexBuffer::create(indices.data(), indices.size());
+  std::shared_ptr<Buffer> ebo = Buffer::create(indices.data(), indices.size() * sizeof(uint32_t));
   vao_->set_index_buffer(ebo);
 }
 

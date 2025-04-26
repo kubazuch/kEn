@@ -4,68 +4,35 @@
 
 namespace kEn {
 
-class OpenglVertexBuffer : public VertexBuffer {
+class OpenglBuffer : virtual public Buffer {
  public:
-  OpenglVertexBuffer(void* vertices, uint32_t size);
-  ~OpenglVertexBuffer() override;
+  OpenglBuffer(const void* data, size_t size);
+  ~OpenglBuffer() override;
 
-  void bind() const override;
-  void unbind() const override;
+  void bind(BufferType type) const override;
+  void unbind(BufferType type) const override;
 
   const BufferLayout& layout() const override { return layout_; }
   void set_layout(const BufferLayout& layout) override { layout_ = layout; }
+  size_t size() const override { return size_; }
 
- private:
+ protected:
+  virtual void set_data_int(const void* data, size_t size) const;
+
+  size_t size_;
   uint32_t renderer_id_;
   BufferLayout layout_;
 };
 
-class OpenglMutableVertexBuffer final : public MutableVertexBuffer {
+class OpenglMutableBuffer final : public MutableBuffer, public OpenglBuffer {
  public:
-  OpenglMutableVertexBuffer(void* vertices, uint32_t size);
-  ~OpenglMutableVertexBuffer() override;
+  OpenglMutableBuffer(const void* data, size_t size) : OpenglBuffer(data, size) {}
 
-  void bind() const override;
-  void unbind() const override;
   void modify_data(std::function<void(void*)> fn) const override;
-
-  const BufferLayout& layout() const override { return layout_; }
-  void set_layout(const BufferLayout& layout) override { layout_ = layout; }
+  void set_data(const void* data, size_t size) override;
 
  private:
-  uint32_t renderer_id_;
-  BufferLayout layout_;
-};
-
-class OpenglIndexBuffer final : public IndexBuffer {
- public:
-  OpenglIndexBuffer(uint32_t* indices, uint32_t count);
-  ~OpenglIndexBuffer() override;
-
-  void bind() const override;
-  void unbind() const override;
-
-  uint32_t get_count() const override { return count_; }
-
- private:
-  uint32_t renderer_id_;
-  uint32_t count_;
-};
-
-class OpenglMutableIndexBuffer final : public MutableIndexBuffer {
- public:
-  OpenglMutableIndexBuffer(uint32_t* indices, uint32_t count);
-  ~OpenglMutableIndexBuffer() override;
-
-  void bind() const override;
-  void unbind() const override;
-  void modify_data(std::function<void(void*)> fn) const override;
-
-  uint32_t get_count() const override { return count_; }
-
- private:
-  uint32_t renderer_id_;
-  uint32_t count_;
+  void set_data_int(const void* data, size_t size) const override;
 };
 
 }  // namespace kEn

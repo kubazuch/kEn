@@ -9,6 +9,30 @@ namespace kEn {
 
 RendererApi::Api RendererApi::api_ = Api::OpenGL;
 
+constexpr GLenum draw_mode(RendererApi::RenderMode mode) {
+  switch (mode) {
+    case RendererApi::RenderMode::Points:
+      return GL_POINTS;
+    case RendererApi::RenderMode::LineStrip:
+      return GL_LINE_STRIP;
+    case RendererApi::RenderMode::LineLoop:
+      return GL_LINE_LOOP;
+    case RendererApi::RenderMode::Lines:
+      return GL_LINES;
+    case RendererApi::RenderMode::TriangleStrip:
+      return GL_TRIANGLE_STRIP;
+    case RendererApi::RenderMode::TriangleFan:
+      return GL_TRIANGLE_FAN;
+    case RendererApi::RenderMode::Triangles:
+      return GL_TRIANGLES;
+    case RendererApi::RenderMode::Patches:
+      return GL_PATCHES;
+    default:
+      KEN_CORE_ASSERT(false, "Unknown draw mode!");
+      return 0;
+  }
+}
+
 void gl_message_callback(unsigned /*src*/, unsigned /*type*/, unsigned /*id*/, unsigned lvl, int /*len*/,
                          const char* msg, const void* /*params*/) {
   switch (lvl) {
@@ -66,23 +90,15 @@ void OpenglRendererApi::depth_testing(bool enabled) {
   }
 }
 
-void OpenglRendererApi::draw_indexed(const VertexArray& vertex_array, size_t index_count) {
+void OpenglRendererApi::draw_indexed(const VertexArray& vertex_array, size_t index_count,
+                                     RendererApi::RenderMode mode) {
   vertex_array.bind();
-  uint32_t count = index_count ? index_count : vertex_array.index_buffer()->get_count();
-
-  glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(count), GL_UNSIGNED_INT, nullptr);
+  glDrawElements(draw_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT, nullptr);
 }
 
-void OpenglRendererApi::draw_lines(const VertexArray& vertex_array, bool strip, size_t index_count) {
+void OpenglRendererApi::draw(const VertexArray& vertex_array, size_t vertex_count, RendererApi::RenderMode mode) {
   vertex_array.bind();
-  uint32_t count = index_count ? index_count : vertex_array.index_buffer()->get_count();
-
-  glDrawElements(strip ? GL_LINE_STRIP : GL_LINES, static_cast<GLsizei>(count), GL_UNSIGNED_INT, nullptr);
-}
-
-void OpenglRendererApi::draw_patches(const VertexArray& vertex_array, size_t vertex_count) {
-  vertex_array.bind();
-  glDrawArrays(GL_PATCHES, 0, static_cast<GLsizei>(vertex_count));
+  glDrawArrays(draw_mode(mode), 0, static_cast<GLsizei>(vertex_count));
 }
 
 void OpenglRendererApi::set_tessellation_patch_vertices(size_t count) {
@@ -90,7 +106,7 @@ void OpenglRendererApi::set_tessellation_patch_vertices(size_t count) {
 }
 
 void OpenglRendererApi::set_wireframe(bool wireframe) {
-  glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
+  glPolygonMode(GL_FRONT_AND_BACK, static_cast<GLenum>(wireframe ? GL_LINE : GL_FILL));
 }
 
 }  // namespace kEn

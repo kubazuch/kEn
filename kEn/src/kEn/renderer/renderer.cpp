@@ -35,27 +35,18 @@ void Renderer::prepare(Shader& shader) {
   }
 }
 
-void Renderer::submit(Shader& shader, const VertexArray& vertex_array) {
+void Renderer::submit(Shader& shader, const VertexArray& vertex_array, RenderMode mode) {
   shader.bind();
-  RenderCommand::draw_indexed(vertex_array);
+  RenderCommand::draw_indexed(vertex_array, vertex_array.element_count(), mode);
 }
 
-void Renderer::submit(Shader& shader, const VertexArray& vertex_array, const Transform& transform) {
+void Renderer::submit(Shader& shader, const VertexArray& vertex_array, const Transform& transform, RenderMode mode) {
   shader.set_mat4("u_VP", scene_data_->VP_matrix);
   shader.set_float3("u_CameraPos", scene_data_->camera_pos);
   shader.set_mat4("u_M", transform.local_to_world_matrix());
 
   shader.bind();
-  RenderCommand::draw_indexed(vertex_array);
-}
-
-void Renderer::submit_lines(Shader& shader, const VertexArray& vertex_array, const Transform& transform, bool strip) {
-  shader.set_mat4("u_VP", scene_data_->VP_matrix);
-  shader.set_float3("u_CameraPos", scene_data_->camera_pos);
-  shader.set_mat4("u_M", transform.local_to_world_matrix());
-
-  shader.bind();
-  RenderCommand::draw_lines(vertex_array, strip);
+  RenderCommand::draw_indexed(vertex_array, vertex_array.element_count(), mode);
 }
 
 void Renderer::submit_tessellated(Shader& shader, const VertexArray& vertex_array, const uint32_t& count,
@@ -65,7 +56,7 @@ void Renderer::submit_tessellated(Shader& shader, const VertexArray& vertex_arra
   shader.set_mat4("u_M", transform.local_to_world_matrix());
 
   shader.bind();
-  RenderCommand::draw_patches(vertex_array, count);
+  RenderCommand::draw(vertex_array, count, RenderMode::Patches);
 }
 
 }  // namespace kEn

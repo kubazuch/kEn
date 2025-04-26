@@ -8,6 +8,7 @@ namespace kEn {
 class RendererApi {
  public:
   enum class Api { None = 0, OpenGL = 1 };
+  enum class RenderMode { Points, LineStrip, LineLoop, Lines, TriangleStrip, TriangleFan, Triangles, Patches };
 
  public:
   virtual ~RendererApi() = default;
@@ -18,9 +19,8 @@ class RendererApi {
   virtual void clear()                                              = 0;
   virtual void depth_testing(bool enabled)                          = 0;
 
-  virtual void draw_indexed(const VertexArray& vertex_array, size_t index_count)           = 0;
-  virtual void draw_lines(const VertexArray& vertex_array, bool strip, size_t index_count) = 0;
-  virtual void draw_patches(const VertexArray& vertex_array, size_t vertex_count)          = 0;
+  virtual void draw_indexed(const VertexArray& vertex_array, size_t index_count, RenderMode mode) = 0;
+  virtual void draw(const VertexArray& vertex_array, size_t vertex_count, RenderMode mode)        = 0;
 
   virtual void set_tessellation_patch_vertices(size_t count) = 0;
 

@@ -6,52 +6,26 @@
 
 namespace kEn {
 
-std::shared_ptr<VertexBuffer> VertexBuffer::create(void* vertices, size_t size) {
+std::shared_ptr<Buffer> Buffer::create(const void* data, size_t size) {
   switch (RendererApi::get_api()) {
     case RendererApi::Api::None:
       KEN_CORE_ASSERT(false, "Renderer has no api!");
       return nullptr;
     case RendererApi::Api::OpenGL:
-      return std::make_shared<OpenglVertexBuffer>(vertices, size);
+      return std::make_shared<OpenglBuffer>(data, size);
   }
 
   KEN_CORE_ASSERT(false, "Unknown api!");
   return nullptr;
 }
 
-std::shared_ptr<MutableVertexBuffer> MutableVertexBuffer::create(void* vertices, size_t size) {
+std::shared_ptr<MutableBuffer> MutableBuffer::create(const void* data, size_t size) {
   switch (RendererApi::get_api()) {
     case RendererApi::Api::None:
       KEN_CORE_ASSERT(false, "Renderer has no api!");
       return nullptr;
     case RendererApi::Api::OpenGL:
-      return std::make_shared<OpenglMutableVertexBuffer>(vertices, size);
-  }
-
-  KEN_CORE_ASSERT(false, "Unknown api!");
-  return nullptr;
-}
-
-std::shared_ptr<IndexBuffer> IndexBuffer::create(uint32_t* indices, size_t size) {
-  switch (RendererApi::get_api()) {
-    case RendererApi::Api::None:
-      KEN_CORE_ASSERT(false, "Renderer has no api!");
-      return nullptr;
-    case RendererApi::Api::OpenGL:
-      return std::make_shared<OpenglIndexBuffer>(indices, size);
-  }
-
-  KEN_CORE_ASSERT(false, "Unknown api!");
-  return nullptr;
-}
-
-std::shared_ptr<MutableIndexBuffer> MutableIndexBuffer::create(uint32_t* indices, size_t size) {
-  switch (RendererApi::get_api()) {
-    case RendererApi::Api::None:
-      KEN_CORE_ASSERT(false, "Renderer has no api!");
-      return nullptr;
-    case RendererApi::Api::OpenGL:
-      return std::make_shared<OpenglMutableIndexBuffer>(indices, size);
+      return std::make_shared<OpenglMutableBuffer>(data, size);
   }
 
   KEN_CORE_ASSERT(false, "Unknown api!");

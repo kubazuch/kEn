@@ -1,19 +1,23 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(kEn)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 message(STATUS "Configuring " ${PROJECT_NAME})
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 23)
 
-file(GLOB_RECURSE SOURCES
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+file(GLOB_RECURSE SOURCES 
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
 )
 
 add_library(${PROJECT_NAME} ${SOURCES})
 
 # Prevent CMake from adding `lib` before `kEn`
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
+
+# GLFW_INCLUDE_NONE makes the GLFW header not include any OpenGL or OpenGL ES
+# API header. This is useful in combination with an extension loading library
+# (GLAD in our case).
+target_compile_definitions(${PROJECT_NAME} PUBLIC GLFW_INCLUDE_NONE)
 
 target_include_directories(${PROJECT_NAME}
         PUBLIC src "${CMAKE_BINARY_DIR}/generated")
