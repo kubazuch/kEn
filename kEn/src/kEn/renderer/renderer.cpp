@@ -44,11 +44,18 @@ void Renderer::submit(Shader& shader, const VertexArray& vertex_array, const Tra
   shader.set_mat4("u_VP", scene_data_->VP_matrix);
   shader.set_float3("u_CameraPos", scene_data_->camera_pos);
   shader.set_mat4("u_M", transform.local_to_world_matrix());
-  shader.set_float3("u_Ambient", scene_data_->ambient);
-  shader.set_float("u_Fog", scene_data_->fog);
 
   shader.bind();
   RenderCommand::draw_indexed(vertex_array);
+}
+
+void Renderer::submit_lines(Shader& shader, const VertexArray& vertex_array, const Transform& transform, bool strip) {
+  shader.set_mat4("u_VP", scene_data_->VP_matrix);
+  shader.set_float3("u_CameraPos", scene_data_->camera_pos);
+  shader.set_mat4("u_M", transform.local_to_world_matrix());
+
+  shader.bind();
+  RenderCommand::draw_lines(vertex_array, strip);
 }
 
 void Renderer::submit_tessellated(Shader& shader, const VertexArray& vertex_array, const uint32_t& count,
@@ -56,8 +63,6 @@ void Renderer::submit_tessellated(Shader& shader, const VertexArray& vertex_arra
   shader.set_mat4("u_VP", scene_data_->VP_matrix);
   shader.set_float3("u_CameraPos", scene_data_->camera_pos);
   shader.set_mat4("u_M", transform.local_to_world_matrix());
-  shader.set_float3("u_Ambient", scene_data_->ambient);
-  shader.set_float("u_Fog", scene_data_->fog);
 
   shader.bind();
   RenderCommand::draw_patches(vertex_array, count);

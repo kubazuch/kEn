@@ -18,8 +18,9 @@ class RendererApi {
   virtual void clear()                                              = 0;
   virtual void depth_testing(bool enabled)                          = 0;
 
-  virtual void draw_indexed(const VertexArray& vertex_array, size_t index_count)  = 0;
-  virtual void draw_patches(const VertexArray& vertex_array, size_t vertex_count) = 0;
+  virtual void draw_indexed(const VertexArray& vertex_array, size_t index_count)           = 0;
+  virtual void draw_lines(const VertexArray& vertex_array, bool strip, size_t index_count) = 0;
+  virtual void draw_patches(const VertexArray& vertex_array, size_t vertex_count)          = 0;
 
   virtual void set_tessellation_patch_vertices(size_t count) = 0;
 

@@ -18,9 +18,8 @@ struct Attenuation {
 
 class BaseLight : public GameComponent {
  public:
-  BaseLight()                         = default;
-  virtual ~BaseLight()                = default;
-  virtual void imgui(bool subsection) = 0;
+  BaseLight()          = default;
+  virtual ~BaseLight() = default;
 
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override = 0;
   void update(duration_t, duration_t) override {}
@@ -36,7 +35,7 @@ class BaseLight : public GameComponent {
 
 class DirectionalLight : public BaseLight {
  public:
-  void imgui(bool subsection) override;
+  void imgui() override;
 
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
@@ -45,7 +44,7 @@ class DirectionalLight : public BaseLight {
 
 class PointLight : public BaseLight {
  public:
-  void imgui(bool subsection) override;
+  void imgui() override;
 
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
@@ -57,7 +56,7 @@ class PointLight : public BaseLight {
 
 class SpotLight : public BaseLight {
  public:
-  void imgui(bool subsection) override;
+  void imgui() override;
 
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 

@@ -45,4 +45,17 @@ std::shared_ptr<IndexBuffer> IndexBuffer::create(uint32_t* indices, size_t size)
   return nullptr;
 }
 
+std::shared_ptr<MutableIndexBuffer> MutableIndexBuffer::create(uint32_t* indices, size_t size) {
+  switch (RendererApi::get_api()) {
+    case RendererApi::Api::None:
+      KEN_CORE_ASSERT(false, "Renderer has no api!");
+      return nullptr;
+    case RendererApi::Api::OpenGL:
+      return std::make_shared<OpenglMutableIndexBuffer>(indices, size);
+  }
+
+  KEN_CORE_ASSERT(false, "Unknown api!");
+  return nullptr;
+}
+
 }  // namespace kEn

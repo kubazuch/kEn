@@ -23,6 +23,8 @@ class Renderer {
 
   static void submit(Shader& shader, const VertexArray& vertex_array);
   static void submit(Shader& shader, const VertexArray& vertex_array, const Transform& transform);
+  static void submit_lines(Shader& shader, const VertexArray& vertex_array, const Transform& transform,
+                           bool strip = false);
   static void submit_tessellated(Shader& shader, const VertexArray& vertex_array, const uint32_t& count,
                                  const Transform& transform);
 

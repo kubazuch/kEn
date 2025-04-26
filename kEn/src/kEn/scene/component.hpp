@@ -19,6 +19,7 @@ class GameComponent {
 
   virtual void update(duration_t delta, duration_t time) = 0;
   virtual void render(Shader& shader, double alpha)      = 0;
+  virtual void imgui()                                   = 0;
   virtual void on_event(BaseEvent& event) { dispatcher_.dispatch(event); }
 
   const GameObject& parent() const { return parent_.value(); }

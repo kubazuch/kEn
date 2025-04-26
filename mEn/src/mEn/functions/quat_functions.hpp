@@ -30,6 +30,14 @@ namespace mEn {
 
 [[nodiscard]] Quat angleAxis(float angle, const Vec3& axis);
 
+[[nodiscard]] Vec3 eulerAngles(const Quat& q);
+
+[[nodiscard]] float roll(const Quat& q);
+
+[[nodiscard]] float pitch(const Quat& q);
+
+[[nodiscard]] float yaw(const Quat& q);
+
 // Cast
 [[nodiscard]] constexpr Mat3 mat3_cast(const Quat& q);
 

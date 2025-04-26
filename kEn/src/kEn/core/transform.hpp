@@ -18,7 +18,7 @@ class Transform {
   mEn::Mat4 local_to_parent_matrix() const;
   mEn::Mat4& local_to_world_matrix() const;
   mEn::Mat4 world_to_local_matrix() const;
-  void model_matrix_updated();
+  void mark_dirty() const;
 
   void rotate(const mEn::Vec3& axis, float angle);
   void rotate(const mEn::Quat& rotation);

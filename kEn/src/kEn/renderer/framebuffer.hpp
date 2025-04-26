@@ -1,6 +1,8 @@
 #pragma once
 
 #include <kEn/core/core.hpp>
+#include <memory>
+#include <vector>
 
 namespace kEn {
 

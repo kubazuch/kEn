@@ -16,6 +16,9 @@ class RenderCommand {
   static void draw_indexed(const VertexArray& vertex_array, uint32_t index_count = 0) {
     renderer_api_->draw_indexed(vertex_array, index_count);
   }
+  static void draw_lines(const VertexArray& vertex_array, bool strip, uint32_t index_count = 0) {
+    renderer_api_->draw_lines(vertex_array, strip, index_count);
+  }
   static void draw_patches(const VertexArray& vertex_array, uint32_t vertex_count = 0) {
     renderer_api_->draw_patches(vertex_array, vertex_count);
   }

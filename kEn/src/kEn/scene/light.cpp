@@ -12,16 +12,7 @@ inline void Attenuation::load(const std::string& name, Shader& shader) const {
   shader.set_float(name + ".quadratic", quadratic);
 }
 
-void DirectionalLight::imgui(bool subsection) {
-  if (subsection) {
-    if (ImGui::TreeNode("Directional light")) {
-      imgui(false);
-      ImGui::TreePop();
-    }
-
-    return;
-  }
-
+void DirectionalLight::imgui() {
   if (ImGui::ColorEdit3("Color##light", mEn::value_ptr(color))) {
   }
   mEn::Vec3 front = transform().front();
@@ -35,16 +26,7 @@ void DirectionalLight::load(const std::string& name, Shader& shader) const {
 
 std::shared_ptr<GameComponent> DirectionalLight::clone() const { return std::make_shared<DirectionalLight>(); }
 
-void PointLight::imgui(bool subsection) {
-  if (subsection) {
-    if (ImGui::TreeNode("Point light")) {
-      imgui(false);
-      ImGui::TreePop();
-    }
-
-    return;
-  }
-
+void PointLight::imgui() {
   if (ImGui::ColorEdit3("Color##light", mEn::value_ptr(color))) {
   }
   if (ImGui::DragFloat3("Pos##light", mEn::value_ptr(transform().local_pos()), 0.01F)) {
@@ -75,16 +57,7 @@ std::shared_ptr<GameComponent> PointLight::clone() const {
   return ptr;
 }
 
-void SpotLight::imgui(bool subsection) {
-  if (subsection) {
-    if (ImGui::TreeNode("Point light")) {
-      imgui(false);
-      ImGui::TreePop();
-    }
-
-    return;
-  }
-
+void SpotLight::imgui() {
   if (ImGui::ColorEdit3("Color##light", mEn::value_ptr(color))) {
   }
   if (ImGui::DragFloat3("Pos##light", mEn::value_ptr(transform().local_pos()), 0.01F)) {

@@ -49,8 +49,8 @@ void OpenglMutableVertexBuffer::modify_data(std::function<void(void*)> fn) const
 
 OpenglIndexBuffer::OpenglIndexBuffer(uint32_t* indices, uint32_t count) : renderer_id_(0), count_(count) {
   glGenBuffers(1, &renderer_id_);
-  glBindBuffer(GL_ARRAY_BUFFER, renderer_id_);
-  glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(count * sizeof(uint32_t)), indices, GL_STATIC_DRAW);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id_);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(count * sizeof(uint32_t)), indices, GL_STATIC_DRAW);
 }
 
 OpenglIndexBuffer::~OpenglIndexBuffer() { glDeleteBuffers(1, &renderer_id_); }
@@ -58,5 +58,28 @@ OpenglIndexBuffer::~OpenglIndexBuffer() { glDeleteBuffers(1, &renderer_id_); }
 void OpenglIndexBuffer::bind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id_); }
 
 void OpenglIndexBuffer::unbind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
+
+/*
+ *		MUTABLE VERTEX BUFFER
+ */
+
+OpenglMutableIndexBuffer::OpenglMutableIndexBuffer(uint32_t* indices, uint32_t count) : renderer_id_(0), count_(count) {
+  glGenBuffers(1, &renderer_id_);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id_);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(count * sizeof(uint32_t)), indices, GL_DYNAMIC_DRAW);
+}
+
+OpenglMutableIndexBuffer::~OpenglMutableIndexBuffer() { glDeleteBuffers(1, &renderer_id_); }
+
+void OpenglMutableIndexBuffer::bind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id_); }
+
+void OpenglMutableIndexBuffer::unbind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
+
+void OpenglMutableIndexBuffer::modify_data(std::function<void(void*)> fn) const {
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id_);
+  void* ptr = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
+  fn(ptr);
+  glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+}
 
 }  // namespace kEn

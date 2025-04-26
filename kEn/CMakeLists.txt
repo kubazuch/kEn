@@ -10,12 +10,6 @@ file(GLOB_RECURSE SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
 )
 
-# Enable Windows-specific settings
-if (WIN32)
-    add_definitions(-D_WIN32_WINNT=0x0601)  # Target Windows 7 or later (modify as needed)
-    add_definitions(-DUNICODE -D_UNICODE)   # Enable Unicode support
-endif()
-
 add_library(${PROJECT_NAME} ${SOURCES})
 
 # Prevent CMake from adding `lib` before `kEn`
@@ -23,7 +17,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 
 target_include_directories(${PROJECT_NAME}
         PUBLIC src "${CMAKE_BINARY_DIR}/generated")
-target_link_libraries(${PROJECT_NAME} PUBLIC mEn glad glfw assimp spdlog stb imgui imguizmo user32 kernel32 gdi32)
+target_link_libraries(${PROJECT_NAME} PUBLIC mEn glad glfw assimp spdlog stb imgui imguizmo)
 
 # Set compile options and properties of the target
 target_compile_options(${PROJECT_NAME} PRIVATE ${PROJ_CXX_FLAGS})

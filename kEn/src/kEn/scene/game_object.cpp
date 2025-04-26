@@ -2,9 +2,14 @@
 #include <kEn/scene/game_object.hpp>
 #include <kEn/scene/mesh/obj_model.hpp>
 #include <kenpch.hpp>
+#include <string_view>
 
 namespace kEn {
-GameObject::GameObject(mEn::Vec3 pos, mEn::Quat rot, mEn::Vec3 scale) : transform_(pos, rot, scale) {}
+
+IdRegistry<GameObject> GameObject::game_object_registry_(GameObject::kMaxGameObjects);
+
+GameObject::GameObject(mEn::Vec3 pos, mEn::Quat rot, mEn::Vec3 scale, std::string_view name)
+    : transform_(pos, rot, scale), id_(game_object_registry_), name_(name) {}
 
 GameObject::~GameObject() {
   for (const auto child : children_) {
@@ -65,6 +70,20 @@ void GameObject::render_all(Shader& shader, double alpha) const {
 
   for (const auto child : children_) {
     child.get().render_all(shader, alpha);
+  }
+}
+
+void GameObject::imgui() {
+  for (const auto& component : components_) {
+    component->imgui();
+  }
+}
+
+void GameObject::imgui_all() {
+  imgui();
+
+  for (const auto& child : children_) {
+    child.get().imgui_all();
   }
 }
 

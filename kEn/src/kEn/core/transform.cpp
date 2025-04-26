@@ -81,18 +81,15 @@ mEn::Mat4 Transform::world_to_local_matrix() const {
   return inv_model_mat_;
 }
 
-void Transform::model_matrix_updated() {
-  mEn::Vec3 skew;
-  mEn::Vec4 perspective;
-
-  inverse_dirty_ = true;
-
-  mEn::Mat4 local_mat = model_mat_;
-  if (parent_) {
-    local_mat = parent_.value().get().world_to_local_matrix() * local_mat;
+void Transform::mark_dirty() const {
+  if (dirty_ && inverse_dirty_) {
+    return;
   }
 
-  // TODO(mEn): mEn::decompose(local_mat, scale_, rot_, pos_, skew, perspective);
+  dirty_ = inverse_dirty_ = true;
+  for (const auto child : children_) {
+    child.get().mark_dirty();
+  }
 }
 
 void Transform::rotate(const mEn::Vec3& axis, float angle) {

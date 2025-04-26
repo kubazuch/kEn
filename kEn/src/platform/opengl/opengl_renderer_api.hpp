@@ -16,6 +16,7 @@ class OpenglRendererApi : public kEn::RendererApi {
   void depth_testing(bool enabled) override;
 
   void draw_indexed(const VertexArray& vertex_array, size_t index_count) override;
+  void draw_lines(const VertexArray& vertex_array, bool strip, size_t index_count) override;
   void draw_patches(const VertexArray& vertex_array, size_t vertex_count) override;
   void set_tessellation_patch_vertices(size_t count) override;
   void set_wireframe(bool wireframe) override;

@@ -122,4 +122,10 @@ struct IndexBuffer {
   static std::shared_ptr<IndexBuffer> create(uint32_t* indices, size_t size);
 };
 
+struct MutableIndexBuffer : public IndexBuffer {
+  virtual void modify_data(std::function<void(void*)> fn) const = 0;
+
+  static std::shared_ptr<MutableIndexBuffer> create(uint32_t* indices, size_t size);
+};
+
 }  // namespace kEn

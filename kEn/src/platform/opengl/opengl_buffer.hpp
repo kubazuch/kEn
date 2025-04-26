@@ -52,4 +52,20 @@ class OpenglIndexBuffer final : public IndexBuffer {
   uint32_t count_;
 };
 
+class OpenglMutableIndexBuffer final : public MutableIndexBuffer {
+ public:
+  OpenglMutableIndexBuffer(uint32_t* indices, uint32_t count);
+  ~OpenglMutableIndexBuffer() override;
+
+  void bind() const override;
+  void unbind() const override;
+  void modify_data(std::function<void(void*)> fn) const override;
+
+  uint32_t get_count() const override { return count_; }
+
+ private:
+  uint32_t renderer_id_;
+  uint32_t count_;
+};
+
 }  // namespace kEn

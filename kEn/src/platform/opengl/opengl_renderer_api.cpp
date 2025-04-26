@@ -73,6 +73,13 @@ void OpenglRendererApi::draw_indexed(const VertexArray& vertex_array, size_t ind
   glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(count), GL_UNSIGNED_INT, nullptr);
 }
 
+void OpenglRendererApi::draw_lines(const VertexArray& vertex_array, bool strip, size_t index_count) {
+  vertex_array.bind();
+  uint32_t count = index_count ? index_count : vertex_array.index_buffer()->get_count();
+
+  glDrawElements(strip ? GL_LINE_STRIP : GL_LINES, static_cast<GLsizei>(count), GL_UNSIGNED_INT, nullptr);
+}
+
 void OpenglRendererApi::draw_patches(const VertexArray& vertex_array, size_t vertex_count) {
   vertex_array.bind();
   glDrawArrays(GL_PATCHES, 0, static_cast<GLsizei>(vertex_count));

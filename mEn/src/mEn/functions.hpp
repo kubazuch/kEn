@@ -12,9 +12,9 @@
 namespace mEn {
 
 template <typename T>
-[[nodiscard]] constexpr T fmin(T a, T b);
+[[nodiscard]] constexpr T min(T a, T b);
 template <typename T>
-[[nodiscard]] constexpr T fmax(T a, T b);
+[[nodiscard]] constexpr T max(T a, T b);
 template <typename T>
 [[nodiscard]] constexpr T clamp(T val, T minVal, T maxVal);
 

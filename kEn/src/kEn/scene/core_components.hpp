@@ -13,6 +13,7 @@ class ModelComponent : public GameComponent {
 
   void update(duration_t, duration_t) override {}
   void render(Shader& shader, double alpha) override;
+  void imgui() override {}
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
  private:
@@ -25,6 +26,7 @@ class FreeLookComponent : public GameComponent {
 
   void update(duration_t delta, duration_t time) override;
   void render(Shader&, double) override {}
+  void imgui() override {}
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
   float sensitivity() const { return sensitivity_; }
@@ -45,6 +47,7 @@ class FreeMoveComponent : public GameComponent {
 
   void update(duration_t delta, duration_t time) override;
   void render(Shader&, double) override {}
+  void imgui() override {}
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
   float speed() const { return speed_; }
@@ -64,6 +67,7 @@ class LookAtComponent : public GameComponent {
 
   void update(duration_t delta, duration_t time) override;
   void render(Shader&, double) override {}
+  void imgui() override {}
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
  private:

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 
@@ -95,6 +96,32 @@ inline constexpr Quat cross(const Quat& u, const Quat& v) {
               u.w * v.y + u.y * v.w + u.z * v.x - u.x * v.z,  //
               u.w * v.z + u.z * v.w + u.x * v.y - u.y * v.x);
 }
+
+inline Vec3 eulerAngles(const Quat& q) { return Vec3(pitch(q), yaw(q), roll(q)); }
+
+inline float roll(const Quat& q) {
+  const float y = 2.0F * (q.x * q.y + q.w * q.z);
+  const float x = q.w * q.w + q.x * q.x - q.y * q.y - q.z * q.z;
+
+  if (std::abs(x) < 1e-6F && std::abs(y) < 1e-6F) {
+    return 0.0F;
+  }
+
+  return std::atan2(y, x);
+}
+
+inline float pitch(const Quat& q) {
+  const float y = 2.0F * (q.y * q.z + q.w * q.x);
+  const float x = q.w * q.w - q.x * q.x - q.y * q.y + q.z * q.z;
+
+  if (std::abs(x) < 1e-6F && std::abs(y) < 1e-6F) {
+    return 0.0F;
+  }
+
+  return std::atan2(y, x);
+}
+
+inline float yaw(const Quat& q) { return std::asin(std::clamp(-2.0F * (q.x * q.z - q.w * q.y), -1.0F, 1.0F)); }
 
 inline constexpr Mat3 mat3_cast(const Quat& q) {
   Mat3 ret(1.F);
