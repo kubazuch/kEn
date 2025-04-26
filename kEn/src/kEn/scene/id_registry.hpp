@@ -123,6 +123,8 @@ template <typename IdType>
 struct IdView {
   IdView() = delete;
   IdView(const IdType& id) : raw_id_(id.raw_id()), registry_(id.registry()) {}  // NOLINT
+  IdView(size_t raw_id, const IdRegistry<typename IdType::object_type>& registry)
+      : raw_id_(raw_id), registry_(registry) {}
 
   bool operator==(const IdView<IdType>& other) const { return raw_id_ == other.raw_id_; }
   bool operator!=(const IdView<IdType>& other) const { return raw_id_ != other.raw_id_; }

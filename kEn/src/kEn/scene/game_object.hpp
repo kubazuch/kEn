@@ -42,13 +42,20 @@ class GameObject {
   kEn::Transform& transform() { return transform_; }
   const kEn::Transform& transform() const { return transform_; }
 
+  static GameObject* find_by_id(const IdView<GameObjectId>& id) {
+    auto it = registry_.find(id);
+    return it != registry_.end() ? it->second : nullptr;
+  }
+
+  static GameObject* find_by_id(size_t id) { return find_by_id(IdView<GameObjectId>(id, game_object_registry_)); }
+
  protected:
   kEn::Transform transform_;
 
  public:
   bool torus = false;
   bool point = false;
-  bool line = false;
+  bool line  = false;
 
  private:
   GameObjectId id_;
@@ -56,6 +63,8 @@ class GameObject {
   std::optional<std::reference_wrapper<GameObject>> parent_;
   std::vector<std::reference_wrapper<GameObject>> children_;
   std::vector<std::shared_ptr<GameComponent>> components_;
+
+  static std::unordered_map<IdView<GameObjectId>, GameObject*, IdViewHash<GameObjectId>> registry_;
 };
 
 }  // namespace kEn
