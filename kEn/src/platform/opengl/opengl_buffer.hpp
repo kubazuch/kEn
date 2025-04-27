@@ -22,6 +22,8 @@ class OpenglBuffer : virtual public Buffer {
   size_t size_;
   uint32_t renderer_id_;
   BufferLayout layout_;
+
+  friend class OpenglUniformBuffer;
 };
 
 class OpenglMutableBuffer final : public MutableBuffer, public OpenglBuffer {
@@ -33,6 +35,21 @@ class OpenglMutableBuffer final : public MutableBuffer, public OpenglBuffer {
 
  private:
   void set_data_int(const void* data, size_t size) const override;
+};
+
+class OpenglUniformBuffer final : public UniformBuffer {
+ public:
+  OpenglUniformBuffer(std::shared_ptr<OpenglBuffer> buffer, size_t binding_point);
+
+  void bind() const override { buffer_->bind(BufferType::Uniform); }
+  void unbind() const override { buffer_->unbind(BufferType::Uniform); }
+
+  const std::shared_ptr<Buffer>& underlying_buffer() const override { return buffer_; };
+  size_t binding_point() const override { return binding_point_; }
+
+ private:
+  std::shared_ptr<Buffer> buffer_;
+  size_t binding_point_;
 };
 
 }  // namespace kEn

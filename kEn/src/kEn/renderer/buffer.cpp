@@ -2,6 +2,7 @@
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/renderer_api.hpp>
 #include <kenpch.hpp>
+#include <memory>
 #include <platform/opengl/opengl_buffer.hpp>
 
 namespace kEn {
@@ -26,6 +27,19 @@ std::shared_ptr<MutableBuffer> MutableBuffer::create(const void* data, size_t si
       return nullptr;
     case RendererApi::Api::OpenGL:
       return std::make_shared<OpenglMutableBuffer>(data, size);
+  }
+
+  KEN_CORE_ASSERT(false, "Unknown api!");
+  return nullptr;
+}
+
+std::shared_ptr<UniformBuffer> UniformBuffer::create(const std::shared_ptr<Buffer>& buffer, size_t binding_point) {
+  switch (RendererApi::get_api()) {
+    case RendererApi::Api::None:
+      KEN_CORE_ASSERT(false, "Renderer has no api!");
+      return nullptr;
+    case RendererApi::Api::OpenGL:
+      return std::make_shared<OpenglUniformBuffer>(std::dynamic_pointer_cast<OpenglBuffer>(buffer), binding_point);
   }
 
   KEN_CORE_ASSERT(false, "Unknown api!");

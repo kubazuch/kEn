@@ -2,6 +2,7 @@
 
 #include <kenpch.hpp>
 #include <platform/opengl/opengl_buffer.hpp>
+#include <utility>
 
 namespace kEn {
 
@@ -11,6 +12,8 @@ constexpr GLenum get_buffer_type(BufferType type) {
       return GL_ARRAY_BUFFER;
     case BufferType::Index:
       return GL_ELEMENT_ARRAY_BUFFER;
+    case BufferType::Uniform:
+      return GL_UNIFORM_BUFFER;
     default:
       KEN_CORE_ASSERT(false, "Unknown buffer type!");
       return 0;
@@ -32,6 +35,8 @@ void OpenglBuffer::set_data_int(const void* data, size_t size) const {
   glNamedBufferData(renderer_id_, static_cast<GLsizeiptr>(size), data, GL_STATIC_DRAW);
 }
 
+// ---------------- //
+
 void OpenglMutableBuffer::modify_data(std::function<void(void*)> fn) const {
   void* ptr = glMapNamedBuffer(renderer_id_, GL_WRITE_ONLY);
   fn(ptr);
@@ -45,6 +50,13 @@ void OpenglMutableBuffer::set_data(const void* data, size_t size) {
 
 void OpenglMutableBuffer::set_data_int(const void* data, size_t size) const {
   glNamedBufferData(renderer_id_, static_cast<GLsizeiptr>(size), data, GL_DYNAMIC_DRAW);
+}
+
+// ---------------- //
+
+OpenglUniformBuffer::OpenglUniformBuffer(std::shared_ptr<OpenglBuffer> buffer, size_t binding_point)
+    : buffer_(std::move(buffer)), binding_point_(binding_point) {
+  glBindBufferBase(GL_UNIFORM_BUFFER, static_cast<GLuint>(binding_point), buffer->renderer_id_);
 }
 
 }  // namespace kEn

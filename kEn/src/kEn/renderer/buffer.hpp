@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string_view>
 
 #define SHADER_FLOAT_SIZE 4
@@ -59,6 +60,7 @@ inline constexpr uint8_t get_component_count(shader_data_type type) {
 enum class BufferType : uint8_t {
   Vertex,
   Index,
+  Uniform,
 };
 
 struct BufferElement {
@@ -116,6 +118,18 @@ struct MutableBuffer : virtual public Buffer {
   virtual void set_data(const void* data, size_t size)          = 0;
 
   static std::shared_ptr<MutableBuffer> create(const void* data, size_t size);
+};
+
+struct UniformBuffer {
+  virtual ~UniformBuffer() = default;
+
+  virtual void bind() const   = 0;
+  virtual void unbind() const = 0;
+
+  virtual const std::shared_ptr<Buffer>& underlying_buffer() const = 0;
+  virtual size_t binding_point() const                             = 0;
+
+  static std::shared_ptr<UniformBuffer> create(const std::shared_ptr<Buffer>& buffer, size_t binding_point);
 };
 
 }  // namespace kEn
