@@ -7,9 +7,9 @@
 namespace kEn {
 
 inline void Attenuation::load(const std::string& name, Shader& shader) const {
-  shader.set_float(name + ".constant", constant);
-  shader.set_float(name + ".linear", linear);
-  shader.set_float(name + ".quadratic", quadratic);
+  shader.set_uniform(name + ".constant", constant);
+  shader.set_uniform(name + ".linear", linear);
+  shader.set_uniform(name + ".quadratic", quadratic);
 }
 
 void DirectionalLight::imgui() {
@@ -20,8 +20,8 @@ void DirectionalLight::imgui() {
 }
 
 void DirectionalLight::load(const std::string& name, Shader& shader) const {
-  shader.set_float3(name + ".color", color);
-  shader.set_float3(name + ".dir", transform().front());
+  shader.set_uniform(name + ".color", color);
+  shader.set_uniform(name + ".dir", transform().front());
 }
 
 std::shared_ptr<GameComponent> DirectionalLight::clone() const { return std::make_shared<DirectionalLight>(); }
@@ -44,11 +44,11 @@ void PointLight::imgui() {
 }
 
 void PointLight::load(const std::string& name, Shader& shader) const {
-  shader.set_float3(name + ".color", color);
+  shader.set_uniform(name + ".color", color);
 
   atten.load(name + ".atten", shader);
 
-  shader.set_float3(name + ".pos", transform().pos());
+  shader.set_uniform(name + ".pos", transform().pos());
 }
 
 std::shared_ptr<GameComponent> PointLight::clone() const {
@@ -81,14 +81,14 @@ void SpotLight::imgui() {
 }
 
 void SpotLight::load(const std::string& name, Shader& shader) const {
-  shader.set_float3(name + ".color", color);
+  shader.set_uniform(name + ".color", color);
 
   atten.load(name + ".atten", shader);
 
-  shader.set_float3(name + ".pos", transform().pos());
-  shader.set_float3(name + ".dir", mEn::normalize(transform().front()));
-  shader.set_float(name + ".cutoff", mEn::cos(inner_cutoff_angle));
-  shader.set_float(name + ".outerCutoff", mEn::cos(outer_cutoff_angle));
+  shader.set_uniform(name + ".pos", transform().pos());
+  shader.set_uniform(name + ".dir", mEn::normalize(transform().front()));
+  shader.set_uniform(name + ".cutoff", mEn::cos(inner_cutoff_angle));
+  shader.set_uniform(name + ".outerCutoff", mEn::cos(outer_cutoff_angle));
 }
 
 std::shared_ptr<GameComponent> SpotLight::clone() const {

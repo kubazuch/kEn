@@ -126,8 +126,8 @@ struct UniformBuffer {
   virtual void bind() const   = 0;
   virtual void unbind() const = 0;
 
-  virtual const std::shared_ptr<Buffer>& underlying_buffer() const = 0;
-  virtual size_t binding_point() const                             = 0;
+  virtual std::shared_ptr<Buffer> underlying_buffer() const = 0;
+  virtual size_t binding_point() const                      = 0;
 
   static std::shared_ptr<UniformBuffer> create(const std::shared_ptr<Buffer>& buffer, size_t binding_point);
 };

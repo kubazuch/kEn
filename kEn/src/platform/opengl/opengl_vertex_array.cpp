@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <kEn/core/assert.hpp>
 #include <kenpch.hpp>
+#include <memory>
 #include <platform/opengl/opengl_vertex_array.hpp>
 
 namespace kEn {
@@ -38,6 +39,10 @@ void OpenglVertexArray::bind() const { glBindVertexArray(renderer_id_); }
 void OpenglVertexArray::unbind() const { glBindVertexArray(0); }
 
 void OpenglVertexArray::add_vertex_buffer(const std::shared_ptr<Buffer>& vertex_buf) {
+  add_vertex_buffer(vertex_buf, 0);
+}
+
+void OpenglVertexArray::add_vertex_buffer(const std::shared_ptr<Buffer>& vertex_buf, size_t divisor) {
   KEN_CORE_ASSERT(!vertex_buf->layout().elements().empty(), "Vertex buffer must have layout!");
 
   glBindVertexArray(renderer_id_);
@@ -55,6 +60,7 @@ void OpenglVertexArray::add_vertex_buffer(const std::shared_ptr<Buffer>& vertex_
             vertex_buffer_index_, static_cast<GLint>(shader_data_types::get_component_count(element.type)),
             get_opengl_type(element.type), static_cast<GLboolean>(element.normalized ? GL_TRUE : GL_FALSE),
             static_cast<GLsizei>(layout.stride()), (const void*)element.offset);  // NOLINT
+        glVertexAttribDivisor(vertex_buffer_index_, divisor);
         vertex_buffer_index_++;
         break;
       }
@@ -69,6 +75,7 @@ void OpenglVertexArray::add_vertex_buffer(const std::shared_ptr<Buffer>& vertex_
                                static_cast<GLint>(shader_data_types::get_component_count(element.type)),
                                get_opengl_type(element.type), static_cast<GLsizei>(layout.stride()),
                                (const void*)element.offset);  // NOLINT
+        glVertexAttribDivisor(vertex_buffer_index_, divisor);
         vertex_buffer_index_++;
         break;
       }
@@ -82,7 +89,7 @@ void OpenglVertexArray::add_vertex_buffer(const std::shared_ptr<Buffer>& vertex_
               vertex_buffer_index_, count, get_opengl_type(element.type),
               static_cast<GLboolean>(element.normalized ? GL_TRUE : GL_FALSE), static_cast<GLsizei>(layout.stride()),
               (const void*)(element.offset + get_size(shader_data_types::float_) * count * i));  // NOLINT
-          glVertexAttribDivisor(vertex_buffer_index_, 1);
+          glVertexAttribDivisor(vertex_buffer_index_, divisor);
           vertex_buffer_index_++;
         }
         break;

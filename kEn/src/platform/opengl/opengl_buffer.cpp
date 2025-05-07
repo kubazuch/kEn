@@ -56,7 +56,7 @@ void OpenglMutableBuffer::set_data_int(const void* data, size_t size) const {
 
 OpenglUniformBuffer::OpenglUniformBuffer(std::shared_ptr<OpenglBuffer> buffer, size_t binding_point)
     : buffer_(std::move(buffer)), binding_point_(binding_point) {
-  glBindBufferBase(GL_UNIFORM_BUFFER, static_cast<GLuint>(binding_point), buffer->renderer_id_);
+  glBindBufferBase(GL_UNIFORM_BUFFER, static_cast<GLuint>(binding_point), buffer_->renderer_id_);
 }
 
 }  // namespace kEn

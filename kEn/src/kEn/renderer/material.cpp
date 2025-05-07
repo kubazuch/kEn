@@ -26,17 +26,17 @@ void Material::set_texture(texture_type_t type, const std::shared_ptr<kEn::Textu
 const std::shared_ptr<Texture2D>& Material::texture(texture_type_t type, size_t id) { return textures_[type][id]; }
 
 void Material::load(Shader& shader, const std::string& name) const {
-  shader.set_float(name + ".ka", ambient_factor);
-  shader.set_float(name + ".kd", diffuse_factor);
-  shader.set_float(name + ".ks", specular_factor);
-  shader.set_float(name + ".m", shininess_factor);
-  shader.set_bool(name + ".emissive", emissive);
+  shader.set_uniform(name + ".ka", ambient_factor);
+  shader.set_uniform(name + ".kd", diffuse_factor);
+  shader.set_uniform(name + ".ks", specular_factor);
+  shader.set_uniform(name + ".m", shininess_factor);
+  shader.set_uniform(name + ".emissive", emissive);
 
   for (const auto& [type, textures] : textures_) {
     for (size_t i = 0; i < textures.size(); i++) {
       std::stringstream ss;
       ss << "u_Material." << texture_type::name_of(type) << "[" << i << "]";
-      shader.set_int(ss.str(), static_cast<int>(i));
+      shader.set_uniform(ss.str(), static_cast<int>(i));
     }
   }
 }

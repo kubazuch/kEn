@@ -32,7 +32,7 @@ void Mesh::setup_mesh() {
 }
 
 void Mesh::render(Shader& shader, const Transform& transform) const {
-  shader.set_material("u_Material", material);
+  material.load(shader, "u_Material");
   material.bind();
   Renderer::submit(shader, *vao_, transform);
 }

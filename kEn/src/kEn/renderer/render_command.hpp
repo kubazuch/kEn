@@ -19,12 +19,25 @@ class RenderCommand {
                            RenderMode mode = RenderMode::Triangles) {
     renderer_api_->draw_indexed(vertex_array, index_count, mode);
   }
+
   static void draw(const VertexArray& vertex_array, uint32_t vertex_count, RenderMode mode = RenderMode::Triangles) {
     renderer_api_->draw(vertex_array, vertex_count, mode);
   }
+
+  static void draw_indexed_instanced(const VertexArray& vertex_array, size_t index_count, size_t instance_count,
+                                     RenderMode mode = RenderMode::Triangles) {
+    renderer_api_->draw_indexed_instanced(vertex_array, index_count, instance_count, mode);
+  }
+
+  static void draw_instanced(const VertexArray& vertex_array, uint32_t vertex_count, size_t instance_count,
+                             RenderMode mode = RenderMode::Triangles) {
+    renderer_api_->draw_instanced(vertex_array, vertex_count, instance_count, mode);
+  }
+
   static void set_tessellation_patch_vertices(uint32_t count = 4) {
     renderer_api_->set_tessellation_patch_vertices(count);
   }
+
   static void set_wireframe(bool wireframe) { renderer_api_->set_wireframe(wireframe); }
 
  private:

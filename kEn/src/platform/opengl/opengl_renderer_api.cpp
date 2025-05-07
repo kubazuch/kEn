@@ -1,5 +1,6 @@
 ﻿#include <glad/gl.h>
 
+#include <cstddef>
 #include <kEn/renderer/renderer_api.hpp>
 #include <kEn/renderer/vertex_array.hpp>
 #include <kenpch.hpp>
@@ -99,6 +100,19 @@ void OpenglRendererApi::draw_indexed(const VertexArray& vertex_array, size_t ind
 void OpenglRendererApi::draw(const VertexArray& vertex_array, size_t vertex_count, RendererApi::RenderMode mode) {
   vertex_array.bind();
   glDrawArrays(draw_mode(mode), 0, static_cast<GLsizei>(vertex_count));
+}
+
+void OpenglRendererApi::draw_indexed_instanced(const VertexArray& vertex_array, size_t index_count,
+                                               size_t instance_count, RendererApi::RenderMode mode) {
+  vertex_array.bind();
+  glDrawElementsInstanced(draw_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT, nullptr,
+                          static_cast<GLsizei>(instance_count));
+}
+
+void OpenglRendererApi::draw_instanced(const VertexArray& vertex_array, size_t vertex_count, size_t instance_count,
+                                       RendererApi::RenderMode mode) {
+  vertex_array.bind();
+  glDrawArraysInstanced(draw_mode(mode), 0, static_cast<GLsizei>(vertex_count), static_cast<GLsizei>(instance_count));
 }
 
 void OpenglRendererApi::set_tessellation_patch_vertices(size_t count) {

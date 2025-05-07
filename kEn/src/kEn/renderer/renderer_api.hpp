@@ -21,6 +21,10 @@ class RendererApi {
 
   virtual void draw_indexed(const VertexArray& vertex_array, size_t index_count, RenderMode mode) = 0;
   virtual void draw(const VertexArray& vertex_array, size_t vertex_count, RenderMode mode)        = 0;
+  virtual void draw_indexed_instanced(const VertexArray& vertex_array, size_t index_count, size_t instance_count,
+                                      RenderMode mode)                                            = 0;
+  virtual void draw_instanced(const VertexArray& vertex_array, size_t vertex_count, size_t instance_count,
+                              RenderMode mode)                                                    = 0;
 
   virtual void set_tessellation_patch_vertices(size_t count) = 0;
 

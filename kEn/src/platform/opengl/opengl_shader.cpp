@@ -66,7 +66,7 @@ std::string OpenglShader::read_shader_src(const std::filesystem::path& file) {
   return read_shader_src_internal(file, included_files);
 }
 
-GLuint OpenglShader::create_shader(const std::string& src, GLenum type) {
+GLuint OpenglShader::create_shader(std::string_view src, GLenum type) {
   const GLuint shader = glCreateShader(type);
 
   if (shader == 0) {
@@ -74,7 +74,7 @@ GLuint OpenglShader::create_shader(const std::string& src, GLenum type) {
     return 0;
   }
 
-  const GLchar* source = src.c_str();
+  const GLchar* source = src.data();
   glShaderSource(shader, 1, &source, nullptr);
   glCompileShader(shader);
 
@@ -134,7 +134,7 @@ void OpenglShader::link_shader() const {
   }
 }
 
-void OpenglShader::create_program(const std::string& vertex_src, const std::string& fragment_src) {
+void OpenglShader::create_program(std::string_view vertex_src, std::string_view fragment_src) {
   GLuint vertex_shader = create_shader(vertex_src, GL_VERTEX_SHADER);
   if (vertex_shader == 0) {
     return;
@@ -256,7 +256,7 @@ OpenglShader::OpenglShader(const std::filesystem::path& path, ShaderConfig confi
   }
 }
 
-OpenglShader::OpenglShader(std::string name, const std::string& vertex_src, const std::string& fragment_src)
+OpenglShader::OpenglShader(std::string_view name, std::string_view vertex_src, std::string_view fragment_src)
     : renderer_id_(0), name_(std::move(name)) {
   create_program(vertex_src, fragment_src);
 }
@@ -268,14 +268,15 @@ void OpenglShader::bind() const { glUseProgram(renderer_id_); }
 void OpenglShader::unbind() const { glUseProgram(0); }
 
 // <Uniforms>
-GLint OpenglShader::get_uniform_location(const std::string& name) const {
+GLint OpenglShader::get_uniform_location(std::string_view name) const {
   auto it = uniform_locations_.find(name);
   if (it != uniform_locations_.end()) {
     return it->second;
   }
 
-  const GLint location     = glGetUniformLocation(renderer_id_, name.c_str());
-  uniform_locations_[name] = location;
+  const std::string key(name);
+  const GLint location    = glGetUniformLocation(renderer_id_, key.c_str());
+  uniform_locations_[key] = location;
   if (location == -1) {
     KEN_CORE_ERROR("Unable to find uniform '{0}' in shader '{1}'", name, name_);
     return -1;
@@ -285,59 +286,39 @@ GLint OpenglShader::get_uniform_location(const std::string& name) const {
   return location;
 }
 
-void OpenglShader::set_bool(const std::string& name, bool value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform1i(renderer_id_, location, static_cast<GLint>(value));
+void OpenglShader::bind_uniform_buffer(std::string_view name, size_t binding) const {
+  GLuint block_index = glGetUniformBlockIndex(renderer_id_, name.data());
+  if (block_index == GL_INVALID_INDEX) {
+    KEN_CORE_ERROR("Unable to find uniform block '{0}' in shader '{1}'", name, name_);
+    return;
+  }
+
+  uniform_block_bindings_[block_index] = static_cast<GLuint>(binding);
+  glUniformBlockBinding(renderer_id_, block_index, binding);
+  KEN_CORE_DEBUG("Adding new uniform block '{0}' (index: {1}) in shader '{2}' to binding: {3}", name, block_index,
+                 name_, binding);
 }
 
-void OpenglShader::set_int(const std::string& name, int value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform1i(renderer_id_, location, value);
-}
+void OpenglShader::bind_uniform_buffer(std::string_view name, const UniformBuffer& ubo) const {
+  GLuint block_index = glGetUniformBlockIndex(renderer_id_, name.data());
+  if (block_index == GL_INVALID_INDEX) {
+    KEN_CORE_ERROR("Unable to find uniform block '{0}' in shader '{1}'", name, name_);
+    return;
+  }
 
-void OpenglShader::set_int_array(const std::string& name, int* values, size_t count) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform1iv(renderer_id_, location, static_cast<GLsizei>(count), values);
-}
+  GLint size = 0;
+  glGetActiveUniformBlockiv(renderer_id_, block_index, GL_UNIFORM_BLOCK_DATA_SIZE, &size);
 
-void OpenglShader::set_uint(const std::string& name, uint32_t value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform1ui(renderer_id_, location, value);
-}
+  // TODO(kuzu): handle padding
+  if (size != static_cast<GLint>(ubo.underlying_buffer()->size())) {
+    KEN_CORE_ERROR("Unexpected uniform block size: {0}. Expected: {1}", size, ubo.underlying_buffer()->size());
+    return;
+  }
 
-void OpenglShader::set_uint_array(const std::string& name, uint32_t* values, size_t count) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform1uiv(renderer_id_, location, static_cast<GLsizei>(count), values);
-}
-
-void OpenglShader::set_float(const std::string& name, float value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform1f(renderer_id_, location, value);
-}
-
-void OpenglShader::set_float2(const std::string& name, const mEn::Vec2& value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform2f(renderer_id_, location, value.x, value.y);
-}
-
-void OpenglShader::set_float3(const std::string& name, const mEn::Vec3& value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform3f(renderer_id_, location, value.x, value.y, value.z);
-}
-
-void OpenglShader::set_float4(const std::string& name, const mEn::Vec4& value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform4f(renderer_id_, location, value.x, value.y, value.z, value.w);
-}
-
-void OpenglShader::set_mat3(const std::string& name, const mEn::Mat3& value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniformMatrix3fv(renderer_id_, location, 1, GL_FALSE, value_ptr(value));
-}
-
-void OpenglShader::set_mat4(const std::string& name, const mEn::Mat4& value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniformMatrix4fv(renderer_id_, location, 1, GL_FALSE, value_ptr(value));
+  uniform_block_bindings_[block_index] = static_cast<GLuint>(ubo.binding_point());
+  glUniformBlockBinding(renderer_id_, block_index, uniform_block_bindings_[block_index]);
+  KEN_CORE_DEBUG("Adding new uniform block '{0}' (index: {1}) in shader '{2}' to binding: {3}", name, block_index,
+                 name_, ubo.binding_point());
 }
 
 // </Uniforms>

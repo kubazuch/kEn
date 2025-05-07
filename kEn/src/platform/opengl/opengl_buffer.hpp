@@ -1,6 +1,7 @@
 #pragma once
 
 #include <kEn/renderer/buffer.hpp>
+#include <memory>
 
 namespace kEn {
 
@@ -44,11 +45,11 @@ class OpenglUniformBuffer final : public UniformBuffer {
   void bind() const override { buffer_->bind(BufferType::Uniform); }
   void unbind() const override { buffer_->unbind(BufferType::Uniform); }
 
-  const std::shared_ptr<Buffer>& underlying_buffer() const override { return buffer_; };
+  std::shared_ptr<Buffer> underlying_buffer() const override { return std::static_pointer_cast<Buffer>(buffer_); };
   size_t binding_point() const override { return binding_point_; }
 
  private:
-  std::shared_ptr<Buffer> buffer_;
+  std::shared_ptr<OpenglBuffer> buffer_;
   size_t binding_point_;
 };
 

@@ -13,6 +13,7 @@ class OpenglVertexArray final : public VertexArray {
   void unbind() const override;
 
   void add_vertex_buffer(const std::shared_ptr<Buffer>& vertex_buf) override;
+  void add_vertex_buffer(const std::shared_ptr<Buffer>& vertex_buf, size_t divisor) override;
   void set_index_buffer(const std::shared_ptr<Buffer>& index_buf) override;
   size_t element_count() const override;
 

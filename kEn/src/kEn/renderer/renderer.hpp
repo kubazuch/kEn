@@ -27,11 +27,15 @@ class Renderer {
   static void submit(Shader& shader, const VertexArray& vertex_array, RenderMode mode = RenderMode::Triangles);
   static void submit(Shader& shader, const VertexArray& vertex_array, const Transform& transform,
                      RenderMode mode = RenderMode::Triangles);
+  static void submit_instanced(Shader& shader, const VertexArray& vertex_array, size_t instance_count,
+                               RenderMode mode = RenderMode::Triangles);
   static void submit_tessellated(Shader& shader, const VertexArray& vertex_array, const uint32_t& count,
                                  const Transform& transform);
 
  private:
   struct SceneData {
+    mEn::Mat4 V_matrix;
+    mEn::Mat4 P_matrix;
     mEn::Mat4 VP_matrix;
     mEn::Vec3 camera_pos;
     std::vector<std::shared_ptr<PointLight>> point_lights;
