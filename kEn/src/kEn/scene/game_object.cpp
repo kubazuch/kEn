@@ -12,6 +12,7 @@ std::unordered_map<IdView<GameObjectId>, GameObject*, IdViewHash<GameObjectId>> 
 GameObject::GameObject(mEn::Vec3 pos, mEn::Quat rot, mEn::Vec3 scale, std::string_view name)
     : transform_(pos, rot, scale), id_(game_object_registry_), name_(name) {
   registry_.emplace(id_, this);
+  transform_.set_owner(*this);
 }
 
 GameObject::~GameObject() {
@@ -127,4 +128,11 @@ void GameObject::on_event(BaseEvent& event) {
     }
   }
 }
+
+void GameObject::on_transform_changed() {
+  for (const auto& component : components_) {
+    component->on_transform_changed();
+  }
+}
+
 }  // namespace kEn

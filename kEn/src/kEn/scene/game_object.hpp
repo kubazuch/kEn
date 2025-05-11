@@ -49,6 +49,9 @@ class GameObject {
 
   static GameObject* find_by_id(size_t id) { return find_by_id(IdView<GameObjectId>(id, game_object_registry_)); }
 
+ private:
+  void on_transform_changed();
+
  protected:
   kEn::Transform transform_;
 
@@ -60,6 +63,8 @@ class GameObject {
   std::vector<std::shared_ptr<GameComponent>> components_;
 
   static std::unordered_map<IdView<GameObjectId>, GameObject*, IdViewHash<GameObjectId>> registry_;
+
+  friend class Transform;
 };
 
 }  // namespace kEn
