@@ -6,6 +6,8 @@
 
 namespace kEn {
 
+class GameObject;
+
 class Transform {
  public:
   explicit Transform(mEn::Vec3 pos = mEn::Vec3(), mEn::Quat rot = {1, 0, 0, 0}, mEn::Vec3 scale = {1, 1, 1});
@@ -15,10 +17,14 @@ class Transform {
   void unset_parent();
   const Transform& get_parent() const { return *parent_; }
 
+  void set_owner(GameObject& owner) { owner_ = owner; }
+  void unset_owner() { owner_ = std::nullopt; }
+  const GameObject& get_owner() const { return *owner_; }
+
   mEn::Mat4 local_to_parent_matrix() const;
   mEn::Mat4& local_to_world_matrix() const;
   mEn::Mat4 world_to_local_matrix() const;
-  void mark_dirty() const;
+  void set_dirty();
 
   void rotate(const mEn::Vec3& axis, float angle);
   void rotate(const mEn::Quat& rotation);
@@ -63,8 +69,6 @@ class Transform {
   mEn::Vec3 right() const;
   mEn::Vec3 up() const;
 
-  void set_dirty();
-
   Transform(const Transform&)                     = delete;
   Transform(Transform&&)                          = delete;
   Transform& operator=(const Transform&) noexcept = delete;
@@ -73,6 +77,7 @@ class Transform {
  private:
   std::optional<std::reference_wrapper<Transform>> parent_;
   std::vector<std::reference_wrapper<Transform>> children_;
+  std::optional<std::reference_wrapper<GameObject>> owner_;
 
   mEn::Vec3 pos_;
   mEn::Quat rot_;

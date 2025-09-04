@@ -24,6 +24,7 @@ class GameComponent {
   virtual void render(Shader& shader, double alpha)      = 0;
   virtual void imgui()                                   = 0;
   virtual void on_event(BaseEvent& event) { dispatcher_.dispatch(event); }
+  virtual void on_transform_changed() = 0;
 
   const GameObject& parent() const { return parent_.value(); }
   GameObject& parent() { return parent_.value(); }

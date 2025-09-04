@@ -19,6 +19,7 @@ class Camera : public GameComponent {
   void update(duration_t, duration_t) override {}
   void render(Shader&, double) override {}
   void imgui() override {}
+  void on_transform_changed() override {}
 
   virtual bool on_window_resize(WindowResizeEvent& event) = 0;
 
