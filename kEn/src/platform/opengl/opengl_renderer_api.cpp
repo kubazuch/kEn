@@ -28,6 +28,8 @@ constexpr GLenum draw_mode(RendererApi::RenderMode mode) {
       return GL_TRIANGLES;
     case RendererApi::RenderMode::Patches:
       return GL_PATCHES;
+    case kEn::RendererApi::RenderMode::LinesAdjacency:
+      return GL_LINES_ADJACENCY;
     default:
       KEN_CORE_ASSERT(false, "Unknown draw mode!");
       return 0;
