@@ -25,6 +25,7 @@ class OpenglBuffer : virtual public Buffer {
   BufferLayout layout_;
 
   friend class OpenglUniformBuffer;
+  friend class OpenglShaderStorageBuffer;
 };
 
 class OpenglMutableBuffer final : public MutableBuffer, public OpenglBuffer {
@@ -44,6 +45,21 @@ class OpenglUniformBuffer final : public UniformBuffer {
 
   void bind() const override { buffer_->bind(BufferType::Uniform); }
   void unbind() const override { buffer_->unbind(BufferType::Uniform); }
+
+  std::shared_ptr<Buffer> underlying_buffer() const override { return std::static_pointer_cast<Buffer>(buffer_); };
+  size_t binding_point() const override { return binding_point_; }
+
+ private:
+  std::shared_ptr<OpenglBuffer> buffer_;
+  size_t binding_point_;
+};
+
+class OpenglShaderStorageBuffer final : public ShaderStorageBuffer {
+ public:
+  OpenglShaderStorageBuffer(std::shared_ptr<OpenglBuffer> buffer, size_t binding_point);
+
+  void bind() const override { buffer_->bind(BufferType::ShaderStorage); }
+  void unbind() const override { buffer_->unbind(BufferType::ShaderStorage); }
 
   std::shared_ptr<Buffer> underlying_buffer() const override { return std::static_pointer_cast<Buffer>(buffer_); };
   size_t binding_point() const override { return binding_point_; }

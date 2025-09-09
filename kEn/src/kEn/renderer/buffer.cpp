@@ -46,4 +46,19 @@ std::shared_ptr<UniformBuffer> UniformBuffer::create(const std::shared_ptr<Buffe
   return nullptr;
 }
 
+std::shared_ptr<ShaderStorageBuffer> ShaderStorageBuffer::create(const std::shared_ptr<Buffer>& buffer,
+                                                                 size_t binding_point) {
+  switch (RendererApi::get_api()) {
+    case RendererApi::Api::None:
+      KEN_CORE_ASSERT(false, "Renderer has no api!");
+      return nullptr;
+    case RendererApi::Api::OpenGL:
+      return std::make_shared<OpenglShaderStorageBuffer>(std::dynamic_pointer_cast<OpenglBuffer>(buffer),
+                                                         binding_point);
+  }
+
+  KEN_CORE_ASSERT(false, "Unknown api!");
+  return nullptr;
+}
+
 }  // namespace kEn

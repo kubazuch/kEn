@@ -14,7 +14,7 @@ using GameObjectId = Id<GameObject>;
 
 class GameObject {
  public:
-  constexpr static size_t kMaxGameObjects = 3000;
+  constexpr static size_t kMaxGameObjects = 6400;
   static IdRegistry<GameObject> game_object_registry_;
 
   explicit GameObject(mEn::Vec3 pos = mEn::Vec3(), mEn::Quat rot = {1, 0, 0, 0}, mEn::Vec3 scale = {1, 1, 1},

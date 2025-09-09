@@ -57,11 +57,7 @@ inline constexpr uint8_t get_component_count(shader_data_type type) {
 #undef COMPS_ENTRY
 }  // namespace shader_data_types
 
-enum class BufferType : uint8_t {
-  Vertex,
-  Index,
-  Uniform,
-};
+enum class BufferType : uint8_t { Vertex, Index, Uniform, ShaderStorage };
 
 struct BufferElement {
   std::string_view name;
@@ -130,6 +126,18 @@ struct UniformBuffer {
   virtual size_t binding_point() const                      = 0;
 
   static std::shared_ptr<UniformBuffer> create(const std::shared_ptr<Buffer>& buffer, size_t binding_point);
+};
+
+struct ShaderStorageBuffer {
+  virtual ~ShaderStorageBuffer() = default;
+
+  virtual void bind() const   = 0;
+  virtual void unbind() const = 0;
+
+  virtual std::shared_ptr<Buffer> underlying_buffer() const = 0;
+  virtual size_t binding_point() const                      = 0;
+
+  static std::shared_ptr<ShaderStorageBuffer> create(const std::shared_ptr<Buffer>& buffer, size_t binding_point);
 };
 
 }  // namespace kEn
