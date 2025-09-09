@@ -181,6 +181,13 @@ int OpenglFramebuffer::read_pixel(uint32_t attachment_id, int x, int y) {
   return pixel_data;
 }
 
+void OpenglFramebuffer::read_pixels(uint32_t attachment_id, int x, int y, int width, int height, void* buffer) {
+  KEN_CORE_ASSERT(attachment_id < color_attachments_.size());
+
+  glReadBuffer(GL_COLOR_ATTACHMENT0 + attachment_id);
+  glReadPixels(x, y, width, height, GL_RED_INTEGER, GL_INT, buffer);
+}
+
 void OpenglFramebuffer::bind_attachment_as_texture(uint32_t attachment_id, uint32_t slot) const {
   KEN_CORE_ASSERT(attachment_id < color_attachments_.size());
 

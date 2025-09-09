@@ -17,6 +17,7 @@ class OpenglFramebuffer : public Framebuffer {
 
   void resize(uint32_t width, uint32_t height) override;
   int read_pixel(uint32_t attachment_id, int x, int y) override;
+  void read_pixels(uint32_t attachment_id, int x, int y, int width, int height, void* buffer) override;
 
   void bind_attachment_as_texture(uint32_t attachment_id, uint32_t slot) const override;
   void bind_depth_as_texture(uint32_t slot) const override;
