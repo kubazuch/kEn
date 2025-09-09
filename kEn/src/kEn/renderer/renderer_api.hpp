@@ -30,6 +30,8 @@ class RendererApi {
 
   virtual void set_wireframe(bool wireframe) = 0;
 
+  virtual int max_tesselation_level() const = 0;
+
   static Api get_api() { return api_; }
   static std::unique_ptr<RendererApi> create();
 

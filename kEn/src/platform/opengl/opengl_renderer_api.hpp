@@ -24,6 +24,11 @@ class OpenglRendererApi : public RendererApi {
 
   void set_tessellation_patch_vertices(size_t count) override;
   void set_wireframe(bool wireframe) override;
+
+  int max_tesselation_level() const override;
+
+ private:
+  mutable int max_tesselation_level_ = -1;
 };
 
 }  // namespace kEn

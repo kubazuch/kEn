@@ -40,6 +40,8 @@ class RenderCommand {
 
   static void set_wireframe(bool wireframe) { renderer_api_->set_wireframe(wireframe); }
 
+  static int max_tesselation_level() { return renderer_api_->max_tesselation_level(); }
+
  private:
   static std::unique_ptr<RendererApi> renderer_api_;
 };

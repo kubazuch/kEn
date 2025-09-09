@@ -125,4 +125,13 @@ void OpenglRendererApi::set_wireframe(bool wireframe) {
   glPolygonMode(GL_FRONT_AND_BACK, static_cast<GLenum>(wireframe ? GL_LINE : GL_FILL));
 }
 
+int OpenglRendererApi::max_tesselation_level() const {
+  if (max_tesselation_level_ > 0) {
+    return max_tesselation_level_;
+  }
+
+  glGetIntegerv(GL_MAX_TESS_GEN_LEVEL, &max_tesselation_level_);
+  return max_tesselation_level_;
+}
+
 }  // namespace kEn
