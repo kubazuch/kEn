@@ -38,6 +38,9 @@ void Renderer::prepare(Shader& shader) {
 }
 
 void Renderer::submit(Shader& shader, const VertexArray& vertex_array, RenderMode mode) {
+  shader.set_uniform("u_VP", scene_data_->VP_matrix);
+  shader.set_uniform("u_CameraPos", scene_data_->camera_pos);
+
   shader.bind();
   RenderCommand::draw_indexed(vertex_array, vertex_array.element_count(), mode);
 }
