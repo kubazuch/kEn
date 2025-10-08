@@ -1,9 +1,10 @@
 #include <filesystem>
-#include <glm/gtc/type_ptr.hpp>
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kenpch.hpp>
 #include <platform/opengl/opengl_shader.hpp>
+#include <string_view>
+#include <unordered_map>
 
 namespace kEn {
 
@@ -28,7 +29,7 @@ std::string OpenglShader::read_shader_src_internal(const std::filesystem::path& 
   std::unique_ptr<std::istream> stream;
   if (internal) {
     auto it = kInternalLibs.find(filePath.string());
-    stream  = std::make_unique<std::stringstream>(it->second);
+    stream  = std::make_unique<std::stringstream>(std::string(it->second));
   } else {
     auto file = std::make_unique<std::ifstream>(filePath);
     if (!file->is_open()) {
@@ -65,7 +66,7 @@ std::string OpenglShader::read_shader_src(const std::filesystem::path& file) {
   return read_shader_src_internal(file, included_files);
 }
 
-GLuint OpenglShader::create_shader(const std::string& src, GLenum type) {
+GLuint OpenglShader::create_shader(std::string_view src, GLenum type) {
   const GLuint shader = glCreateShader(type);
 
   if (shader == 0) {
@@ -73,7 +74,7 @@ GLuint OpenglShader::create_shader(const std::string& src, GLenum type) {
     return 0;
   }
 
-  const GLchar* source = src.c_str();
+  const GLchar* source = src.data();
   glShaderSource(shader, 1, &source, nullptr);
   glCompileShader(shader);
 
@@ -133,7 +134,7 @@ void OpenglShader::link_shader() const {
   }
 }
 
-void OpenglShader::create_program(const std::string& vertex_src, const std::string& fragment_src) {
+void OpenglShader::create_program(std::string_view vertex_src, std::string_view fragment_src) {
   GLuint vertex_shader = create_shader(vertex_src, GL_VERTEX_SHADER);
   if (vertex_shader == 0) {
     return;
@@ -255,7 +256,7 @@ OpenglShader::OpenglShader(const std::filesystem::path& path, ShaderConfig confi
   }
 }
 
-OpenglShader::OpenglShader(std::string name, const std::string& vertex_src, const std::string& fragment_src)
+OpenglShader::OpenglShader(std::string_view name, std::string_view vertex_src, std::string_view fragment_src)
     : renderer_id_(0), name_(std::move(name)) {
   create_program(vertex_src, fragment_src);
 }
@@ -267,14 +268,15 @@ void OpenglShader::bind() const { glUseProgram(renderer_id_); }
 void OpenglShader::unbind() const { glUseProgram(0); }
 
 // <Uniforms>
-GLint OpenglShader::get_uniform_location(const std::string& name) const {
+GLint OpenglShader::get_uniform_location(std::string_view name) const {
   auto it = uniform_locations_.find(name);
   if (it != uniform_locations_.end()) {
     return it->second;
   }
 
-  const GLint location     = glGetUniformLocation(renderer_id_, name.c_str());
-  uniform_locations_[name] = location;
+  const std::string key(name);
+  const GLint location    = glGetUniformLocation(renderer_id_, key.c_str());
+  uniform_locations_[key] = location;
   if (location == -1) {
     KEN_CORE_ERROR("Unable to find uniform '{0}' in shader '{1}'", name, name_);
     return -1;
@@ -284,174 +286,44 @@ GLint OpenglShader::get_uniform_location(const std::string& name) const {
   return location;
 }
 
-void OpenglShader::set_bool(const std::string& name, bool value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform1i(renderer_id_, location, static_cast<GLint>(value));
+void OpenglShader::bind_uniform_buffer(std::string_view name, size_t binding) const {
+  GLuint block_index = glGetUniformBlockIndex(renderer_id_, name.data());
+  if (block_index == GL_INVALID_INDEX) {
+    KEN_CORE_ERROR("Unable to find uniform block '{0}' in shader '{1}'", name, name_);
+    return;
+  }
+
+  uniform_block_bindings_[block_index] = static_cast<GLuint>(binding);
+  glUniformBlockBinding(renderer_id_, block_index, binding);
+  KEN_CORE_DEBUG("Adding new uniform block '{0}' (index: {1}) in shader '{2}' to binding: {3}", name, block_index,
+                 name_, binding);
 }
 
-void OpenglShader::set_int(const std::string& name, int value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform1i(renderer_id_, location, value);
-}
+void OpenglShader::bind_uniform_buffer(std::string_view name, const UniformBuffer& ubo) const {
+  GLuint block_index = glGetUniformBlockIndex(renderer_id_, name.data());
+  if (block_index == GL_INVALID_INDEX) {
+    KEN_CORE_ERROR("Unable to find uniform block '{0}' in shader '{1}'", name, name_);
+    return;
+  }
 
-void OpenglShader::set_int_array(const std::string& name, int* values, size_t count) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform1iv(renderer_id_, location, static_cast<GLsizei>(count), values);
-}
+  GLint size = 0;
+  glGetActiveUniformBlockiv(renderer_id_, block_index, GL_UNIFORM_BLOCK_DATA_SIZE, &size);
 
-void OpenglShader::set_uint(const std::string& name, uint32_t value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform1ui(renderer_id_, location, value);
-}
+  // TODO(kuzu): handle padding
+  if (size != static_cast<GLint>(ubo.underlying_buffer()->size())) {
+    KEN_CORE_ERROR("Unexpected uniform block size: {0}. Expected: {1}", size, ubo.underlying_buffer()->size());
+    return;
+  }
 
-void OpenglShader::set_uint_array(const std::string& name, uint32_t* values, size_t count) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform1uiv(renderer_id_, location, static_cast<GLsizei>(count), values);
-}
-
-void OpenglShader::set_float(const std::string& name, float value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform1f(renderer_id_, location, value);
-}
-
-void OpenglShader::set_float2(const std::string& name, const glm::vec2& value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform2f(renderer_id_, location, value.x, value.y);
-}
-
-void OpenglShader::set_float3(const std::string& name, const glm::vec3& value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform3f(renderer_id_, location, value.x, value.y, value.z);
-}
-
-void OpenglShader::set_float4(const std::string& name, const glm::vec4& value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniform4f(renderer_id_, location, value.x, value.y, value.z, value.w);
-}
-
-void OpenglShader::set_mat3(const std::string& name, const glm::mat3& value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniformMatrix3fv(renderer_id_, location, 1, GL_FALSE, value_ptr(value));
-}
-
-void OpenglShader::set_mat4(const std::string& name, const glm::mat4& value) {
-  GLint location = get_uniform_location(name);
-  glProgramUniformMatrix4fv(renderer_id_, location, 1, GL_FALSE, value_ptr(value));
+  uniform_block_bindings_[block_index] = static_cast<GLuint>(ubo.binding_point());
+  glUniformBlockBinding(renderer_id_, block_index, uniform_block_bindings_[block_index]);
+  KEN_CORE_DEBUG("Adding new uniform block '{0}' (index: {1}) in shader '{2}' to binding: {3}", name, block_index,
+                 name_, ubo.binding_point());
 }
 
 // </Uniforms>
 
-const std::unordered_map<std::string, std::string> OpenglShader::kInternalLibs = {
-    {"material",
-     R"(const int MAX_TEXTURES = 5;
-
-struct material {
-	float ka;
-	float kd;
-	float ks;
-	float m;
-
-	bool emissive;
-
-	int diffuse_count;
-	sampler2D diffuse[MAX_TEXTURES];
-};)"},
-    {"light",
-     R"(#include "material"
-struct attenuation {
-	float constant;
-	float linear;
-	float quadratic;
-};
-
-struct directional_light {
-	vec3 color;
-
-	vec3 dir;
-}; 
-
-struct point_light {
-	vec3 color;
-
-	attenuation atten;
-
-	vec3 pos;
-}; 
-
-struct spot_light {
-	vec3 color;
-
-	attenuation atten;
-
-	vec3 pos;
-	vec3 dir;
-	float cutoff;
-	float outerCutoff;
-}; 
-
-const int MAX_LIGHTS = 15;
-
-uniform bool u_UseBlinn = false;
-
-float calc_attenuation(attenuation atten, float dist) {
-	return 1.0 / (atten.constant + dist * (atten.linear + dist * atten.quadratic));
-}
-
-vec2 calc_light(vec3 light_dir, vec3 normal, vec3 view_dir) {
-	float diff = max(dot(normal, light_dir), 0.0);
-
-	vec3 reflect_dir = reflect(-light_dir, normal);
-	float spec = max(dot(view_dir, reflect_dir), 0.0);
-	
-	return vec2(diff, spec);
-}
-
-vec2 calc_light_blinn(vec3 light_dir, vec3 normal, vec3 view_dir) {
-	float diff = max(dot(normal, light_dir), 0.0);
-
-	vec3 halfway_dir = normalize(light_dir + view_dir);
-	float spec = max(dot(normal, halfway_dir), 0.0);
-	
-	return vec2(diff, spec);
-}
-
-vec3 calc_point_light(point_light light, material mat, vec3 normal, vec3 frag_pos, vec3 view_dir) {
-	vec2 factors = u_UseBlinn ? calc_light_blinn(normalize(light.pos - frag_pos), normal, view_dir) : calc_light(normalize(light.pos - frag_pos), normal, view_dir);
-
-	vec3 diffuse = mat.kd * factors.x * light.color;
-	vec3 specular = mat.ks * pow(factors.y, u_UseBlinn ? 4*mat.m : mat.m) * light.color;
-
-	return (diffuse + specular) * calc_attenuation(light.atten, length(light.pos - frag_pos));
-}
-
-vec3 calc_dir_light(directional_light light, material mat, vec3 normal, vec3 view_dir) {
-	vec2 factors = u_UseBlinn ? calc_light_blinn(normalize(-light.dir), normal, view_dir) : calc_light(normalize(-light.dir), normal, view_dir);
-
-	vec3 diffuse = mat.kd * factors.x * light.color;
-	vec3 specular = mat.ks * pow(factors.y, u_UseBlinn ? 4*mat.m : mat.m) * light.color;
-
-	return (diffuse + specular);
-}
-
-vec3 calc_spot_light(spot_light light, material mat, vec3 normal, vec3 frag_pos, vec3 view_dir) {
-	vec3 light_dir = normalize(light.pos - frag_pos);
-
-	float theta = dot(light_dir, normalize(-light.dir));
-	float epsilon = light.cutoff - light.outerCutoff;
-	float intensity;
-	if(epsilon == 0)
-		intensity = theta > light.cutoff ? 1 : 0;
-	else
-		intensity = clamp((theta - light.outerCutoff) / epsilon, 0.0, 1.0);    
-
-	vec2 factors = u_UseBlinn ? calc_light_blinn(normalize(light.pos - frag_pos), normal, view_dir) : calc_light(normalize(light.pos - frag_pos), normal, view_dir);
-
-	vec3 diffuse = mat.kd * factors.x * light.color;
-	vec3 specular = mat.ks * pow(factors.y, u_UseBlinn ? 4*mat.m : mat.m) * light.color;
-
-	return (diffuse + specular) * calc_attenuation(light.atten, length(light.pos - frag_pos)) * intensity;
-}
-)"},
-};
+#include <shaders.hpp>
+const std::unordered_map<std::string_view, std::string_view> OpenglShader::kInternalLibs = GENERATED_SHADER_MAP;
 
 }  // namespace kEn

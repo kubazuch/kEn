@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <kEn/event/event.hpp>
 #include <string>
 #include <string_view>
@@ -16,7 +17,7 @@ class Layer {
   virtual void on_attach() {}
   virtual void on_detach() {}
   virtual void on_update(duration_t /*delta*/, duration_t /*time*/) {}
-  virtual void on_render(/*TODO: renderer*/) {}
+  virtual void on_render(double /*alpha*/) {}
   virtual void on_imgui() {}
   virtual void on_event(BaseEvent& /*event*/) {}
 

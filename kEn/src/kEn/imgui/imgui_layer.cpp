@@ -12,7 +12,17 @@
 
 namespace kEn {
 
-ImguiLayer::ImguiLayer() : Layer("ImGuiLayer") {}
+ImguiLayer::ImguiLayer() : Layer("ImGuiLayer") {
+  dispatcher_.subscribe<MouseButtonPressedEvent>(KEN_EVENT_SUBSCRIBER(on_mouse_event));
+  dispatcher_.subscribe<MouseButtonReleasedEvent>(KEN_EVENT_SUBSCRIBER(on_mouse_event));
+  dispatcher_.subscribe<MouseMoveEvent>(KEN_EVENT_SUBSCRIBER(on_mouse_event));
+  dispatcher_.subscribe<MouseScrollEvent>(KEN_EVENT_SUBSCRIBER(on_mouse_event));
+  dispatcher_.subscribe<MouseDragEvent>(KEN_EVENT_SUBSCRIBER(on_mouse_event));
+
+  dispatcher_.subscribe<KeyPressedEvent>(KEN_EVENT_SUBSCRIBER(on_keyboard_event));
+  dispatcher_.subscribe<KeyReleasedEvent>(KEN_EVENT_SUBSCRIBER(on_keyboard_event));
+  dispatcher_.subscribe<KeyTypedEvent>(KEN_EVENT_SUBSCRIBER(on_keyboard_event));
+}
 
 // https://github.com/ocornut/imgui/wiki/Getting-Started#example-if-you-are-using-glfw--openglwebgl
 void ImguiLayer::on_attach() {
@@ -47,24 +57,7 @@ void ImguiLayer::on_imgui() {
   // 	ImGui::ShowDemoWindow(&show); // Show demo window! :)
 }
 
-void ImguiLayer::on_event(BaseEvent& event) {
-  ImGuiIO& io = ImGui::GetIO();
-  EventDispatcher dispatcher;
-
-  auto on_mouse_event = [&](BaseEvent&) { return io.WantCaptureMouse; };
-
-  auto on_keyboard_event = [&](BaseEvent&) { return io.WantCaptureKeyboard; };
-
-  dispatcher.subscribe<MouseButtonPressedEvent>(on_mouse_event);
-  dispatcher.subscribe<MouseButtonReleasedEvent>(on_mouse_event);
-  dispatcher.subscribe<MouseMoveEvent>(on_mouse_event);
-  dispatcher.subscribe<MouseScrollEvent>(on_mouse_event);
-  dispatcher.subscribe<KeyPressedEvent>(on_keyboard_event);
-  dispatcher.subscribe<KeyReleasedEvent>(on_keyboard_event);
-  dispatcher.subscribe<KeyTypedEvent>(on_keyboard_event);
-
-  dispatcher.dispatch(event);
-}
+void ImguiLayer::on_event(BaseEvent& event) { dispatcher_.dispatch(event); }
 
 void ImguiLayer::begin() {  // NOLINT
   // (Your code calls glfwPollEvents())
@@ -94,6 +87,16 @@ void ImguiLayer::end() {  // NOLINT
     ImGui::RenderPlatformWindowsDefault();
     glfwMakeContextCurrent(context);
   }
+}
+
+bool ImguiLayer::on_mouse_event(BaseEvent&) {  // NOLINT
+  const ImGuiIO& io = ImGui::GetIO();
+  return io.WantCaptureMouse;
+}
+
+bool ImguiLayer::on_keyboard_event(BaseEvent&) {  // NOLINT
+  const ImGuiIO& io = ImGui::GetIO();
+  return io.WantCaptureKeyboard;
 }
 
 }  // namespace kEn

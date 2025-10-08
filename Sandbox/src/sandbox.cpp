@@ -15,8 +15,8 @@ class FizzbuzzLayer : public kEn::Layer {
  public:
   FizzbuzzLayer() : Layer("FizzBuzz") {
     // camera_ = kEn::orthographic_camera(-1.F, 1.F, -1.F, 1.F);
-    camera_ = std::make_shared<kEn::PerspectiveCamera>(glm::radians(70.F), 1.0F, 0.01F, 100.F);
-    object_ = std::make_shared<kEn::GameObject>(glm::vec3{0, 0, 2});
+    camera_ = std::make_shared<kEn::PerspectiveCamera>(mEn::radians(70.F), 1.0F, 0.01F, 100.F);
+    object_ = std::make_shared<kEn::GameObject>(mEn::Vec3{0, 0, 2});
     object_->add_component(camera_);
 
     float vertices[4 * (3 + 4)] = {
@@ -28,7 +28,7 @@ class FizzbuzzLayer : public kEn::Layer {
 
     unsigned int indices[2 * 3] = {
         0, 1, 2,  //
-        1, 2, 3   //
+        1, 3, 2   //
     };
 
     vertex_array_      = kEn::VertexArray::create();
@@ -50,7 +50,7 @@ class FizzbuzzLayer : public kEn::Layer {
 
   void on_update(kEn::duration_t delta, kEn::duration_t time) override {
     const float seconds_delta = std::chrono::duration<float>(delta).count();
-    const float seconds_time = std::chrono::duration<float>(time).count();
+    const float seconds_time  = std::chrono::duration<float>(time).count();
 
     shader_->bind();
     shader_->set_float("iTime", seconds_time);

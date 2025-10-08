@@ -1,7 +1,10 @@
 #pragma once
-#include <glm/glm.hpp>
+#include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/material.hpp>
 #include <kEn/scene/light.hpp>
+#include <mEn.hpp>
+#include <span>
+#include <string_view>
 
 namespace kEn {
 
@@ -19,31 +22,28 @@ class Shader {
   virtual void unbind() const = 0;
 
   // <Uniforms>
-  virtual void set_bool(const std::string& name, bool value) = 0;
+  virtual void set_uniform(std::string_view name, bool value)             = 0;
+  virtual void set_uniform(std::string_view name, int value)              = 0;
+  virtual void set_uniform(std::string_view name, uint32_t value)         = 0;
+  virtual void set_uniform(std::string_view name, float value)            = 0;
+  virtual void set_uniform(std::string_view name, const mEn::Vec2& value) = 0;
+  virtual void set_uniform(std::string_view name, const mEn::Vec3& value) = 0;
+  virtual void set_uniform(std::string_view name, const mEn::Vec4& value) = 0;
+  virtual void set_uniform(std::string_view name, const mEn::Mat3& value) = 0;
+  virtual void set_uniform(std::string_view name, const mEn::Mat4& value) = 0;
 
-  virtual void set_int(const std::string& name, int value)                       = 0;
-  virtual void set_int_array(const std::string& name, int* values, size_t count) = 0;
+  virtual void set_uniform_array(std::string_view name, std::span<int> values)      = 0;
+  virtual void set_uniform_array(std::string_view name, std::span<uint32_t> values) = 0;
 
-  virtual void set_uint(const std::string& name, uint32_t value)                       = 0;
-  virtual void set_uint_array(const std::string& name, uint32_t* values, size_t count) = 0;
-
-  virtual void set_float(const std::string& name, float value)             = 0;
-  virtual void set_float2(const std::string& name, const glm::vec2& value) = 0;
-  virtual void set_float3(const std::string& name, const glm::vec3& value) = 0;
-  virtual void set_float4(const std::string& name, const glm::vec4& value) = 0;
-
-  virtual void set_mat3(const std::string& name, const glm::mat3& value) = 0;
-  virtual void set_mat4(const std::string& name, const glm::mat4& value) = 0;
-
-  virtual void set_material(const std::string& name, const Material& value) { value.load(*this, name); }
-  virtual void set_light(const std::string& name, const BaseLight& value) { value.load(name, *this); }
+  virtual void bind_uniform_buffer(std::string_view name, size_t binding) const           = 0;
+  virtual void bind_uniform_buffer(std::string_view name, const UniformBuffer& ubo) const = 0;
   // </Uniforms>
 
-  virtual const std::string& get_name() = 0;
+  virtual std::string_view get_name() = 0;
 
   static const std::filesystem::path kShaderPath;
-  static std::shared_ptr<Shader> create(const std::string& name, const std::string& vertex_src,
-                                        const std::string& fragment_src);
+  static std::shared_ptr<Shader> create(std::string_view name, std::string_view vertex_src,
+                                        std::string_view fragment_src);
   static std::shared_ptr<Shader> create(const std::filesystem::path& path, ShaderConfig config = ShaderConfig());
 };
 

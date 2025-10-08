@@ -17,12 +17,12 @@ ObjModel::ObjModel(const std::filesystem::path& path) {
   vertex_array_ = VertexArray::create();
 
   std::ifstream file(kModelPath / path);
-  std::vector<glm::vec3> positions;
-  std::vector<glm::vec2> texture_coords;
-  std::vector<glm::vec3> normals;
+  std::vector<mEn::Vec3> positions;
+  std::vector<mEn::Vec2> texture_coords;
+  std::vector<mEn::Vec3> normals;
 
   std::vector<ObjVertex> final_vertices;
-  std::vector<unsigned int> final_indices;
+  std::vector<uint32_t> final_indices;
 
   std::string curline;
   while (std::getline(file, curline)) {
@@ -33,7 +33,7 @@ ObjModel::ObjModel(const std::filesystem::path& path) {
     // pos
     if (first == "v") {
       std::string tok;
-      glm::vec3 pos;
+      mEn::Vec3 pos;
       iss >> tok;
       pos.x = std::stof(tok);
       iss >> tok;
@@ -47,7 +47,7 @@ ObjModel::ObjModel(const std::filesystem::path& path) {
     // normal
     if (first == "vn") {
       std::string tok;
-      glm::vec3 norm;
+      mEn::Vec3 norm;
       iss >> tok;
       norm.x = std::stof(tok);
       iss >> tok;
@@ -61,7 +61,7 @@ ObjModel::ObjModel(const std::filesystem::path& path) {
     // texture coord
     if (first == "vt") {
       std::string tok;
-      glm::vec3 tex;
+      mEn::Vec2 tex;
       iss >> tok;
       tex.x = std::stof(tok);
       iss >> tok;
@@ -95,7 +95,7 @@ ObjModel::ObjModel(const std::filesystem::path& path) {
 
         if (is.size() == 1) {
           vert.pos       = positions[std::stoi(is[0]) - 1];
-          vert.tex_coord = glm::vec2(0, 0);
+          vert.tex_coord = mEn::Vec2(0, 0);
           vertices.push_back(vert);
         } else if (is.size() == 2) {
           vert.pos       = positions[std::stoi(is[0]) - 1];
@@ -103,7 +103,7 @@ ObjModel::ObjModel(const std::filesystem::path& path) {
           vertices.push_back(vert);
         } else if (is[1].empty()) {
           vert.pos       = positions[std::stoi(is[0]) - 1];
-          vert.tex_coord = glm::vec2(0, 0);
+          vert.tex_coord = mEn::Vec2(0, 0);
           vert.normal    = normals[std::stoi(is[2]) - 1];
           normal         = true;
           vertices.push_back(vert);
@@ -117,20 +117,20 @@ ObjModel::ObjModel(const std::filesystem::path& path) {
       }
 
       if (!normal) {
-        glm::vec3 a    = vertices[0].pos - vertices[1].pos;
-        glm::vec3 b    = vertices[2].pos - vertices[1].pos;
-        glm::vec3 norm = glm::cross(a, b);
+        mEn::Vec3 a    = vertices[0].pos - vertices[1].pos;
+        mEn::Vec3 b    = vertices[2].pos - vertices[1].pos;
+        mEn::Vec3 norm = mEn::cross(a, b);
 
         for (int i = 0; i < 3; i++) {
           vertices[i].normal = norm;
         }
       }
 
-      size_t id0 = final_vertices.size();
+      uint32_t id0 = final_vertices.size();
       for (int i = 0; i < 3; i++) {
         final_vertices.push_back(vertices[i]);
 
-        size_t ind = id0 + i;
+        uint32_t ind = id0 + i;
         final_indices.push_back(ind);
       }
     }
@@ -157,9 +157,9 @@ ObjModel::ObjModel(const std::filesystem::path& path) {
     offset += stride;
   }
 
-  auto vertex_buffer = VertexBuffer::create(vertices.get(), obj_layout_.stride() * final_vertices.size());
+  auto vertex_buffer = Buffer::create(vertices.get(), obj_layout_.stride() * final_vertices.size());
   vertex_buffer->set_layout(obj_layout_);
-  auto index_buffer = IndexBuffer::create(final_indices.data(), final_indices.size());
+  auto index_buffer = Buffer::create(final_indices.data(), final_indices.size() * sizeof(uint32_t));
 
   vertex_array_->add_vertex_buffer(vertex_buffer);
   vertex_array_->set_index_buffer(index_buffer);

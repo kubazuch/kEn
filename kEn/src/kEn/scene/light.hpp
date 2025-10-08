@@ -1,8 +1,8 @@
 #pragma once
-#include <glm/vec3.hpp>
 #include <kEn/core/core.hpp>
 #include <kEn/core/transform.hpp>
 #include <kEn/scene/component.hpp>
+#include <mEn/vec3.hpp>
 
 namespace kEn {
 
@@ -18,25 +18,25 @@ struct Attenuation {
 
 class BaseLight : public GameComponent {
  public:
-  BaseLight()                         = default;
-  virtual ~BaseLight()                = default;
-  virtual void imgui(bool subsection) = 0;
+  BaseLight()          = default;
+  virtual ~BaseLight() = default;
 
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override = 0;
-  void update(float) override {}
-  void render(Shader&) override {}
+  void update(duration_t, duration_t) override {}
+  void render(Shader&, double) override {}
+  void on_transform_changed() override {}
 
   VIRTUAL_FIVE(BaseLight);
 
   virtual void load(const std::string& name, Shader& shader) const = 0;
 
  public:
-  glm::vec3 color = glm::vec3{1.F};
+  mEn::Vec3 color{1.F};
 };
 
 class DirectionalLight : public BaseLight {
  public:
-  void imgui(bool subsection) override;
+  void imgui() override;
 
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
@@ -45,7 +45,7 @@ class DirectionalLight : public BaseLight {
 
 class PointLight : public BaseLight {
  public:
-  void imgui(bool subsection) override;
+  void imgui() override;
 
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
@@ -57,7 +57,7 @@ class PointLight : public BaseLight {
 
 class SpotLight : public BaseLight {
  public:
-  void imgui(bool subsection) override;
+  void imgui() override;
 
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 

@@ -3,8 +3,11 @@
 #include <GLFW/glfw3.h>
 
 #include <kEn/core/core.hpp>
+#include <kEn/core/mod_keys.hpp>
 #include <kEn/core/window.hpp>
 #include <kEn/renderer/graphics_context.hpp>
+
+#include "mEn/vec2.hpp"
 
 namespace kEn {
 
@@ -17,6 +20,7 @@ class WindowsWindow : public Window {
 
   inline unsigned int width() const override { return data_.width; }
   inline unsigned int height() const override { return data_.height; }
+  inline mEn::Vec2 size() const override { return {data_.width, data_.height}; }
 
   inline void set_event_handler(const handler_t& handler) override { data_.handler = handler; }
 
@@ -42,6 +46,11 @@ class WindowsWindow : public Window {
     unsigned int width, height;
 
     bool vsync;
+
+    bool dragging[GLFW_MOUSE_BUTTON_LAST];
+    float drag_from_x[GLFW_MOUSE_BUTTON_LAST];
+    float drag_from_y[GLFW_MOUSE_BUTTON_LAST];
+    ModKeys active_mods;
 
     handler_t handler;
   };

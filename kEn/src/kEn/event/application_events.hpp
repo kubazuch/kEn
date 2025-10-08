@@ -1,16 +1,16 @@
 #pragma once
 
 #include <kEn/event/event.hpp>
-#include <sstream>
+#include <ostream>
 
 namespace kEn {
 
 class WindowCloseEvent : public Event<WindowCloseEvent> {
  public:
   WindowCloseEvent() = default;
-
-  const char* name() const override { return "WindowCloseEvent"; }
 };
+
+inline std::ostream& operator<<(std::ostream& os, const WindowCloseEvent& /*e*/) { return os << "WindowCloseEvent"; }
 
 class WindowResizeEvent : public Event<WindowResizeEvent> {
  public:
@@ -19,15 +19,12 @@ class WindowResizeEvent : public Event<WindowResizeEvent> {
   unsigned int width() const { return width_; }
   unsigned int height() const { return height_; }
 
-  const char* name() const override { return "WindowResizeEvent"; }
-  std::string to_string() const override {
-    std::stringstream ss;
-    ss << name() << ": " << width_ << " x " << height_;
-    return ss.str();
-  }
-
  private:
   unsigned int width_, height_;
 };
+
+inline std::ostream& operator<<(std::ostream& os, const WindowResizeEvent& e) {
+  return os << "WindowResizeEvent: " << e.width() << "x" << e.height();
+}
 
 }  // namespace kEn

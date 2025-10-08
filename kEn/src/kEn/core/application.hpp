@@ -32,14 +32,14 @@ class Application {
 
  private:
   void run();
-  void update(duration_t delta);
-  void render();
+  void update();
+  void render(double alpha);
 
   bool on_window_close(WindowCloseEvent& e);
   bool on_window_resize(WindowResizeEvent& e);
 
  public:
-  static constexpr duration_t kTickTime = 8333us;  // 120 TPS = 8.(3) ms/t
+  static constexpr duration_t kTickTime = 16667us;  // 60 TPS = 16.(6) ms/t
 
  private:
   std::unique_ptr<Window> window_;

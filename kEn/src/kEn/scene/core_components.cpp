@@ -6,7 +6,7 @@
 
 namespace kEn {
 
-void ModelComponent::render(Shader& shader) {
+void ModelComponent::render(Shader& shader, double alpha) {
   if (!parent_.has_value()) {
     return;
   }
@@ -21,7 +21,7 @@ FreeLookComponent::FreeLookComponent(float sensitivity) : sensitivity_(sensitivi
   window_center_     = {main.width() / 2, main.height() / 2};
 }
 
-void FreeLookComponent::update(float) {
+void FreeLookComponent::update(duration_t delta, duration_t time) {
   if (kEn::Input::is_key_pressed(kEn::key::escape)) {
     kEn::Input::set_cursor_visible(true);
     update_ = false;
@@ -42,19 +42,21 @@ void FreeLookComponent::update(float) {
   bool rot_x     = delta_pos.y != 0;
 
   if (rot_y) {
-    yaw_ -= glm::radians(delta_pos.x) * sensitivity_;
+    yaw_ -= mEn::radians(delta_pos.x) * sensitivity_;
   }
 
   if (rot_x) {
-    pitch_ -= glm::radians(delta_pos.y) * sensitivity_;
-    pitch_ = glm::clamp(pitch_, -glm::pi<float>() / 2.F + 0.01F, glm::pi<float>() / 2.F - 0.01F);
+    pitch_ -= mEn::radians(delta_pos.y) * sensitivity_;
+    pitch_ = mEn::clamp(pitch_, -mEn::pi<float>() / 2.F + 0.01F, mEn::pi<float>() / 2.F - 0.01F);
   }
 
   if (rot_x || rot_y) {
     kEn::Input::set_mouse_pos(window_center_);
-    glm::quat q_pitch = glm::angleAxis(pitch_, glm::vec3(1, 0, 0));
-    glm::quat q_yaw   = glm::angleAxis(yaw_, glm::vec3(0, 1, 0));
-    transform().set_local_rot(q_yaw * q_pitch);
+
+    mEn::Quat rot(1, 0, 0, 0);
+    rot = mEn::rotate(rot, yaw_, mEn::Vec3(0.0F, 1.0F, 0.0F));
+    rot = mEn::rotate(rot, pitch_, mEn::Vec3(1.0F, 0.0F, 0.0F));
+    transform().set_local_rot(rot);
   }
 }
 
@@ -63,13 +65,15 @@ std::shared_ptr<GameComponent> FreeLookComponent::clone() const {
 }
 
 bool FreeLookComponent::on_window_resize(const kEn::WindowResizeEvent& event) {
-  window_center_ = glm::vec2(event.width() / 2, event.height() / 2);
+  window_center_ = mEn::Vec2(event.width() / 2, event.height() / 2);
   return false;
 }
 
-void FreeMoveComponent::update(float delta) {
-  float move_amount = kEn::Input::is_key_pressed(kEn::key::left_control) ? 3.F * delta * speed_ : delta * speed_;
-  glm::vec3 direction{0.F};
+void FreeMoveComponent::update(duration_t delta, duration_t time) {
+  const float dt    = std::chrono::duration<float>(delta).count();
+  float move_amount = kEn::Input::is_key_pressed(kEn::key::left_control) ? 3.F * dt * speed_ : dt * speed_;
+
+  mEn::Vec3 direction{0.F};
   if (kEn::Input::is_key_pressed(kEn::key::up) || kEn::Input::is_key_pressed(kEn::key::w)) {
     direction += transform().local_front();
   }
@@ -82,15 +86,15 @@ void FreeMoveComponent::update(float delta) {
   if (kEn::Input::is_key_pressed(kEn::key::left) || kEn::Input::is_key_pressed(kEn::key::a)) {
     direction -= transform().local_right();
   }
-  if (kEn::Input::is_key_pressed(kEn::key::space) || kEn::Input::is_key_pressed(kEn::key::q)) {
-    direction += world_y_ ? glm::vec3(0, 1, 0) : transform().local_up();
+  if (kEn::Input::is_key_pressed(kEn::key::space) || kEn::Input::is_key_pressed(kEn::key::e)) {
+    direction += world_y_ ? mEn::Vec3(0, 1, 0) : transform().local_up();
   }
-  if (kEn::Input::is_key_pressed(kEn::key::left_shift) || kEn::Input::is_key_pressed(kEn::key::e)) {
-    direction -= world_y_ ? glm::vec3(0, 1, 0) : transform().local_up();
+  if (kEn::Input::is_key_pressed(kEn::key::left_shift) || kEn::Input::is_key_pressed(kEn::key::q)) {
+    direction -= world_y_ ? mEn::Vec3(0, 1, 0) : transform().local_up();
   }
 
   if (direction.x || direction.y || direction.z) {
-    transform().fma(glm::normalize(direction), move_amount);
+    transform().fma(mEn::normalize(direction), move_amount);
   }
 }
 
@@ -100,7 +104,9 @@ std::shared_ptr<GameComponent> FreeMoveComponent::clone() const {
 
 void LookAtComponent::set_target(const GameObject& target) { target_ = target; }
 
-void LookAtComponent::update(float) { transform().look_at(target_.get().transform().pos()); }
+void LookAtComponent::update(duration_t delta, duration_t time) {
+  transform().look_at(target_.get().transform().pos());
+}
 
 std::shared_ptr<GameComponent> LookAtComponent::clone() const { return std::make_shared<LookAtComponent>(target_); }
 

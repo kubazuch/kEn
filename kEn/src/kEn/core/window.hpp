@@ -5,6 +5,8 @@
 #include <kEn/event/event.hpp>
 #include <string>
 
+#include "mEn/vec2.hpp"
+
 namespace kEn {
 
 struct WindowProperties {
@@ -27,6 +29,7 @@ class Window {
 
   virtual unsigned int width() const  = 0;
   virtual unsigned int height() const = 0;
+  virtual mEn::Vec2 size() const      = 0;
 
   virtual void set_event_handler(const handler_t& handler) = 0;
   virtual void set_vsync(bool enabled)                     = 0;

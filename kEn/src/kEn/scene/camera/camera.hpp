@@ -1,10 +1,9 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <glm/gtx/quaternion.hpp>
 #include <kEn/core/transform.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/scene/component.hpp>
+#include <mEn.hpp>
 
 namespace kEn {
 
@@ -12,18 +11,20 @@ class Camera : public GameComponent {
  public:
   virtual ~Camera() = default;
 
-  glm::mat4 projection_matrix() const { return projection_matrix_; }
-  glm::mat4 view_matrix() const { return transform().world_to_local_matrix(); }
-  glm::mat4 view_projection_matrix() const { return projection_matrix_ * view_matrix(); }
+  mEn::Mat4 projection_matrix() const { return projection_matrix_; }
+  mEn::Mat4 view_matrix() const { return transform().world_to_local_matrix(); }
+  mEn::Mat4 view_projection_matrix() const { return projection_matrix_ * view_matrix(); }
 
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override = 0;
-  void update(float) override {}
-  void render(Shader&) override {}
+  void update(duration_t, duration_t) override {}
+  void render(Shader&, double) override {}
+  void imgui() override {}
+  void on_transform_changed() override {}
 
   virtual bool on_window_resize(WindowResizeEvent& event) = 0;
 
  protected:
-  glm::mat4 projection_matrix_;
+  mEn::Mat4 projection_matrix_;
 };
 
 class OrthographicCamera : public Camera {

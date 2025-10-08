@@ -1,10 +1,10 @@
 #include <imgui/imgui.h>
 #include <stb_image.h>
 
-#include <glm/ext/scalar_common.hpp>
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/texture.hpp>
 #include <kenpch.hpp>
+#include <mEn/functions.hpp>
 #include <platform/opengl/opengl_texture.hpp>
 
 namespace kEn {
@@ -141,6 +141,11 @@ OpenglTexture2D::~OpenglTexture2D() { glDeleteTextures(1, &renderer_id_); }
 void OpenglTexture2D::set_data(void* data, uint32_t size) {
   uint32_t bpp = data_format_ == GL_RGBA ? 4 : 3;
   KEN_CORE_ASSERT(size == spec_.width.value() * spec_.height.value() * bpp, "Data must be entire texture!");
+  if (bpp == 4) {
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+  } else {
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  }
   glTextureSubImage2D(renderer_id_, 0, 0, 0, static_cast<GLsizei>(spec_.width.value()),
                       static_cast<GLsizei>(spec_.height.value()), data_format_, GL_UNSIGNED_BYTE, data);
 }
@@ -148,7 +153,7 @@ void OpenglTexture2D::set_data(void* data, uint32_t size) {
 void OpenglTexture2D::bind(uint32_t slot) const { glBindTextureUnit(slot, renderer_id_); }
 
 void OpenglTexture2D::imgui() {
-  float height = glm::max(glm::min(static_cast<float>(spec_.height.value()), 250.F), 100.F);
+  float height = mEn::max(mEn::min(static_cast<float>(spec_.height.value()), 250.F), 100.F);
   float width  = static_cast<float>(spec_.width.value()) / static_cast<float>(spec_.height.value()) * height;
 
   ImGui::Image(static_cast<ImTextureID>(renderer_id_), ImVec2{width, height}, ImVec2{0.0F, 1.0F}, ImVec2{1.0F, 0.0F});

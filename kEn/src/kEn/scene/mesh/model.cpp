@@ -6,6 +6,8 @@
 #include <kEn/renderer/texture.hpp>
 #include <kEn/scene/mesh/model.hpp>
 #include <kenpch.hpp>
+#include <mEn/vec2.hpp>
+#include <mEn/vec3.hpp>
 
 namespace kEn {
 std::unordered_map<std::filesystem::path, std::shared_ptr<Model>> Model::loaded_resources_;
@@ -60,7 +62,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene, TextureSpec spec) {
   std::vector<Vertex> vertices;
   for (unsigned int i = 0; i < mesh->mNumVertices; ++i) {
     Vertex v{};
-    glm::vec3 vector;
+    mEn::Vec3 vector;
 
     vector.x = mesh->mVertices[i].x;
     vector.y = mesh->mVertices[i].y;
@@ -75,13 +77,13 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene, TextureSpec spec) {
     }
 
     if (mesh->mTextureCoords[0]) {
-      glm::vec2 vec;
+      mEn::Vec2 vec;
 
       vec.x           = mesh->mTextureCoords[0][i].x;
       vec.y           = mesh->mTextureCoords[0][i].y;
       v.texture_coord = vec;
     } else {
-      v.texture_coord = glm::vec2(0.0F);
+      v.texture_coord = mEn::Vec2(0.0F);
     }
 
     // TODO(): tangents and bitangents
@@ -111,7 +113,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene, TextureSpec spec) {
   mat->Get(AI_MATKEY_COLOR_SPECULAR, color);
   material.specular_factor = color.r;
   mat->Get(AI_MATKEY_SHININESS, material.shininess_factor);
-  material.shininess_factor = glm::max(material.shininess_factor, 1.F);
+  material.shininess_factor = std::max(material.shininess_factor, 1.F);
   mat->Get(AI_MATKEY_COLOR_EMISSIVE, color);
   material.emissive = color.r > 0;
 

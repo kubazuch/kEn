@@ -13,7 +13,6 @@ project(
 option(GENERATE_CLANGD_FILE
        "Generate the .clangd file for the host operating system" ON)
 option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
-option(BUILD_GLM "Fetch and build GLM. When OFF, CMake will look for proper GLM version on your operating system." ON)
 option(BUILD_GLFW "Fetch and build GLFW. When OFF, CMake will look for proper GLFW version on your operating system." ON)
 option(BUILD_ASSIMP "Fetch and build assimp. When OFF, CMake will look for proper assimp version on your operating system." ON)
 option(
@@ -67,10 +66,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 include(CTest)
 
 # Prepare dependencies
-if(NOT BUILD_GLM)
-  find_package(GLM 1.0.1)
-endif()
-
 if(NOT BUILD_GLFW)
   find_package(GLFW 3.4)
 endif()
@@ -79,7 +74,10 @@ if(NOT BUILD_ASSIMP)
   find_package(assimp 5.4.3)
 endif()
 
+set(MEN_GLM OFF CACHE BOOL "Use GLM for mEn")
+
 add_subdirectory(cmake/dependencies)
 
+add_subdirectory(mEn)
 add_subdirectory(kEn)
 add_subdirectory(Sandbox)
