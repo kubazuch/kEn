@@ -1,55 +1,72 @@
 #pragma once
 
 #include <kEn/renderer/buffer.hpp>
+#include <memory>
 
 namespace kEn {
 
-class OpenglVertexBuffer : public VertexBuffer {
+class OpenglBuffer : virtual public Buffer {
  public:
-  OpenglVertexBuffer(void* vertices, uint32_t size);
-  ~OpenglVertexBuffer() override;
+  OpenglBuffer(const void* data, size_t size);
+  ~OpenglBuffer() override;
 
-  void bind() const override;
-  void unbind() const override;
+  void bind(BufferType type) const override;
+  void unbind(BufferType type) const override;
 
   const BufferLayout& layout() const override { return layout_; }
   void set_layout(const BufferLayout& layout) override { layout_ = layout; }
+  size_t size() const override { return size_; }
 
- private:
+ protected:
+  virtual void set_data_int(const void* data, size_t size) const;
+
+  size_t size_;
   uint32_t renderer_id_;
   BufferLayout layout_;
+
+  friend class OpenglUniformBuffer;
+  friend class OpenglShaderStorageBuffer;
 };
 
-class OpenglMutableVertexBuffer final : public MutableVertexBuffer {
+class OpenglMutableBuffer final : public MutableBuffer, public OpenglBuffer {
  public:
-  OpenglMutableVertexBuffer(void* vertices, uint32_t size);
-  ~OpenglMutableVertexBuffer() override;
+  OpenglMutableBuffer(const void* data, size_t size) : OpenglBuffer(data, size) {}
 
-  void bind() const override;
-  void unbind() const override;
   void modify_data(std::function<void(void*)> fn) const override;
-
-  const BufferLayout& layout() const override { return layout_; }
-  void set_layout(const BufferLayout& layout) override { layout_ = layout; }
+  void set_data(const void* data, size_t size) override;
 
  private:
-  uint32_t renderer_id_;
-  BufferLayout layout_;
+  void set_data_int(const void* data, size_t size) const override;
 };
 
-class OpenglIndexBuffer final : public IndexBuffer {
+class OpenglUniformBuffer final : public UniformBuffer {
  public:
-  OpenglIndexBuffer(uint32_t* indices, uint32_t count);
-  ~OpenglIndexBuffer() override;
+  OpenglUniformBuffer(std::shared_ptr<OpenglBuffer> buffer, size_t binding_point);
 
-  void bind() const override;
-  void unbind() const override;
+  void bind() const override { buffer_->bind(BufferType::Uniform); }
+  void unbind() const override { buffer_->unbind(BufferType::Uniform); }
 
-  uint32_t get_count() const override { return count_; }
+  std::shared_ptr<Buffer> underlying_buffer() const override { return std::static_pointer_cast<Buffer>(buffer_); };
+  size_t binding_point() const override { return binding_point_; }
 
  private:
-  uint32_t renderer_id_;
-  uint32_t count_;
+  std::shared_ptr<OpenglBuffer> buffer_;
+  size_t binding_point_;
+};
+
+class OpenglShaderStorageBuffer final : public ShaderStorageBuffer {
+ public:
+  OpenglShaderStorageBuffer(std::shared_ptr<OpenglBuffer> buffer, size_t binding_point);
+
+  void bind() const override { buffer_->bind(BufferType::ShaderStorage); }
+  void unbind() const override { buffer_->unbind(BufferType::ShaderStorage); }
+
+  std::shared_ptr<Buffer> underlying_buffer() const override { return std::static_pointer_cast<Buffer>(buffer_); };
+  size_t binding_point() const override { return binding_point_; }
+
+ private:
+  std::shared_ptr<OpenglBuffer> buffer_;
+  size_t binding_point_;
 };
 
 }  // namespace kEn

@@ -1,4 +1,5 @@
 #include <kEn/core/transform.hpp>
+#include <kEn/scene/game_object.hpp>
 #include <kenpch.hpp>
 #include <mEn.hpp>
 
@@ -17,27 +18,6 @@ Transform::~Transform() {
   }
 }
 
-void Transform::set_dirty() {
-  if (dirty_) {
-    return;
-  }
-
-  dirty_         = true;
-  inverse_dirty_ = true;
-
-  for (const auto child : children_) {
-    child.get().set_dirty();
-  }
-}
-
-void Transform::unset_parent() {
-  if (parent_.has_value()) {
-    std::erase_if(parent_.value().get().children_, [this](auto ref) { return std::addressof(ref.get()) == this; });
-  }
-
-  parent_.reset();
-}
-
 void Transform::set_parent(Transform& parent) {
   if (parent_.has_value()) {
     std::erase_if(parent_.value().get().children_, [this](auto ref) { return std::addressof(ref.get()) == this; });
@@ -48,6 +28,14 @@ void Transform::set_parent(Transform& parent) {
   parent.children_.emplace_back(*this);
 
   set_dirty();
+}
+
+void Transform::unset_parent() {
+  if (parent_.has_value()) {
+    std::erase_if(parent_.value().get().children_, [this](auto ref) { return std::addressof(ref.get()) == this; });
+  }
+
+  parent_.reset();
 }
 
 mEn::Mat4 Transform::local_to_parent_matrix() const {
@@ -81,18 +69,21 @@ mEn::Mat4 Transform::world_to_local_matrix() const {
   return inv_model_mat_;
 }
 
-void Transform::model_matrix_updated() {
-  mEn::Vec3 skew;
-  mEn::Vec4 perspective;
-
-  inverse_dirty_ = true;
-
-  mEn::Mat4 local_mat = model_mat_;
-  if (parent_) {
-    local_mat = parent_.value().get().world_to_local_matrix() * local_mat;
+void Transform::set_dirty() {
+  if (dirty_) {
+    return;
   }
 
-  // TODO(mEn): mEn::decompose(local_mat, scale_, rot_, pos_, skew, perspective);
+  dirty_         = true;
+  inverse_dirty_ = true;
+
+  for (const auto child : children_) {
+    child.get().set_dirty();
+  }
+
+  if (owner_.has_value()) {
+    owner_->get().on_transform_changed();
+  }
 }
 
 void Transform::rotate(const mEn::Vec3& axis, float angle) {

@@ -113,7 +113,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene, TextureSpec spec) {
   mat->Get(AI_MATKEY_COLOR_SPECULAR, color);
   material.specular_factor = color.r;
   mat->Get(AI_MATKEY_SHININESS, material.shininess_factor);
-  material.shininess_factor = max(material.shininess_factor, 1.F);
+  material.shininess_factor = std::max(material.shininess_factor, 1.F);
   mat->Get(AI_MATKEY_COLOR_EMISSIVE, color);
   material.emissive = color.r > 0;
 

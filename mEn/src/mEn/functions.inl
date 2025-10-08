@@ -4,18 +4,18 @@
 namespace mEn {
 
 template <typename T>
-inline constexpr T fmin(T a, T b) {
+inline constexpr T min(T a, T b) {
   return (a < b) ? a : b;
 }
 
 template <typename T>
-inline constexpr T fmax(T a, T b) {
+inline constexpr T max(T a, T b) {
   return (a < b) ? b : a;
 }
 
 template <typename T>
 inline constexpr T clamp(T val, T minVal, T maxVal) {
-  return fmin(fmax(val, minVal), maxVal);
+  return min(max(val, minVal), maxVal);
 }
 
 template <typename T>

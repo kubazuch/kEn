@@ -1,6 +1,9 @@
 #include <glad/gl.h>
 
+#include <cstddef>
+#include <kEn/core/assert.hpp>
 #include <kenpch.hpp>
+#include <memory>
 #include <platform/opengl/opengl_vertex_array.hpp>
 
 namespace kEn {
@@ -35,11 +38,15 @@ void OpenglVertexArray::bind() const { glBindVertexArray(renderer_id_); }
 
 void OpenglVertexArray::unbind() const { glBindVertexArray(0); }
 
-void OpenglVertexArray::add_vertex_buffer(const std::shared_ptr<VertexBuffer>& vertex_buf) {
+void OpenglVertexArray::add_vertex_buffer(const std::shared_ptr<Buffer>& vertex_buf) {
+  add_vertex_buffer(vertex_buf, 0);
+}
+
+void OpenglVertexArray::add_vertex_buffer(const std::shared_ptr<Buffer>& vertex_buf, size_t divisor) {
   KEN_CORE_ASSERT(!vertex_buf->layout().elements().empty(), "Vertex buffer must have layout!");
 
   glBindVertexArray(renderer_id_);
-  vertex_buf->bind();
+  vertex_buf->bind(BufferType::Vertex);
 
   const auto& layout = vertex_buf->layout();
   for (const auto& element : layout) {
@@ -49,10 +56,11 @@ void OpenglVertexArray::add_vertex_buffer(const std::shared_ptr<VertexBuffer>& v
       case shader_data_types::float3:
       case shader_data_types::float4: {
         glEnableVertexAttribArray(vertex_buffer_index_);
-        glVertexAttribPointer(vertex_buffer_index_,
-                              static_cast<GLint>(shader_data_types::get_component_count(element.type)),
-                              get_opengl_type(element.type), element.normalized ? GL_TRUE : GL_FALSE,
-                              static_cast<GLsizei>(layout.stride()), (const void*)element.offset);  // NOLINT
+        glVertexAttribPointer(
+            vertex_buffer_index_, static_cast<GLint>(shader_data_types::get_component_count(element.type)),
+            get_opengl_type(element.type), static_cast<GLboolean>(element.normalized ? GL_TRUE : GL_FALSE),
+            static_cast<GLsizei>(layout.stride()), (const void*)element.offset);  // NOLINT
+        glVertexAttribDivisor(vertex_buffer_index_, divisor);
         vertex_buffer_index_++;
         break;
       }
@@ -67,6 +75,7 @@ void OpenglVertexArray::add_vertex_buffer(const std::shared_ptr<VertexBuffer>& v
                                static_cast<GLint>(shader_data_types::get_component_count(element.type)),
                                get_opengl_type(element.type), static_cast<GLsizei>(layout.stride()),
                                (const void*)element.offset);  // NOLINT
+        glVertexAttribDivisor(vertex_buffer_index_, divisor);
         vertex_buffer_index_++;
         break;
       }
@@ -77,10 +86,10 @@ void OpenglVertexArray::add_vertex_buffer(const std::shared_ptr<VertexBuffer>& v
         for (uint8_t i = 0; i < count; ++i) {
           glEnableVertexAttribArray(vertex_buffer_index_);
           glVertexAttribPointer(
-              vertex_buffer_index_, count, get_opengl_type(element.type), element.normalized ? GL_TRUE : GL_FALSE,
-              static_cast<GLsizei>(layout.stride()),
+              vertex_buffer_index_, count, get_opengl_type(element.type),
+              static_cast<GLboolean>(element.normalized ? GL_TRUE : GL_FALSE), static_cast<GLsizei>(layout.stride()),
               (const void*)(element.offset + get_size(shader_data_types::float_) * count * i));  // NOLINT
-          glVertexAttribDivisor(vertex_buffer_index_, 1);
+          glVertexAttribDivisor(vertex_buffer_index_, divisor);
           vertex_buffer_index_++;
         }
         break;
@@ -93,11 +102,26 @@ void OpenglVertexArray::add_vertex_buffer(const std::shared_ptr<VertexBuffer>& v
   vertex_buffers_.push_back(vertex_buf);
 }
 
-void OpenglVertexArray::set_index_buffer(const std::shared_ptr<kEn::IndexBuffer>& index_buf) {
+void OpenglVertexArray::set_index_buffer(const std::shared_ptr<kEn::Buffer>& index_buf) {
   glBindVertexArray(renderer_id_);
-  index_buf->bind();
+  index_buf->bind(BufferType::Index);
 
   index_buffer_ = index_buf;
+}
+
+size_t OpenglVertexArray::element_count() const {
+  if (index_buffer_) {
+    return index_buffer_->size() / sizeof(uint32_t);
+  }
+
+  // If no index buffer is set, return the number of vertices in the first vertex buffer.
+  if (!vertex_buffers_.empty()) {
+    auto& vertex_buf = *vertex_buffers_[0];
+    return vertex_buf.size() / vertex_buf.layout().stride();
+  }
+
+  KEN_CORE_ASSERT(false, "No index buffer or vertex buffer found!");
+  return 0;
 }
 
 }  // namespace kEn

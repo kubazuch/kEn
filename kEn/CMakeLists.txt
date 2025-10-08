@@ -1,29 +1,27 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(kEn)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 message(STATUS "Configuring " ${PROJECT_NAME})
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 23)
 
-file(GLOB_RECURSE SOURCES
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+file(GLOB_RECURSE SOURCES 
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
 )
-
-# Enable Windows-specific settings
-if (WIN32)
-    add_definitions(-D_WIN32_WINNT=0x0601)  # Target Windows 7 or later (modify as needed)
-    add_definitions(-DUNICODE -D_UNICODE)   # Enable Unicode support
-endif()
 
 add_library(${PROJECT_NAME} ${SOURCES})
 
 # Prevent CMake from adding `lib` before `kEn`
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 
+# GLFW_INCLUDE_NONE makes the GLFW header not include any OpenGL or OpenGL ES
+# API header. This is useful in combination with an extension loading library
+# (GLAD in our case).
+target_compile_definitions(${PROJECT_NAME} PUBLIC GLFW_INCLUDE_NONE)
+
 target_include_directories(${PROJECT_NAME}
         PUBLIC src "${CMAKE_BINARY_DIR}/generated")
-target_link_libraries(${PROJECT_NAME} PUBLIC mEn glad glfw assimp spdlog stb imgui imguizmo user32 kernel32 gdi32)
+target_link_libraries(${PROJECT_NAME} PUBLIC mEn glad glfw assimp spdlog stb imgui imguizmo)
 
 # Set compile options and properties of the target
 target_compile_options(${PROJECT_NAME} PRIVATE ${PROJ_CXX_FLAGS})

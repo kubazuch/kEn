@@ -16,7 +16,3 @@
 /// KEN
 #include <kEn/core/core.hpp>
 #include <kEn/core/log.hpp>
-
-#ifdef KEN_PLATFORM_WIN
-#include <Windows.h>
-#endif

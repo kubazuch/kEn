@@ -22,7 +22,7 @@ ObjModel::ObjModel(const std::filesystem::path& path) {
   std::vector<mEn::Vec3> normals;
 
   std::vector<ObjVertex> final_vertices;
-  std::vector<unsigned int> final_indices;
+  std::vector<uint32_t> final_indices;
 
   std::string curline;
   while (std::getline(file, curline)) {
@@ -126,11 +126,11 @@ ObjModel::ObjModel(const std::filesystem::path& path) {
         }
       }
 
-      size_t id0 = final_vertices.size();
+      uint32_t id0 = final_vertices.size();
       for (int i = 0; i < 3; i++) {
         final_vertices.push_back(vertices[i]);
 
-        size_t ind = id0 + i;
+        uint32_t ind = id0 + i;
         final_indices.push_back(ind);
       }
     }
@@ -157,9 +157,9 @@ ObjModel::ObjModel(const std::filesystem::path& path) {
     offset += stride;
   }
 
-  auto vertex_buffer = VertexBuffer::create(vertices.get(), obj_layout_.stride() * final_vertices.size());
+  auto vertex_buffer = Buffer::create(vertices.get(), obj_layout_.stride() * final_vertices.size());
   vertex_buffer->set_layout(obj_layout_);
-  auto index_buffer = IndexBuffer::create(final_indices.data(), final_indices.size());
+  auto index_buffer = Buffer::create(final_indices.data(), final_indices.size() * sizeof(uint32_t));
 
   vertex_array_->add_vertex_buffer(vertex_buffer);
   vertex_array_->set_index_buffer(index_buffer);

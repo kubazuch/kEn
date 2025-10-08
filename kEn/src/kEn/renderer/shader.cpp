@@ -8,8 +8,8 @@ namespace kEn {
 
 const std::filesystem::path Shader::kShaderPath("assets/shaders");
 
-std::shared_ptr<Shader> Shader::create(const std::string& name, const std::string& vertex_src,
-                                       const std::string& fragment_src) {
+std::shared_ptr<Shader> Shader::create(std::string_view name, std::string_view vertex_src,
+                                       std::string_view fragment_src) {
   switch (RendererApi::get_api()) {
     case RendererApi::Api::None:
       KEN_CORE_ASSERT(false, "Renderer has no api!");

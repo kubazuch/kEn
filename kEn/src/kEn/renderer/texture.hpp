@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <kEn/core/core.hpp>
 #include <optional>
+#include <unordered_map>
 
 #define TEXTURE_TYPES(X)                                \
   X(ambient_occlusion, aiTextureType_AMBIENT_OCCLUSION) \

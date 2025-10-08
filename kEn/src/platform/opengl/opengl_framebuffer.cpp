@@ -3,6 +3,7 @@
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 #include <kenpch.hpp>
+#include <mEn/functions.hpp>
 #include <platform/opengl/opengl_framebuffer.hpp>
 
 namespace kEn {
@@ -180,12 +181,39 @@ int OpenglFramebuffer::read_pixel(uint32_t attachment_id, int x, int y) {
   return pixel_data;
 }
 
+void OpenglFramebuffer::read_pixels(uint32_t attachment_id, int x, int y, int width, int height, void* buffer) {
+  KEN_CORE_ASSERT(attachment_id < color_attachments_.size());
+
+  glReadBuffer(GL_COLOR_ATTACHMENT0 + attachment_id);
+  glReadPixels(x, y, width, height, GL_RED_INTEGER, GL_INT, buffer);
+}
+
+void OpenglFramebuffer::bind_attachment_as_texture(uint32_t attachment_id, uint32_t slot) const {
+  KEN_CORE_ASSERT(attachment_id < color_attachments_.size());
+
+  glBindTextureUnit(slot, color_attachments_[attachment_id]);
+}
+
+void OpenglFramebuffer::bind_depth_as_texture(uint32_t slot) const {
+  KEN_CORE_ASSERT(depth_attachment_ != 0);
+
+  glBindTextureUnit(slot, depth_attachment_);
+}
+
 void OpenglFramebuffer::clear_attachment(uint32_t attachment_id, int value) {
   KEN_CORE_ASSERT(attachment_id < color_attachments_.size());
 
   auto& spec = color_attachment_specs_[attachment_id];
   glClearTexImage(color_attachments_[attachment_id], 0, utils::texture_format_to_GL(spec.texture_format), GL_INT,
                   &value);
+}
+
+void OpenglFramebuffer::clear_attachment(uint32_t attachment_id, mEn::Vec4 value) {
+  KEN_CORE_ASSERT(attachment_id < color_attachments_.size());
+
+  auto& spec = color_attachment_specs_[attachment_id];
+  glClearTexImage(color_attachments_[attachment_id], 0, utils::texture_format_to_GL(spec.texture_format), GL_FLOAT,
+                  mEn::value_ptr(value));
 }
 
 }  // namespace kEn

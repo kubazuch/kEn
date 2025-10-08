@@ -7,6 +7,8 @@
 #include <kEn/core/window.hpp>
 #include <kEn/renderer/graphics_context.hpp>
 
+#include "mEn/vec2.hpp"
+
 namespace kEn {
 
 class WindowsWindow : public Window {
@@ -18,6 +20,7 @@ class WindowsWindow : public Window {
 
   inline unsigned int width() const override { return data_.width; }
   inline unsigned int height() const override { return data_.height; }
+  inline mEn::Vec2 size() const override { return {data_.width, data_.height}; }
 
   inline void set_event_handler(const handler_t& handler) override { data_.handler = handler; }
 

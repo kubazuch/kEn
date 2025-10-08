@@ -18,6 +18,8 @@ class Camera : public GameComponent {
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override = 0;
   void update(duration_t, duration_t) override {}
   void render(Shader&, double) override {}
+  void imgui() override {}
+  void on_transform_changed() override {}
 
   virtual bool on_window_resize(WindowResizeEvent& event) = 0;
 

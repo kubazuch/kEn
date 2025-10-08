@@ -50,7 +50,7 @@ class FizzbuzzLayer : public kEn::Layer {
 
   void on_update(kEn::duration_t delta, kEn::duration_t time) override {
     const float seconds_delta = std::chrono::duration<float>(delta).count();
-    const float seconds_time = std::chrono::duration<float>(time).count();
+    const float seconds_time  = std::chrono::duration<float>(time).count();
 
     shader_->bind();
     shader_->set_float("iTime", seconds_time);
