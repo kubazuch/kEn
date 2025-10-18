@@ -52,11 +52,11 @@ void Application::run() {
     lag += std::chrono::duration_cast<duration_t>(delta);
     second += std::chrono::duration_cast<duration_t>(delta);
 
-    while (lag >= kTickTime) {
+    while (lag >= tick_time_) {
       update();
 
-      lag -= kTickTime;
-      time_ += kTickTime;
+      lag -= tick_time_;
+      time_ += tick_time_;
       ++ticks;
     }
 
@@ -71,7 +71,7 @@ void Application::run() {
       second = 0ns;
     }
 
-    render(std::chrono::duration<double>(lag).count() / std::chrono::duration<double>(kTickTime).count());
+    render(std::chrono::duration<double>(lag).count() / std::chrono::duration<double>(tick_time_).count());
   }
 }
 
@@ -82,7 +82,7 @@ void Application::update() {
 
   if (!minimized_) {
     for (Layer* layer : layer_stack_) {
-      layer->on_update(kTickTime, time_);
+      layer->on_update(tick_time_, time_);
     }
   }
 }
@@ -98,10 +98,16 @@ void Application::render(double alpha) {
       layer->on_imgui();
     }
 
-    ImGui::Begin("DEBUG");
-    ImGui::Text("FPS: %d", fps_);
-    ImGui::Text("TPS: %d", tps_);
-    ImGui::Checkbox("VSync", &vsync_);
+    if (ImGui::Begin("DEBUG")) {
+      float ms = std::chrono::duration<float, std::milli>(tick_time_).count();
+      if (ImGui::SliderFloat("Tick time", &ms, 1, 1000, "%.3f ms", ImGuiSliderFlags_Logarithmic)) {
+        tick_time_ = std::chrono::duration_cast<duration_t>(std::chrono::duration<float, std::milli>(ms));
+      }
+
+      ImGui::Text("FPS: %d", fps_);
+      ImGui::Text("TPS: %d", tps_);
+      ImGui::Checkbox("VSync", &vsync_);
+    }
     ImGui::End();
   }
   imgui_layer_->end();

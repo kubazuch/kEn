@@ -52,6 +52,7 @@ class Application {
   bool vsync_      = true;
   duration_t time_ = 0ns;
   uint16_t fps_ = 0, tps_ = 0;
+  duration_t tick_time_ = kTickTime;
 
  private:
   static Application* instance_;
