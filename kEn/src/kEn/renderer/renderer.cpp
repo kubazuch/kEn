@@ -40,6 +40,7 @@ void Renderer::prepare(Shader& shader) {
 void Renderer::submit(Shader& shader, const VertexArray& vertex_array, RenderMode mode) {
   shader.set_uniform("u_VP", scene_data_->VP_matrix);
   shader.set_uniform("u_CameraPos", scene_data_->camera_pos);
+  shader.set_uniform("u_Ambient", scene_data_->ambient);
 
   shader.bind();
   RenderCommand::draw_indexed(vertex_array, vertex_array.element_count(), mode);
@@ -49,6 +50,7 @@ void Renderer::submit(Shader& shader, const VertexArray& vertex_array, const Tra
   shader.set_uniform("u_VP", scene_data_->VP_matrix);
   shader.set_uniform("u_CameraPos", scene_data_->camera_pos);
   shader.set_uniform("u_M", transform.local_to_world_matrix());
+  shader.set_uniform("u_Ambient", scene_data_->ambient);
 
   shader.bind();
   RenderCommand::draw_indexed(vertex_array, vertex_array.element_count(), mode);
@@ -58,6 +60,7 @@ void Renderer::submit_instanced(Shader& shader, const VertexArray& vertex_array,
                                 RenderMode mode) {
   shader.set_uniform("u_V", scene_data_->V_matrix);
   shader.set_uniform("u_P", scene_data_->P_matrix);
+  shader.set_uniform("u_Ambient", scene_data_->ambient);
 
   shader.bind();
   RenderCommand::draw_indexed_instanced(vertex_array, vertex_array.element_count(), instance_count, mode);
@@ -68,6 +71,7 @@ void Renderer::submit_tessellated(Shader& shader, const VertexArray& vertex_arra
   shader.set_uniform("u_VP", scene_data_->VP_matrix);
   shader.set_uniform("u_CameraPos", scene_data_->camera_pos);
   shader.set_uniform("u_M", transform.local_to_world_matrix());
+  shader.set_uniform("u_Ambient", scene_data_->ambient);
 
   shader.bind();
   RenderCommand::draw(vertex_array, count, RenderMode::Patches);

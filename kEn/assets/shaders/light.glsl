@@ -33,7 +33,7 @@ struct spot_light {
 
 const int MAX_LIGHTS = 15;
 
-uniform bool u_UseBlinn = false;
+uniform bool u_UseBlinn = true;
 
 float calc_attenuation(attenuation atten, float dist) {
 	return 1.0 / (atten.constant + dist * (atten.linear + dist * atten.quadratic));
