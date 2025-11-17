@@ -1,6 +1,10 @@
 #pragma once
+
+#pragma warning(push)
+#pragma warning(disable : 4619 4365 4351)
 #include <assimp/material.h>
 #include <assimp/scene.h>
+#pragma warning(pop)
 
 #include <deque>
 #include <kEn/renderer/shader.hpp>

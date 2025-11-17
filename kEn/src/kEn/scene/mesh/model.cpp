@@ -1,10 +1,16 @@
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
+#include "model.hpp"
+
 #include <imgui/imgui.h>
 
+#pragma warning(push)
+#pragma warning(disable : 4619 4365 4351)
+#include <assimp/postprocess.h>
+
 #include <assimp/Importer.hpp>
+
+#pragma warning(pop)
+
 #include <kEn/renderer/texture.hpp>
-#include <kEn/scene/mesh/model.hpp>
 #include <kenpch.hpp>
 #include <mEn/vec2.hpp>
 #include <mEn/vec3.hpp>
