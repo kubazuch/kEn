@@ -14,7 +14,6 @@
 class FizzbuzzLayer : public kEn::Layer {
  public:
   FizzbuzzLayer() : Layer("FizzBuzz") {
-    // camera_ = kEn::orthographic_camera(-1.F, 1.F, -1.F, 1.F);
     camera_ = std::make_shared<kEn::PerspectiveCamera>(mEn::radians(70.F), 1.0F, 0.01F, 100.F);
     object_ = std::make_shared<kEn::GameObject>(mEn::Vec3{0, 0, 2});
     object_->add_component(camera_);
