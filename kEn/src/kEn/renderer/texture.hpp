@@ -73,6 +73,8 @@ inline const char* name_of(const texture_type_t type) {
       return "INVALID";
   }
 }
+#undef ENUM_ENTRY
+#undef CASE_ENTRY
 }  // namespace texture_type
 
 class Texture {

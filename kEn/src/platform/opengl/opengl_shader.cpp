@@ -84,7 +84,7 @@ GLuint OpenglShader::create_shader(std::string_view src, GLenum type) {
     GLint length = 0;
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
 
-    std::vector<GLchar> info(length);
+    std::vector<GLchar> info(static_cast<size_t>(length));
     glGetShaderInfoLog(shader, length, &length, info.data());
 
     glDeleteShader(shader);
@@ -107,7 +107,7 @@ void OpenglShader::link_shader() const {
     GLint length = 0;
     glGetProgramiv(renderer_id_, GL_INFO_LOG_LENGTH, &length);
 
-    std::vector<GLchar> info(length);
+    std::vector<GLchar> info(static_cast<size_t>(length));
     glGetProgramInfoLog(renderer_id_, length, &length, info.data());
 
     glDeleteProgram(renderer_id_);
@@ -124,7 +124,7 @@ void OpenglShader::link_shader() const {
     GLint length = 0;
     glGetProgramiv(renderer_id_, GL_INFO_LOG_LENGTH, &length);
 
-    std::vector<GLchar> info(length);
+    std::vector<GLchar> info(static_cast<size_t>(length));
     glGetProgramInfoLog(renderer_id_, length, &length, info.data());
 
     glDeleteProgram(renderer_id_);
@@ -294,7 +294,7 @@ void OpenglShader::bind_uniform_buffer(std::string_view name, size_t binding) co
   }
 
   uniform_block_bindings_[block_index] = static_cast<GLuint>(binding);
-  glUniformBlockBinding(renderer_id_, block_index, binding);
+  glUniformBlockBinding(renderer_id_, block_index, static_cast<GLuint>(binding));
   KEN_CORE_DEBUG("Adding new uniform block '{0}' (index: {1}) in shader '{2}' to binding: {3}", name, block_index,
                  name_, binding);
 }

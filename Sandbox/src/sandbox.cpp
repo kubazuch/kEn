@@ -31,7 +31,7 @@ class FizzbuzzLayer : public kEn::Layer {
     };
 
     vertex_array_      = kEn::VertexArray::create();
-    auto vertex_buffer = kEn::VertexBuffer::create(vertices, sizeof vertices);
+    auto vertex_buffer = kEn::Buffer::create(vertices, sizeof vertices);
     {
       kEn::BufferLayout layout = {{kEn::shader_data_types::float3, "a_Position"},
                                   {kEn::shader_data_types::float4, "a_Color"}};
@@ -39,7 +39,7 @@ class FizzbuzzLayer : public kEn::Layer {
       vertex_buffer->set_layout(layout);
     }
 
-    auto index_buffer = kEn::IndexBuffer::create(indices, 6);
+    auto index_buffer = kEn::Buffer::create(indices, 6);
 
     vertex_array_->add_vertex_buffer(vertex_buffer);
     vertex_array_->set_index_buffer(index_buffer);
@@ -52,13 +52,13 @@ class FizzbuzzLayer : public kEn::Layer {
     const float seconds_time  = std::chrono::duration<float>(time).count();
 
     shader_->bind();
-    shader_->set_float("iTime", seconds_time);
+    shader_->set_uniform("iTime", seconds_time);
     // camera_.set_rotation(glm::rotate(camera_.rotation(), (float) delta, { 0, 1.0F, 0.0F }));
     transform_.rotate({0, 1, 0}, seconds_delta);
     transform_.set_local_pos({0, 0, sin(seconds_time)});
   }
 
-  void on_render() override {
+  void on_render(double) override {
     kEn::RenderCommand::set_clear_color({1.0F, 0.0F, 1.0F, 1.0F});
     kEn::RenderCommand::clear();
 
@@ -91,10 +91,7 @@ class FizzbuzzLayer : public kEn::Layer {
 
 class Sandbox : public kEn::Application {
  public:
-  Sandbox() {
-    srand(time(NULL));
-    push_layer(new FizzbuzzLayer());
-  }
+  Sandbox() { push_layer(new FizzbuzzLayer()); }
 };
 
 kEn::Application* kEn::create_application() { return new Sandbox(); }

@@ -146,7 +146,7 @@ void Model::imgui() {
   if (ImGui::TreeNode("Meshes")) {
     ImGui::BeginChild("Meshes", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeY);
     for (size_t i = 0; i < meshes_.size(); ++i) {
-      ImGui::PushID(i);
+      ImGui::PushID(static_cast<int>(i));
       meshes_[i].imgui();
       ImGui::PopID();
     }

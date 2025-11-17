@@ -71,16 +71,16 @@ void WindowsWindow::set_glfw_callbacks() const {
 
   glfwSetWindowSizeCallback(window_ptr_, [](GLFWwindow* window, int width, int height) {
     Data& win_data  = *static_cast<Data*>(glfwGetWindowUserPointer(window));
-    win_data.width  = width;
-    win_data.height = height;
+    win_data.width  = static_cast<unsigned int>(width);
+    win_data.height = static_cast<unsigned int>(height);
 
-    WindowResizeEvent event(width, height);
+    WindowResizeEvent event(static_cast<unsigned int>(width), static_cast<unsigned int>(height));
     win_data.handler(event);
   });
 
   glfwSetKeyCallback(window_ptr_, [](GLFWwindow* window, int key, int /*scancode*/, int action, int mods) {
     Data& win_data       = *static_cast<Data*>(glfwGetWindowUserPointer(window));
-    win_data.active_mods = mods;
+    win_data.active_mods = static_cast<ModKeys>(mods);
 
     switch (action) {
       case GLFW_PRESS: {
@@ -109,7 +109,7 @@ void WindowsWindow::set_glfw_callbacks() const {
 
   glfwSetMouseButtonCallback(window_ptr_, [](GLFWwindow* window, int button, int action, int mods) {
     Data& win_data       = *static_cast<Data*>(glfwGetWindowUserPointer(window));
-    win_data.active_mods = mods;
+    win_data.active_mods = static_cast<ModKeys>(mods);
 
     double dx, dy;  // NOLINT
     glfwGetCursorPos(window, &dx, &dy);
@@ -149,9 +149,9 @@ void WindowsWindow::set_glfw_callbacks() const {
 
     for (int i = 0; i < GLFW_MOUSE_BUTTON_LAST; ++i) {
       if (win_data.dragging[i]) {
-        MouseDragEvent event({win_data.drag_from_x[i], win_data.drag_from_y[i]}, {x, y}, static_cast<MouseCode>(i),
-                             win_data.active_mods);
-        win_data.handler(event);
+        MouseDragEvent drag_event({win_data.drag_from_x[i], win_data.drag_from_y[i]}, {x, y}, static_cast<MouseCode>(i),
+                                  win_data.active_mods);
+        win_data.handler(drag_event);
       }
     }
   });

@@ -15,7 +15,7 @@ static GLenum texture_target(bool multisampled) {
   return static_cast<GLenum>(multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D);
 }
 
-static void create_textures(bool multisampled, uint32_t* outId, uint32_t count) {
+static void create_textures(bool multisampled, uint32_t* outId, size_t count) {
   glCreateTextures(texture_target(multisampled), static_cast<GLsizei>(count), outId);
 }
 
@@ -25,8 +25,8 @@ static void attach_color_texture(uint32_t id, int samples, GLint internalFormat,
                                  uint32_t height, size_t index) {
   bool multisampled = samples > 1;
   if (multisampled) {
-    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, static_cast<GLsizei>(width),
-                            static_cast<GLsizei>(height), GL_FALSE);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, static_cast<GLenum>(internalFormat),
+                            static_cast<GLsizei>(width), static_cast<GLsizei>(height), GL_FALSE);
   } else {
     glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, static_cast<GLsizei>(width), static_cast<GLsizei>(height), 0, format,
                  GL_UNSIGNED_BYTE, nullptr);
@@ -84,11 +84,11 @@ static GLenum texture_format_to_GL(FramebufferTextureFormat format) {
 }  // namespace utils
 
 OpenglFramebuffer::OpenglFramebuffer(const FramebufferSpec& spec) : spec_(spec) {
-  for (auto spec : spec_.attachments.attachments) {
-    if (!utils::is_depth_format(spec.texture_format)) {
-      color_attachment_specs_.emplace_back(spec);
+  for (auto s : spec_.attachments.attachments) {
+    if (!utils::is_depth_format(s.texture_format)) {
+      color_attachment_specs_.emplace_back(s);
     } else {
-      depth_attachment_spec_ = spec;
+      depth_attachment_spec_ = s;
     }
   }
 

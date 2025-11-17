@@ -6,7 +6,7 @@
 
 namespace kEn {
 
-void ModelComponent::render(Shader& shader, double alpha) {
+void ModelComponent::render(Shader& shader, double /*alpha*/) {
   if (!parent_.has_value()) {
     return;
   }
@@ -21,7 +21,7 @@ FreeLookComponent::FreeLookComponent(float sensitivity) : sensitivity_(sensitivi
   window_center_     = {main.width() / 2, main.height() / 2};
 }
 
-void FreeLookComponent::update(duration_t delta, duration_t time) {
+void FreeLookComponent::update(duration_t /*delta*/, duration_t /*time*/) {
   if (kEn::Input::is_key_pressed(kEn::key::escape)) {
     kEn::Input::set_cursor_visible(true);
     update_ = false;
@@ -69,7 +69,7 @@ bool FreeLookComponent::on_window_resize(const kEn::WindowResizeEvent& event) {
   return false;
 }
 
-void FreeMoveComponent::update(duration_t delta, duration_t time) {
+void FreeMoveComponent::update(duration_t delta, duration_t /*time*/) {
   const float dt    = std::chrono::duration<float>(delta).count();
   float move_amount = kEn::Input::is_key_pressed(kEn::key::left_control) ? 3.F * dt * speed_ : dt * speed_;
 
@@ -104,7 +104,7 @@ std::shared_ptr<GameComponent> FreeMoveComponent::clone() const {
 
 void LookAtComponent::set_target(const GameObject& target) { target_ = target; }
 
-void LookAtComponent::update(duration_t delta, duration_t time) {
+void LookAtComponent::update(duration_t /*delta*/, duration_t /*time*/) {
   transform().look_at(target_.get().transform().pos());
 }
 
