@@ -63,7 +63,7 @@ class FizzbuzzLayer : public kEn::Layer {
     kEn::RenderCommand::clear();
 
     kEn::Renderer::begin_scene(camera_);
-    { kEn::Renderer::submit(*shader_, *vertex_array_, transform_); }
+    kEn::Renderer::submit(*shader_, *vertex_array_, transform_);
     kEn::Renderer::end_scene();
   }
 
