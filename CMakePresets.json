@@ -79,6 +79,27 @@
       }
     },
     {
+      "name": "ci-windows-x64-test",
+      "binaryDir": "${sourceDir}/build",
+      "generator": "Ninja",
+      "inherits": [
+        "windows-x64-pedantic"
+      ],
+      "environment": {
+        "UseMultiToolTask": "true",
+        "EnforceProcessCountAcrossBuilds": "true"
+      },
+      "cacheVariables": {
+        "CMAKE_CONFIGURATION_TYPES": "Release",
+        "CMAKE_TOOLCHAIN_FILE": "cmake/toolchains/Windows.MSVC.toolchain.cmake",
+        "CMAKE_VS_VERSION_PRERELEASE": "ON",
+        "VS_EXPERIMENTAL_MODULE": "OFF",
+        "VS_USE_SPECTRE_MITIGATION_ATLMFC_RUNTIME": "OFF",
+        "VS_USE_SPECTRE_MITIGATION_RUNTIME": "OFF",
+        "CMAKE_DISABLE_PRECOMPILE_HEADERS": "ON"
+      }
+    },
+    {
       "name": "dev-debug-linux",
       "binaryDir": "${sourceDir}/build/debug",
       "generator": "Ninja",
@@ -144,6 +165,11 @@
     {
       "name": "ci-windows-x64-msvc",
       "configurePreset": "ci-windows-x64-msvc",
+      "configuration": "Release"
+    },
+    {
+      "name": "ci-windows-x64-test",
+      "configurePreset": "ci-windows-x64-test",
       "configuration": "Release"
     },
     {
