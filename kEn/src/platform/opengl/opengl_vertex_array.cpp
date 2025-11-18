@@ -1,14 +1,16 @@
+#include "opengl_vertex_array.hpp"
+
 #include <glad/gl.h>
 
 #include <cstddef>
 #include <kEn/core/assert.hpp>
-#include <kenpch.hpp>
 #include <memory>
-#include <platform/opengl/opengl_vertex_array.hpp>
 
 namespace kEn {
 
-static GLenum get_opengl_type(shader_data_type type) {
+namespace {
+
+GLenum get_opengl_type(shader_data_type type) {
   switch (type) {
     case shader_data_types::float_:
     case shader_data_types::float2:
@@ -29,6 +31,8 @@ static GLenum get_opengl_type(shader_data_type type) {
       return 0;
   }
 }
+
+}  // namespace
 
 OpenglVertexArray::OpenglVertexArray() : renderer_id_(0) { glGenVertexArrays(1, &renderer_id_); }
 

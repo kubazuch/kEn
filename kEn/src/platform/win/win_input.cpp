@@ -2,7 +2,6 @@
 
 #include <kEn/core/application.hpp>
 #include <kEn/core/input.hpp>
-#include <kenpch.hpp>
 
 namespace kEn {
 

@@ -1,9 +1,9 @@
+#include "material.hpp"
+
 #include <imgui/imgui.h>
 
 #include <cstdint>
-#include <kEn/renderer/material.hpp>
 #include <kEn/renderer/shader.hpp>
-#include <kenpch.hpp>
 #include <ranges>
 
 namespace kEn {

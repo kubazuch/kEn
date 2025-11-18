@@ -1,7 +1,7 @@
+#include "graphics_context.hpp"
+
 #include <kEn/core/assert.hpp>
-#include <kEn/renderer/graphics_context.hpp>
 #include <kEn/renderer/renderer_api.hpp>
-#include <kenpch.hpp>
 #include <platform/opengl/opengl_context.hpp>
 
 namespace kEn {

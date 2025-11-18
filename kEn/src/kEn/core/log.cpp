@@ -1,7 +1,6 @@
-#include <spdlog/sinks/stdout_color_sinks.h>
+#include "log.hpp"
 
-#include <kEn/core/log.hpp>
-#include <kenpch.hpp>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace kEn {
 std::shared_ptr<spdlog::logger> Log::core_logger_;

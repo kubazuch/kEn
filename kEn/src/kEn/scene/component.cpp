@@ -1,6 +1,6 @@
-#include <kEn/scene/component.hpp>
+#include "component.hpp"
+
 #include <kEn/scene/game_object.hpp>
-#include <kenpch.hpp>
 
 namespace kEn {
 

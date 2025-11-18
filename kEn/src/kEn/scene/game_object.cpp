@@ -1,7 +1,7 @@
+#include "game_object.hpp"
+
 #include <kEn/renderer/renderer.hpp>
-#include <kEn/scene/game_object.hpp>
 #include <kEn/scene/mesh/obj_model.hpp>
-#include <kenpch.hpp>
 #include <string_view>
 
 namespace kEn {

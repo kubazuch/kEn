@@ -1,7 +1,7 @@
+#include "buffer.hpp"
+
 #include <kEn/core/assert.hpp>
-#include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/renderer_api.hpp>
-#include <kenpch.hpp>
 #include <memory>
 #include <platform/opengl/opengl_buffer.hpp>
 

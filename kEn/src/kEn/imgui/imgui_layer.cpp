@@ -1,3 +1,5 @@
+#include "imgui_layer.hpp"
+
 #include <GLFW/glfw3.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
@@ -7,8 +9,6 @@
 #include <kEn/core/application.hpp>
 #include <kEn/event/key_events.hpp>
 #include <kEn/event/mouse_events.hpp>
-#include <kEn/imgui/imgui_layer.hpp>
-#include <kenpch.hpp>
 
 namespace kEn {
 

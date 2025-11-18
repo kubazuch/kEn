@@ -11,7 +11,6 @@
 #pragma warning(pop)
 
 #include <kEn/renderer/texture.hpp>
-#include <kenpch.hpp>
 #include <mEn/vec2.hpp>
 #include <mEn/vec3.hpp>
 

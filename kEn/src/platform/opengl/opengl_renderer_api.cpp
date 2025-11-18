@@ -1,14 +1,16 @@
-﻿#include <glad/gl.h>
+﻿#include "opengl_renderer_api.hpp"
+
+#include <glad/gl.h>
 
 #include <cstddef>
 #include <kEn/renderer/renderer_api.hpp>
 #include <kEn/renderer/vertex_array.hpp>
-#include <kenpch.hpp>
-#include <platform/opengl/opengl_renderer_api.hpp>
 
 namespace kEn {
 
 RendererApi::Api RendererApi::api_ = Api::OpenGL;
+
+namespace {
 
 constexpr GLenum draw_mode(RendererApi::RenderMode mode) {
   switch (mode) {
@@ -38,7 +40,7 @@ constexpr GLenum draw_mode(RendererApi::RenderMode mode) {
 
 void gl_message_callback(unsigned /*src*/, unsigned /*type*/, unsigned /*id*/, unsigned lvl, int /*len*/,
                          const char* msg, const void* /*params*/) {
-  switch (lvl) {
+  switch (lvl) {  // NOLINT
     case GL_DEBUG_SEVERITY_HIGH:
       KEN_CORE_CRITICAL(msg);
       return;
@@ -55,6 +57,8 @@ void gl_message_callback(unsigned /*src*/, unsigned /*type*/, unsigned /*id*/, u
 
   KEN_CORE_ASSERT(false, "Unknown message severity!");
 }
+
+}  // namespace
 
 void OpenglRendererApi::init() {
 #ifdef _KEN_DEBUG

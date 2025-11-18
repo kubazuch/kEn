@@ -1,8 +1,9 @@
+#include "opengl_shader.hpp"
+
 #include <filesystem>
+#include <iostream>
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/shader.hpp>
-#include <kenpch.hpp>
-#include <platform/opengl/opengl_shader.hpp>
 #include <string_view>
 #include <unordered_map>
 
@@ -17,7 +18,7 @@ const std::regex OpenglShader::kIncludeRegex("#include\\s+\"(.+)\"");
 
 std::string OpenglShader::read_shader_src_internal(const std::filesystem::path& filePath,
                                                    std::unordered_set<std::filesystem::path>& included, bool internal) {
-  if (included.find(filePath) != included.end()) {
+  if (included.contains(filePath)) {
     if (!internal) {
       KEN_CORE_WARN("Circular dependency or already loaded package detected in file {0}!", filePath.string());
     }
@@ -287,7 +288,7 @@ GLint OpenglShader::get_uniform_location(std::string_view name) const {
 }
 
 void OpenglShader::bind_uniform_buffer(std::string_view name, size_t binding) const {
-  GLuint block_index = glGetUniformBlockIndex(renderer_id_, name.data());
+  GLuint block_index = glGetUniformBlockIndex(renderer_id_, name.data());  // NOLINT
   if (block_index == GL_INVALID_INDEX) {
     KEN_CORE_ERROR("Unable to find uniform block '{0}' in shader '{1}'", name, name_);
     return;
@@ -300,7 +301,7 @@ void OpenglShader::bind_uniform_buffer(std::string_view name, size_t binding) co
 }
 
 void OpenglShader::bind_uniform_buffer(std::string_view name, const UniformBuffer& ubo) const {
-  GLuint block_index = glGetUniformBlockIndex(renderer_id_, name.data());
+  GLuint block_index = glGetUniformBlockIndex(renderer_id_, name.data());  // NOLINT
   if (block_index == GL_INVALID_INDEX) {
     KEN_CORE_ERROR("Unable to find uniform block '{0}' in shader '{1}'", name, name_);
     return;

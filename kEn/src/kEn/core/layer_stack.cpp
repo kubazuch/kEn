@@ -1,11 +1,12 @@
-#include <kEn/core/layer_stack.hpp>
-#include <kenpch.hpp>
+#include "layer_stack.hpp"
+
+#include <kEn/core/layer.hpp>
 
 namespace kEn {
 LayerStack::~LayerStack() {
   for (Layer* layer : layers_) {
     layer->on_detach();
-    delete layer;
+    delete layer;  // NOLINT
   }
 }
 

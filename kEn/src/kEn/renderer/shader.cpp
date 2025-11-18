@@ -1,7 +1,7 @@
+#include "shader.hpp"
+
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/renderer_api.hpp>
-#include <kEn/renderer/shader.hpp>
-#include <kenpch.hpp>
 #include <platform/opengl/opengl_shader.hpp>
 
 namespace kEn {

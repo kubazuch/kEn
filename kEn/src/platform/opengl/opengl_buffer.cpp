@@ -1,7 +1,7 @@
+#include "opengl_buffer.hpp"
+
 #include <glad/gl.h>
 
-#include <kenpch.hpp>
-#include <platform/opengl/opengl_buffer.hpp>
 #include <utility>
 
 namespace kEn {

@@ -1,8 +1,8 @@
+#include "obj_model.hpp"
+
 #include <fstream>
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/vertex_array.hpp>
-#include <kEn/scene/mesh/obj_model.hpp>
-#include <kenpch.hpp>
 #include <string>
 
 namespace kEn {

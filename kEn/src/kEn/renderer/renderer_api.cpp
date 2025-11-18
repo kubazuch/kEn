@@ -1,6 +1,6 @@
-#include <kEn/renderer/renderer_api.hpp>
+#include "renderer_api.hpp"
+
 #include <kEn/renderer/vertex_array.hpp>
-#include <kenpch.hpp>
 #include <platform/opengl/opengl_renderer_api.hpp>
 
 namespace kEn {

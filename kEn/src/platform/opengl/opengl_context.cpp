@@ -3,9 +3,9 @@
 #include <GLFW/glfw3.h>
 // clang-format on
 
+#include "opengl_context.hpp"
+
 #include <kEn/core/assert.hpp>
-#include <kenpch.hpp>
-#include <platform/opengl/opengl_context.hpp>
 
 namespace kEn {
 

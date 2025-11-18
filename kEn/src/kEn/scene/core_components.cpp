@@ -1,8 +1,8 @@
+#include "core_components.hpp"
+
 #include <kEn/core/application.hpp>
 #include <kEn/core/input.hpp>
-#include <kEn/scene/core_components.hpp>
 #include <kEn/scene/game_object.hpp>
-#include <kenpch.hpp>
 
 namespace kEn {
 
@@ -47,7 +47,7 @@ void FreeLookComponent::update(duration_t /*delta*/, duration_t /*time*/) {
 
   if (rot_x) {
     pitch_ -= mEn::radians(delta_pos.y) * sensitivity_;
-    pitch_ = mEn::clamp(pitch_, -mEn::pi<float>() / 2.F + 0.01F, mEn::pi<float>() / 2.F - 0.01F);
+    pitch_ = mEn::clamp(pitch_, (-mEn::pi<float>() / 2.F) + 0.01F, (mEn::pi<float>() / 2.F) - 0.01F);
   }
 
   if (rot_x || rot_y) {
@@ -93,7 +93,7 @@ void FreeMoveComponent::update(duration_t delta, duration_t /*time*/) {
     direction -= world_y_ ? mEn::Vec3(0, 1, 0) : transform().local_up();
   }
 
-  if (direction.x || direction.y || direction.z) {
+  if (direction.x != 0.0F || direction.y != 0.0F || direction.z != 0.0F) {
     transform().fma(mEn::normalize(direction), move_amount);
   }
 }

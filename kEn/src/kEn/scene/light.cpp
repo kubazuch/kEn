@@ -1,8 +1,8 @@
+#include "light.hpp"
+
 #include <imgui/imgui.h>
 
 #include <kEn/renderer/shader.hpp>
-#include <kEn/scene/light.hpp>
-#include <kenpch.hpp>
 
 namespace kEn {
 

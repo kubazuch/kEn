@@ -1,11 +1,11 @@
+#include "mesh.hpp"
+
 #include <imgui/imgui.h>
 
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/material.hpp>
 #include <kEn/renderer/render_command.hpp>
 #include <kEn/renderer/renderer.hpp>
-#include <kEn/scene/mesh/mesh.hpp>
-#include <kenpch.hpp>
 #include <utility>
 
 namespace kEn {

@@ -1,8 +1,8 @@
+#include "renderer.hpp"
+
 #include <kEn/renderer/render_command.hpp>
-#include <kEn/renderer/renderer.hpp>
 #include <kEn/renderer/vertex_array.hpp>
 #include <kEn/scene/core_components.hpp>
-#include <kenpch.hpp>
 
 namespace kEn {
 
