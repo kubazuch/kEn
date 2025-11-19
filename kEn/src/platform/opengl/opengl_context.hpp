@@ -1,5 +1,7 @@
 #pragma once
+
 #include <kEn/renderer/graphics_context.hpp>
+
 #include <platform/win/win_window.hpp>
 
 namespace kEn {

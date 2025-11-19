@@ -3,8 +3,9 @@
 #include <glad/gl.h>
 
 #include <cstddef>
-#include <kEn/core/assert.hpp>
 #include <memory>
+
+#include <kEn/core/assert.hpp>
 
 namespace kEn {
 

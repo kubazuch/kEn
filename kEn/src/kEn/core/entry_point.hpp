@@ -1,7 +1,9 @@
 #pragma once
+
+#include <memory>
+
 #include <kEn/core/application.hpp>
 #include <kEn/core/log.hpp>
-#include <memory>
 
 #ifdef KEN_PLATFORM_WIN
 

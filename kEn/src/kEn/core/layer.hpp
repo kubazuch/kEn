@@ -1,8 +1,10 @@
 #pragma once
+
 #include <chrono>
-#include <kEn/event/event.hpp>
 #include <string>
 #include <string_view>
+
+#include <kEn/event/event.hpp>
 
 namespace kEn {
 

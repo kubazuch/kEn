@@ -1,9 +1,10 @@
 #pragma once
 
 #include <chrono>
+#include <memory>
+
 #include <kEn/core/transform.hpp>
 #include <kEn/event/event.hpp>
-#include <memory>
 
 namespace kEn {
 using duration_t = std::chrono::nanoseconds;

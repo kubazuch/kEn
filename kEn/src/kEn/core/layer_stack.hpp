@@ -1,4 +1,5 @@
 #pragma once
+
 #include <kEn/core/layer.hpp>
 
 namespace kEn {

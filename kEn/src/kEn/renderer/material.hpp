@@ -1,6 +1,8 @@
 #pragma once
-#include <kEn/renderer/texture.hpp>
+
 #include <unordered_map>
+
+#include <kEn/renderer/texture.hpp>
 
 namespace kEn {
 

@@ -1,8 +1,10 @@
 #pragma once
+
+#include <mEn/vec3.hpp>
+
 #include <kEn/core/core.hpp>
 #include <kEn/core/transform.hpp>
 #include <kEn/scene/component.hpp>
-#include <mEn/vec3.hpp>
 
 namespace kEn {
 

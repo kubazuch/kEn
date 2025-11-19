@@ -3,9 +3,10 @@
 #include <imgui/imgui.h>
 #include <stb_image.h>
 
+#include <mEn/functions.hpp>
+
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/texture.hpp>
-#include <mEn/functions.hpp>
 
 namespace kEn {
 

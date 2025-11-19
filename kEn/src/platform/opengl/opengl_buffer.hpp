@@ -1,7 +1,8 @@
 #pragma once
 
-#include <kEn/renderer/buffer.hpp>
 #include <memory>
+
+#include <kEn/renderer/buffer.hpp>
 
 namespace kEn {
 

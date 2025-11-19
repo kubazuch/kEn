@@ -1,8 +1,10 @@
 #include "buffer.hpp"
 
+#include <memory>
+
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/renderer_api.hpp>
-#include <memory>
+
 #include <platform/opengl/opengl_buffer.hpp>
 
 namespace kEn {

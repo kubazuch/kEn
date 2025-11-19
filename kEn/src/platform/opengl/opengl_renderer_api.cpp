@@ -3,6 +3,7 @@
 #include <glad/gl.h>
 
 #include <cstddef>
+
 #include <kEn/renderer/renderer_api.hpp>
 #include <kEn/renderer/vertex_array.hpp>
 

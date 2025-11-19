@@ -10,9 +10,10 @@
 
 #pragma warning(pop)
 
-#include <kEn/renderer/texture.hpp>
 #include <mEn/vec2.hpp>
 #include <mEn/vec3.hpp>
+
+#include <kEn/renderer/texture.hpp>
 
 namespace kEn {
 std::unordered_map<std::filesystem::path, std::shared_ptr<Model>> Model::loaded_resources_;

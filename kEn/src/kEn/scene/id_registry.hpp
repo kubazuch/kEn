@@ -2,10 +2,11 @@
 
 #include <cstddef>
 #include <functional>
-#include <kEn/core/log.hpp>
 #include <limits>
 #include <stack>
 #include <type_traits>
+
+#include <kEn/core/log.hpp>
 
 // Adapted from https://github.com/gizmokis/resin/pull/22
 // migoox, 04.12.2024

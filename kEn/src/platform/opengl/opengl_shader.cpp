@@ -2,10 +2,11 @@
 
 #include <filesystem>
 #include <iostream>
-#include <kEn/core/assert.hpp>
-#include <kEn/renderer/shader.hpp>
 #include <string_view>
 #include <unordered_map>
+
+#include <kEn/core/assert.hpp>
+#include <kEn/renderer/shader.hpp>
 
 namespace kEn {
 

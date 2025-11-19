@@ -1,6 +1,7 @@
 #include "vertex_array.hpp"
 
 #include <kEn/renderer/renderer_api.hpp>
+
 #include <platform/opengl/opengl_vertex_array.hpp>
 
 namespace kEn {

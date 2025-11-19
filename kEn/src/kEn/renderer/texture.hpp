@@ -1,9 +1,10 @@
 #pragma once
 
 #include <filesystem>
-#include <kEn/core/core.hpp>
 #include <optional>
 #include <unordered_map>
+
+#include <kEn/core/core.hpp>
 
 #define TEXTURE_TYPES(X)                                \
   X(ambient_occlusion, aiTextureType_AMBIENT_OCCLUSION) \

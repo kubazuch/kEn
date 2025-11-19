@@ -2,9 +2,17 @@
 
 #include <glad/gl.h>
 
+#include <cstddef>
+#include <functional>
+#include <memory>
 #include <utility>
 
+#include <kEn/core/assert.hpp>
+#include <kEn/renderer/buffer.hpp>
+
 namespace kEn {
+
+namespace {
 
 constexpr GLenum get_buffer_type(BufferType type) {
   switch (type) {
@@ -21,6 +29,8 @@ constexpr GLenum get_buffer_type(BufferType type) {
       return 0;
   }
 }
+
+}  // namespace
 
 OpenglBuffer::OpenglBuffer(const void* data, size_t size) : size_(size), renderer_id_(0) {
   glCreateBuffers(1, &renderer_id_);

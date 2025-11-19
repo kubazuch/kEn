@@ -3,8 +3,9 @@
 #include <imgui/imgui.h>
 
 #include <cstdint>
-#include <kEn/renderer/shader.hpp>
 #include <ranges>
+
+#include <kEn/renderer/shader.hpp>
 
 namespace kEn {
 

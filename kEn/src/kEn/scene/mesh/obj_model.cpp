@@ -1,9 +1,10 @@
 #include "obj_model.hpp"
 
 #include <fstream>
+#include <string>
+
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/vertex_array.hpp>
-#include <string>
 
 namespace kEn {
 

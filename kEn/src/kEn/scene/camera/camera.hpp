@@ -1,9 +1,10 @@
 #pragma once
 
+#include <mEn.hpp>
+
 #include <kEn/core/transform.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/scene/component.hpp>
-#include <mEn.hpp>
 
 namespace kEn {
 

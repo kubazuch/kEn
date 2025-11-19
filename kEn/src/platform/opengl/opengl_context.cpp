@@ -1,9 +1,9 @@
+#include "opengl_context.hpp"
+
 // clang-format off
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 // clang-format on
-
-#include "opengl_context.hpp"
 
 #include <kEn/core/assert.hpp>
 

@@ -1,9 +1,11 @@
 #pragma once
+
+#include <mEn/vec2.hpp>
+
 #include <kEn/event/application_events.hpp>
 #include <kEn/scene/camera/camera.hpp>
 #include <kEn/scene/component.hpp>
 #include <kEn/scene/mesh/model.hpp>
-#include <mEn/vec2.hpp>
 
 namespace kEn {
 

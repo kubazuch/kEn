@@ -2,9 +2,10 @@
 
 #include <glad/gl.h>
 
+#include <mEn/functions.hpp>
+
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/framebuffer.hpp>
-#include <mEn/functions.hpp>
 
 namespace kEn {
 

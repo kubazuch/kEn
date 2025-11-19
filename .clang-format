@@ -10,3 +10,32 @@ AlignConsecutiveAssignments:
   Enabled: true
   AcrossEmptyLines: false 
   AcrossComments: false
+
+IncludeCategories:
+  - Regex:           '^<.*\.h>'
+    Priority:        1
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '^<[a-zA-Z0-9_]+>'
+    Priority:        2
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '^<mEn/?.*\.hpp>'
+    Priority:        3
+    SortPriority:    0
+  - Regex:           '^<kEn/?.*\.hpp>'
+    Priority:        4
+    SortPriority:    0
+    CaseSensitive: false
+  - Regex:           '^<platform/.*\.hpp>'
+    Priority:        5
+    SortPriority:    0
+    CaseSensitive: false
+  - Regex:           '^<.*'
+    Priority:        6
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '.*'
+    Priority:        7
+    SortPriority:    0
+    CaseSensitive:   false

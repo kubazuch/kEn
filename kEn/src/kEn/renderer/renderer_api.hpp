@@ -1,7 +1,8 @@
 #pragma once
 
-#include <kEn/renderer/vertex_array.hpp>
 #include <mEn/vec4.hpp>
+
+#include <kEn/renderer/vertex_array.hpp>
 
 namespace kEn {
 
