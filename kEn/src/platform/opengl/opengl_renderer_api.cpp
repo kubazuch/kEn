@@ -74,12 +74,13 @@ void OpenglRendererApi::init() {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
   glEnable(GL_LINE_SMOOTH);
   // glEnable(GL_MULTISAMPLE);
 
-  // glEnable(GL_CULL_FACE);
-  // glCullFace(GL_BACK);
-  // glFrontFace(GL_CCW);
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_BACK);
+  glFrontFace(GL_CCW);
 }
 
 void OpenglRendererApi::set_viewport(size_t x, size_t y, size_t width, size_t height) {

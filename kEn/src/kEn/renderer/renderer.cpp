@@ -53,7 +53,11 @@ void Renderer::submit(Shader& shader, const VertexArray& vertex_array, const Tra
   shader.set_uniform("u_Ambient", scene_data_->ambient);
 
   shader.bind();
-  RenderCommand::draw_indexed(vertex_array, vertex_array.element_count(), mode);
+  if (vertex_array.index_buffer()) {
+    RenderCommand::draw_indexed(vertex_array, vertex_array.element_count(), mode);
+  } else {
+    RenderCommand::draw(vertex_array, vertex_array.element_count(), mode);
+  }
 }
 
 void Renderer::submit_instanced(Shader& shader, const VertexArray& vertex_array, size_t instance_count,
