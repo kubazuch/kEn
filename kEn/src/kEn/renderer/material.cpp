@@ -1,10 +1,11 @@
+#include "material.hpp"
+
 #include <imgui/imgui.h>
 
 #include <cstdint>
-#include <kEn/renderer/material.hpp>
-#include <kEn/renderer/shader.hpp>
-#include <kenpch.hpp>
 #include <ranges>
+
+#include <kEn/renderer/shader.hpp>
 
 namespace kEn {
 
@@ -65,9 +66,9 @@ void Material::imgui() {
     for (texture_type_t i = 0; i < texture_type::Last; ++i) {
       if (!textures_[i].empty()) {
         if (ImGui::TreeNode(texture_type::name_of(i))) {
-          for (int j = 0; j < static_cast<int>(textures_[i].size()); ++j) {
-            ImGui::PushID(j);
-            ImGui::Text("Texture %d:", j);
+          for (size_t j = 0; j < textures_[i].size(); ++j) {
+            ImGui::PushID(static_cast<int>(j));
+            ImGui::Text("Texture %lld:", j);
 
             textures_[i][j]->imgui();
 

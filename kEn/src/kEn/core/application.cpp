@@ -1,13 +1,14 @@
+#include "application.hpp"
+
 #include <GLFW/glfw3.h>
 #include <imgui/imgui.h>
 
 #include <chrono>
-#include <kEn/core/application.hpp>
+
 #include <kEn/core/assert.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/renderer/render_command.hpp>
 #include <kEn/renderer/renderer.hpp>
-#include <kenpch.hpp>
 
 namespace kEn {
 Application* Application::instance_ = nullptr;
@@ -25,7 +26,7 @@ Application::Application() {
 
   RenderCommand::init();
 
-  imgui_layer_ = new ImguiLayer();
+  imgui_layer_ = new ImguiLayer();  // NOLINT
   push_overlay(imgui_layer_);
 }
 

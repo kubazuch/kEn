@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ostream>
+
 #include <kEn/core/key_codes.hpp>
 #include <kEn/core/mod_keys.hpp>
 #include <kEn/event/event.hpp>

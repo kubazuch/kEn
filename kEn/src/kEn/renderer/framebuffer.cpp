@@ -1,7 +1,10 @@
-#include <kEn/renderer/framebuffer.hpp>
-#include <kEn/renderer/renderer.hpp>
+#include "framebuffer.hpp"
+
+#include <memory>
+
+#include <kEn/core/assert.hpp>
 #include <kEn/renderer/renderer_api.hpp>
-#include <kenpch.hpp>
+
 #include <platform/opengl/opengl_framebuffer.hpp>
 
 namespace kEn {

@@ -2,12 +2,12 @@
 
 #include <GLFW/glfw3.h>
 
+#include <mEn/vec2.hpp>
+
 #include <kEn/core/core.hpp>
 #include <kEn/core/mod_keys.hpp>
 #include <kEn/core/window.hpp>
 #include <kEn/renderer/graphics_context.hpp>
-
-#include "mEn/vec2.hpp"
 
 namespace kEn {
 

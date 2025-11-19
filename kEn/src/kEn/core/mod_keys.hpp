@@ -1,6 +1,9 @@
 #pragma once
 
-namespace kEn {
+#include <cstdint>
+#include <string>
+
+namespace kEn {  // NOLINT
 
 using ModKeys = uint8_t;
 

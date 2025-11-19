@@ -1,9 +1,10 @@
+#include "obj_model.hpp"
+
 #include <fstream>
+#include <string>
+
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/vertex_array.hpp>
-#include <kEn/scene/mesh/obj_model.hpp>
-#include <kenpch.hpp>
-#include <string>
 
 namespace kEn {
 
@@ -83,7 +84,7 @@ ObjModel::ObjModel(const std::filesystem::path& path) {
       v.push_back(tok);
 
       bool normal = false;
-      for (int i = 0; i < 3; i++) {
+      for (size_t i = 0; i < 3; i++) {
         ObjVertex vert{};
         std::vector<std::string> is;
         std::istringstream iss2(v[i]);
@@ -94,23 +95,23 @@ ObjModel::ObjModel(const std::filesystem::path& path) {
         }
 
         if (is.size() == 1) {
-          vert.pos       = positions[std::stoi(is[0]) - 1];
+          vert.pos       = positions[std::stoull(is[0]) - 1];
           vert.tex_coord = mEn::Vec2(0, 0);
           vertices.push_back(vert);
         } else if (is.size() == 2) {
-          vert.pos       = positions[std::stoi(is[0]) - 1];
-          vert.tex_coord = texture_coords[std::stoi(is[1]) - 1];
+          vert.pos       = positions[std::stoull(is[0]) - 1];
+          vert.tex_coord = texture_coords[std::stoull(is[1]) - 1];
           vertices.push_back(vert);
         } else if (is[1].empty()) {
-          vert.pos       = positions[std::stoi(is[0]) - 1];
+          vert.pos       = positions[std::stoull(is[0]) - 1];
           vert.tex_coord = mEn::Vec2(0, 0);
-          vert.normal    = normals[std::stoi(is[2]) - 1];
+          vert.normal    = normals[std::stoull(is[2]) - 1];
           normal         = true;
           vertices.push_back(vert);
         } else {
-          vert.pos       = positions[std::stoi(is[0]) - 1];
-          vert.tex_coord = texture_coords[std::stoi(is[1]) - 1];
-          vert.normal    = normals[std::stoi(is[2]) - 1];
+          vert.pos       = positions[std::stoull(is[0]) - 1];
+          vert.tex_coord = texture_coords[std::stoull(is[1]) - 1];
+          vert.normal    = normals[std::stoull(is[2]) - 1];
           normal         = true;
           vertices.push_back(vert);
         }
@@ -121,17 +122,15 @@ ObjModel::ObjModel(const std::filesystem::path& path) {
         mEn::Vec3 b    = vertices[2].pos - vertices[1].pos;
         mEn::Vec3 norm = mEn::cross(a, b);
 
-        for (int i = 0; i < 3; i++) {
+        for (size_t i = 0; i < 3; i++) {
           vertices[i].normal = norm;
         }
       }
 
-      uint32_t id0 = final_vertices.size();
-      for (int i = 0; i < 3; i++) {
+      size_t id0 = final_vertices.size();
+      for (size_t i = 0; i < 3; i++) {
         final_vertices.push_back(vertices[i]);
-
-        uint32_t ind = id0 + i;
-        final_indices.push_back(ind);
+        final_indices.push_back(static_cast<uint32_t>(id0 + i));
       }
     }
   }
@@ -141,7 +140,7 @@ ObjModel::ObjModel(const std::filesystem::path& path) {
   const auto stride   = obj_layout_.stride() / sizeof(float);
   const auto vertices = std::make_unique<float[]>(stride * final_vertices.size());
 
-  uint32_t offset = 0;
+  size_t offset = 0;
   for (auto vertex : final_vertices) {
     vertices[offset + 0] = vertex.pos.x;
     vertices[offset + 1] = vertex.pos.y;

@@ -1,8 +1,9 @@
 #pragma once
 
+#include <mEn/vec2.hpp>
+
 #include <kEn/core/key_codes.hpp>
 #include <kEn/core/mouse_codes.hpp>
-#include <mEn/vec2.hpp>
 
 namespace kEn {
 

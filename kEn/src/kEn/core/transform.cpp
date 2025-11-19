@@ -1,7 +1,8 @@
-#include <kEn/core/transform.hpp>
-#include <kEn/scene/game_object.hpp>
-#include <kenpch.hpp>
+#include "transform.hpp"
+
 #include <mEn.hpp>
+
+#include <kEn/scene/game_object.hpp>
 
 namespace kEn {
 

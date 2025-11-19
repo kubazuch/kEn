@@ -1,7 +1,8 @@
 #pragma once
 
-#include <kEn/renderer/buffer.hpp>
 #include <memory>
+
+#include <kEn/renderer/buffer.hpp>
 
 namespace kEn {
 
@@ -31,6 +32,13 @@ class OpenglBuffer : virtual public Buffer {
 class OpenglMutableBuffer final : public MutableBuffer, public OpenglBuffer {
  public:
   OpenglMutableBuffer(const void* data, size_t size) : OpenglBuffer(data, size) {}
+
+  void bind(BufferType type) const override { OpenglBuffer::bind(type); }
+  void unbind(BufferType type) const override { OpenglBuffer::unbind(type); }
+
+  const BufferLayout& layout() const override { return OpenglBuffer::layout(); }
+  void set_layout(const BufferLayout& layout) override { OpenglBuffer::set_layout(layout); }
+  size_t size() const override { return OpenglBuffer::size(); }
 
   void modify_data(std::function<void(void*)> fn) const override;
   void set_data(const void* data, size_t size) override;

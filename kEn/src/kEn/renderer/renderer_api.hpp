@@ -1,14 +1,25 @@
 #pragma once
 
-#include <kEn/renderer/vertex_array.hpp>
 #include <mEn/vec4.hpp>
+
+#include <kEn/renderer/vertex_array.hpp>
 
 namespace kEn {
 
 class RendererApi {
  public:
   enum class Api { None = 0, OpenGL = 1 };
-  enum class RenderMode { Points, LineStrip, LineLoop, Lines, TriangleStrip, TriangleFan, Triangles, Patches, LinesAdjacency };
+  enum class RenderMode {
+    Points,
+    LineStrip,
+    LineLoop,
+    Lines,
+    TriangleStrip,
+    TriangleFan,
+    Triangles,
+    Patches,
+    LinesAdjacency
+  };
 
  public:
   virtual ~RendererApi() = default;

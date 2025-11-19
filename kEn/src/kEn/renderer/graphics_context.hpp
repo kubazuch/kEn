@@ -1,6 +1,8 @@
 #pragma once
 
-namespace kEn {
+#include <memory>
+
+namespace kEn {  // NOLINT
 
 class GraphicsContext {
  public:

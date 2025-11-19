@@ -1,7 +1,8 @@
 #pragma once
 
-#include <kEn/event/event.hpp>
 #include <ostream>
+
+#include <kEn/event/event.hpp>
 
 namespace kEn {
 

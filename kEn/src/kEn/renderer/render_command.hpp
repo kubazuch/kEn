@@ -1,6 +1,8 @@
 #pragma once
-#include <kEn/renderer/renderer_api.hpp>
+
 #include <mEn/vec4.hpp>
+
+#include <kEn/renderer/renderer_api.hpp>
 
 namespace kEn {
 

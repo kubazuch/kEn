@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace kEn {
+namespace kEn {  // NOLINT
 
 class file_dialog {
  public:

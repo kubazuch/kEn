@@ -1,23 +1,29 @@
+#include "win_window.hpp"
+
 #include <GLFW/glfw3.h>
 
 #include <kEn/core/assert.hpp>
+#include <kEn/core/key_codes.hpp>
+#include <kEn/core/log.hpp>
 #include <kEn/core/mod_keys.hpp>
 #include <kEn/core/mouse_codes.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/key_events.hpp>
 #include <kEn/event/mouse_events.hpp>
 #include <kEn/renderer/graphics_context.hpp>
-#include <kEn/renderer/renderer_api.hpp>
-#include <kenpch.hpp>
-#include <platform/win/win_window.hpp>
+#include <kEn/renderer/renderer_api.hpp>  // NOLINT
 
 namespace kEn {
 
-static uint8_t GLFW_window_count = 0;
+namespace {
 
-static void api_error_callback(int error_code, const char* description) {
+uint8_t GLFW_window_count = 0;  // NOLINT
+
+void api_error_callback(int error_code, const char* description) {
   KEN_CORE_ERROR("GLFW Error #{0}: {1}", error_code, description);
 }
+
+}  // namespace
 
 void WindowsWindow::api_init() {
   const int status = glfwInit();
@@ -28,7 +34,7 @@ void WindowsWindow::api_init() {
 
 void WindowsWindow::api_shutdown() { glfwTerminate(); }
 
-Window* Window::create(const WindowProperties& props) { return new WindowsWindow(props); }
+Window* Window::create(const WindowProperties& props) { return new WindowsWindow(props); }  // NOLINT
 
 WindowsWindow::WindowsWindow(const WindowProperties& properties) {
   data_.title  = properties.title;
@@ -71,18 +77,18 @@ void WindowsWindow::set_glfw_callbacks() const {
 
   glfwSetWindowSizeCallback(window_ptr_, [](GLFWwindow* window, int width, int height) {
     Data& win_data  = *static_cast<Data*>(glfwGetWindowUserPointer(window));
-    win_data.width  = width;
-    win_data.height = height;
+    win_data.width  = static_cast<unsigned int>(width);
+    win_data.height = static_cast<unsigned int>(height);
 
-    WindowResizeEvent event(width, height);
+    WindowResizeEvent event(static_cast<unsigned int>(width), static_cast<unsigned int>(height));
     win_data.handler(event);
   });
 
   glfwSetKeyCallback(window_ptr_, [](GLFWwindow* window, int key, int /*scancode*/, int action, int mods) {
     Data& win_data       = *static_cast<Data*>(glfwGetWindowUserPointer(window));
-    win_data.active_mods = mods;
+    win_data.active_mods = static_cast<ModKeys>(mods);
 
-    switch (action) {
+    switch (action) {  // NOLINT
       case GLFW_PRESS: {
         KeyPressedEvent event(static_cast<KeyCode>(key), static_cast<ModKeys>(mods), false);
         win_data.handler(event);
@@ -109,14 +115,14 @@ void WindowsWindow::set_glfw_callbacks() const {
 
   glfwSetMouseButtonCallback(window_ptr_, [](GLFWwindow* window, int button, int action, int mods) {
     Data& win_data       = *static_cast<Data*>(glfwGetWindowUserPointer(window));
-    win_data.active_mods = mods;
+    win_data.active_mods = static_cast<ModKeys>(mods);
 
     double dx, dy;  // NOLINT
     glfwGetCursorPos(window, &dx, &dy);
     auto x = static_cast<float>(dx);
     auto y = static_cast<float>(dy);
 
-    switch (action) {
+    switch (action) {  // NOLINT
       case GLFW_PRESS: {
         MouseButtonPressedEvent event({x, y}, static_cast<MouseCode>(button), static_cast<ModKeys>(mods));
         win_data.handler(event);
@@ -149,9 +155,9 @@ void WindowsWindow::set_glfw_callbacks() const {
 
     for (int i = 0; i < GLFW_MOUSE_BUTTON_LAST; ++i) {
       if (win_data.dragging[i]) {
-        MouseDragEvent event({win_data.drag_from_x[i], win_data.drag_from_y[i]}, {x, y}, static_cast<MouseCode>(i),
-                             win_data.active_mods);
-        win_data.handler(event);
+        MouseDragEvent drag_event({win_data.drag_from_x[i], win_data.drag_from_y[i]}, {x, y}, static_cast<MouseCode>(i),
+                                  win_data.active_mods);
+        win_data.handler(drag_event);
       }
     }
   });

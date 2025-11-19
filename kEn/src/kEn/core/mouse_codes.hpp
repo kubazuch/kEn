@@ -1,5 +1,7 @@
 #pragma once
+
 #include <cstdint>
+
 // TODO: rework
 // Copied from "glfw3.h"
 #define MOUSE_CODES(X, Y) \

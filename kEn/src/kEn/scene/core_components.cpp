@@ -1,12 +1,12 @@
+#include "core_components.hpp"
+
 #include <kEn/core/application.hpp>
 #include <kEn/core/input.hpp>
-#include <kEn/scene/core_components.hpp>
 #include <kEn/scene/game_object.hpp>
-#include <kenpch.hpp>
 
 namespace kEn {
 
-void ModelComponent::render(Shader& shader, double alpha) {
+void ModelComponent::render(Shader& shader, double /*alpha*/) {
   if (!parent_.has_value()) {
     return;
   }
@@ -21,7 +21,7 @@ FreeLookComponent::FreeLookComponent(float sensitivity) : sensitivity_(sensitivi
   window_center_     = {main.width() / 2, main.height() / 2};
 }
 
-void FreeLookComponent::update(duration_t delta, duration_t time) {
+void FreeLookComponent::update(duration_t /*delta*/, duration_t /*time*/) {
   if (kEn::Input::is_key_pressed(kEn::key::escape)) {
     kEn::Input::set_cursor_visible(true);
     update_ = false;
@@ -47,7 +47,7 @@ void FreeLookComponent::update(duration_t delta, duration_t time) {
 
   if (rot_x) {
     pitch_ -= mEn::radians(delta_pos.y) * sensitivity_;
-    pitch_ = mEn::clamp(pitch_, -mEn::pi<float>() / 2.F + 0.01F, mEn::pi<float>() / 2.F - 0.01F);
+    pitch_ = mEn::clamp(pitch_, (-mEn::pi<float>() / 2.F) + 0.01F, (mEn::pi<float>() / 2.F) - 0.01F);
   }
 
   if (rot_x || rot_y) {
@@ -69,7 +69,7 @@ bool FreeLookComponent::on_window_resize(const kEn::WindowResizeEvent& event) {
   return false;
 }
 
-void FreeMoveComponent::update(duration_t delta, duration_t time) {
+void FreeMoveComponent::update(duration_t delta, duration_t /*time*/) {
   const float dt    = std::chrono::duration<float>(delta).count();
   float move_amount = kEn::Input::is_key_pressed(kEn::key::left_control) ? 3.F * dt * speed_ : dt * speed_;
 
@@ -93,7 +93,7 @@ void FreeMoveComponent::update(duration_t delta, duration_t time) {
     direction -= world_y_ ? mEn::Vec3(0, 1, 0) : transform().local_up();
   }
 
-  if (direction.x || direction.y || direction.z) {
+  if (direction.x != 0.0F || direction.y != 0.0F || direction.z != 0.0F) {
     transform().fma(mEn::normalize(direction), move_amount);
   }
 }
@@ -104,7 +104,7 @@ std::shared_ptr<GameComponent> FreeMoveComponent::clone() const {
 
 void LookAtComponent::set_target(const GameObject& target) { target_ = target; }
 
-void LookAtComponent::update(duration_t delta, duration_t time) {
+void LookAtComponent::update(duration_t /*delta*/, duration_t /*time*/) {
   transform().look_at(target_.get().transform().pos());
 }
 

@@ -1,12 +1,17 @@
 #pragma once
+
+#pragma warning(push)
+#pragma warning(disable : 4619 4365 4351)
 #include <assimp/material.h>
 #include <assimp/scene.h>
+#pragma warning(pop)
 
 #include <deque>
+#include <unordered_map>
+
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
 #include <kEn/scene/mesh/mesh.hpp>
-#include <unordered_map>
 
 namespace kEn {
 

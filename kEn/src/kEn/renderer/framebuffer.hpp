@@ -1,9 +1,11 @@
 #pragma once
 
-#include <kEn/core/core.hpp>
-#include <mEn/vec4.hpp>
 #include <memory>
 #include <vector>
+
+#include <mEn/vec4.hpp>
+
+#include <kEn/core/core.hpp>
 
 namespace kEn {
 

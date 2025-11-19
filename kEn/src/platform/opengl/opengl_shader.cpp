@@ -1,10 +1,12 @@
+#include "opengl_shader.hpp"
+
 #include <filesystem>
-#include <kEn/core/assert.hpp>
-#include <kEn/renderer/shader.hpp>
-#include <kenpch.hpp>
-#include <platform/opengl/opengl_shader.hpp>
+#include <iostream>
 #include <string_view>
 #include <unordered_map>
+
+#include <kEn/core/assert.hpp>
+#include <kEn/renderer/shader.hpp>
 
 namespace kEn {
 
@@ -17,7 +19,7 @@ const std::regex OpenglShader::kIncludeRegex("#include\\s+\"(.+)\"");
 
 std::string OpenglShader::read_shader_src_internal(const std::filesystem::path& filePath,
                                                    std::unordered_set<std::filesystem::path>& included, bool internal) {
-  if (included.find(filePath) != included.end()) {
+  if (included.contains(filePath)) {
     if (!internal) {
       KEN_CORE_WARN("Circular dependency or already loaded package detected in file {0}!", filePath.string());
     }
@@ -84,7 +86,7 @@ GLuint OpenglShader::create_shader(std::string_view src, GLenum type) {
     GLint length = 0;
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
 
-    std::vector<GLchar> info(length);
+    std::vector<GLchar> info(static_cast<size_t>(length));
     glGetShaderInfoLog(shader, length, &length, info.data());
 
     glDeleteShader(shader);
@@ -107,7 +109,7 @@ void OpenglShader::link_shader() const {
     GLint length = 0;
     glGetProgramiv(renderer_id_, GL_INFO_LOG_LENGTH, &length);
 
-    std::vector<GLchar> info(length);
+    std::vector<GLchar> info(static_cast<size_t>(length));
     glGetProgramInfoLog(renderer_id_, length, &length, info.data());
 
     glDeleteProgram(renderer_id_);
@@ -124,7 +126,7 @@ void OpenglShader::link_shader() const {
     GLint length = 0;
     glGetProgramiv(renderer_id_, GL_INFO_LOG_LENGTH, &length);
 
-    std::vector<GLchar> info(length);
+    std::vector<GLchar> info(static_cast<size_t>(length));
     glGetProgramInfoLog(renderer_id_, length, &length, info.data());
 
     glDeleteProgram(renderer_id_);
@@ -287,20 +289,20 @@ GLint OpenglShader::get_uniform_location(std::string_view name) const {
 }
 
 void OpenglShader::bind_uniform_buffer(std::string_view name, size_t binding) const {
-  GLuint block_index = glGetUniformBlockIndex(renderer_id_, name.data());
+  GLuint block_index = glGetUniformBlockIndex(renderer_id_, name.data());  // NOLINT
   if (block_index == GL_INVALID_INDEX) {
     KEN_CORE_ERROR("Unable to find uniform block '{0}' in shader '{1}'", name, name_);
     return;
   }
 
   uniform_block_bindings_[block_index] = static_cast<GLuint>(binding);
-  glUniformBlockBinding(renderer_id_, block_index, binding);
+  glUniformBlockBinding(renderer_id_, block_index, static_cast<GLuint>(binding));
   KEN_CORE_DEBUG("Adding new uniform block '{0}' (index: {1}) in shader '{2}' to binding: {3}", name, block_index,
                  name_, binding);
 }
 
 void OpenglShader::bind_uniform_buffer(std::string_view name, const UniformBuffer& ubo) const {
-  GLuint block_index = glGetUniformBlockIndex(renderer_id_, name.data());
+  GLuint block_index = glGetUniformBlockIndex(renderer_id_, name.data());  // NOLINT
   if (block_index == GL_INVALID_INDEX) {
     KEN_CORE_ERROR("Unable to find uniform block '{0}' in shader '{1}'", name, name_);
     return;

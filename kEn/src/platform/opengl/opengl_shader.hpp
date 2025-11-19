@@ -1,13 +1,16 @@
 #pragma once
+
 #include <glad/gl.h>
 
 #include <filesystem>
 #include <functional>
-#include <kEn/renderer/shader.hpp>
-#include <kEn/util/string_hash.hpp>
-#include <mEn.hpp>
 #include <regex>
 #include <unordered_set>
+
+#include <mEn.hpp>
+
+#include <kEn/renderer/shader.hpp>
+#include <kEn/util/string_hash.hpp>
 
 namespace kEn {
 

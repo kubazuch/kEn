@@ -1,10 +1,13 @@
 #pragma once
+
+#include <span>
+#include <string_view>
+
+#include <mEn.hpp>
+
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/material.hpp>
 #include <kEn/scene/light.hpp>
-#include <mEn.hpp>
-#include <span>
-#include <string_view>
 
 namespace kEn {
 

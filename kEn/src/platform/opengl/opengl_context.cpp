@@ -1,11 +1,11 @@
+#include "opengl_context.hpp"
+
 // clang-format off
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 // clang-format on
 
 #include <kEn/core/assert.hpp>
-#include <kenpch.hpp>
-#include <platform/opengl/opengl_context.hpp>
 
 namespace kEn {
 

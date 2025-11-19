@@ -1,11 +1,12 @@
 #pragma once
 
 #include <functional>
-#include <kEn/core/core.hpp>
-#include <kEn/event/event.hpp>
 #include <string>
 
-#include "mEn/vec2.hpp"
+#include <mEn/vec2.hpp>
+
+#include <kEn/core/core.hpp>
+#include <kEn/event/event.hpp>
 
 namespace kEn {
 

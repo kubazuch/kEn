@@ -1,5 +1,4 @@
-#include <kEn/scene/camera/camera.hpp>
-#include <kenpch.hpp>
+#include "camera.hpp"
 
 namespace kEn {
 

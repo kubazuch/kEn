@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 // Copied from "glfw3.h"
 #define KEY_CODES(X, Y)           \
   /* Printable keys */            \
@@ -133,7 +135,7 @@
   X(right_super, 347)             \
   X(menu, 348)
 
-namespace kEn {
+namespace kEn {  // NOLINT
 
 using KeyCode = uint16_t;
 

@@ -1,13 +1,19 @@
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
+#include "model.hpp"
+
 #include <imgui/imgui.h>
 
+#pragma warning(push)
+#pragma warning(disable : 4619 4365 4351)
+#include <assimp/postprocess.h>
+
 #include <assimp/Importer.hpp>
-#include <kEn/renderer/texture.hpp>
-#include <kEn/scene/mesh/model.hpp>
-#include <kenpch.hpp>
+
+#pragma warning(pop)
+
 #include <mEn/vec2.hpp>
 #include <mEn/vec3.hpp>
+
+#include <kEn/renderer/texture.hpp>
 
 namespace kEn {
 std::unordered_map<std::filesystem::path, std::shared_ptr<Model>> Model::loaded_resources_;
@@ -146,7 +152,7 @@ void Model::imgui() {
   if (ImGui::TreeNode("Meshes")) {
     ImGui::BeginChild("Meshes", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeY);
     for (size_t i = 0; i < meshes_.size(); ++i) {
-      ImGui::PushID(i);
+      ImGui::PushID(static_cast<int>(i));
       meshes_[i].imgui();
       ImGui::PopID();
     }

@@ -1,17 +1,18 @@
+#include "opengl_texture.hpp"
+
 #include <imgui/imgui.h>
 #include <stb_image.h>
 
+#include <mEn/functions.hpp>
+
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/texture.hpp>
-#include <kenpch.hpp>
-#include <mEn/functions.hpp>
-#include <platform/opengl/opengl_texture.hpp>
 
 namespace kEn {
 
-namespace utils {
+namespace {
 
-static GLenum ken_image_format_to_gl_data(ImageFormat format) {
+GLenum ken_image_format_to_gl_data(ImageFormat format) {
   switch (format) {
     case ImageFormat::RGB8:
       return GL_RGB;
@@ -23,7 +24,7 @@ static GLenum ken_image_format_to_gl_data(ImageFormat format) {
   return 0;
 }
 
-static GLenum ken_image_format_to_gl_internal(ImageFormat format) {
+GLenum ken_image_format_to_gl_internal(ImageFormat format) {
   switch (format) {
     case ImageFormat::RGB8:
       return GL_RGB8;
@@ -35,7 +36,7 @@ static GLenum ken_image_format_to_gl_internal(ImageFormat format) {
   return 0;
 }
 
-static GLint ken_filter_to_gl(TextureSpec::filter filter, bool mipmap = false) {
+GLint ken_filter_to_gl(TextureSpec::filter filter, bool mipmap = false) {
   switch (filter) {
     case TextureSpec::filter::Nearest:
       return static_cast<GLint>(mipmap ? GL_NEAREST_MIPMAP_LINEAR : GL_NEAREST);
@@ -45,7 +46,7 @@ static GLint ken_filter_to_gl(TextureSpec::filter filter, bool mipmap = false) {
   }
 }
 
-static GLint ken_wrap_to_gl(TextureSpec::wrap wrap) {
+GLint ken_wrap_to_gl(TextureSpec::wrap wrap) {
   switch (wrap) {
     case TextureSpec::wrap::Clamp:
       return GL_CLAMP_TO_EDGE;
@@ -57,21 +58,21 @@ static GLint ken_wrap_to_gl(TextureSpec::wrap wrap) {
   }
 }
 
-}  // namespace utils
+}  // namespace
 
 OpenglTexture2D::OpenglTexture2D(const TextureSpec& specification)
     : spec_(specification),
       renderer_id_(0),
-      internal_format_(utils::ken_image_format_to_gl_internal(specification.format.value())),
-      data_format_(utils::ken_image_format_to_gl_data(specification.format.value())) {
+      internal_format_(ken_image_format_to_gl_internal(specification.format.value())),
+      data_format_(ken_image_format_to_gl_data(specification.format.value())) {
   glCreateTextures(GL_TEXTURE_2D, 1, &renderer_id_);
   glTextureStorage2D(renderer_id_, 1, internal_format_, static_cast<GLsizei>(spec_.width.value()),
                      static_cast<GLsizei>(spec_.height.value()));
 
-  glTextureParameteri(renderer_id_, GL_TEXTURE_MIN_FILTER, utils::ken_filter_to_gl(specification.min_filter));
-  glTextureParameteri(renderer_id_, GL_TEXTURE_MAG_FILTER, utils::ken_filter_to_gl(specification.mag_filter));
-  glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_S, utils::ken_wrap_to_gl(specification.x_wrap));
-  glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_T, utils::ken_wrap_to_gl(specification.y_wrap));
+  glTextureParameteri(renderer_id_, GL_TEXTURE_MIN_FILTER, ken_filter_to_gl(specification.min_filter));
+  glTextureParameteri(renderer_id_, GL_TEXTURE_MAG_FILTER, ken_filter_to_gl(specification.mag_filter));
+  glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_S, ken_wrap_to_gl(specification.x_wrap));
+  glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_T, ken_wrap_to_gl(specification.y_wrap));
 }
 
 OpenglTexture2D::OpenglTexture2D(const std::filesystem::path& path, const TextureSpec& spec)
@@ -112,11 +113,10 @@ OpenglTexture2D::OpenglTexture2D(const std::filesystem::path& path, const Textur
     glTextureStorage2D(renderer_id_, static_cast<GLsizei>(spec_.mipmap_levels), internal_format_,
                        static_cast<GLsizei>(spec_.width.value()), static_cast<GLsizei>(spec_.height.value()));
 
-    glTextureParameteri(renderer_id_, GL_TEXTURE_MIN_FILTER,
-                        utils::ken_filter_to_gl(spec.min_filter, spec.mipmap_levels > 1));
-    glTextureParameteri(renderer_id_, GL_TEXTURE_MAG_FILTER, utils::ken_filter_to_gl(spec.mag_filter));
-    glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_S, utils::ken_wrap_to_gl(spec.x_wrap));
-    glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_T, utils::ken_wrap_to_gl(spec.y_wrap));
+    glTextureParameteri(renderer_id_, GL_TEXTURE_MIN_FILTER, ken_filter_to_gl(spec.min_filter, spec.mipmap_levels > 1));
+    glTextureParameteri(renderer_id_, GL_TEXTURE_MAG_FILTER, ken_filter_to_gl(spec.mag_filter));
+    glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_S, ken_wrap_to_gl(spec.x_wrap));
+    glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_T, ken_wrap_to_gl(spec.y_wrap));
 
     if (channels == 4) {
       glPixelStorei(GL_UNPACK_ALIGNMENT, 4);

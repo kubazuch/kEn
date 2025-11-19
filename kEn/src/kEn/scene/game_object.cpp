@@ -1,8 +1,15 @@
-#include <kEn/renderer/renderer.hpp>
-#include <kEn/scene/game_object.hpp>
-#include <kEn/scene/mesh/obj_model.hpp>
-#include <kenpch.hpp>
+#include "game_object.hpp"
+
+#include <functional>
+#include <memory>
 #include <string_view>
+#include <unordered_map>
+
+#include <mEn/quat.hpp>
+#include <mEn/vec3.hpp>
+
+#include <kEn/core/log.hpp>
+#include <kEn/scene/id_registry.hpp>
 
 namespace kEn {
 

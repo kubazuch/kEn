@@ -1,6 +1,9 @@
 #pragma once
 
-namespace kEn {
+#include <mEn/vec2.hpp>
+#include <mEn/vec3.hpp>
+
+namespace kEn {  // NOLINT
 
 struct Vertex {
   mEn::Vec3 pos;

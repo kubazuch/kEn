@@ -1,9 +1,10 @@
 #pragma once
 
 #include <filesystem>
-#include <kEn/core/core.hpp>
 #include <optional>
 #include <unordered_map>
+
+#include <kEn/core/core.hpp>
 
 #define TEXTURE_TYPES(X)                                \
   X(ambient_occlusion, aiTextureType_AMBIENT_OCCLUSION) \
@@ -73,6 +74,8 @@ inline const char* name_of(const texture_type_t type) {
       return "INVALID";
   }
 }
+#undef ENUM_ENTRY
+#undef CASE_ENTRY
 }  // namespace texture_type
 
 class Texture {

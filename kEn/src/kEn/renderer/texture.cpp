@@ -1,7 +1,8 @@
+#include "texture.hpp"
+
 #include <kEn/renderer/renderer.hpp>
 #include <kEn/renderer/renderer_api.hpp>
-#include <kEn/renderer/texture.hpp>
-#include <kenpch.hpp>
+
 #include <platform/opengl/opengl_texture.hpp>
 
 namespace kEn {

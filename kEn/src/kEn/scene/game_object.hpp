@@ -1,12 +1,14 @@
 #pragma once
+
 #include <cstddef>
+#include <optional>
+#include <string>
+#include <string_view>
+
 #include <kEn/core/transform.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/scene/component.hpp>
 #include <kEn/scene/id_registry.hpp>
-#include <optional>
-#include <string>
-#include <string_view>
 
 namespace kEn {
 using duration_t   = std::chrono::nanoseconds;

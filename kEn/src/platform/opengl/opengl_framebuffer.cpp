@@ -1,32 +1,33 @@
+#include "opengl_framebuffer.hpp"
+
 #include <glad/gl.h>
+
+#include <mEn/functions.hpp>
 
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/framebuffer.hpp>
-#include <kenpch.hpp>
-#include <mEn/functions.hpp>
-#include <platform/opengl/opengl_framebuffer.hpp>
 
 namespace kEn {
 
 static constexpr uint32_t kMaxFramebufferSize = 8192;
 
-namespace utils {
-static GLenum texture_target(bool multisampled) {
+namespace {
+GLenum texture_target(bool multisampled) {
   return static_cast<GLenum>(multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D);
 }
 
-static void create_textures(bool multisampled, uint32_t* outId, uint32_t count) {
+void create_textures(bool multisampled, uint32_t* outId, size_t count) {
   glCreateTextures(texture_target(multisampled), static_cast<GLsizei>(count), outId);
 }
 
-static void bind_texture(bool multisampled, uint32_t id) { glBindTexture(texture_target(multisampled), id); }
+void bind_texture(bool multisampled, uint32_t id) { glBindTexture(texture_target(multisampled), id); }
 
-static void attach_color_texture(uint32_t id, int samples, GLint internalFormat, GLenum format, uint32_t width,
-                                 uint32_t height, size_t index) {
+void attach_color_texture(uint32_t id, int samples, GLint internalFormat, GLenum format, uint32_t width,
+                          uint32_t height, size_t index) {
   bool multisampled = samples > 1;
   if (multisampled) {
-    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, static_cast<GLsizei>(width),
-                            static_cast<GLsizei>(height), GL_FALSE);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, static_cast<GLenum>(internalFormat),
+                            static_cast<GLsizei>(width), static_cast<GLsizei>(height), GL_FALSE);
   } else {
     glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, static_cast<GLsizei>(width), static_cast<GLsizei>(height), 0, format,
                  GL_UNSIGNED_BYTE, nullptr);
@@ -42,8 +43,8 @@ static void attach_color_texture(uint32_t id, int samples, GLint internalFormat,
                          texture_target(multisampled), id, 0);
 }
 
-static void attach_depth_texture(uint32_t id, int samples, GLenum format, GLenum attachmentType, uint32_t width,
-                                 uint32_t height) {
+void attach_depth_texture(uint32_t id, int samples, GLenum format, GLenum attachmentType, uint32_t width,
+                          uint32_t height) {
   bool multisampled = samples > 1;
   if (multisampled) {
     glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, static_cast<GLsizei>(width),
@@ -61,7 +62,7 @@ static void attach_depth_texture(uint32_t id, int samples, GLenum format, GLenum
   glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, texture_target(multisampled), id, 0);
 }
 
-static bool is_depth_format(FramebufferTextureFormat format) {
+bool is_depth_format(FramebufferTextureFormat format) {
   switch (format) {
     case FramebufferTextureFormat::DEPTH24STENCIL8:
       return true;
@@ -70,7 +71,7 @@ static bool is_depth_format(FramebufferTextureFormat format) {
   }
 }
 
-static GLenum texture_format_to_GL(FramebufferTextureFormat format) {
+GLenum texture_format_to_GL(FramebufferTextureFormat format) {
   switch (format) {
     case FramebufferTextureFormat::RGBA8:
       return GL_RGBA;
@@ -81,14 +82,15 @@ static GLenum texture_format_to_GL(FramebufferTextureFormat format) {
       return 0;
   }
 }
-}  // namespace utils
+
+}  // namespace
 
 OpenglFramebuffer::OpenglFramebuffer(const FramebufferSpec& spec) : spec_(spec) {
-  for (auto spec : spec_.attachments.attachments) {
-    if (!utils::is_depth_format(spec.texture_format)) {
-      color_attachment_specs_.emplace_back(spec);
+  for (auto s : spec_.attachments.attachments) {
+    if (!is_depth_format(s.texture_format)) {
+      color_attachment_specs_.emplace_back(s);
     } else {
-      depth_attachment_spec_ = spec;
+      depth_attachment_spec_ = s;
     }
   }
 
@@ -116,28 +118,28 @@ void OpenglFramebuffer::invalidate() {
 
   if (!color_attachment_specs_.empty()) {
     color_attachments_.resize(color_attachment_specs_.size());
-    utils::create_textures(false, color_attachments_.data(), color_attachments_.size());
+    create_textures(false, color_attachments_.data(), color_attachments_.size());
 
     for (size_t i = 0; i < color_attachments_.size(); i++) {
-      utils::bind_texture(false, color_attachments_[i]);
+      bind_texture(false, color_attachments_[i]);
       switch (color_attachment_specs_[i].texture_format) {
         case FramebufferTextureFormat::RGBA8:
-          utils::attach_color_texture(color_attachments_[i], 1, GL_RGBA8, GL_RGBA, spec_.width, spec_.height, i);
+          attach_color_texture(color_attachments_[i], 1, GL_RGBA8, GL_RGBA, spec_.width, spec_.height, i);
           break;
         case FramebufferTextureFormat::RED_INT:
-          utils::attach_color_texture(color_attachments_[i], 1, GL_R32I, GL_RED_INTEGER, spec_.width, spec_.height, i);
+          attach_color_texture(color_attachments_[i], 1, GL_R32I, GL_RED_INTEGER, spec_.width, spec_.height, i);
           break;
       }
     }
   }
 
   if (depth_attachment_spec_.texture_format != FramebufferTextureFormat::None) {
-    utils::create_textures(false, &depth_attachment_, 1);
-    utils::bind_texture(false, depth_attachment_);
+    create_textures(false, &depth_attachment_, 1);
+    bind_texture(false, depth_attachment_);
     switch (depth_attachment_spec_.texture_format) {
       case FramebufferTextureFormat::DEPTH24STENCIL8:
-        utils::attach_depth_texture(depth_attachment_, 1, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, spec_.width,
-                                    spec_.height);
+        attach_depth_texture(depth_attachment_, 1, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, spec_.width,
+                             spec_.height);
         break;
     }
   }
@@ -204,15 +206,14 @@ void OpenglFramebuffer::clear_attachment(uint32_t attachment_id, int value) {
   KEN_CORE_ASSERT(attachment_id < color_attachments_.size());
 
   auto& spec = color_attachment_specs_[attachment_id];
-  glClearTexImage(color_attachments_[attachment_id], 0, utils::texture_format_to_GL(spec.texture_format), GL_INT,
-                  &value);
+  glClearTexImage(color_attachments_[attachment_id], 0, texture_format_to_GL(spec.texture_format), GL_INT, &value);
 }
 
 void OpenglFramebuffer::clear_attachment(uint32_t attachment_id, mEn::Vec4 value) {
   KEN_CORE_ASSERT(attachment_id < color_attachments_.size());
 
   auto& spec = color_attachment_specs_[attachment_id];
-  glClearTexImage(color_attachments_[attachment_id], 0, utils::texture_format_to_GL(spec.texture_format), GL_FLOAT,
+  glClearTexImage(color_attachments_[attachment_id], 0, texture_format_to_GL(spec.texture_format), GL_FLOAT,
                   mEn::value_ptr(value));
 }
 
