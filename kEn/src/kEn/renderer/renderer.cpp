@@ -67,7 +67,11 @@ void Renderer::submit_instanced(Shader& shader, const VertexArray& vertex_array,
   shader.set_uniform("u_Ambient", scene_data_->ambient);
 
   shader.bind();
-  RenderCommand::draw_indexed_instanced(vertex_array, vertex_array.element_count(), instance_count, mode);
+  if (vertex_array.index_buffer()) {
+    RenderCommand::draw_indexed_instanced(vertex_array, vertex_array.element_count(), instance_count, mode);
+  } else {
+    RenderCommand::draw_instanced(vertex_array, vertex_array.element_count(), instance_count, mode);
+  }
 }
 
 void Renderer::submit_tessellated(Shader& shader, const VertexArray& vertex_array, const uint32_t& count,

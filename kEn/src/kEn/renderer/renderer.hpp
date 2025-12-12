@@ -10,9 +10,9 @@
 namespace kEn {
 
 class Renderer {
+ public:
   using RenderMode = RendererApi::RenderMode;
 
- public:
   static void begin_scene(const std::shared_ptr<Camera>& camera);
   static void end_scene();
 

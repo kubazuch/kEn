@@ -33,11 +33,13 @@ void Material::load(Shader& shader, const std::string& name) const {
   shader.set_uniform(name + ".m", shininess_factor);
   shader.set_uniform(name + ".emissive", emissive);
 
+  uint32_t texture_id = 0;
   for (const auto& [type, textures] : textures_) {
     for (size_t i = 0; i < textures.size(); i++) {
       std::stringstream ss;
       ss << "u_Material." << texture_type::name_of(type) << "[" << i << "]";
-      shader.set_uniform(ss.str(), static_cast<int>(i));
+      shader.set_uniform(ss.str(), static_cast<int>(texture_id));
+      texture_id++;
     }
   }
 }
