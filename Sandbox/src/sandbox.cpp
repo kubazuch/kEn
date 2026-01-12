@@ -1,6 +1,8 @@
 #include <imgui/imgui.h>
 
 #include <chrono>
+#include <memory>
+
 #include <kEn.hpp>
 #include <kEn/core/assert.hpp>
 #include <kEn/core/transform.hpp>
@@ -9,7 +11,6 @@
 #include <kEn/renderer/vertex_array.hpp>
 #include <kEn/scene/camera/camera.hpp>
 #include <kEn/scene/game_object.hpp>
-#include <memory>
 
 class FizzbuzzLayer : public kEn::Layer {
  public:
