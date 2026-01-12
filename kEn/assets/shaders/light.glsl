@@ -35,6 +35,15 @@ const int MAX_LIGHTS = 15;
 
 uniform bool u_UseBlinn = true;
 
+uniform int u_DirectionalCount;
+uniform directional_light u_DirectionalLights[MAX_LIGHTS];
+
+uniform int u_PointCount;
+uniform point_light u_PointLights[MAX_LIGHTS];
+
+uniform int u_SpotCount;
+uniform spot_light u_SpotLights[MAX_LIGHTS];
+
 float calc_attenuation(attenuation atten, float dist) {
 	return 1.0 / (atten.constant + dist * (atten.linear + dist * atten.quadratic));
 }
