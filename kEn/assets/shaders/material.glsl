@@ -6,6 +6,8 @@ struct material {
   float ks;
   float m;
 
+  vec3 surface_color;
+
   bool emissive;
 
   int diffuse_count;

@@ -23,6 +23,7 @@ class OpenglFramebuffer : public Framebuffer {
   void bind_depth_as_texture(uint32_t slot) const override;
 
   void clear_attachment(uint32_t attachment_id, int value) override;
+  void clear_attachment(uint32_t attachment_id, float value) override;
   void clear_attachment(uint32_t attachment_id, mEn::Vec4 value) override;
 
   uint32_t get_color_attachment_renderer_id(uint32_t id) const override {

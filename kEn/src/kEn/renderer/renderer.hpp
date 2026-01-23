@@ -1,5 +1,6 @@
 #pragma once
 #include <mEn.hpp>
+#include <mEn/vec3.hpp>
 
 #include <kEn/core/transform.hpp>
 #include <kEn/renderer/renderer_api.hpp>
@@ -14,6 +15,7 @@ class Renderer {
   using RenderMode = RendererApi::RenderMode;
 
   static void begin_scene(const std::shared_ptr<Camera>& camera);
+  static void begin_scene(const mEn::Vec3& camera_pos, const mEn::Mat4& view, const mEn::Mat4& projection);
   static void end_scene();
 
   static void add_light(const std::shared_ptr<PointLight>& light) { scene_data_->point_lights.push_back(light); }

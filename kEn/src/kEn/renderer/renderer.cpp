@@ -15,6 +15,13 @@ void Renderer::begin_scene(const std::shared_ptr<Camera>& camera) {  // NOLINT
   scene_data_->camera_pos = camera->transform().pos();
 }
 
+void Renderer::begin_scene(const mEn::Vec3& camera_pos, const mEn::Mat4& view, const mEn::Mat4& projection) {  // NOLINT
+  scene_data_->V_matrix   = view;
+  scene_data_->P_matrix   = projection;
+  scene_data_->VP_matrix  = projection * view;
+  scene_data_->camera_pos = camera_pos;
+}
+
 void Renderer::end_scene() {}
 
 void Renderer::prepare(Shader& shader) {
@@ -47,6 +54,8 @@ void Renderer::submit(Shader& shader, const VertexArray& vertex_array, RenderMod
 }
 
 void Renderer::submit(Shader& shader, const VertexArray& vertex_array, const Transform& transform, RenderMode mode) {
+  shader.set_uniform("u_V", scene_data_->V_matrix);
+  shader.set_uniform("u_P", scene_data_->P_matrix);
   shader.set_uniform("u_VP", scene_data_->VP_matrix);
   shader.set_uniform("u_CameraPos", scene_data_->camera_pos);
   shader.set_uniform("u_M", transform.local_to_world_matrix());

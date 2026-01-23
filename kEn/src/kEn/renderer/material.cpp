@@ -32,6 +32,7 @@ void Material::load(Shader& shader, const std::string& name) const {
   shader.set_uniform(name + ".ks", specular_factor);
   shader.set_uniform(name + ".m", shininess_factor);
   shader.set_uniform(name + ".emissive", emissive);
+  shader.set_uniform(name + ".surface_color", surface_color);
 
   uint32_t texture_id = 0;
   for (const auto& [type, textures] : textures_) {

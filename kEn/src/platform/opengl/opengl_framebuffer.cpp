@@ -4,6 +4,7 @@
 
 #include <mEn/functions.hpp>
 
+#include <kEn/core/application.hpp>
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 
@@ -77,6 +78,8 @@ GLenum texture_format_to_GL(FramebufferTextureFormat format) {
       return GL_RGBA;
     case FramebufferTextureFormat::RED_INT:
       return GL_RED_INTEGER;
+    case FramebufferTextureFormat::RED32:
+      return GL_RED;
     default:
       KEN_CORE_ASSERT(false);
       return 0;
@@ -129,6 +132,9 @@ void OpenglFramebuffer::invalidate() {
         case FramebufferTextureFormat::RED_INT:
           attach_color_texture(color_attachments_[i], 1, GL_R32I, GL_RED_INTEGER, spec_.width, spec_.height, i);
           break;
+        case FramebufferTextureFormat::RED32:
+          attach_color_texture(color_attachments_[i], 1, GL_R32F, GL_RED, spec_.width, spec_.height, i);
+          break;
       }
     }
   }
@@ -161,7 +167,12 @@ void OpenglFramebuffer::bind() {
   glViewport(0, 0, static_cast<GLsizei>(spec_.width), static_cast<GLsizei>(spec_.height));
 }
 
-void OpenglFramebuffer::unbind() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+void OpenglFramebuffer::unbind() {
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  mEn::Vec2 window_size = kEn::Application::instance().main_window().size();
+  glViewport(0, 0, static_cast<GLsizei>(window_size.x), static_cast<GLsizei>(window_size.y));
+}
 
 void OpenglFramebuffer::resize(uint32_t width, uint32_t height) {
   if (width == 0 || height == 0 || width > kMaxFramebufferSize || height > kMaxFramebufferSize) {
@@ -207,6 +218,13 @@ void OpenglFramebuffer::clear_attachment(uint32_t attachment_id, int value) {
 
   auto& spec = color_attachment_specs_[attachment_id];
   glClearTexImage(color_attachments_[attachment_id], 0, texture_format_to_GL(spec.texture_format), GL_INT, &value);
+}
+
+void OpenglFramebuffer::clear_attachment(uint32_t attachment_id, float value) {
+  KEN_CORE_ASSERT(attachment_id < color_attachments_.size());
+
+  auto& spec = color_attachment_specs_[attachment_id];
+  glClearTexImage(color_attachments_[attachment_id], 0, texture_format_to_GL(spec.texture_format), GL_FLOAT, &value);
 }
 
 void OpenglFramebuffer::clear_attachment(uint32_t attachment_id, mEn::Vec4 value) {

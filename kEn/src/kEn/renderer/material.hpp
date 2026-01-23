@@ -2,6 +2,8 @@
 
 #include <unordered_map>
 
+#include <mEn.hpp>
+
 #include <kEn/renderer/texture.hpp>
 
 namespace kEn {
@@ -28,6 +30,8 @@ class Material {
   float diffuse_factor   = 0.5F;
   float specular_factor  = 0.5F;
   float shininess_factor = 50.F;
+
+  mEn::Vec3 surface_color = mEn::Vec3(1.F, 1.F, 1.F);
 
   bool transparent = false;
   bool emissive    = false;
