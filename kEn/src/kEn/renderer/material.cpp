@@ -34,6 +34,10 @@ void Material::load(Shader& shader, const std::string& name) const {
   shader.set_uniform(name + ".emissive", emissive);
   shader.set_uniform(name + ".surface_color", surface_color);
 
+  shader.set_uniform(name + ".sigma", sigma);
+  shader.set_uniform(name + ".sss_color", sss_color);
+  shader.set_uniform(name + ".sss_strength", sss_strength);
+
   uint32_t texture_id = 0;
   for (const auto& [type, textures] : textures_) {
     for (size_t i = 0; i < textures.size(); i++) {
@@ -56,11 +60,21 @@ void Material::bind() const {
 }
 
 void Material::imgui() {
+  ImGui::ColorEdit3("Surface color", mEn::value_ptr(surface_color));
+
   if (ImGui::TreeNode("Phong properties")) {
     ImGui::SliderFloat("ambient", &ambient_factor, 0, 1);
     ImGui::SliderFloat("diffuse", &diffuse_factor, 0, 1);
     ImGui::SliderFloat("specular", &specular_factor, 0, 1);
     ImGui::SliderFloat("shininess", &shininess_factor, 1, 100);
+
+    ImGui::TreePop();
+  }
+
+  if (ImGui::TreeNode("SSS parameters")) {
+    ImGui::SliderFloat("sigma", &sigma, 0.01F, 20);
+    ImGui::ColorEdit3("sss color", mEn::value_ptr(sss_color));
+    ImGui::SliderFloat("sss strength", &sss_strength, 0, 1);
 
     ImGui::TreePop();
   }

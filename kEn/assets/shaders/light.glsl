@@ -31,6 +31,10 @@ struct spot_light {
   vec3 dir;
   float cutoff;
   float outerCutoff;
+
+  sampler2D sss_texture;
+  mat4 view_matrix;
+  mat4 proj_matrix;
 };
 
 const int MAX_LIGHTS = 15;

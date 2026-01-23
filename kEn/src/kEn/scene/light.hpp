@@ -4,6 +4,7 @@
 
 #include <kEn/core/core.hpp>
 #include <kEn/core/transform.hpp>
+#include <kEn/renderer/framebuffer.hpp>
 #include <kEn/scene/component.hpp>
 
 namespace kEn {
@@ -59,7 +60,16 @@ class PointLight : public BaseLight {
 
 class SpotLight : public BaseLight {
  public:
+  SpotLight();
+
   void imgui() override;
+
+  void set_angles(float inner, float outer);
+
+  Framebuffer& framebuffer() const { return *sss_framebuffer_; };
+  mEn::Mat4 view_matrix() const { return transform().world_to_local_matrix(); }
+  mEn::Mat4 proj_matrix() const { return proj_matrix_; }
+  void bind_sss_texture() const;
 
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
@@ -69,6 +79,11 @@ class SpotLight : public BaseLight {
   Attenuation atten;
   float inner_cutoff_angle = 0.1F;
   float outer_cutoff_angle = 0.1F;
+
+ private:
+  int light_id_;
+  std::shared_ptr<Framebuffer> sss_framebuffer_;
+  mEn::Mat4 proj_matrix_;
 };
 
 }  // namespace kEn

@@ -33,6 +33,10 @@ class Material {
 
   mEn::Vec3 surface_color = mEn::Vec3(1.F, 1.F, 1.F);
 
+  float sigma         = 1.F;
+  mEn::Vec3 sss_color = mEn::Vec3(1.F, 0.F, 0.F);
+  float sss_strength  = 1.0;
+
   bool transparent = false;
   bool emissive    = false;
 

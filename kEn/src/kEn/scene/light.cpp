@@ -57,6 +57,26 @@ std::shared_ptr<GameComponent> PointLight::clone() const {
   return ptr;
 }
 
+SpotLight::SpotLight() {
+  static int light_texture_id = 1;
+
+  light_id_ = light_texture_id++;
+
+  kEn::FramebufferSpec spec;
+  spec.width       = 512;
+  spec.height      = 512;
+  spec.attachments = {kEn::FramebufferTextureFormat::RED32, kEn::FramebufferTextureFormat::Depth};
+
+  sss_framebuffer_ = kEn::Framebuffer::create(spec);
+  proj_matrix_     = mEn::perspective(2 * outer_cutoff_angle, 1.F, 0.01F, 100.F);
+}
+
+void SpotLight::set_angles(float inner, float outer) {
+  inner_cutoff_angle = inner;
+  outer_cutoff_angle = outer;
+  proj_matrix_       = mEn::perspective(2 * outer_cutoff_angle, 1.F, 0.01F, 100.F);
+}
+
 void SpotLight::imgui() {
   if (ImGui::ColorEdit3("Color##light", mEn::value_ptr(color))) {
   }
@@ -74,9 +94,16 @@ void SpotLight::imgui() {
   }
 
   if (ImGui::SliderFloat("Outer angle", &outer_cutoff_angle, 0, mEn::pi<float>() / 2)) {
+    proj_matrix_ = mEn::perspective(2 * outer_cutoff_angle, 1.F, 0.01F, 100.F);
   }
 
   if (ImGui::SliderFloat("Inner angle", &inner_cutoff_angle, 0, mEn::pi<float>() / 2)) {
+  }
+
+  if (ImGui::TreeNode("Texture")) {
+    ImGui::Image(sss_framebuffer_->get_color_attachment_renderer_id(0), ImVec2(512, 512), ImVec2(0, 1), ImVec2(1, 0));
+
+    ImGui::TreePop();
   }
 }
 
@@ -89,6 +116,9 @@ void SpotLight::load(const std::string& name, Shader& shader) const {
   shader.set_uniform(name + ".dir", mEn::normalize(transform().front()));
   shader.set_uniform(name + ".cutoff", mEn::cos(inner_cutoff_angle));
   shader.set_uniform(name + ".outerCutoff", mEn::cos(outer_cutoff_angle));
+  shader.set_uniform(name + ".sss_texture", light_id_);
+  shader.set_uniform(name + ".view_matrix", transform().world_to_local_matrix());
+  shader.set_uniform(name + ".proj_matrix", proj_matrix_);
 }
 
 std::shared_ptr<GameComponent> SpotLight::clone() const {
@@ -98,5 +128,7 @@ std::shared_ptr<GameComponent> SpotLight::clone() const {
   ptr->outer_cutoff_angle = outer_cutoff_angle;
   return ptr;
 }
+
+void SpotLight::bind_sss_texture() const { sss_framebuffer_->bind_attachment_as_texture(0, light_id_); }
 
 }  // namespace kEn
