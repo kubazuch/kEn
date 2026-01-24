@@ -1,5 +1,7 @@
 #include "render_command.hpp"
 
+#include <memory>
+
 #include <kEn/renderer/renderer_api.hpp>
 
 namespace kEn {

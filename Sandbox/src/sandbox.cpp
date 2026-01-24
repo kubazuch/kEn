@@ -3,15 +3,22 @@
 #include <chrono>
 #include <memory>
 
-#include <kEn.hpp>
-#include <kEn/core/assert.hpp>
+#include <mEn/functions.hpp>
+
+#include <kEn.hpp>  //NOLINT
+#include <kEn/core/input.hpp>
+#include <kEn/core/layer.hpp>
+#include <kEn/core/log.hpp>
 #include <kEn/core/transform.hpp>
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/render_command.hpp>
+#include <kEn/renderer/renderer.hpp>
+#include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/vertex_array.hpp>
 #include <kEn/scene/camera/camera.hpp>
 #include <kEn/scene/game_object.hpp>
 
+namespace {
 class FizzbuzzLayer : public kEn::Layer {
  public:
   FizzbuzzLayer() : Layer("FizzBuzz") {
@@ -34,8 +41,8 @@ class FizzbuzzLayer : public kEn::Layer {
     vertex_array_      = kEn::VertexArray::create();
     auto vertex_buffer = kEn::Buffer::create(vertices, sizeof(vertices));
     {
-      kEn::BufferLayout layout = {{kEn::shader_data_types::float3, "a_Position"},
-                                  {kEn::shader_data_types::float4, "a_Color"}};
+      const kEn::BufferLayout layout = {{kEn::shader_data_types::float3, "a_Position"},
+                                        {kEn::shader_data_types::float4, "a_Color"}};
 
       vertex_buffer->set_layout(layout);
     }
@@ -56,7 +63,7 @@ class FizzbuzzLayer : public kEn::Layer {
     shader_->set_uniform("iTime", seconds_time);
     // camera_.set_rotation(glm::rotate(camera_.rotation(), (float) delta, { 0, 1.0F, 0.0F }));
     transform_.rotate({0, 1, 0}, seconds_delta);
-    transform_.set_local_pos({0, 0, sin(seconds_time)});
+    transform_.set_local_pos({0, 0, mEn::sin(seconds_time)});
   }
 
   void on_render(double) override {
@@ -92,7 +99,9 @@ class FizzbuzzLayer : public kEn::Layer {
 
 class Sandbox : public kEn::Application {
  public:
-  Sandbox() { push_layer(new FizzbuzzLayer()); }
+  Sandbox() { push_layer(new FizzbuzzLayer()); }  // NOLINT
 };
 
-kEn::Application* kEn::create_application() { return new Sandbox(); }
+}  // namespace
+
+kEn::Application* kEn::create_application() { return new Sandbox(); }  // NOLINT

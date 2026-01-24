@@ -27,7 +27,7 @@ void api_error_callback(int error_code, const char* description) {
 
 void WindowsWindow::api_init() {
   const int status = glfwInit();
-  KEN_CORE_ASSERT(status, "GLFW init failed!");
+  KEN_CORE_ASSERT(status, "GLFW init failed!");  // NOLINT
 
   glfwSetErrorCallback(api_error_callback);
 }

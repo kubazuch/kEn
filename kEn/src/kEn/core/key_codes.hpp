@@ -1,8 +1,31 @@
 #pragma once
 
 #include <cstdint>
+#include <string_view>
+#include <type_traits>
 
+namespace kEn {  // NOLINT
+
+/// @brief Underlying integral type used for key codes.
+using KeyCode = std::uint16_t;
+
+/**
+ * @def KEY_CODES(X, Y)
+ * @brief X-macro list of key definitions.
+ *
+ * Expand with:
+ * - `X(id, code)` for entries where the display name is the identifier
+ * - `Y(id, code, name)` for entries that need a custom display name (e.g. digits)
+ *
+ * Example:
+ * @code
+ * #define ENUM_ENTRY(id, code) id = code,
+ * #define NAMED_ENUM_ENTRY(id, code, name) id = code,
+ * KEY_CODES(ENUM_ENTRY, NAMED_ENUM_ENTRY)
+ * @endcode
+ */
 // Copied from "glfw3.h"
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define KEY_CODES(X, Y)           \
   /* Printable keys */            \
   X(space, 32)                    \
@@ -135,38 +158,79 @@
   X(right_super, 347)             \
   X(menu, 348)
 
-namespace kEn {  // NOLINT
-
-using KeyCode = uint16_t;
-
 namespace key {
 
+/**
+ * @brief Strongly-typed keyboard key identifier.
+ *
+ * Values match the corresponding GLFW key codes.
+ * Use `kEn::key::code()` to obtain the underlying numeric code.
+ */
+enum class Key : KeyCode {
+// NOLINTBEGIN(cppcoreguidelines-macro-usage, bugprone-macro-parentheses, readability-identifier-naming)
 #define ENUM_ENTRY(id, code) id = code,
 #define NAMED_ENUM_ENTRY(id, code, name) id = code,
+  KEY_CODES(ENUM_ENTRY, NAMED_ENUM_ENTRY)
+#undef ENUM_ENTRY
+#undef NAMED_ENUM_ENTRY
+  // NOLINTEND(cppcoreguidelines-macro-usage, bugprone-macro-parentheses, readability-identifier-naming)
+};
 
-#define CASE_ENTRY(id, code) \
-  case code:                 \
-    return #id;
-#define NAMED_CASE_ENTRY(id, code, name) \
-  case code:                             \
-    return name;
+/// @brief C++20 convenience: brings enumerators into `kEn::key` namespace (e.g. `kEn::key::a`).
+using enum Key;
 
-enum : KeyCode { KEY_CODES(ENUM_ENTRY, NAMED_ENUM_ENTRY) };
-
-inline const char* name_of(const KeyCode key) {
-  switch (key) {
-    KEY_CODES(CASE_ENTRY, NAMED_CASE_ENTRY)
-    default:
-      return "INVALID";
-  }
+/**
+ * @brief Convert an enum value to its underlying integer type.
+ * @tparam E Enum type.
+ * @param e Enum value.
+ * @return Underlying integer representation.
+ */
+template <class E>
+[[nodiscard]] constexpr std::underlying_type_t<E> to_underlying(E e) noexcept {
+  return static_cast<std::underlying_type_t<E>>(e);
 }
+
+/**
+ * @brief Get the underlying numeric key code.
+ * @param k Key enum value.
+ * @return Numeric key code (matches GLFW).
+ */
+[[nodiscard]] constexpr KeyCode code(Key k) noexcept { return to_underlying(k); }
+
+/**
+ * @brief Get a stable, human-readable name for a key.
+ * @param k Key enum value.
+ * @return A string view describing the key (e.g. `"a"`, `"escape"`, `"0"`).
+ *
+ * @note For unknown/unsupported values, returns `"INVALID"`.
+ */
+[[nodiscard]] constexpr std::string_view name_of(Key k) noexcept {
+  // NOLINTBEGIN(cppcoreguidelines-macro-usage)
+  switch (k) {
+#define CASE_ENTRY(id, code) \
+  case Key::id:              \
+    return std::string_view{#id};
+#define NAMED_CASE_ENTRY(id, code, name) \
+  case Key::id:                          \
+    return std::string_view{name};
+    KEY_CODES(CASE_ENTRY, NAMED_CASE_ENTRY)
+#undef CASE_ENTRY
+#undef NAMED_CASE_ENTRY
+    default:
+      return std::string_view{"INVALID"};
+  }
+  // NOLINTEND(cppcoreguidelines-macro-usage)
+}
+
+/**
+ * @brief Get a stable, human-readable name from a raw key code.
+ * @param k Raw numeric key code.
+ * @return A string view describing the key, or `"INVALID"` if unknown.
+ */
+[[nodiscard]] constexpr std::string_view name_of(KeyCode k) noexcept { return name_of(static_cast<Key>(k)); }
 
 }  // namespace key
 
 }  // namespace kEn
 
 #undef KEY_CODES
-#undef ENUM_ENTRY
-#undef NAMED_ENUM_ENTRY
-#undef CASE_ENTRY
-#undef NAMED_CASE_ENTRY

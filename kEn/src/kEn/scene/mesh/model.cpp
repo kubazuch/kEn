@@ -4,16 +4,31 @@
 
 #pragma warning(push)
 #pragma warning(disable : 4619 4365 4351)
+#include <assimp/material.h>
+#include <assimp/mesh.h>
 #include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <assimp/types.h>
 
 #include <assimp/Importer.hpp>
-
 #pragma warning(pop)
+
+#include <algorithm>
+#include <cstdint>
+#include <filesystem>
+#include <memory>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include <mEn/vec2.hpp>
 #include <mEn/vec3.hpp>
 
+#include <kEn/core/log.hpp>
+#include <kEn/core/transform.hpp>
+#include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
+#include <kEn/scene/mesh/vertex.hpp>
 
 namespace kEn {
 std::unordered_map<std::filesystem::path, std::shared_ptr<Model>> Model::loaded_resources_;
@@ -92,7 +107,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene, TextureSpec spec) {
       v.texture_coord = mEn::Vec2(0.0F);
     }
 
-    // TODO(): tangents and bitangents
+    // TODO(kuzu): tangents and bitangents
 
     vertices.emplace_back(v);
   }
@@ -100,7 +115,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene, TextureSpec spec) {
   // Indices
   std::vector<uint32_t> indices;
   for (unsigned int i = 0; i < mesh->mNumFaces; ++i) {
-    aiFace face = mesh->mFaces[i];
+    const aiFace face = mesh->mFaces[i];
     for (unsigned int j = 0; j < face.mNumIndices; ++j) {
       indices.push_back(face.mIndices[j]);
     }
@@ -129,7 +144,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene, TextureSpec spec) {
   }
 
   load_material_textures(mat, kEn::texture_type::diffuse, material, spec);
-  // TODO(): other types
+  // TODO(kuzu): other types
 
   return {mesh->mName.C_Str(), vertices, indices, material};
 }
@@ -153,7 +168,7 @@ void Model::imgui() {
     ImGui::BeginChild("Meshes", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeY);
     for (size_t i = 0; i < meshes_.size(); ++i) {
       ImGui::PushID(static_cast<int>(i));
-      meshes_[i].imgui();
+      meshes_.at(i).imgui();
       ImGui::PopID();
     }
     ImGui::EndChild();

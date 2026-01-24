@@ -1,7 +1,19 @@
 #include "core_components.hpp"
 
+#include <chrono>
+#include <memory>
+
+#include <mEn/functions.hpp>
+#include <mEn/quat.hpp>
+
 #include <kEn/core/application.hpp>
 #include <kEn/core/input.hpp>
+#include <kEn/core/key_codes.hpp>
+#include <kEn/core/window.hpp>
+#include <kEn/event/application_events.hpp>
+#include <kEn/event/event.hpp>
+#include <kEn/renderer/shader.hpp>
+#include <kEn/scene/component.hpp>
 #include <kEn/scene/game_object.hpp>
 
 namespace kEn {
@@ -37,9 +49,9 @@ void FreeLookComponent::update(duration_t /*delta*/, duration_t /*time*/) {
     return;
   }
 
-  auto delta_pos = kEn::Input::get_mouse_pos() - window_center_;
-  bool rot_y     = delta_pos.x != 0;
-  bool rot_x     = delta_pos.y != 0;
+  auto delta_pos   = kEn::Input::get_mouse_pos() - window_center_;
+  const bool rot_y = delta_pos.x != 0;
+  const bool rot_x = delta_pos.y != 0;
 
   if (rot_y) {
     yaw_ -= mEn::radians(delta_pos.x) * sensitivity_;
@@ -70,8 +82,8 @@ bool FreeLookComponent::on_window_resize(const kEn::WindowResizeEvent& event) {
 }
 
 void FreeMoveComponent::update(duration_t delta, duration_t /*time*/) {
-  const float dt    = std::chrono::duration<float>(delta).count();
-  float move_amount = kEn::Input::is_key_pressed(kEn::key::left_control) ? 3.F * dt * speed_ : dt * speed_;
+  const float dt          = std::chrono::duration<float>(delta).count();
+  const float move_amount = kEn::Input::is_key_pressed(kEn::key::left_control) ? 3.F * dt * speed_ : dt * speed_;
 
   mEn::Vec3 direction{0.F};
   if (kEn::Input::is_key_pressed(kEn::key::up) || kEn::Input::is_key_pressed(kEn::key::w)) {

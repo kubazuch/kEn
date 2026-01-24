@@ -1,3 +1,4 @@
+// NOLINTBEGIN(cppcoreguidelines-macro-usage)
 #pragma once
 
 #ifdef _KEN_DEBUG
@@ -37,3 +38,5 @@
 
 template <class>
 inline constexpr bool always_false_v = false;  // NOLINT
+
+// NOLINTEND(cppcoreguidelines-macro-usage)

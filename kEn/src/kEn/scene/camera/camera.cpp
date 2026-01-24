@@ -1,5 +1,13 @@
 #include "camera.hpp"
 
+#include <memory>
+
+#include <mEn/functions/mat_functions.hpp>
+
+#include <kEn/event/application_events.hpp>
+#include <kEn/event/event.hpp>
+#include <kEn/scene/component.hpp>
+
 namespace kEn {
 
 OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
@@ -17,7 +25,7 @@ void OrthographicCamera::set_projection(float left, float right, float bottom, f
 }
 
 bool OrthographicCamera::on_window_resize(WindowResizeEvent& event) {
-  float aspect       = static_cast<float>(event.width()) / static_cast<float>(event.height());
+  const float aspect = static_cast<float>(event.width()) / static_cast<float>(event.height());
   left_              = -aspect;
   right_             = aspect;
   projection_matrix_ = mEn::ortho(left_, right_, bottom_, top_, -1.0F, 1.0F);
