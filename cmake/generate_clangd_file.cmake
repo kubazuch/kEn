@@ -6,6 +6,8 @@ function(generate_clangd_file COMPILER_FLAGS)
   endif()
 
   string(CONCAT CLANGD_FILE_CONTENT 
+    "Documentation:\n"
+    "  CommentFormat: Doxygen\n"
     "CompileFlags:\n"
     "  CompilationDatabase: build/debug/\n"
     "  Add:\n"

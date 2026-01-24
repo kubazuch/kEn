@@ -2,6 +2,7 @@
 
 #include <kEn/core/transform.hpp>
 #include <kEn/renderer/buffer.hpp>
+#include <kEn/renderer/material.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
 #include <kEn/renderer/vertex_array.hpp>

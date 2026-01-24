@@ -32,7 +32,7 @@ class FizzbuzzLayer : public kEn::Layer {
     };
 
     vertex_array_      = kEn::VertexArray::create();
-    auto vertex_buffer = kEn::Buffer::create(vertices, sizeof vertices);
+    auto vertex_buffer = kEn::Buffer::create(vertices, sizeof(vertices));
     {
       kEn::BufferLayout layout = {{kEn::shader_data_types::float3, "a_Position"},
                                   {kEn::shader_data_types::float4, "a_Color"}};
@@ -40,7 +40,7 @@ class FizzbuzzLayer : public kEn::Layer {
       vertex_buffer->set_layout(layout);
     }
 
-    auto index_buffer = kEn::Buffer::create(indices, 6);
+    auto index_buffer = kEn::Buffer::create(indices, 6 * sizeof(indices));
 
     vertex_array_->add_vertex_buffer(vertex_buffer);
     vertex_array_->set_index_buffer(index_buffer);

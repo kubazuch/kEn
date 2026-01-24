@@ -34,3 +34,6 @@
 #define MAP0(f, x, peek, ...) f(x) MAP_NEXT(peek, MAP1)(f, peek, __VA_ARGS__)
 #define MAP1(f, x, peek, ...) f(x) MAP_NEXT(peek, MAP0)(f, peek, __VA_ARGS__)
 #define MAP(f, ...) EVAL(MAP1(f, __VA_ARGS__, (), 0))
+
+template <class>
+inline constexpr bool always_false_v = false;  // NOLINT

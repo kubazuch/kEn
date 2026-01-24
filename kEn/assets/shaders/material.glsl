@@ -1,3 +1,5 @@
+#pragma once
+
 const int MAX_TEXTURES = 5;
 
 struct material {

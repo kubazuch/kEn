@@ -7,6 +7,7 @@
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/vertex_array.hpp>
 #include <kEn/scene/camera/camera.hpp>
+#include <kEn/scene/light.hpp>
 
 namespace kEn {
 
