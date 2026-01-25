@@ -25,6 +25,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y doxygen graphviz
 
+      - name: Prepare output dir
+        run: mkdir -p build/doxygen
+        
       - name: Generate docs
         run: doxygen Doxyfile
 
