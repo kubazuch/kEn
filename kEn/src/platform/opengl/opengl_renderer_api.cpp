@@ -4,6 +4,7 @@
 
 #include <cstddef>
 
+#include <kEn/core/log.hpp>
 #include <kEn/renderer/renderer_api.hpp>
 #include <kEn/renderer/vertex_array.hpp>
 

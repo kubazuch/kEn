@@ -6,6 +6,7 @@
 
 #include <kEn/core/application.hpp>
 #include <kEn/core/assert.hpp>
+#include <kEn/core/log.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 
 namespace kEn {

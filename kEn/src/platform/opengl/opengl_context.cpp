@@ -6,6 +6,7 @@
 // clang-format on
 
 #include <kEn/core/assert.hpp>
+#include <kEn/core/log.hpp>
 
 namespace kEn {
 
