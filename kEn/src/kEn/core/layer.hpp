@@ -21,7 +21,7 @@ class Layer {
   virtual void on_update(duration_t /*delta*/, duration_t /*time*/) {}
   virtual void on_render(double /*alpha*/) {}
   virtual void on_imgui() {}
-  virtual void on_event(BaseEvent& /*event*/) {}
+  virtual bool on_event(BaseEvent& /*event*/) { return false; }
 
   const std::string& name() const { return debug_name_; }
 

@@ -2,12 +2,9 @@
 
 #include <cstdint>
 #include <string_view>
-#include <type_traits>
+#include <utility>
 
 namespace kEn {  // NOLINT
-
-/// @brief Underlying integral type used for key codes.
-using KeyCode = std::uint16_t;
 
 /**
  * @def KEY_CODES(X, Y)
@@ -158,15 +155,13 @@ using KeyCode = std::uint16_t;
   X(right_super, 347)             \
   X(menu, 348)
 
-namespace key {
-
 /**
  * @brief Strongly-typed keyboard key identifier.
  *
  * Values match the corresponding GLFW key codes.
  * Use `kEn::key::code()` to obtain the underlying numeric code.
  */
-enum class Key : KeyCode {
+enum class Key : std::uint16_t {
 // NOLINTBEGIN(cppcoreguidelines-macro-usage, bugprone-macro-parentheses, readability-identifier-naming)
 #define ENUM_ENTRY(id, code) id = code,
 #define NAMED_ENUM_ENTRY(id, code, name) id = code,
@@ -176,26 +171,17 @@ enum class Key : KeyCode {
   // NOLINTEND(cppcoreguidelines-macro-usage, bugprone-macro-parentheses, readability-identifier-naming)
 };
 
+namespace key {
+
 /// @brief C++20 convenience: brings enumerators into `kEn::key` namespace (e.g. `kEn::key::a`).
 using enum Key;
-
-/**
- * @brief Convert an enum value to its underlying integer type.
- * @tparam E Enum type.
- * @param e Enum value.
- * @return Underlying integer representation.
- */
-template <class E>
-[[nodiscard]] constexpr std::underlying_type_t<E> to_underlying(E e) noexcept {
-  return static_cast<std::underlying_type_t<E>>(e);
-}
 
 /**
  * @brief Get the underlying numeric key code.
  * @param k Key enum value.
  * @return Numeric key code (matches GLFW).
  */
-[[nodiscard]] constexpr KeyCode code(Key k) noexcept { return to_underlying(k); }
+[[nodiscard]] constexpr auto code(Key k) noexcept { return std::to_underlying(k); }
 
 /**
  * @brief Get a stable, human-readable name for a key.
@@ -221,13 +207,6 @@ template <class E>
   }
   // NOLINTEND(cppcoreguidelines-macro-usage)
 }
-
-/**
- * @brief Get a stable, human-readable name from a raw key code.
- * @param k Raw numeric key code.
- * @return A string view describing the key, or `"INVALID"` if unknown.
- */
-[[nodiscard]] constexpr std::string_view name_of(KeyCode k) noexcept { return name_of(static_cast<Key>(k)); }
 
 }  // namespace key
 

@@ -13,7 +13,7 @@ namespace kEn {
 OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
     : Camera(), left_(left), right_(right), bottom_(bottom), top_(top) {
   projection_matrix_ = mEn::ortho(left, right, bottom, top, -1.0F, 1.0F);
-  dispatcher_.subscribe<kEn::WindowResizeEvent>(KEN_EVENT_SUBSCRIBER(on_window_resize));
+  dispatcher_.subscribe(this, &OrthographicCamera::on_window_resize);
 }
 
 void OrthographicCamera::set_projection(float left, float right, float bottom, float top) {
@@ -40,7 +40,7 @@ std::shared_ptr<GameComponent> OrthographicCamera::clone() const {
 PerspectiveCamera::PerspectiveCamera(float fov, float aspect, float zNear, float zFar)
     : Camera(), fov_(fov), aspect_(aspect), zNear_(zNear), zFar_(zFar) {
   projection_matrix_ = mEn::perspective(fov, aspect, zNear, zFar);
-  dispatcher_.subscribe<kEn::WindowResizeEvent>(KEN_EVENT_SUBSCRIBER(on_window_resize));
+  dispatcher_.subscribe(this, &PerspectiveCamera::on_window_resize);
 }
 
 void PerspectiveCamera::set_projection(float fov, float aspect, float zNear, float zFar) {

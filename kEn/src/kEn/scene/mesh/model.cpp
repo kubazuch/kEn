@@ -53,7 +53,7 @@ void Model::load_model(const std::filesystem::path& path, const TextureSpec& spe
   const aiScene* scene = importer.ReadFile(path.string(), aiProcess_Triangulate | aiProcess_GenSmoothNormals);
 
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-    KEN_ERROR("ASSIMP: {}", importer.GetErrorString());
+    KEN_CORE_ERROR("ASSIMP: {}", importer.GetErrorString());
     return;
   }
 

@@ -36,7 +36,7 @@ GameObject::~GameObject() {
   }
 
   registry_.erase(id_);
-  KEN_DEBUG("GameObject {} with id {} destroyed", name_, id_.raw_id());
+  KEN_CORE_DEBUG("GameObject {} with id {} destroyed", name_, id_.raw_id());
 }
 
 GameObject& GameObject::add_child(GameObject& child) {

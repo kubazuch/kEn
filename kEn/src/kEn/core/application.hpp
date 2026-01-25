@@ -44,7 +44,7 @@ class Application {
 
  private:
   std::unique_ptr<Window> window_;
-  std::unique_ptr<EventDispatcher> dispatcher_;
+  EventDispatcher dispatcher_;
   ImguiLayer* imgui_layer_;
   bool running_   = true;
   bool minimized_ = false;

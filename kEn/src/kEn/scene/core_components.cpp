@@ -28,7 +28,7 @@ void ModelComponent::render(Shader& shader, double /*alpha*/) {
 std::shared_ptr<GameComponent> ModelComponent::clone() const { return std::make_shared<ModelComponent>(model_); }
 
 FreeLookComponent::FreeLookComponent(float sensitivity) : sensitivity_(sensitivity), window_center_() {
-  dispatcher_.subscribe<WindowResizeEvent>(KEN_EVENT_SUBSCRIBER(on_window_resize));
+  dispatcher_.subscribe(this, &FreeLookComponent::on_window_resize);
   const Window& main = kEn::Application::instance().main_window();
   window_center_     = {main.width() / 2, main.height() / 2};
 }

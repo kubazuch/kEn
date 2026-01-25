@@ -24,14 +24,14 @@ class Input {
    * @param key The key to query.
    * @return `true` if the key is down (pressed or repeated), otherwise `false`.
    */
-  [[nodiscard]] static bool is_key_pressed(key::Key key) noexcept;
+  [[nodiscard]] static bool is_key_pressed(Key key) noexcept;
 
   /**
    * @brief Check whether a mouse button is currently pressed.
    * @param button The mouse button to query.
    * @return `true` if the button is down, otherwise `false`.
    */
-  [[nodiscard]] static bool is_mouse_button_pressed(mouse::Button button) noexcept;
+  [[nodiscard]] static bool is_mouse_button_pressed(MouseButton button) noexcept;
 
   /**
    * @brief Get the current mouse cursor position in window coordinates.

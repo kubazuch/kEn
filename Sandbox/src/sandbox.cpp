@@ -7,9 +7,11 @@
 
 #include <kEn.hpp>  //NOLINT
 #include <kEn/core/input.hpp>
+#include <kEn/core/key_codes.hpp>
 #include <kEn/core/layer.hpp>
 #include <kEn/core/log.hpp>
 #include <kEn/core/transform.hpp>
+#include <kEn/event/key_events.hpp>
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/render_command.hpp>
 #include <kEn/renderer/renderer.hpp>
@@ -22,6 +24,8 @@ namespace {
 class FizzbuzzLayer : public kEn::Layer {
  public:
   FizzbuzzLayer() : Layer("FizzBuzz") {
+    dispatcher_.subscribe(this, &FizzbuzzLayer::on_key_pressed);
+
     camera_ = std::make_shared<kEn::PerspectiveCamera>(mEn::radians(70.F), 1.0F, 0.01F, 100.F);
     object_ = std::make_shared<kEn::GameObject>(mEn::Vec3{0, 0, 2});
     object_->add_component(camera_);
@@ -88,7 +92,16 @@ class FizzbuzzLayer : public kEn::Layer {
     ImGui::End();
   }
 
+  bool on_event(kEn::BaseEvent& event) override { return dispatcher_.dispatch(event); }
+
+  bool on_key_pressed(kEn::KeyPressedEvent& event) {
+    KEN_INFO("{}", event);
+    return false;
+  }
+
  private:
+  kEn::EventDispatcher dispatcher_;
+
   std::shared_ptr<kEn::GameObject> object_;
   std::shared_ptr<kEn::Camera> camera_;
   kEn::Transform transform_;

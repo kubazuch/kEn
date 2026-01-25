@@ -16,13 +16,13 @@ namespace {
 
 }  // namespace
 
-bool Input::is_key_pressed(key::Key key) noexcept {
+bool Input::is_key_pressed(Key key) noexcept {
   auto* window         = glfw_window();
   const auto key_state = glfwGetKey(window, static_cast<int>(key));
   return key_state == GLFW_PRESS || key_state == GLFW_REPEAT;
 }
 
-bool Input::is_mouse_button_pressed(mouse::Button button) noexcept {
+bool Input::is_mouse_button_pressed(MouseButton button) noexcept {
   auto* window            = glfw_window();
   const auto button_state = glfwGetMouseButton(window, static_cast<int>(button));
   return button_state == GLFW_PRESS;

@@ -14,15 +14,14 @@ namespace kEn {
 Application* Application::instance_ = nullptr;
 
 Application::Application() {
-  KEN_CORE_ASSERT(!instance_, "App already exists!");
+  KEN_CORE_ASSERT(!instance_, "App already exists!");  // NOLINT
   instance_ = this;
 
   window_ = std::unique_ptr<Window>(Window::create());
   window_->set_event_handler([this](auto& event) { window_event_handler(event); });
 
-  dispatcher_ = std::make_unique<EventDispatcher>();
-  dispatcher_->subscribe<WindowCloseEvent>(KEN_EVENT_SUBSCRIBER(on_window_close));
-  dispatcher_->subscribe<WindowResizeEvent>(KEN_EVENT_SUBSCRIBER(on_window_resize));
+  dispatcher_.subscribe(this, &Application::on_window_close);
+  dispatcher_.subscribe(this, &Application::on_window_resize);
 
   RenderCommand::init();
 
@@ -117,13 +116,14 @@ void Application::render(double alpha) {
 }
 
 void Application::window_event_handler(BaseEvent& e) {
-  dispatcher_->dispatch(e);
+  if (dispatcher_.dispatch(e)) {
+    return;
+  }
 
   for (auto it = layer_stack_.rbegin(); it != layer_stack_.rend(); ++it) {
-    if (e.handled) {
+    if ((*it)->on_event(e)) {
       break;
     }
-    (*it)->on_event(e);
   }
 }
 
