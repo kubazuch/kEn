@@ -6,6 +6,7 @@
 #include <type_traits>
 #include <utility>
 
+/** @ingroup ken */
 namespace kEn::util {  // NOLINT
 
 /**
@@ -440,6 +441,7 @@ template <EnumFlag E>
 }  // namespace kEn::util
 
 /**
+ * @ingroup ken
  * @def KEN_ENABLE_FLAGS(EnumType)
  * @brief Enable enum-flag operators for @p EnumType.
  *

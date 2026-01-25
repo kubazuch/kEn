@@ -1,7 +1,9 @@
 #pragma once
 
+#include <functional>
 #include <memory>
 #include <string_view>
+#include <vector>
 
 #define SHADER_FLOAT_SIZE 4
 #define SHADER_INT_SIZE 4

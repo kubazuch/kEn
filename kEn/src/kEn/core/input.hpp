@@ -5,6 +5,7 @@
 #include <kEn/core/key_codes.hpp>
 #include <kEn/core/mouse_codes.hpp>
 
+/** @ingroup ken */
 namespace kEn {
 
 /**

@@ -4,6 +4,7 @@
 #include <string_view>
 #include <utility>
 
+/** @ingroup ken */
 namespace kEn {  // NOLINT
 
 /**

@@ -6,6 +6,7 @@
 #include <kEn/core/mouse_codes.hpp>
 #include <kEn/event/event.hpp>
 
+/** @ingroup ken */
 namespace kEn {
 
 /**

@@ -1,0 +1,11 @@
+/** @defgroup men mEn
+ *  Math library.
+ */
+
+/** @defgroup ken kEn
+ *  Main engine.
+ */
+
+/** @defgroup sandbox Sandbox
+ *  Test game / playground.
+ */

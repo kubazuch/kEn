@@ -8,6 +8,7 @@
 
 #include <kEn/renderer/buffer.hpp>
 
+/** @ingroup ken */
 namespace kEn {
 
 /**

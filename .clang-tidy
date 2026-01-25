@@ -43,6 +43,7 @@ Checks: >
   -bugprone-implicit-widening-of-multiplication-result,
   -bugprone-unchecked-optional-access,
   -bugprone-exception-escape,
+  -portability-avoid-pragma-once,
 
 HeaderFilterRegex: ""
 

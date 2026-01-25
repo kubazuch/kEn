@@ -4,6 +4,7 @@
 
 #include <kEn/event/event.hpp>
 
+/** @ingroup ken */
 namespace kEn {
 
 /**

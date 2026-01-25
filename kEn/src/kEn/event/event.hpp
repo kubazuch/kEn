@@ -15,6 +15,7 @@
 #include <kEn/core/core.hpp>
 
 /**
+ * @ingroup ken
  * @def KEN_EVENT_SUBSCRIBER(function)
  * @brief Convenience wrapper to adapt a member-call style function into a subscriber lambda.
  *
@@ -36,6 +37,7 @@
 #define KEN_EVENT_SUBSCRIBER(function) [this](auto& event) { return function(event); }
 
 /**
+ * @ingroup ken
  * @def KEN_BIND_EVENT_HANDLER(member_fn)
  * @brief Convenience wrapper to bind a member function as an invocable object.
  *
@@ -51,6 +53,7 @@
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define KEN_BIND_EVENT_HANDLER(member_fn) std::bind_front(&std::remove_reference_t<decltype(*this)>::member_fn, this)
 
+/** @ingroup ken */
 namespace kEn {  // NOLINT
 
 namespace detail {
@@ -468,6 +471,7 @@ class EventDispatcher {
 namespace std {
 
 /**
+ * @ingroup ken
  * @brief std::format support for @ref kEn::BaseEvent.
  *
  * Formats the event by calling @ref kEn::BaseEvent::to_string() and then formatting
@@ -492,6 +496,7 @@ struct formatter<kEn::BaseEvent, char> : formatter<std::string_view, char> {
 };
 
 /**
+ * @ingroup ken
  * @brief std::format support for any type derived from @ref kEn::BaseEvent.
  *
  * Delegates to @ref std::formatter<kEn::BaseEvent, char> by casting the derived event

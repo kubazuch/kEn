@@ -6,6 +6,7 @@
 #include <kEn/core/mod_keys.hpp>
 #include <kEn/event/event.hpp>
 
+/** @ingroup ken */
 namespace kEn {
 
 /**

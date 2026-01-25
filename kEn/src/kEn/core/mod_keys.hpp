@@ -8,6 +8,7 @@
 
 #include <kEn/util/flags.hpp>
 
+/** @ingroup ken */
 namespace kEn {  // NOLINT
 
 /**
