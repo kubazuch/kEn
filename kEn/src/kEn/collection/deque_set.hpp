@@ -6,7 +6,10 @@
 #include <unordered_set>
 #include <utility>
 
-/** @ingroup ken */
+/** @file
+ *  @ingroup ken
+ */
+
 namespace kEn {  // NOLINT
 
 /**

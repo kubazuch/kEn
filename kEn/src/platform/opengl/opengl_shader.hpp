@@ -12,7 +12,10 @@
 #include <kEn/renderer/shader.hpp>
 #include <kEn/util/string_hash.hpp>
 
-/** @ingroup ken */
+/** @file
+ *  @ingroup ken
+ */
+
 namespace kEn {
 
 /**

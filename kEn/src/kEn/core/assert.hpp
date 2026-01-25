@@ -1,5 +1,9 @@
 #pragma once
 
+/** @file
+ *  @ingroup ken
+ */
+
 // https://github.com/TheCherno/Hazel/blob/93af298aa9007f50bc908edb84812b3af8df2409/Hazel/src/Hazel/Core/Assert.h
 // NOLINTBEGIN(cppcoreguidelines-macro-usage)
 #ifdef KEN_ENABLE_ASSERTS
@@ -26,7 +30,6 @@
   KEN_EXPAND(KEN_INT_ASSERT_GET_MACRO_NAME(__VA_ARGS__, KEN_INT_ASSERT_MSG, KEN_INT_ASSERT_NO_MSG))
 
 /**
- * @ingroup ken
  * @brief Assertion macro that checks a condition. If the condition is false, it logs to CLIENT logger and triggers a
  * debug breakpoint.
  *
@@ -46,7 +49,6 @@
 #define KEN_ASSERT(...) KEN_SEMICOLON(KEN_INT_ASSERT_GET_MACRO(__VA_ARGS__)(_, __VA_ARGS__))
 
 /**
- * @ingroup ken
  * @brief Assertion macro that checks a condition. If the condition is false, it logs to CORE logger and triggers a
  * debug breakpoint.
  *
