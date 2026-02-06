@@ -24,6 +24,7 @@ class Renderer {
     scene_data_->directional_lights.push_back(light);
   }
   static void add_light(const std::shared_ptr<SpotLight>& light) { scene_data_->spot_lights.push_back(light); }
+  static void remove_light(const std::shared_ptr<SpotLight>& light) { std::erase(scene_data_->spot_lights, light); }
   static void set_ambient(const mEn::Vec3& ambient) { scene_data_->ambient = ambient; }
   static void set_fog(float fog) { scene_data_->fog = fog; }
   static void prepare(Shader& shader);
