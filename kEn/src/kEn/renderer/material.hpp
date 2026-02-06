@@ -35,7 +35,7 @@ class Material {
 
   float sigma         = 1.F;
   mEn::Vec3 sss_color = mEn::Vec3(1.F, 0.F, 0.F);
-  float sss_strength  = 1.0;
+  float sss_strength  = 0.3F;
 
   bool transparent = false;
   bool emissive    = false;
