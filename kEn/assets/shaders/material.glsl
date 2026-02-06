@@ -20,4 +20,6 @@ struct material {
   sampler2D diffuse[MAX_TEXTURES];
   int normal_count;
   sampler2D normal[MAX_TEXTURES];
+  int height_count;
+  sampler2D height[MAX_TEXTURES];
 };

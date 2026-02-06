@@ -144,6 +144,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene, TextureSpec spec) {
   }
 
   load_material_textures(mat, kEn::texture_type::diffuse, material, spec);
+  load_material_textures(mat, kEn::texture_type::height, material, spec);
   // TODO(kuzu): other types
 
   return {mesh->mName.C_Str(), vertices, indices, material};

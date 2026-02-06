@@ -40,10 +40,12 @@ void Material::load(Shader& shader, const std::string& name) const {
 
   uint32_t texture_id = 0;
   for (const auto& [type, textures] : textures_) {
+    const auto* const type_name = texture_type::name_of(type);
+
+    shader.set_uniform(std::format("u_Material.{}_count", type_name), static_cast<int>(textures.size()));
+
     for (size_t i = 0; i < textures.size(); i++) {
-      std::stringstream ss;
-      ss << "u_Material." << texture_type::name_of(type) << "[" << i << "]";
-      shader.set_uniform(ss.str(), static_cast<int>(texture_id));
+      shader.set_uniform(std::format("u_Material.{}[{}]", type_name, i), static_cast<int>(texture_id));
       texture_id++;
     }
   }
