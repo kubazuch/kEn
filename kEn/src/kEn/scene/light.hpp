@@ -79,6 +79,7 @@ class SpotLight : public BaseLight {
   Attenuation atten;
   float inner_cutoff_angle = 0.1F;
   float outer_cutoff_angle = 0.1F;
+  bool is_active           = true;
 
  private:
   int light_id_;

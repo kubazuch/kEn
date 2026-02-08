@@ -31,6 +31,7 @@ struct spot_light {
   vec3 dir;
   float cutoff;
   float outerCutoff;
+  bool is_active;
 
   sampler2D sss_texture;
   mat4 view_matrix;

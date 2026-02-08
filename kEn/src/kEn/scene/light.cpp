@@ -80,8 +80,11 @@ void SpotLight::set_angles(float inner, float outer) {
 void SpotLight::imgui() {
   if (ImGui::ColorEdit3("Color##light", mEn::value_ptr(color))) {
   }
-  if (ImGui::DragFloat3("Pos##light", mEn::value_ptr(transform().local_pos()), 0.01F)) {
-    transform().set_local_pos(transform().local_pos());
+  // if (ImGui::DragFloat3("Pos##light", mEn::value_ptr(transform().local_pos()), 0.01F)) {
+  //   transform().set_local_pos(transform().local_pos());
+  // }
+
+  if (ImGui::Checkbox("Active", &is_active)) {
   }
 
   if (ImGui::SliderFloat("Constant", &atten.constant, 0, 2)) {
@@ -119,6 +122,7 @@ void SpotLight::load(const std::string& name, Shader& shader) const {
   shader.set_uniform(name + ".sss_texture", light_id_);
   shader.set_uniform(name + ".view_matrix", transform().world_to_local_matrix());
   shader.set_uniform(name + ".proj_matrix", proj_matrix_);
+  shader.set_uniform(name + ".is_active", is_active);
 }
 
 std::shared_ptr<GameComponent> SpotLight::clone() const {
