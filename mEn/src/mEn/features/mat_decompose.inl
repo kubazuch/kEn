@@ -1,5 +1,7 @@
 #include <mEn/constants.hpp>
 #include <mEn/functions/geometric.hpp>
+#include <mEn/functions/matrix_common.hpp>
+#include <mEn/functions/quaternion_geometric.hpp>
 #include <mEn/mat4.hpp>
 #include <mEn/quat.hpp>
 #include <mEn/vec3.hpp>

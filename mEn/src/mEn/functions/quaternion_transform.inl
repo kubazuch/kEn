@@ -22,16 +22,15 @@ MEN_FORCE_INLINE constexpr qua<T> rotate(const qua<T>& q, T angle, const vec<3, 
 }
 
 template <typename T>
-MEN_FORCE_INLINE constexpr qua<T> quatLookAt(const vec<3, T>& eye, const vec<3, T>& center,
-                                             const vec<3, T>& up) noexcept {
-  const vec<3, T> f(normalize(center - eye));
-  const vec<3, T> s(normalize(cross(up, f)));
-  const vec<3, T> u(cross(f, s));
+MEN_FORCE_INLINE constexpr qua<T> quatLookAt(const vec<3, T>& direction, const vec<3, T>& up) noexcept {
+  const vec<3, T> f(normalize(direction));
+  const vec<3, T> s(normalize(cross(f, up)));
+  const vec<3, T> u(cross(s, f));
 
   mat<3, T> ret;
   ret[0] = s;
   ret[1] = u;
-  ret[2] = f;
+  ret[2] = -f;
 
   return qua<T>(ret);
 }

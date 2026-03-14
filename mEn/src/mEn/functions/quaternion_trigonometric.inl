@@ -18,7 +18,7 @@ MEN_FORCE_INLINE T angle(const qua<T>& q) noexcept {
 
 template <typename T>
 MEN_FORCE_INLINE vec<3, T> axis(const qua<T>& q) noexcept {
-  const T sin_half_angle_sq = T{1} - (q.x * q.x);
+  const T sin_half_angle_sq = T{1} - (q.w * q.w);
 
   if (sin_half_angle_sq <= T{0}) {
     return vec<3, T>(0, 0, 1);

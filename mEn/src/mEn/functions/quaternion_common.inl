@@ -37,14 +37,14 @@ MEN_FORCE_INLINE qua<T> slerp(const qua<T>& x, const qua<T>& y, T t) noexcept {
   }
 
   if (cos > T{1} - kEpsilon<T>) {
-    return qua<T>(((T{1} - t) * x.w) + (t * y.w),  //
-                  ((T{1} - t) * x.x) + (t * y.x),  //
-                  ((T{1} - t) * x.y) + (t * y.y),  //
-                  ((T{1} - t) * x.z) + (t * y.z));
+    return qua<T>(((T{1} - t) * x.w) + (t * z.w),  //
+                  ((T{1} - t) * x.x) + (t * z.x),  //
+                  ((T{1} - t) * x.y) + (t * z.y),  //
+                  ((T{1} - t) * x.z) + (t * z.z));
   }
 
   T angle = std::acos(cos);
-  return ((sin((T{1} - t) * angle) * x) + (sin(t * angle) * y)) / sin(angle);
+  return ((sin((T{1} - t) * angle) * x) + (sin(t * angle) * z)) / sin(angle);
 }
 
 template <typename T>

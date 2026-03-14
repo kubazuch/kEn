@@ -15,6 +15,7 @@ option(GENERATE_CLANGD_FILE
 option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
 option(BUILD_GLFW "Fetch and build GLFW. When OFF, CMake will look for proper GLFW version on your operating system." ON)
 option(BUILD_ASSIMP "Fetch and build assimp. When OFF, CMake will look for proper assimp version on your operating system." ON)
+option(BUILD_TESTING "Fetch GoogleTest and build tests" OFF)
 option(
   USE_IMPLICIT_INCLUDE_DIRECTORIES
   "Add the implicit include directories to standard include directories.
@@ -74,10 +75,10 @@ if(NOT BUILD_ASSIMP)
   find_package(assimp 5.4.3)
 endif()
 
-set(MEN_GLM OFF CACHE BOOL "Use GLM for mEn")
+set(MEN_USE_GLM ON CACHE BOOL "Use GLM for mEn")
 
 add_subdirectory(cmake/dependencies)
 
 add_subdirectory(mEn)
-add_subdirectory(kEn)
-add_subdirectory(Sandbox)
+#add_subdirectory(kEn)
+#add_subdirectory(Sandbox)

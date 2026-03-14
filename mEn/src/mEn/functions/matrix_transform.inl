@@ -2,6 +2,7 @@
 #include <mEn/functions/trigonometric.hpp>
 #include <mEn/mat3.hpp>
 #include <mEn/mat4.hpp>
+#include <mEn/vec2.hpp>
 #include <mEn/vec3.hpp>
 
 namespace mEn {
@@ -99,8 +100,8 @@ template <typename T>
 MEN_FORCE_INLINE constexpr mat<4, T> lookAt(const vec<3, T>& eye, const vec<3, T>& center,
                                             const vec<3, T>& up) noexcept {
   const vec<3, T> f(normalize(center - eye));
-  const vec<3, T> s(normalize(cross(up, f)));
-  const vec<3, T> u(cross(f, s));
+  const vec<3, T> s(normalize(cross(f, up)));
+  const vec<3, T> u(cross(s, f));
 
   mat<4, T> ret(1);
   ret[0][0] = s.x;
@@ -109,12 +110,12 @@ MEN_FORCE_INLINE constexpr mat<4, T> lookAt(const vec<3, T>& eye, const vec<3, T
   ret[0][1] = u.x;
   ret[1][1] = u.y;
   ret[2][1] = u.z;
-  ret[0][2] = f.x;
-  ret[1][2] = f.y;
-  ret[2][2] = f.z;
+  ret[0][2] = -f.x;
+  ret[1][2] = -f.y;
+  ret[2][2] = -f.z;
   ret[3][0] = -dot(s, eye);
   ret[3][1] = -dot(u, eye);
-  ret[3][2] = -dot(f, eye);
+  ret[3][2] = dot(f, eye);
   return ret;
 }
 
