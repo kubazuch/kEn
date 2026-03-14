@@ -1,23 +1,23 @@
 #pragma once
 
-#ifdef MEN_GLM
+#include <mEn/fwd.hpp>
+
+#if MEN_GLM
+#include <glm/detail/qualifier.hpp>
 #include <glm/vec4.hpp>
-
-namespace mEn {
-
-using Vec4 = ::glm::vec4;
-
-}
-#else
-#include <ostream>
-
-#include "common.hpp"
+#endif
 
 namespace mEn {
 
 template <typename T>
 struct vec<4, T> {
+  static_assert(Scalar<T>, "mEn::vec<4, T> requires an arithmetic scalar type");
+
   using value_t = T;
+
+#if MEN_GLM
+  using glm_type = glm::vec<4, T, glm::defaultp>;
+#endif
 
   union {
     T x, r, s;
@@ -32,109 +32,123 @@ struct vec<4, T> {
     T w, a, q;
   };
 
-  [[nodiscard]] static constexpr int length() { return 4; }
+  [[nodiscard]] static constexpr length_t length() noexcept { return 4; }
 
-  // Components
-  [[nodiscard]] constexpr T& operator[](int i);
-  [[nodiscard]] constexpr const T& operator[](int i) const;
+  [[nodiscard]] constexpr T& operator[](length_t i) noexcept;
+  [[nodiscard]] constexpr const T& operator[](length_t i) const noexcept;
 
-  // Implicit constructors
-  constexpr vec()             = default;
-  constexpr vec(const vec& v) = default;
+  // Basic construction and assignment
+  constexpr vec() noexcept                      = default;
+  constexpr vec(const vec&) noexcept            = default;
+  constexpr vec(vec&&) noexcept                 = default;
+  constexpr vec& operator=(const vec&) noexcept = default;
+  constexpr vec& operator=(vec&&) noexcept      = default;
+  ~vec()                                        = default;
 
-  // Explicit constructors
-  constexpr explicit vec(T scalar);
-  constexpr vec(T x, T y, T z, T w);
+  constexpr explicit vec(T scalar) noexcept;
+  constexpr vec(T x, T y, T z, T w) noexcept;
+
+#if MEN_GLM
+  template <Scalar U, glm::qualifier Q>
+  constexpr vec(const glm::vec<4, U, Q>& v) noexcept;  // NOLINT(google-explicit-constructor)
+
+  template <glm::qualifier Q = glm::defaultp>
+  [[nodiscard]] constexpr operator glm::vec<4, T, Q>() const noexcept;  // NOLINT(google-explicit-constructor)
+#endif
 
   // Conversion constructors
-  template <typename X, typename Y, typename Z, typename W>
-  constexpr vec(X x, Y y, Z z, W w);
-  template <typename XY, typename Z, typename W>
-  constexpr vec(const vec<2, XY>& xy, Z z, W w);
-  template <typename X, typename YZ, typename W>
-  constexpr vec(X x, const vec<2, YZ>& yz, W w);
-  template <typename X, typename Y, typename ZW>
-  constexpr vec(X x, Y y, const vec<2, ZW>& zw);
-  template <typename X, typename YZW>
-  constexpr vec(X x, const vec<3, YZW>& yzw);
-  template <typename XYZ, typename W>
-  constexpr vec(const vec<3, XYZ>& xyz, W w);
+  template <Scalar X, Scalar Y, Scalar Z, Scalar W>
+  constexpr vec(X x, Y y, Z z, W w) noexcept;
+
+  template <typename XY, Scalar Z, Scalar W>
+  constexpr vec(const vec<2, XY>& xy, Z z, W w) noexcept;
+  template <Scalar X, typename YZ, Scalar W>
+  constexpr vec(X x, const vec<2, YZ>& yz, W w) noexcept;
+  template <Scalar X, Scalar Y, typename ZW>
+  constexpr vec(X x, Y y, const vec<2, ZW>& zw) noexcept;
+
+  template <Scalar X, typename YZW>
+  constexpr vec(X x, const vec<3, YZW>& yzw) noexcept;
+  template <typename XYZ, Scalar W>
+  constexpr vec(const vec<3, XYZ>& xyz, W w) noexcept;
+
   template <typename XY, typename ZW>
-  constexpr vec(const vec<2, XY>& xy, const vec<2, ZW>& zw);
+  constexpr vec(const vec<2, XY>& xy, const vec<2, ZW>& zw) noexcept;
+
+  template <typename U>
+  constexpr explicit vec(const vec<4, U>& v) noexcept;
 
   // Unary arithmetic operators
-  constexpr vec<4, T>& operator=(const vec& v) = default;
+  template <typename U>
+  constexpr vec& operator=(const vec<4, U>& v) noexcept;
 
+  template <Scalar U>
+  constexpr vec& operator+=(U scalar) noexcept;
   template <typename U>
-  constexpr vec<4, T>& operator+=(U scalar);
+  constexpr vec& operator+=(const vec<4, U>& v) noexcept;
+
+  template <Scalar U>
+  constexpr vec& operator-=(U scalar) noexcept;
   template <typename U>
-  constexpr vec<4, T>& operator+=(const vec<4, U>& v);
+  constexpr vec& operator-=(const vec<4, U>& v) noexcept;
+
+  template <Scalar U>
+  constexpr vec& operator*=(U scalar) noexcept;
   template <typename U>
-  constexpr vec<4, T>& operator-=(U scalar);
+  constexpr vec& operator*=(const vec<4, U>& v) noexcept;
+
+  template <Scalar U>
+  constexpr vec& operator/=(U scalar) noexcept;
   template <typename U>
-  constexpr vec<4, T>& operator-=(const vec<4, U>& v);
-  template <typename U>
-  constexpr vec<4, T>& operator*=(U scalar);
-  template <typename U>
-  constexpr vec<4, T>& operator*=(const vec<4, U>& v);
-  template <typename U>
-  constexpr vec<4, T>& operator/=(U scalar);
-  template <typename U>
-  constexpr vec<4, T>& operator/=(const vec<4, U>& v);
+  constexpr vec& operator/=(const vec<4, U>& v) noexcept;
 
   // Increment and decrement operators
-  constexpr vec<4, T>& operator++();
-  constexpr vec<4, T>& operator--();
-  [[nodiscard]] constexpr vec<4, T> operator++(int);
-  [[nodiscard]] constexpr vec<4, T> operator--(int);
+  constexpr vec& operator++() noexcept;
+  constexpr vec& operator--() noexcept;
+  [[nodiscard]] constexpr vec operator++(int) noexcept;
+  [[nodiscard]] constexpr vec operator--(int) noexcept;
 };
 
 // Unary operators
 template <typename T>
-[[nodiscard]] constexpr vec<4, T> operator+(const vec<4, T>& v);
+[[nodiscard]] constexpr vec<4, T> operator+(vec<4, T> v) noexcept;
 template <typename T>
-[[nodiscard]] constexpr vec<4, T> operator-(const vec<4, T>& v);
+[[nodiscard]] constexpr vec<4, T> operator-(const vec<4, T>& v) noexcept;
 
-// Binary arithmetic operators
-template <typename T>
-[[nodiscard]] constexpr vec<4, T> operator+(const vec<4, T>& v, T scalar);
-template <typename T>
-[[nodiscard]] constexpr vec<4, T> operator+(T scalar, const vec<4, T>& v);
-template <typename T>
-[[nodiscard]] constexpr vec<4, T> operator+(const vec<4, T>& v1, const vec<4, T>& v2);
-template <typename T>
-[[nodiscard]] constexpr vec<4, T> operator-(const vec<4, T>& v, T scalar);
-template <typename T>
-[[nodiscard]] constexpr vec<4, T> operator-(T scalar, const vec<4, T>& v);
-template <typename T>
-[[nodiscard]] constexpr vec<4, T> operator-(const vec<4, T>& v1, const vec<4, T>& v2);
-template <typename T>
-[[nodiscard]] constexpr vec<4, T> operator*(const vec<4, T>& v, T scalar);
-template <typename T>
-[[nodiscard]] constexpr vec<4, T> operator*(T scalar, const vec<4, T>& v);
-template <typename T>
-[[nodiscard]] constexpr vec<4, T> operator*(const vec<4, T>& v1, const vec<4, T>& v2);
-template <typename T>
-[[nodiscard]] constexpr vec<4, T> operator/(const vec<4, T>& v, T scalar);
-template <typename T>
-[[nodiscard]] constexpr vec<4, T> operator/(T scalar, const vec<4, T>& v);
-template <typename T>
-[[nodiscard]] constexpr vec<4, T> operator/(const vec<4, T>& v1, const vec<4, T>& v2);
+// Scalar binary arithmetic operators
+template <typename T, Scalar U>
+[[nodiscard]] constexpr vec<4, T> operator+(vec<4, T> v, U scalar) noexcept;
+template <typename T, Scalar U>
+[[nodiscard]] constexpr vec<4, T> operator+(U scalar, vec<4, T> v) noexcept;
+template <typename T, Scalar U>
+[[nodiscard]] constexpr vec<4, T> operator-(vec<4, T> v, U scalar) noexcept;
+template <typename T, Scalar U>
+[[nodiscard]] constexpr vec<4, T> operator-(U scalar, const vec<4, T>& v) noexcept;
+template <typename T, Scalar U>
+[[nodiscard]] constexpr vec<4, T> operator*(vec<4, T> v, U scalar) noexcept;
+template <typename T, Scalar U>
+[[nodiscard]] constexpr vec<4, T> operator*(U scalar, vec<4, T> v) noexcept;
+template <typename T, Scalar U>
+[[nodiscard]] constexpr vec<4, T> operator/(vec<4, T> v, U scalar) noexcept;
+template <typename T, Scalar U>
+[[nodiscard]] constexpr vec<4, T> operator/(U scalar, const vec<4, T>& v) noexcept;
+
+// Vector binary arithmetic operators
+template <typename T, typename U>
+[[nodiscard]] constexpr vec<4, T> operator+(vec<4, T> lhs, const vec<4, U>& rhs) noexcept;
+template <typename T, typename U>
+[[nodiscard]] constexpr vec<4, T> operator-(vec<4, T> lhs, const vec<4, U>& rhs) noexcept;
+template <typename T, typename U>
+[[nodiscard]] constexpr vec<4, T> operator*(vec<4, T> lhs, const vec<4, U>& rhs) noexcept;
+template <typename T, typename U>
+[[nodiscard]] constexpr vec<4, T> operator/(vec<4, T> lhs, const vec<4, U>& rhs) noexcept;
 
 // Boolean operators
-template <typename T>
-[[nodiscard]] constexpr bool operator==(const vec<4, T>& v1, const vec<4, T>& v2);
-template <typename T>
-[[nodiscard]] constexpr bool operator!=(const vec<4, T>& v1, const vec<4, T>& v2);
-
-// Ostream
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const vec<3, T>& v);
-
-using Vec4 = vec<4, float>;
+template <typename T, typename U>
+[[nodiscard]] constexpr bool operator==(const vec<4, T>& v1, const vec<4, U>& v2) noexcept;
+template <typename T, typename U>
+[[nodiscard]] constexpr bool operator!=(const vec<4, T>& v1, const vec<4, U>& v2) noexcept;
 
 }  // namespace mEn
 
-#include "vec4.inl"
-
-#endif
+#include "detail/vec4.inl"

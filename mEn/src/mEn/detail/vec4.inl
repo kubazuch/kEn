@@ -1,54 +1,13 @@
-#pragma once
-#include "vec4.hpp"
+#include <mEn/constants.hpp>
 
-namespace mEn {
-
-// Explicit constructors
-template <typename T>
-inline constexpr vec<4, T>::vec(T scalar) : x(scalar), y(scalar), z(scalar), w(scalar) {}
-template <typename T>
-inline constexpr vec<4, T>::vec(T _x, T _y, T _z, T _w) : x(_x), y(_y), z(_z), w(_w) {}
-
-// Conversion constructors
-template <typename T>
-template <typename X, typename Y, typename Z, typename W>
-inline constexpr vec<4, T>::vec(X _x, Y _y, Z _z, W _w)
-    : x(static_cast<T>(_x)), y(static_cast<T>(_y)), z(static_cast<T>(_z)), w(static_cast<T>(_w)) {}
-
-template <typename T>
-template <typename XY, typename Z, typename W>
-inline constexpr vec<4, T>::vec(const vec<2, XY>& _xy, Z _z, W _w)
-    : x(static_cast<T>(_xy.x)), y(static_cast<T>(_xy.y)), z(static_cast<T>(_z)), w(static_cast<T>(_w)) {}
-
-template <typename T>
-template <typename X, typename YZ, typename W>
-inline constexpr vec<4, T>::vec(X _x, const vec<2, YZ>& _yz, W _w)
-    : x(static_cast<T>(_x)), y(static_cast<T>(_yz.x)), z(static_cast<T>(_yz.y)), w(static_cast<T>(_w)) {}
-
-template <typename T>
-template <typename X, typename Y, typename ZW>
-inline constexpr vec<4, T>::vec(X _x, Y _y, const vec<2, ZW>& _zw)
-    : x(static_cast<T>(_x)), y(static_cast<T>(_y)), z(static_cast<T>(_zw.x)), w(static_cast<T>(_zw.y)) {}
-
-template <typename T>
-template <typename X, typename YZW>
-inline constexpr vec<4, T>::vec(X _x, const vec<3, YZW>& _yzw)
-    : x(static_cast<T>(_x)), y(static_cast<T>(_yzw.x)), z(static_cast<T>(_yzw.y)), w(static_cast<T>(_yzw.z)) {}
-
-template <typename T>
-template <typename XYZ, typename W>
-inline constexpr vec<4, T>::vec(const vec<3, XYZ>& _xyz, W _w)
-    : x(static_cast<T>(_xyz.x)), y(static_cast<T>(_xyz.y)), z(static_cast<T>(_xyz.z)), w(static_cast<T>(_w)) {}
-
-template <typename T>
-template <typename XY, typename ZW>
-inline constexpr vec<4, T>::vec(const vec<2, XY>& _xy, const vec<2, ZW>& _zw)
-    : x(static_cast<T>(_xy.x)), y(static_cast<T>(_xy.y)), z(static_cast<T>(_zw.x)), w(static_cast<T>(_zw.y)) {}
+namespace mEn {  // NOLINT
 
 // Components
 template <typename T>
-inline constexpr T& vec<4, T>::operator[](int i) {
-  assert(i >= 0 && i < length());
+MEN_FORCE_INLINE constexpr T& vec<4, T>::operator[](length_t i) noexcept {
+  if (!std::is_constant_evaluated()) {
+    MEN_ASSERT(i < length());
+  }
   switch (i) {
     default:
     case 0:
@@ -63,8 +22,10 @@ inline constexpr T& vec<4, T>::operator[](int i) {
 }
 
 template <typename T>
-inline constexpr const T& vec<4, T>::operator[](int i) const {
-  assert(i >= 0 && i < length());
+MEN_FORCE_INLINE constexpr const T& vec<4, T>::operator[](length_t i) const noexcept {
+  if (!std::is_constant_evaluated()) {
+    MEN_ASSERT(i < length());
+  }
   switch (i) {
     default:
     case 0:
@@ -77,209 +38,308 @@ inline constexpr const T& vec<4, T>::operator[](int i) const {
       return w;
   }
 }
+
+// Explicit constructors
+template <typename T>
+MEN_FORCE_INLINE constexpr vec<4, T>::vec(T scalar) noexcept : x(scalar), y(scalar), z(scalar), w(scalar) {}
+
+template <typename T>
+MEN_FORCE_INLINE constexpr vec<4, T>::vec(T x, T y, T z, T w) noexcept : x(x), y(y), z(z), w(w) {}
+
+#if MEN_GLM
+template <typename T>
+template <Scalar U, glm::qualifier Q>
+MEN_FORCE_INLINE constexpr vec<4, T>::vec(const glm::vec<4, U, Q>& v) noexcept
+    : x(static_cast<T>(v.x)), y(static_cast<T>(v.y)), z(static_cast<T>(v.z)), w(static_cast<T>(v.w)) {}
+
+template <typename T>
+template <glm::qualifier Q>
+MEN_FORCE_INLINE constexpr vec<4, T>::operator glm::vec<4, T, Q>() const noexcept {
+  return glm::vec<4, T, Q>{x, y, z, w};
+}
+#endif
+
+// Conversion constructors
+template <typename T>
+template <Scalar X, Scalar Y, Scalar Z, Scalar W>
+MEN_FORCE_INLINE constexpr vec<4, T>::vec(X x, Y y, Z z, W w) noexcept
+    : x(static_cast<T>(x)), y(static_cast<T>(y)), z(static_cast<T>(z)), w(static_cast<T>(w)) {}
+
+template <typename T>
+template <typename XY, Scalar Z, Scalar W>
+MEN_FORCE_INLINE constexpr vec<4, T>::vec(const vec<2, XY>& xy, Z z, W w) noexcept
+    : x(static_cast<T>(xy.x)), y(static_cast<T>(xy.y)), z(static_cast<T>(z)), w(static_cast<T>(w)) {}
+
+template <typename T>
+template <Scalar X, typename YZ, Scalar W>
+MEN_FORCE_INLINE constexpr vec<4, T>::vec(X x, const vec<2, YZ>& yz, W w) noexcept
+    : x(static_cast<T>(x)), y(static_cast<T>(yz.x)), z(static_cast<T>(yz.y)), w(static_cast<T>(w)) {}
+
+template <typename T>
+template <Scalar X, Scalar Y, typename ZW>
+MEN_FORCE_INLINE constexpr vec<4, T>::vec(X x, Y y, const vec<2, ZW>& zw) noexcept
+    : x(static_cast<T>(x)), y(static_cast<T>(y)), z(static_cast<T>(zw.x)), w(static_cast<T>(zw.y)) {}
+
+template <typename T>
+template <Scalar X, typename YZW>
+MEN_FORCE_INLINE constexpr vec<4, T>::vec(X x, const vec<3, YZW>& yzw) noexcept
+    : x(static_cast<T>(x)), y(static_cast<T>(yzw.x)), z(static_cast<T>(yzw.y)), w(static_cast<T>(yzw.z)) {}
+
+template <typename T>
+template <typename XYZ, Scalar W>
+MEN_FORCE_INLINE constexpr vec<4, T>::vec(const vec<3, XYZ>& xyz, W w) noexcept
+    : x(static_cast<T>(xyz.x)), y(static_cast<T>(xyz.y)), z(static_cast<T>(xyz.z)), w(static_cast<T>(w)) {}
+
+template <typename T>
+template <typename XY, typename ZW>
+MEN_FORCE_INLINE constexpr vec<4, T>::vec(const vec<2, XY>& xy, const vec<2, ZW>& zw) noexcept
+    : x(static_cast<T>(xy.x)), y(static_cast<T>(xy.y)), z(static_cast<T>(zw.x)), w(static_cast<T>(zw.y)) {}
+
+template <typename T>
+template <typename U>
+MEN_FORCE_INLINE constexpr vec<4, T>::vec(const vec<4, U>& v) noexcept
+    : x(static_cast<T>(v.x)), y(static_cast<T>(v.y)), z(static_cast<T>(v.z)), w(static_cast<T>(v.w)) {}
 
 // Unary arithmetic operators
 template <typename T>
-template <typename U>
-inline constexpr vec<4, T>& vec<4, T>::operator+=(U scalar) {
-  this->x += static_cast<T>(scalar);
-  this->y += static_cast<T>(scalar);
-  this->z += static_cast<T>(scalar);
-  this->w += static_cast<T>(scalar);
+template <Scalar U>
+MEN_FORCE_INLINE constexpr vec<4, T>& vec<4, T>::operator+=(U scalar) noexcept {
+  const T s = static_cast<T>(scalar);
+  x += s;
+  y += s;
+  z += s;
+  w += s;
+  return *this;
+}
+
+template <typename T>
+template <Scalar U>
+MEN_FORCE_INLINE constexpr vec<4, T>& vec<4, T>::operator-=(U scalar) noexcept {
+  const T s = static_cast<T>(scalar);
+  x -= s;
+  y -= s;
+  z -= s;
+  w -= s;
+  return *this;
+}
+
+template <typename T>
+template <Scalar U>
+MEN_FORCE_INLINE constexpr vec<4, T>& vec<4, T>::operator*=(U scalar) noexcept {
+  const T s = static_cast<T>(scalar);
+  x *= s;
+  y *= s;
+  z *= s;
+  w *= s;
+  return *this;
+}
+
+template <typename T>
+template <Scalar U>
+MEN_FORCE_INLINE constexpr vec<4, T>& vec<4, T>::operator/=(U scalar) noexcept {
+  const T s = static_cast<T>(scalar);
+  x /= s;
+  y /= s;
+  z /= s;
+  w /= s;
   return *this;
 }
 
 template <typename T>
 template <typename U>
-inline constexpr vec<4, T>& vec<4, T>::operator+=(const vec<4, U>& v) {
-  this->x += static_cast<T>(v.x);
-  this->y += static_cast<T>(v.y);
-  this->z += static_cast<T>(v.z);
-  this->w += static_cast<T>(v.w);
+MEN_FORCE_INLINE constexpr vec<4, T>& vec<4, T>::operator=(const vec<4, U>& v) noexcept {
+  x = static_cast<T>(v.x);
+  y = static_cast<T>(v.y);
+  z = static_cast<T>(v.z);
+  w = static_cast<T>(v.w);
   return *this;
 }
 
 template <typename T>
 template <typename U>
-inline constexpr vec<4, T>& vec<4, T>::operator-=(U scalar) {
-  this->x -= static_cast<T>(scalar);
-  this->y -= static_cast<T>(scalar);
-  this->z -= static_cast<T>(scalar);
-  this->w -= static_cast<T>(scalar);
+MEN_FORCE_INLINE constexpr vec<4, T>& vec<4, T>::operator+=(const vec<4, U>& v) noexcept {
+  x += static_cast<T>(v.x);
+  y += static_cast<T>(v.y);
+  z += static_cast<T>(v.z);
+  w += static_cast<T>(v.w);
   return *this;
 }
 
 template <typename T>
 template <typename U>
-inline constexpr vec<4, T>& vec<4, T>::operator-=(const vec<4, U>& v) {
-  this->x -= static_cast<T>(v.x);
-  this->y -= static_cast<T>(v.y);
-  this->z -= static_cast<T>(v.z);
-  this->w -= static_cast<T>(v.w);
+MEN_FORCE_INLINE constexpr vec<4, T>& vec<4, T>::operator-=(const vec<4, U>& v) noexcept {
+  x -= static_cast<T>(v.x);
+  y -= static_cast<T>(v.y);
+  z -= static_cast<T>(v.z);
+  w -= static_cast<T>(v.w);
   return *this;
 }
 
 template <typename T>
 template <typename U>
-inline constexpr vec<4, T>& vec<4, T>::operator*=(U scalar) {
-  this->x *= static_cast<T>(scalar);
-  this->y *= static_cast<T>(scalar);
-  this->z *= static_cast<T>(scalar);
-  this->w *= static_cast<T>(scalar);
+MEN_FORCE_INLINE constexpr vec<4, T>& vec<4, T>::operator*=(const vec<4, U>& v) noexcept {
+  x *= static_cast<T>(v.x);
+  y *= static_cast<T>(v.y);
+  z *= static_cast<T>(v.z);
+  w *= static_cast<T>(v.w);
   return *this;
 }
 
 template <typename T>
 template <typename U>
-inline constexpr vec<4, T>& vec<4, T>::operator*=(const vec<4, U>& v) {
-  this->x *= static_cast<T>(v.x);
-  this->y *= static_cast<T>(v.y);
-  this->z *= static_cast<T>(v.z);
-  this->w *= static_cast<T>(v.w);
-  return *this;
-}
-
-template <typename T>
-template <typename U>
-inline constexpr vec<4, T>& vec<4, T>::operator/=(U scalar) {
-  this->x /= static_cast<T>(scalar);
-  this->y /= static_cast<T>(scalar);
-  this->z /= static_cast<T>(scalar);
-  this->w /= static_cast<T>(scalar);
-  return *this;
-}
-
-template <typename T>
-template <typename U>
-inline constexpr vec<4, T>& vec<4, T>::operator/=(const vec<4, U>& v) {
-  this->x /= static_cast<T>(v.x);
-  this->y /= static_cast<T>(v.y);
-  this->z /= static_cast<T>(v.z);
-  this->w /= static_cast<T>(v.w);
+MEN_FORCE_INLINE constexpr vec<4, T>& vec<4, T>::operator/=(const vec<4, U>& v) noexcept {
+  x /= static_cast<T>(v.x);
+  y /= static_cast<T>(v.y);
+  z /= static_cast<T>(v.z);
+  w /= static_cast<T>(v.w);
   return *this;
 }
 
 // Increment and decrement operators
 template <typename T>
-inline constexpr vec<4, T>& vec<4, T>::operator++() {
-  ++this->x;
-  ++this->y;
-  ++this->z;
-  ++this->w;
+MEN_FORCE_INLINE constexpr vec<4, T>& vec<4, T>::operator++() noexcept {
+  ++x;
+  ++y;
+  ++z;
+  ++w;
   return *this;
 }
 
 template <typename T>
-inline constexpr vec<4, T>& vec<4, T>::operator--() {
-  --this->x;
-  --this->y;
-  --this->z;
-  --this->w;
+MEN_FORCE_INLINE constexpr vec<4, T>& vec<4, T>::operator--() noexcept {
+  --x;
+  --y;
+  --z;
+  --w;
   return *this;
 }
 
 template <typename T>
-inline constexpr vec<4, T> vec<4, T>::operator++(int) {
-  vec<4, T> result(*this);
-  ++*this;
+MEN_FORCE_INLINE constexpr vec<4, T> vec<4, T>::operator++(int) noexcept {
+  vec result(*this);
+  ++(*this);
   return result;
 }
 
 template <typename T>
-inline constexpr vec<4, T> vec<4, T>::operator--(int) {
-  vec<4, T> result(*this);
-  --*this;
+MEN_FORCE_INLINE constexpr vec<4, T> vec<4, T>::operator--(int) noexcept {
+  vec result(*this);
+  --(*this);
   return result;
 }
 
 // Unary operators
 template <typename T>
-inline constexpr vec<4, T> operator+(const vec<4, T>& v) {
+MEN_FORCE_INLINE constexpr vec<4, T> operator+(vec<4, T> v) noexcept {
   return v;
 }
 
 template <typename T>
-inline constexpr vec<4, T> operator-(const vec<4, T>& v) {
-  return vec<4, T>(-v.x, -v.y, -v.z, -v.w);
+MEN_FORCE_INLINE constexpr vec<4, T> operator-(const vec<4, T>& v) noexcept {
+  return vec<4, T>{static_cast<T>(-v.x), static_cast<T>(-v.y), static_cast<T>(-v.z), static_cast<T>(-v.w)};
 }
 
-// Binary arithmetic operators
-template <typename T>
-inline constexpr vec<4, T> operator+(const vec<4, T>& v, T scalar) {
-  return vec<4, T>(v.x + scalar, v.y + scalar, v.z + scalar, v.w + scalar);
+// Scalar binary arithmetic operators
+template <typename T, Scalar U>
+MEN_FORCE_INLINE constexpr vec<4, T> operator+(vec<4, T> v, U scalar) noexcept {
+  v += scalar;
+  return v;
 }
 
-template <typename T>
-inline constexpr vec<4, T> operator+(T scalar, const vec<4, T>& v) {
-  return vec<4, T>(scalar + v.x, scalar + v.y, scalar + v.z, scalar + v.w);
+template <typename T, Scalar U>
+MEN_FORCE_INLINE constexpr vec<4, T> operator+(U scalar, vec<4, T> v) noexcept {
+  v += scalar;
+  return v;
 }
 
-template <typename T>
-inline constexpr vec<4, T> operator+(const vec<4, T>& v1, const vec<4, T>& v2) {
-  return vec<4, T>(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z, v1.w + v2.w);
+template <typename T, Scalar U>
+MEN_FORCE_INLINE constexpr vec<4, T> operator-(vec<4, T> v, U scalar) noexcept {
+  v -= scalar;
+  return v;
 }
 
-template <typename T>
-inline constexpr vec<4, T> operator-(const vec<4, T>& v, T scalar) {
-  return vec<4, T>(v.x - scalar, v.y - scalar, v.z - scalar, v.w - scalar);
+template <typename T, Scalar U>
+MEN_FORCE_INLINE constexpr vec<4, T> operator-(U scalar, const vec<4, T>& v) noexcept {
+  vec<4, T> out{static_cast<T>(scalar)};
+  out -= v;
+  return out;
 }
 
-template <typename T>
-inline constexpr vec<4, T> operator-(T scalar, const vec<4, T>& v) {
-  return vec<4, T>(scalar - v.x, scalar - v.y, scalar - v.z, scalar - v.w);
+template <typename T, Scalar U>
+MEN_FORCE_INLINE constexpr vec<4, T> operator*(vec<4, T> v, U scalar) noexcept {
+  v *= scalar;
+  return v;
 }
 
-template <typename T>
-inline constexpr vec<4, T> operator-(const vec<4, T>& v1, const vec<4, T>& v2) {
-  return vec<4, T>(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z, v1.w - v2.w);
+template <typename T, Scalar U>
+MEN_FORCE_INLINE constexpr vec<4, T> operator*(U scalar, vec<4, T> v) noexcept {
+  v *= scalar;
+  return v;
 }
 
-template <typename T>
-inline constexpr vec<4, T> operator*(const vec<4, T>& v, T scalar) {
-  return vec<4, T>(v.x * scalar, v.y * scalar, v.z * scalar, v.w * scalar);
+template <typename T, Scalar U>
+MEN_FORCE_INLINE constexpr vec<4, T> operator/(vec<4, T> v, U scalar) noexcept {
+  v /= scalar;
+  return v;
 }
 
-template <typename T>
-inline constexpr vec<4, T> operator*(T scalar, const vec<4, T>& v) {
-  return vec<4, T>(scalar * v.x, scalar * v.y, scalar * v.z, scalar * v.w);
+template <typename T, Scalar U>
+MEN_FORCE_INLINE constexpr vec<4, T> operator/(U scalar, const vec<4, T>& v) noexcept {
+  vec<4, T> out{static_cast<T>(scalar)};
+  out /= v;
+  return out;
 }
 
-template <typename T>
-inline constexpr vec<4, T> operator*(const vec<4, T>& v1, const vec<4, T>& v2) {
-  return vec<4, T>(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z, v1.w * v2.w);
+// Vector binary arithmetic operators
+template <typename T, typename U>
+MEN_FORCE_INLINE constexpr vec<4, T> operator+(vec<4, T> lhs, const vec<4, U>& rhs) noexcept {
+  lhs += rhs;
+  return lhs;
 }
 
-template <typename T>
-inline constexpr vec<4, T> operator/(const vec<4, T>& v, T scalar) {
-  return vec<4, T>(v.x / scalar, v.y / scalar, v.z / scalar, v.w / scalar);
+template <typename T, typename U>
+MEN_FORCE_INLINE constexpr vec<4, T> operator-(vec<4, T> lhs, const vec<4, U>& rhs) noexcept {
+  lhs -= rhs;
+  return lhs;
 }
 
-template <typename T>
-inline constexpr vec<4, T> operator/(T scalar, const vec<4, T>& v) {
-  return vec<4, T>(scalar / v.x, scalar / v.y, scalar / v.z, scalar / v.w);
+template <typename T, typename U>
+MEN_FORCE_INLINE constexpr vec<4, T> operator*(vec<4, T> lhs, const vec<4, U>& rhs) noexcept {
+  lhs *= rhs;
+  return lhs;
 }
 
-template <typename T>
-inline constexpr vec<4, T> operator/(const vec<4, T>& v1, const vec<4, T>& v2) {
-  return vec<4, T>(v1.x / v2.x, v1.y / v2.y, v1.z / v2.z, v1.w / v2.w);
+template <typename T, typename U>
+MEN_FORCE_INLINE constexpr vec<4, T> operator/(vec<4, T> lhs, const vec<4, U>& rhs) noexcept {
+  lhs /= rhs;
+  return lhs;
 }
 
 // Boolean operators
-template <typename T>
-inline constexpr bool operator==(const vec<4, T>& v1, const vec<4, T>& v2) {
-  // TODO(C++23): Implement epsilon comparison
-  return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z && v1.w == v2.w;
+template <typename T, typename U>
+MEN_FORCE_INLINE constexpr bool operator==(const vec<4, T>& v1, const vec<4, U>& v2) noexcept {
+  using C    = ::std::common_type_t<T, U>;
+  const C ax = static_cast<C>(v1.x);
+  const C ay = static_cast<C>(v1.y);
+  const C az = static_cast<C>(v1.z);
+  const C aw = static_cast<C>(v1.w);
+  const C bx = static_cast<C>(v2.x);
+  const C by = static_cast<C>(v2.y);
+  const C bz = static_cast<C>(v2.z);
+  const C bw = static_cast<C>(v2.w);
+
+  if constexpr (Floating<C>) {
+    const C eps      = kEpsilon<C>;
+    const auto error = [](C a, C b) noexcept -> C { return (a > b) ? (a - b) : (b - a); };
+    return error(ax, bx) <= eps && error(ay, by) <= eps && error(az, bz) <= eps && error(aw, bw) <= eps;
+  } else {
+    return ax == bx && ay == by && az == bz && aw == bw;
+  }
 }
 
-template <typename T>
-inline constexpr bool operator!=(const vec<4, T>& v1, const vec<4, T>& v2) {
+template <typename T, typename U>
+MEN_FORCE_INLINE constexpr bool operator!=(const vec<4, T>& v1, const vec<4, U>& v2) noexcept {
   return !(v1 == v2);
-}
-
-// Ostream
-template <typename T>
-inline std::ostream& operator<<(std::ostream& os, const vec<4, T>& v) {
-  return os << "(" << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ")";
 }
 
 }  // namespace mEn
