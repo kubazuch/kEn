@@ -29,6 +29,7 @@ jobs:
         id: extract-size-label
         run: |
           N=$(gh api repos/$GITHUB_REPOSITORY/pulls/$NUMBER --jq '.additions + .deletions')
+          echo "Lines changed: $N"
           if   [ "$N" -gt "$XXL_THRESHOLD" ]; then LABEL="$XXL_LABEL"
           elif [ "$N" -gt "$XL_THRESHOLD"  ]; then LABEL="$XL_LABEL"
           elif [ "$N" -gt "$L_THRESHOLD"   ]; then LABEL="$L_LABEL"
@@ -36,11 +37,13 @@ jobs:
           elif [ "$N" -gt "$S_THRESHOLD"   ]; then LABEL="$S_LABEL"
           else LABEL="$XS_LABEL"
           fi
+          echo "Resolved label: $LABEL"
           echo "label=$LABEL" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NUMBER: ${{ github.event.pull_request.number }}
-      - run: gh pr edit "$NUMBER" --add-label "$LABEL"
+      - name: Apply size label to PR
+        run: gh pr edit "$NUMBER" --add-label "$LABEL"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
