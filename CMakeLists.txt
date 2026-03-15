@@ -23,6 +23,8 @@ option(
    when the clangd struggles to find the standard libraries."
   OFF)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Print version
 set(VERSION_SUFFIX "")
 if(IS_STABLE EQUAL 0)
