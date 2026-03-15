@@ -46,8 +46,10 @@ jobs:
         run: |
           gh pr view "$NUMBER" --json labels --jq '[.labels[].name | select(startswith("size/"))][]' | \
           while IFS= read -r L; do
-            echo "Removing existing size label: $L"
-            gh pr edit "$NUMBER" --remove-label "$L"
+            if [ "$L" != "$LABEL" ]; then
+              echo "Removing existing size label: $L"
+              gh pr edit "$NUMBER" --remove-label "$L"
+            fi
           done
           echo "Applying label: $LABEL"
           gh pr edit "$NUMBER" --add-label "$LABEL"
