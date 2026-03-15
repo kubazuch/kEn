@@ -1,23 +1,17 @@
 #pragma once
 
+#include <cstdint>
 #include <filesystem>
 #include <optional>
 #include <unordered_map>
 
 #include <kEn/core/core.hpp>
 
-#define TEXTURE_TYPES(X)                                \
-  X(ambient_occlusion, aiTextureType_AMBIENT_OCCLUSION) \
-  X(diffuse, aiTextureType_DIFFUSE)                     \
-  X(height, aiTextureType_HEIGHT)                       \
-  X(normal, aiTextureType_NORMALS)                      \
-  X(specular, aiTextureType_SPECULAR)
-
 namespace kEn {
 
 class Texture;
 
-enum class ImageFormat { None = 0, R8, RGB8, RGBA8, RGBA32F };
+enum class ImageFormat : std::uint8_t { None = 0, R8, RGB8, RGBA8, RGBA32F };
 
 struct TextureSpec {
   enum class filter { Linear, Nearest };
@@ -60,22 +54,26 @@ struct TextureSpec {
 using texture_type_t = uint8_t;
 
 namespace texture_type {
-#define ENUM_ENTRY(name, x) name,
-#define CASE_ENTRY(name, x) \
-  case name:                \
-    return #name;
 
-enum : texture_type_t { TEXTURE_TYPES(ENUM_ENTRY) Last };
+enum : texture_type_t { AmbientOcclusion, Diffuse, Height, Normal, Specular, Last };
 
 inline const char* name_of(const texture_type_t type) {
   switch (type) {
-    TEXTURE_TYPES(CASE_ENTRY)
+    case AmbientOcclusion:
+      return "ambient_occlusion";
+    case Diffuse:
+      return "diffuse";
+    case Height:
+      return "height";
+    case Normal:
+      return "normal";
+    case Specular:
+      return "specular";
     default:
       return "INVALID";
   }
 }
-#undef ENUM_ENTRY
-#undef CASE_ENTRY
+
 }  // namespace texture_type
 
 class Texture {

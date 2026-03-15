@@ -2,7 +2,9 @@
 
 #include <glad/gl.h>
 
-#include <mEn/functions.hpp>
+#include <mEn/features/type_ptr.hpp>
+#include <mEn/vec2.hpp>
+#include <mEn/vec4.hpp>
 
 #include <kEn/core/application.hpp>
 #include <kEn/core/assert.hpp>

@@ -1,11 +1,5 @@
 #pragma once
 
-#pragma warning(push)
-#pragma warning(disable : 4619 4365 4351)
-#include <assimp/material.h>
-#include <assimp/scene.h>
-#pragma warning(pop)
-
 #include <deque>
 #include <unordered_map>
 
@@ -13,20 +7,12 @@
 #include <kEn/renderer/texture.hpp>
 #include <kEn/scene/mesh/mesh.hpp>
 
-namespace kEn {
+struct aiNode;
+struct aiScene;
+struct aiMesh;
+struct aiMaterial;
 
-namespace texture_type {
-#define ASSIMP_ENTRY(name, type) \
-  case name:                     \
-    return type;
-inline aiTextureType to_assimp(const texture_type_t type) {
-  switch (type) {
-    TEXTURE_TYPES(ASSIMP_ENTRY)
-    default:
-      return aiTextureType_NONE;
-  }
-}
-}  // namespace texture_type
+namespace kEn {
 
 class Model {
  public:

@@ -2,6 +2,8 @@
 
 #include <imgui/imgui.h>
 
+#include <mEn/constants.hpp>
+
 #include <kEn/renderer/shader.hpp>
 
 namespace kEn {
@@ -29,8 +31,9 @@ std::shared_ptr<GameComponent> DirectionalLight::clone() const { return std::mak
 void PointLight::imgui() {
   if (ImGui::ColorEdit3("Color##light", mEn::value_ptr(color))) {
   }
-  if (ImGui::DragFloat3("Pos##light", mEn::value_ptr(transform().local_pos()), 0.01F)) {
-    transform().set_local_pos(transform().local_pos());
+  {
+    auto edit = transform().edit_local_trs();
+    edit.set_active(ImGui::DragFloat3("Pos##light", edit.pos_ptr(), 0.01F));
   }
 
   if (ImGui::SliderFloat("Constant", &atten.constant, 0, 2)) {
@@ -60,8 +63,9 @@ std::shared_ptr<GameComponent> PointLight::clone() const {
 void SpotLight::imgui() {
   if (ImGui::ColorEdit3("Color##light", mEn::value_ptr(color))) {
   }
-  if (ImGui::DragFloat3("Pos##light", mEn::value_ptr(transform().local_pos()), 0.01F)) {
-    transform().set_local_pos(transform().local_pos());
+  {
+    auto edit = transform().edit_local_trs();
+    edit.set_active(ImGui::DragFloat3("Pos##light", edit.pos_ptr(), 0.01F));
   }
 
   if (ImGui::SliderFloat("Constant", &atten.constant, 0, 2)) {
@@ -73,10 +77,10 @@ void SpotLight::imgui() {
   if (ImGui::SliderFloat("Quadratic", &atten.quadratic, 0, 2)) {
   }
 
-  if (ImGui::SliderFloat("Outer angle", &outer_cutoff_angle, 0, mEn::pi<float>() / 2)) {
+  if (ImGui::SliderFloat("Outer angle", &outer_cutoff_angle, 0, mEn::kHalfPi<float>)) {
   }
 
-  if (ImGui::SliderFloat("Inner angle", &inner_cutoff_angle, 0, mEn::pi<float>() / 2)) {
+  if (ImGui::SliderFloat("Inner angle", &inner_cutoff_angle, 0, mEn::kHalfPi<float>)) {
   }
 }
 

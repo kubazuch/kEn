@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mEn/features/ostream.hpp>
 #include <mEn/vec2.hpp>
 
 #include <kEn/core/mod_keys.hpp>

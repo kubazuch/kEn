@@ -1,5 +1,7 @@
 #pragma once
 
+#include <filesystem>
+
 #include <mEn.hpp>
 
 #include <kEn/renderer/buffer.hpp>

@@ -7,6 +7,7 @@
 #include <regex>
 
 #include <mEn.hpp>
+#include <mEn/features/type_ptr.hpp>
 
 #include <kEn/core/core.hpp>
 #include <kEn/renderer/shader.hpp>

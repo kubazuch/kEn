@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <mEn/functions/mat_functions.hpp>
+#include <mEn/functions/matrix_projection.hpp>
 
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/event.hpp>

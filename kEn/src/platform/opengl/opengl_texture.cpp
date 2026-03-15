@@ -3,7 +3,7 @@
 #include <imgui/imgui.h>
 #include <stb_image.h>
 
-#include <mEn/functions.hpp>
+#include <mEn/functions/common.hpp>
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>

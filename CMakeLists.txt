@@ -84,5 +84,5 @@ endif()
 add_subdirectory(cmake/dependencies)
 
 add_subdirectory(mEn)
-#add_subdirectory(kEn)
-#add_subdirectory(Sandbox)
+add_subdirectory(kEn)
+add_subdirectory(Sandbox)
