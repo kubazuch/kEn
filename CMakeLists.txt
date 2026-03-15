@@ -16,6 +16,7 @@ option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
 option(BUILD_GLFW "Fetch and build GLFW. When OFF, CMake will look for proper GLFW version on your operating system." ON)
 option(BUILD_ASSIMP "Fetch and build assimp. When OFF, CMake will look for proper assimp version on your operating system." ON)
 option(BUILD_TESTING "Fetch GoogleTest and build tests" OFF)
+option(MEN_USE_GLM "Use GLM instead of native mEn implementations" ON)
 option(
   USE_IMPLICIT_INCLUDE_DIRECTORIES
   "Add the implicit include directories to standard include directories.
@@ -48,7 +49,10 @@ endif()
 
 if(GENERATE_CLANGD_FILE)
   include(cmake/generate_clangd_file.cmake)
-  generate_clangd_file("${PROJ_CXX_FLAGS}")
+  cmake_path(RELATIVE_PATH CMAKE_BINARY_DIR
+             BASE_DIRECTORY "${CMAKE_SOURCE_DIR}"
+             OUTPUT_VARIABLE BINARY_DIR_RELATIVE)
+  generate_clangd_file("${PROJ_CXX_FLAGS}" "${BINARY_DIR_RELATIVE}")
 endif()
 
 # Set the binaries and libraries output directory
@@ -56,7 +60,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# When CMAKE_CONFIGURATION_TYPES is set to "Relase", multi-config generators
+# When CMAKE_CONFIGURATION_TYPES is set to "Release", multi-config generators
 # (e.g. Visual Studio), by default put the output files in the
 # ${CMAKE_(ARCHIVE|LIBRARY|RUNTIME)_OUTPUT_DIRECTORY}/Release directory in order
 # to avoid collisions with the debug binaries. In our setup there is no need for
@@ -70,15 +74,14 @@ include(CTest)
 
 # Prepare dependencies
 if(NOT BUILD_GLFW)
-  find_package(GLFW 3.4)
+  find_package(glfw3 3.4)
 endif()
 
 if(NOT BUILD_ASSIMP)
   find_package(assimp 5.4.3)
 endif()
 
-set(MEN_USE_GLM ON CACHE BOOL "Use GLM for mEn")
-
+# TODO(): bump versions
 add_subdirectory(cmake/dependencies)
 
 add_subdirectory(mEn)

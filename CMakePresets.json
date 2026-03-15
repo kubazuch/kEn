@@ -100,7 +100,8 @@
       "binaryDir": "${sourceDir}/build",
       "generator": "Ninja",
       "inherits": [
-        "windows-x64-pedantic"
+        "windows-x64-pedantic",
+        "test"
       ],
       "environment": {
         "UseMultiToolTask": "true",
@@ -161,12 +162,21 @@
     {
       "name": "release-windows-x64",
       "binaryDir": "${sourceDir}/build/release",
+      "generator": "Ninja",
+      "inherits": [
+        "windows-x64-pedantic"
+      ],
       "environment": {
         "UseMultiToolTask": "true",
         "EnforceProcessCountAcrossBuilds": "true"
       },
       "cacheVariables": {
-        "CMAKE_CONFIGURATION_TYPES": "Release"
+        "CMAKE_CONFIGURATION_TYPES": "Release",
+        "CMAKE_TOOLCHAIN_FILE": "cmake/toolchains/Windows.MSVC.toolchain.cmake",
+        "CMAKE_VS_VERSION_PRERELEASE": "ON",
+        "VS_EXPERIMENTAL_MODULE": "OFF",
+        "VS_USE_SPECTRE_MITIGATION_ATLMFC_RUNTIME": "OFF",
+        "VS_USE_SPECTRE_MITIGATION_RUNTIME": "OFF"
       }
     }
   ],

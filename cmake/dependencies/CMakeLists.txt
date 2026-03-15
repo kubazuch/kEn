@@ -14,6 +14,7 @@ FetchContent_Declare(
   glad
   GIT_REPOSITORY "https://github.com/Dav1dde/glad.git"
   GIT_TAG "v2.0.8"
+  GIT_SHALLOW TRUE
   PATCH_COMMAND git apply --ignore-whitespace
                 "${CMAKE_CURRENT_LIST_DIR}/../../patches/glad.patch"
   UPDATE_DISCONNECTED 1)
@@ -57,6 +58,7 @@ if(BUILD_GLFW)
     glfw
     GIT_REPOSITORY "https://github.com/glfw/glfw.git"
     GIT_TAG "3.4"
+    GIT_SHALLOW TRUE
     PATCH_COMMAND git apply --ignore-whitespace
                   "${CMAKE_CURRENT_LIST_DIR}/../../patches/glfw.patch"
     UPDATE_DISCONNECTED 1)
@@ -76,6 +78,7 @@ FetchContent_Declare(
   imgui
   GIT_REPOSITORY "https://github.com/ocornut/imgui.git"
   GIT_TAG "v1.91.8-docking"
+  GIT_SHALLOW TRUE
   PATCH_COMMAND git apply --ignore-whitespace
                 "${CMAKE_CURRENT_LIST_DIR}/../../patches/imgui.patch"
   UPDATE_DISCONNECTED 1)
@@ -91,9 +94,10 @@ message(CHECK_START "Fetching ImGuizmo")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
 FetchContent_Declare(
-  imguizmo 
+  imguizmo
   GIT_REPOSITORY "https://github.com/CedricGuillemet/ImGuizmo.git"
   GIT_TAG "1.83"
+  GIT_SHALLOW TRUE
   PATCH_COMMAND git apply --ignore-whitespace
                 "${CMAKE_CURRENT_LIST_DIR}/../../patches/imguizmo.patch"
   UPDATE_DISCONNECTED 1)
@@ -109,9 +113,10 @@ message(CHECK_START "Fetching nlohmann/json")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
 FetchContent_Declare(
-  nlohmann_json 
+  nlohmann_json
   GIT_REPOSITORY "https://github.com/nlohmann/json.git"
   GIT_TAG "v3.11.3"
+  GIT_SHALLOW TRUE
   UPDATE_DISCONNECTED 1)
 FetchContent_MakeAvailable(nlohmann_json)
 
@@ -119,7 +124,7 @@ list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "fetched")
 
 # ##############################################################################
-# assimp 
+# assimp
 # ##############################################################################
 if(BUILD_ASSIMP)
   message(CHECK_START "Fetching assimp")
@@ -139,7 +144,7 @@ if(BUILD_ASSIMP)
 
   set(ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT
       OFF
-      CACHE BOOL "Disable all importers" FORCE)
+      CACHE BOOL "Disable all exporters" FORCE)
 
   set(ASSIMP_BUILD_OBJ_IMPORTER
       ON
@@ -152,16 +157,17 @@ if(BUILD_ASSIMP)
   set(ASSIMP_BUILD_ASSIMP_VIEW
       OFF
       CACHE BOOL "Do not build the assimp view tool." FORCE)
-    
+
   set(ASSIMP_BUILD_ZLIB
       ON
       CACHE BOOL "Build the zlib" FORCE)
-       
+
   FetchContent_Declare(
-  assimp 
-  GIT_REPOSITORY "https://github.com/assimp/assimp.git"
-  GIT_TAG "v5.4.3"
-  UPDATE_DISCONNECTED 1)
+    assimp
+    GIT_REPOSITORY "https://github.com/assimp/assimp.git"
+    GIT_TAG "v5.4.3"
+    GIT_SHALLOW TRUE
+    UPDATE_DISCONNECTED 1)
   FetchContent_MakeAvailable(assimp)
 
   list(POP_BACK CMAKE_MESSAGE_INDENT)
@@ -175,17 +181,18 @@ message(CHECK_START "Fetching nativefiledialog-extended")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
 # IMPORTANT: The xdg-desktop-portal allows to display the actual native file dialog
-# on linux systems (by default the nfd uses gtk). However there might be some issues 
-# on DEs that are not directly supporting the portals. The rule of thumb is that everywhere 
+# on linux systems (by default the nfd uses gtk). However there might be some issues
+# on DEs that are not directly supporting the portals. The rule of thumb is that everywhere
 # you can run file dialog from your flatpak app, the portals should work seamlessly.
 set(NFD_PORTAL
     ON
     CACHE BOOL "Use portal to use native file dialog instead of the gtk" FORCE)
 
 FetchContent_Declare(
-  nfd 
+  nfd
   GIT_REPOSITORY "https://github.com/btzy/nativefiledialog-extended.git"
   GIT_TAG "v1.2.1"
+  GIT_SHALLOW TRUE
   PATCH_COMMAND git apply --ignore-whitespace
                 "${CMAKE_CURRENT_LIST_DIR}/../../patches/nfd.patch"
   UPDATE_DISCONNECTED 1)
@@ -204,6 +211,7 @@ FetchContent_Declare(
   spdlog
   GIT_REPOSITORY "https://github.com/gabime/spdlog.git"
   GIT_TAG "v1.15.1"
+  GIT_SHALLOW TRUE
   UPDATE_DISCONNECTED 1)
 FetchContent_MakeAvailable(spdlog)
 
@@ -239,7 +247,8 @@ if(BUILD_TESTING)
     googletest
     GIT_REPOSITORY "https://github.com/google/googletest.git"
     GIT_TAG "v1.17.0"
-  )
+    GIT_SHALLOW TRUE
+    UPDATE_DISCONNECTED 1)
 
   # For Windows: Prevent overriding the parent project's compiler/linker settings
   set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
