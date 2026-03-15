@@ -3,9 +3,9 @@
 #include <cstdint>
 #include <format>
 
-#include <mEn/fwd.hpp>
 #include <mEn/features/format.hpp>  // NOLINT(misc-include-cleaner)
 #include <mEn/functions/matrix_transform.hpp>
+#include <mEn/fwd.hpp>
 
 namespace {
 
