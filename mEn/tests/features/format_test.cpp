@@ -1,8 +1,10 @@
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <format>
 
-#include <mEn/features/format.hpp>
+#include <mEn/fwd.hpp>
+#include <mEn/features/format.hpp>  // NOLINT(misc-include-cleaner)
 #include <mEn/functions/matrix_transform.hpp>
 
 namespace {

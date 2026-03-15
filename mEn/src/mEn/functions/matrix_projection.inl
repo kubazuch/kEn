@@ -3,6 +3,7 @@
 #include <mEn/mat4.hpp>
 
 namespace mEn {
+// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 template <typename T>
 MEN_FORCE_INLINE constexpr mat<4, T> ortho(T left, T right, T bottom, T top, T zNear, T zFar) noexcept {
@@ -23,7 +24,7 @@ MEN_FORCE_INLINE constexpr mat<4, T> perspective(T fov, T aspect, T zNear, T zFa
 
   mat<4, T> ret(0);
   ret[0][0] = T{1} / (tan_half_fov * aspect);
-  ret[1][1] = T{1} / (tan_half_fov);
+  ret[1][1] = T{1} / tan_half_fov;
   ret[2][2] = -(zFar + zNear) / (zFar - zNear);
   ret[2][3] = -T{1};
   ret[3][2] = -(T{2} * zFar * zNear) / (zFar - zNear);
@@ -31,4 +32,5 @@ MEN_FORCE_INLINE constexpr mat<4, T> perspective(T fov, T aspect, T zNear, T zFa
   return ret;
 }
 
+// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace mEn

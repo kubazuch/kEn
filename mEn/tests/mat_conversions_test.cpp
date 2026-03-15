@@ -3,14 +3,9 @@
 #include <cstdint>
 #include <type_traits>
 
-#include <mEn/mat3.hpp>
-#include <mEn/mat4.hpp>
+#include <mEn/fwd.hpp>
 
 #include <glm/detail/qualifier.hpp>
-#include <glm/mat3x3.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
 
 #include "assert/mat3_eq.hpp"
 #include "assert/mat4_eq.hpp"
@@ -88,6 +83,7 @@ TEST(MatConversions, Mat4FromMat3IsExplicitAndEmbedsTopLeftAndAddsIdentity) {
       m4, EX(float, 1.F, 2.0F, 3.0F, 0.0F, 4.0F, 5.0F, 6.0F, 0.0F, 7.0F, 8.0F, 9.0F, 0.0F, 0.0F, 0.0F, 0.0F, 1.0F));
 }
 
+// NOLINTBEGIN(misc-include-cleaner)
 TEST(MatGlmConversions, GlmMat3ToMenMat3IsImplicitAndPreservesColumns) {
   using Dst = Mat3<float>;
   using Src = glm::mat<3, 3, float, glm::defaultp>;
@@ -220,3 +216,4 @@ TEST(MatGlmConversions, MenMat4ToGlmMat4WithNonDefaultQualifierWorks) {
   const Dst gm = m;
   EXPECT_MAT4_EQ(m, gm);
 }
+// NOLINTEND(misc-include-cleaner)

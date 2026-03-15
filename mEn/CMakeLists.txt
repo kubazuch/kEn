@@ -29,7 +29,11 @@ if(MEN_USE_GLM OR BUILD_TESTING)
     else()
         message(CHECK_START "Fetching GLM")
         list(APPEND CMAKE_MESSAGE_INDENT "  ")
-
+        
+        set(GLM_BUILD_LIBRARY
+            OFF
+            CACHE BOOL "Do not build GLM as a static library" FORCE)
+        
         FetchContent_Declare(
         glm
         GIT_REPOSITORY "https://github.com/g-truc/glm.git"

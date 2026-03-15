@@ -2,11 +2,11 @@
 
 #include <gtest/gtest.h>
 
+#include <mEn/fwd.hpp>
 #include <mEn/mat4.hpp>
 
 #include <glm/mat4x4.hpp>
 
-#include "mEn/fwd.hpp"
 #include "scalar_eq.hpp"
 
 template <class T>

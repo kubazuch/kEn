@@ -6,6 +6,7 @@
 #include <mEn/vec3.hpp>
 #include <mEn/vec4.hpp>
 
+#include <glm/detail/qualifier.hpp>
 #include <glm/glm.hpp>
 
 #include "../assert/vec2_eq.hpp"
@@ -18,7 +19,7 @@ template <mEn::length_t L, typename T>
 using V = mEn::vec<L, T>;
 
 // Build a glm::vec<L, T> from 4 scalars, using the first L components.
-template <mEn::length_t L, typename T>
+template <glm::length_t L, typename T>
 glm::vec<L, T> GV(T a, T b, T c, T d) {
   if constexpr (L == 2) {
     return glm::vec<2, T>{a, b};
@@ -31,13 +32,13 @@ glm::vec<L, T> GV(T a, T b, T c, T d) {
 }
 
 // Convert a glm::vec<L, T> to an mEn::vec<L, T>.
-template <mEn::length_t L, typename T>
-V<L, T> MV(const glm::vec<L, T>& g) {
-  return V<L, T>(g);
+template <glm::length_t L, typename T>
+V<mEn::length_t{L}, T> MV(const glm::vec<L, T>& g) {
+  return V<mEn::length_t{L}, T>(g);
 }
 
 template <mEn::length_t L, typename T>
-void ExpectVecEq(const V<L, T>& actual, const glm::vec<L, T>& expected) {
+void ExpectVecEq(const V<L, T>& actual, const glm::vec<glm::length_t{L}, T>& expected) {
   if constexpr (L == 2) {
     EXPECT_VEC2_EQ(actual, expected);
   } else if constexpr (L == 3) {
@@ -49,7 +50,7 @@ void ExpectVecEq(const V<L, T>& actual, const glm::vec<L, T>& expected) {
 }
 
 template <mEn::length_t L>
-void ExpectBoolVecEq(const mEn::vec<L, bool>& actual, const glm::vec<L, bool>& expected) {
+void ExpectBoolVecEq(const mEn::vec<L, bool>& actual, const glm::vec<glm::length_t{L}, bool>& expected) {
   for (mEn::length_t i = 0; i < L; ++i) {
     EXPECT_EQ(actual[i], expected[i]) << "component " << i;
   }

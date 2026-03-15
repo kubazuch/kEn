@@ -15,7 +15,7 @@ namespace mEn {
 /// @param v  The object whose raw data is requested.
 /// @returns Const pointer to the first component.
 template <typename GenType>
-[[nodiscard]] constexpr const typename GenType::value_t* value_ptr(const GenType& v) noexcept;
+[[nodiscard]] constexpr const GenType::value_t* value_ptr(const GenType& v) noexcept;
 
 /// @brief Returns a mutable pointer to the first component of @p v in memory.
 ///
@@ -26,7 +26,7 @@ template <typename GenType>
 /// @param v  The object whose raw data is requested.
 /// @returns Mutable pointer to the first component.
 template <typename GenType>
-[[nodiscard]] constexpr typename GenType::value_t* value_ptr(GenType& v) noexcept;
+[[nodiscard]] constexpr GenType::value_t* value_ptr(GenType& v) noexcept;
 
 /// @brief Constructs a @c vec2 from the first two scalars at @p ptr.
 /// @param ptr Pointer to at least 2 contiguous scalars in @c {x, y} order.

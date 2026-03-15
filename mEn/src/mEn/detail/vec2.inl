@@ -1,6 +1,7 @@
 #include <mEn/constants.hpp>
 
 namespace mEn {
+// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 // Components
 template <typename T>
@@ -275,4 +276,5 @@ MEN_FORCE_INLINE constexpr bool operator!=(const vec<2, T>& v1, const vec<2, U>&
   return !(v1 == v2);
 }
 
+// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace mEn

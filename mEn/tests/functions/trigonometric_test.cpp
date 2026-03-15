@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 
 #include <mEn/functions/trigonometric.hpp>
+#include <mEn/fwd.hpp>
+
+#include <glm/detail/qualifier.hpp>
 
 #include "../util/vec_test_utils.hpp"
 

@@ -17,14 +17,14 @@ template <mEn::length_t N, typename T>
 using M = mEn::mat<N, T>;
 
 // Convert a glm::mat<N, N, T> to an mEn::mat<N, T>.
-template <mEn::length_t N, typename T>
-M<N, T> MM(const glm::mat<N, N, T>& g) {
-  return M<N, T>(g);
+template <glm::length_t N, typename T>
+M<mEn::length_t{N}, T> MM(const glm::mat<N, N, T>& g) {
+  return M<mEn::length_t{N}, T>(g);
 }
 
 // Dispatch to EXPECT_MAT3_EQ or EXPECT_MAT4_EQ.
 template <mEn::length_t N, typename T>
-void ExpectMatEq(const M<N, T>& actual, const glm::mat<N, N, T>& expected) {
+void ExpectMatEq(const M<N, T>& actual, const glm::mat<glm::length_t{N}, glm::length_t{N}, T>& expected) {
   if constexpr (N == 3) {
     EXPECT_MAT3_EQ(actual, expected);
   } else {

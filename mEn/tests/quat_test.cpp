@@ -3,19 +3,15 @@
 #include <numbers>
 #include <type_traits>
 
-#include <mEn/config.hpp>
-#include <mEn/mat3.hpp>
-#include <mEn/mat4.hpp>
+#include <mEn/constants.hpp>
+#include <mEn/fwd.hpp>
 #include <mEn/quat.hpp>
-#include <mEn/vec3.hpp>
-#include <mEn/vec4.hpp>
 
 #include "assert/mat3_eq.hpp"
 #include "assert/mat4_eq.hpp"
 #include "assert/quat_eq.hpp"
 #include "assert/vec3_eq.hpp"
 #include "assert/vec4_eq.hpp"
-#include "mEn/constants.hpp"
 #include "util/test_utils.hpp"
 
 namespace {
@@ -34,8 +30,9 @@ TYPED_TEST_SUITE(Quat, TestedTypes);
 }  // namespace
 
 TYPED_TEST(Quat, LengthAndIndexing) {
+  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   Q q{T{1}, T{2}, T{3}, T{4}};
   EXPECT_EQ(Q::length(), 4U);
@@ -57,11 +54,12 @@ TYPED_TEST(Quat, LengthAndIndexing) {
   EXPECT_EQ(cq[1], cq.y);
   EXPECT_EQ(cq[2], cq.z);
   EXPECT_EQ(cq[3], cq.w);
+  // NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }
 
 TYPED_TEST(Quat, ConstructorWXYZ) {
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   const Q q{T{1}, T{2}, T{3}, T{4}};
   EXPECT_QUAT_EQ(q, EX(T, 2, 3, 4, 1));
@@ -69,7 +67,7 @@ TYPED_TEST(Quat, ConstructorWXYZ) {
 
 TYPED_TEST(Quat, ConstructorScalarVec3) {
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   const mEn::vec<3, T> v{T{2}, T{3}, T{4}};
   const Q q{T{1}, v};
@@ -78,7 +76,7 @@ TYPED_TEST(Quat, ConstructorScalarVec3) {
 
 TYPED_TEST(Quat, ConstructorConversionExplicit) {
   using T  = TypeParam;
-  using Q  = typename TestFixture::Q;
+  using Q  = TestFixture::Q;
   using U  = OtherT<T>;
   using QU = mEn::qua<U>;
 
@@ -92,7 +90,7 @@ TYPED_TEST(Quat, ConstructorConversionExplicit) {
 
 TYPED_TEST(Quat, ExplicitConstructorsAndConversionsStayExplicit) {
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   static_assert(!std::is_convertible_v<mEn::vec<3, T>, Q>);
   static_assert(!std::is_convertible_v<mEn::mat<3, T>, Q>);
@@ -105,7 +103,7 @@ TYPED_TEST(Quat, ExplicitConstructorsAndConversionsStayExplicit) {
 
 TYPED_TEST(Quat, AssignmentFromOtherQuaternionType) {
   using T  = TypeParam;
-  using Q  = typename TestFixture::Q;
+  using Q  = TestFixture::Q;
   using U  = OtherT<T>;
   using QU = mEn::qua<U>;
 
@@ -118,7 +116,7 @@ TYPED_TEST(Quat, AssignmentFromOtherQuaternionType) {
 
 TYPED_TEST(Quat, ConstructorFromTwoVectors) {
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   // Rotation from (1,0,0) to (0,1,0) is 90deg around Z.
   // q * (1,0,0) should give (0,1,0).
@@ -131,7 +129,7 @@ TYPED_TEST(Quat, ConstructorFromTwoVectors) {
 
 TYPED_TEST(Quat, ConstructorFromTwoOppositeVectors) {
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   const mEn::vec<3, T> u{T{1}, T{0}, T{0}};
   const mEn::vec<3, T> v{T{-1}, T{0}, T{0}};
@@ -142,7 +140,7 @@ TYPED_TEST(Quat, ConstructorFromTwoOppositeVectors) {
 
 TYPED_TEST(Quat, ConstructorFromEulerAngles) {
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   // 90deg rotation around Z: euler = (0, 0, pi/2)
   // Expected: w = cos(pi/4) = sqrt(2)/2, x=0, y=0, z = sin(pi/4) = sqrt(2)/2
@@ -157,7 +155,7 @@ TYPED_TEST(Quat, ConstructorFromEulerAngles) {
 
 TYPED_TEST(Quat, ConversionToMat3) {
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   const Q identity{T{1}, T{0}, T{0}, T{0}};
   const auto m = static_cast<mEn::mat<3, T>>(identity);
@@ -172,7 +170,7 @@ TYPED_TEST(Quat, ConversionToMat3) {
 
 TYPED_TEST(Quat, ConversionToMat4) {
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   const Q identity{T{1}, T{0}, T{0}, T{0}};
   const auto m = static_cast<mEn::mat<4, T>>(identity);
@@ -186,7 +184,7 @@ TYPED_TEST(Quat, ConversionToMat4) {
 
 TYPED_TEST(Quat, ConstructorFromMat3) {
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   const mEn::mat<3, T> identity_m{T{1}};
   const Q q_identity{identity_m};
@@ -200,7 +198,7 @@ TYPED_TEST(Quat, ConstructorFromMat3) {
 
 TYPED_TEST(Quat, ConstructorFromMat3CoversDominantBranches) {
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   const T pi = static_cast<T>(std::numbers::pi);
 
@@ -225,7 +223,7 @@ TYPED_TEST(Quat, ConstructorFromMat3CoversDominantBranches) {
 
 TYPED_TEST(Quat, ConstructorFromMat4) {
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   const mEn::mat<4, T> identity_m{T{1}};
   const Q q_identity{identity_m};
@@ -240,7 +238,7 @@ TYPED_TEST(Quat, ConstructorFromMat4) {
 
 TYPED_TEST(Quat, UnaryOperators) {
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   const Q q{T{1}, T{2}, T{3}, T{4}};
 
@@ -253,7 +251,7 @@ TYPED_TEST(Quat, UnaryOperators) {
 
 TYPED_TEST(Quat, CompoundScalarArithmetic) {
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   Q q{T{1}, T{2}, T{4}, T{8}};
 
@@ -266,7 +264,7 @@ TYPED_TEST(Quat, CompoundScalarArithmetic) {
 
 TYPED_TEST(Quat, CompoundQuatArithmetic) {
   using T  = TypeParam;
-  using Q  = typename TestFixture::Q;
+  using Q  = TestFixture::Q;
   using U  = OtherT<T>;
   using QU = mEn::qua<U>;
 
@@ -288,7 +286,7 @@ TYPED_TEST(Quat, CompoundQuatArithmetic) {
 
 TYPED_TEST(Quat, ScalarBinaryOperators) {
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   const Q q{T{1}, T{2}, T{3}, T{4}};
 
@@ -299,7 +297,7 @@ TYPED_TEST(Quat, ScalarBinaryOperators) {
 
 TYPED_TEST(Quat, QuatBinaryOperators) {
   using T  = TypeParam;
-  using Q  = typename TestFixture::Q;
+  using Q  = TestFixture::Q;
   using U  = OtherT<T>;
   using QU = mEn::qua<U>;
 
@@ -316,7 +314,7 @@ TYPED_TEST(Quat, QuatBinaryOperators) {
 
 TYPED_TEST(Quat, VectorMultiplicationWithIdentity) {
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   const Q identity{T{1}, T{0}, T{0}, T{0}};
   const mEn::vec<3, T> v3{T{1}, T{2}, T{3}};
@@ -337,7 +335,7 @@ TYPED_TEST(Quat, VectorMultiplicationWithIdentity) {
 
 TYPED_TEST(Quat, ReverseOrderVectorMultiplicationUsesInverseRotation) {
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   const Q q{mEn::vec<3, T>{T{0}, T{0}, mEn::kHalfPi<T>}};
 
@@ -352,7 +350,7 @@ TYPED_TEST(Quat, ReverseOrderVectorMultiplicationUsesInverseRotation) {
 
 TYPED_TEST(Quat, EqualityAndInequality) {
   using T  = TypeParam;
-  using Q  = typename TestFixture::Q;
+  using Q  = TestFixture::Q;
   using U  = OtherT<T>;
   using QU = mEn::qua<U>;
 
@@ -368,7 +366,7 @@ TYPED_TEST(Quat, EqualityAndInequality) {
 
 TYPED_TEST(Quat, FloatingEqualityUsesEpsilon) {
   using T = TypeParam;
-  using Q = typename TestFixture::Q;
+  using Q = TestFixture::Q;
 
   const Q a{T{1}, T{2}, T{3}, T{4}};
   const auto half_eps = T{0.5} * mEn::kEpsilon<T>;

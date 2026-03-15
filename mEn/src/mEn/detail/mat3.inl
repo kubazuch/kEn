@@ -1,4 +1,5 @@
 namespace mEn {
+// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 namespace detail {
 
@@ -62,7 +63,7 @@ template <typename T>
 
 // Components
 template <typename T>
-MEN_FORCE_INLINE constexpr typename mat<3, T>::col_t& mat<3, T>::operator[](length_t i) noexcept {
+MEN_FORCE_INLINE constexpr mat<3, T>::col_t& mat<3, T>::operator[](length_t i) noexcept {
   if (!std::is_constant_evaluated()) {
     MEN_ASSERT(i < length());
   }
@@ -70,7 +71,7 @@ MEN_FORCE_INLINE constexpr typename mat<3, T>::col_t& mat<3, T>::operator[](leng
 }
 
 template <typename T>
-MEN_FORCE_INLINE constexpr const typename mat<3, T>::col_t& mat<3, T>::operator[](length_t i) const noexcept {
+MEN_FORCE_INLINE constexpr const mat<3, T>::col_t& mat<3, T>::operator[](length_t i) const noexcept {
   if (!std::is_constant_evaluated()) {
     MEN_ASSERT(i < length());
   }
@@ -100,7 +101,7 @@ template <typename T>
 template <glm::qualifier Q>
 MEN_FORCE_INLINE constexpr mat<3, T>::operator glm::mat<3, 3, T, Q>() const noexcept {
   using gm_t  = glm::mat<3, 3, T, Q>;
-  using col_g = typename gm_t::col_type;
+  using col_g = gm_t::col_type;
   return gm_t{col_g{value_[0]}, col_g{value_[1]}, col_g{value_[2]}};
 }
 #endif
@@ -325,7 +326,7 @@ MEN_FORCE_INLINE constexpr mat<3, T> operator/(mat<3, T> lhs, const mat<3, U>& r
 
 // Matrix / vector operators
 template <typename T, typename U>
-MEN_FORCE_INLINE constexpr typename mat<3, T>::col_t operator*(const mat<3, T>& m, const vec<3, U>& v) noexcept {
+MEN_FORCE_INLINE constexpr mat<3, T>::col_t operator*(const mat<3, T>& m, const vec<3, U>& v) noexcept {
   const T x = static_cast<T>(v[0]);
   const T y = static_cast<T>(v[1]);
   const T z = static_cast<T>(v[2]);
@@ -333,7 +334,7 @@ MEN_FORCE_INLINE constexpr typename mat<3, T>::col_t operator*(const mat<3, T>& 
 }
 
 template <typename T, typename U>
-MEN_FORCE_INLINE constexpr typename mat<3, T>::row_t operator*(const vec<3, U>& v, const mat<3, T>& m) noexcept {
+MEN_FORCE_INLINE constexpr mat<3, T>::row_t operator*(const vec<3, U>& v, const mat<3, T>& m) noexcept {
   const T x = static_cast<T>(v[0]);
   const T y = static_cast<T>(v[1]);
   const T z = static_cast<T>(v[2]);
@@ -346,12 +347,12 @@ MEN_FORCE_INLINE constexpr typename mat<3, T>::row_t operator*(const vec<3, U>& 
 }
 
 template <typename T, typename U>
-MEN_FORCE_INLINE constexpr typename mat<3, T>::col_t operator/(const mat<3, T>& m, const vec<3, U>& v) noexcept {
+MEN_FORCE_INLINE constexpr mat<3, T>::col_t operator/(const mat<3, T>& m, const vec<3, U>& v) noexcept {
   return detail::inv(m) * vec<3, T>{v};
 }
 
 template <typename T, typename U>
-MEN_FORCE_INLINE constexpr typename mat<3, T>::row_t operator/(const vec<3, U>& v, const mat<3, T>& m) noexcept {
+MEN_FORCE_INLINE constexpr mat<3, T>::row_t operator/(const vec<3, U>& v, const mat<3, T>& m) noexcept {
   return vec<3, T>{v} * detail::inv(m);
 }
 
@@ -366,4 +367,5 @@ MEN_FORCE_INLINE constexpr bool operator!=(const mat<3, T>& m1, const mat<3, U>&
   return !(m1 == m2);
 }
 
+// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace mEn

@@ -7,6 +7,7 @@
 #include <mEn/vec3.hpp>
 
 namespace mEn {
+// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 template <typename T>
 MEN_FORCE_INLINE bool decompose(const mat<4, T>& model, vec<3, T>& translation, qua<T>& rotation,
@@ -50,4 +51,5 @@ MEN_FORCE_INLINE bool decompose(const mat<4, T>& model, vec<3, T>& translation, 
   return true;
 }
 
+// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace mEn

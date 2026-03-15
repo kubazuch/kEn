@@ -5,6 +5,7 @@
 #include <type_traits>
 
 #include <mEn/constants.hpp>
+#include <mEn/fwd.hpp>
 #include <mEn/vec2.hpp>
 
 #include "assert/vec2_eq.hpp"
@@ -23,8 +24,9 @@ TYPED_TEST_SUITE(Vec2, TestedTypes);
 }  // namespace
 
 TYPED_TEST(Vec2, LengthAndIndexing) {
+  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
 
   V v{T{1}, T{2}};
   EXPECT_EQ(v.length(), 2U);
@@ -39,11 +41,12 @@ TYPED_TEST(Vec2, LengthAndIndexing) {
   const V cv{T{3}, T{4}};
   EXPECT_EQ(cv[0], cv.x);
   EXPECT_EQ(cv[1], cv.y);
+  // NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }
 
 TYPED_TEST(Vec2, AliasesShareStorage) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
 
   V v{T{1}, T{2}};
 
@@ -74,26 +77,26 @@ TYPED_TEST(Vec2, AliasesShareStorage) {
 
 TYPED_TEST(Vec2, Constructors) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
   using U = std::size_t;
 
-  V splat{T{5}};
+  const V splat{T{5}};
   EXPECT_VEC2_EQ(splat, EX(T, 5, 5));
 
-  V pair{T{6}, T{7}};
+  const V pair{T{6}, T{7}};
   EXPECT_VEC2_EQ(pair, EX(T, 6, 7));
 
-  V mixed{1, U{2}};
+  const V mixed{1, U{2}};
   EXPECT_VEC2_EQ(mixed, EX(T, 1, 2));
 
-  mEn::vec<2, U> u{U{1}, U{2}};
-  V from_u{u};
+  const mEn::vec<2, U> u{U{1}, U{2}};
+  const V from_u{u};
   EXPECT_VEC2_EQ(from_u, EX(T, 1, 2));
 }
 
 TYPED_TEST(Vec2, CompoundScalarArithmetic) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
   using U = std::size_t;
 
   V v{T{1}, T{2}};
@@ -113,11 +116,11 @@ TYPED_TEST(Vec2, CompoundScalarArithmetic) {
 
 TYPED_TEST(Vec2, CompoundVectorArithmeticWithMixedTypes) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
   using U = std::size_t;
 
   V v{T{1}, T{2}};
-  mEn::vec<2, U> i{2, 3};
+  const mEn::vec<2, U> i{2, 3};
 
   v += i;
   EXPECT_VEC2_EQ(v, EX(T, 3, 5));
@@ -137,43 +140,43 @@ TYPED_TEST(Vec2, CompoundVectorArithmeticWithMixedTypes) {
 
 TYPED_TEST(Vec2, IncrementDecrement) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
 
   V v{T{1}, T{2}};
 
-  V post_inc = v++;
+  const V post_inc = v++;
   EXPECT_VEC2_EQ(post_inc, EX(T, 1, 2));
   EXPECT_VEC2_EQ(v, EX(T, 2, 3));
 
-  V pre_inc = ++v;
+  const V pre_inc = ++v;
   EXPECT_VEC2_EQ(pre_inc, EX(T, 3, 4));
   EXPECT_VEC2_EQ(v, EX(T, 3, 4));
 
-  V post_dec = v--;
+  const V post_dec = v--;
   EXPECT_VEC2_EQ(post_dec, EX(T, 3, 4));
   EXPECT_VEC2_EQ(v, EX(T, 2, 3));
 
-  V pre_dec = --v;
+  const V pre_dec = --v;
   EXPECT_VEC2_EQ(pre_dec, EX(T, 1, 2));
   EXPECT_VEC2_EQ(v, EX(T, 1, 2));
 }
 
 TYPED_TEST(Vec2, UnaryOperators) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
 
-  V v{T{2}, T{3}};
+  const V v{T{2}, T{3}};
 
-  V plus = +v;
+  const V plus = +v;
   EXPECT_VEC2_EQ(plus, EX(T, 2, 3));
 
-  V neg = -v;
+  const V neg = -v;
   EXPECT_VEC2_EQ(neg, EX(T, -2, -3));
 }
 
 TYPED_TEST(Vec2, BinaryScalarOperators) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
 
   const V v{T{1}, T{2}};
 
@@ -196,7 +199,7 @@ TYPED_TEST(Vec2, BinaryScalarOperators) {
 
 TYPED_TEST(Vec2, BinaryVectorOperators) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
 
   const V a{T{1}, T{2}};
   const V b{T{3}, T{5}};
@@ -214,7 +217,7 @@ TYPED_TEST(Vec2, BinaryVectorOperators) {
 
 TYPED_TEST(Vec2, EqualityAndInequality) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
 
   const V a{T{1}, T{2}};
   const V b{T{1}, T{2}};
@@ -228,7 +231,7 @@ TYPED_TEST(Vec2, EqualityAndInequality) {
 
 TYPED_TEST(Vec2, FloatingEqualityUsesEpsilon) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
 
   if constexpr (!std::is_floating_point_v<T>) {
     GTEST_SKIP() << "epsilon equality applies only to floating-point types";

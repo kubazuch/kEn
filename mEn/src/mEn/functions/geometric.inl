@@ -16,19 +16,19 @@ MEN_FORCE_INLINE T distance(const vec<L, T>& x, const vec<L, T>& y) noexcept {
 
 template <typename T>
 MEN_FORCE_INLINE constexpr T dot(const vec<2, T>& x, const vec<2, T>& y) noexcept {
-  vec<2, T> tmp(x * y);
+  const vec<2, T> tmp(x * y);
   return tmp.x + tmp.y;
 }
 
 template <typename T>
 MEN_FORCE_INLINE constexpr T dot(const vec<3, T>& x, const vec<3, T>& y) noexcept {
-  vec<3, T> tmp(x * y);
+  const vec<3, T> tmp(x * y);
   return tmp.x + tmp.y + tmp.z;
 }
 
 template <typename T>
 MEN_FORCE_INLINE constexpr T dot(const vec<4, T>& x, const vec<4, T>& y) noexcept {
-  vec<4, T> tmp(x * y);
+  const vec<4, T> tmp(x * y);
   return tmp.x + tmp.y + tmp.z + tmp.w;
 }
 

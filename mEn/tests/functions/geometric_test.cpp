@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 
 #include <mEn/functions/geometric.hpp>
+#include <mEn/fwd.hpp>
+
+#include <glm/detail/qualifier.hpp>
 
 #include "../assert/scalar_eq.hpp"
 #include "../util/vec_test_utils.hpp"

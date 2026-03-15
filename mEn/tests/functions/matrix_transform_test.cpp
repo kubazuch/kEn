@@ -3,6 +3,7 @@
 #include <mEn/constants.hpp>
 #include <mEn/functions/matrix_transform.hpp>
 
+#include <glm/detail/qualifier.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
 #include "../util/mat_test_utils.hpp"

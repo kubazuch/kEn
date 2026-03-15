@@ -3,6 +3,9 @@
 #include <limits>
 
 #include <mEn/functions/common.hpp>
+#include <mEn/fwd.hpp>
+
+#include <glm/detail/qualifier.hpp>
 
 #include "../util/vec_test_utils.hpp"
 

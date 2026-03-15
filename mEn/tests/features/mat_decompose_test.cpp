@@ -3,7 +3,9 @@
 #include <mEn/constants.hpp>
 #include <mEn/features/mat_decompose.hpp>
 #include <mEn/functions/matrix_transform.hpp>
+#include <mEn/fwd.hpp>
 
+#include <glm/detail/qualifier.hpp>
 #include <glm/ext/quaternion_trigonometric.hpp>
 
 #include "../util/quat_test_utils.hpp"
@@ -123,7 +125,7 @@ TYPED_TEST(MatDecompose, FailsOnPerspectiveMatrix) {
 
   // Set a non-zero perspective row (row 3, cols 0-2)
   auto m  = mEn::identity<4, T>();
-  m[0][3] = T{1};  // m[col][row]: col=0, row=3
+  m[0][3] = T{1};  // NOLINT
 
   mEn::vec<3, T> t{};
   mEn::qua<T> r{};

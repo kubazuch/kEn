@@ -2,12 +2,15 @@
 
 #include <mEn/constants.hpp>
 #include <mEn/functions/vector_relational.hpp>
+#include <mEn/fwd.hpp>
 
+#include <glm/detail/qualifier.hpp>
 #include <glm/ext/vector_relational.hpp>
 
 #include "../util/vec_test_utils.hpp"
 
 namespace {
+// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 using men_test::ExpectBoolVecEq;
 using men_test::GV;
@@ -71,6 +74,7 @@ TYPED_TEST_SUITE(Vec2Relational, TestedTypes);
 TYPED_TEST_SUITE(Vec3Relational, TestedTypes);
 TYPED_TEST_SUITE(Vec4Relational, TestedTypes);
 
+// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace
 
 TYPED_TEST(Vec2Relational, Comparisons) { RunComparisonTests<2, TypeParam>(); }

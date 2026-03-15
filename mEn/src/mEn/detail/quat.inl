@@ -7,6 +7,7 @@
 #include <mEn/vec4.hpp>
 
 namespace mEn {
+// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 namespace detail {
 
@@ -107,8 +108,8 @@ template <typename T>
 MEN_FORCE_INLINE qua<T>::qua(const vec<3, T>& u, const vec<3, T>& v) noexcept {
   T norm  = sqrt(dot(u, u) * dot(v, v));
   T angle = norm + dot(u, v);
-  vec<3, T> axis;
 
+  vec<3, T> axis{};
   if (angle < static_cast<T>(1e-6) * norm) {
     angle = T{0};
     axis  = abs(u.x) > abs(u.z) ? vec<3, T>(-u.y, u.x, T{0}) : vec<3, T>(T{0}, -u.z, u.y);
@@ -116,7 +117,7 @@ MEN_FORCE_INLINE qua<T>::qua(const vec<3, T>& u, const vec<3, T>& v) noexcept {
     axis = cross(u, v);
   }
 
-  vec<4, T> quat = normalize(vec<4, T>(axis.x, axis.y, axis.z, angle));
+  const vec<4, T> quat = normalize(vec<4, T>(axis.x, axis.y, axis.z, angle));
 
   *this = qua<T>(quat.w, quat.x, quat.y, quat.z);
 }
@@ -336,4 +337,5 @@ MEN_FORCE_INLINE constexpr bool operator!=(const qua<T>& q1, const qua<U>& q2) n
   return !(q1 == q2);
 }
 
+// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace mEn

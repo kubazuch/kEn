@@ -4,14 +4,9 @@
 #include <cstdint>
 #include <type_traits>
 
-#include <mEn/vec2.hpp>
-#include <mEn/vec3.hpp>
-#include <mEn/vec4.hpp>
+#include <mEn/fwd.hpp>
 
 #include <glm/detail/qualifier.hpp>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
 
 #include "assert/vec2_eq.hpp"
 #include "assert/vec3_eq.hpp"
@@ -160,6 +155,7 @@ TEST(VecConversions, ConversionsCastToDestinationScalarType) {
   EXPECT_VEC4_EQ(i4, EX(std::int32_t, 1, 2, 3, 4));
 }
 
+// NOLINTBEGIN(misc-include-cleaner)
 TEST(VecGlmConversions, GlmVec2ToMenVec2IsImplicitAndPreservesComponents) {
   using Dst = Vec2<float>;
   using Src = glm::vec<2, int, glm::highp>;
@@ -315,3 +311,4 @@ TEST(VecGlmConversions, MenVec4ToGlmVec4WithNonDefaultQualifierWorks) {
   EXPECT_FLOAT_EQ(gv.z, 3.5);
   EXPECT_FLOAT_EQ(gv.w, 4.9);
 }
+// NOLINTEND(misc-include-cleaner)

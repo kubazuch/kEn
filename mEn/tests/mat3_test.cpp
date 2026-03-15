@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <type_traits>
 
+#include <mEn/fwd.hpp>
 #include <mEn/mat3.hpp>
 
 #include "assert/mat3_eq.hpp"
@@ -24,8 +25,9 @@ TYPED_TEST_SUITE(Mat3, TestedTypes);
 }  // namespace
 
 TYPED_TEST(Mat3, LengthAndIndexing) {
+  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
   using T = TypeParam;
-  using M = typename TestFixture::M;
+  using M = TestFixture::M;
 
   M m{T{1}, T{2}, T{3}, T{4}, T{5}, T{6}, T{7}, T{8}, T{9}};
   EXPECT_EQ(m.length(), 3U);
@@ -46,34 +48,35 @@ TYPED_TEST(Mat3, LengthAndIndexing) {
 
   const M cm{T{1}, T{2}, T{3}, T{4}, T{5}, T{6}, T{7}, T{8}, T{9}};
   EXPECT_MAT3_EQ(cm, EX(T, 1, 2, 3, 4, 5, 6, 7, 8, 9));
+  // NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }
 
 TYPED_TEST(Mat3, Constructors) {
   using T = TypeParam;
-  using M = typename TestFixture::M;
-  using V = typename TestFixture::V;
+  using M = TestFixture::M;
+  using V = TestFixture::V;
   using U = std::size_t;
 
-  M id{T{5}};
+  const M id{T{5}};
   EXPECT_MAT3_EQ(id, EX(T, 5, 0, 0, 0, 5, 0, 0, 0, 5));
 
-  M m{T{1}, T{2}, T{3}, T{4}, T{5}, T{6}, T{7}, T{8}, T{9}};
+  const M m{T{1}, T{2}, T{3}, T{4}, T{5}, T{6}, T{7}, T{8}, T{9}};
   EXPECT_MAT3_EQ(m, EX(T, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 
-  M from_cols{V{T{1}, T{2}, T{3}}, V{T{4}, T{5}, T{6}}, V{T{7}, T{8}, T{9}}};
+  const M from_cols{V{T{1}, T{2}, T{3}}, V{T{4}, T{5}, T{6}}, V{T{7}, T{8}, T{9}}};
   EXPECT_TRUE(from_cols == m);
 
-  M mixed{1, U{2}, 3, 4, U{5}, 6, 7, U{8}, 9};
+  const M mixed{1, U{2}, 3, 4, U{5}, 6, 7, U{8}, 9};
   EXPECT_MAT3_EQ(mixed, EX(T, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 
   const mEn::mat<3, U> um{1, 2, 3, 4, 5, 6, 7, 8, 9};
-  M from_u{um};
+  const M from_u{um};
   EXPECT_TRUE(from_u == m);
 }
 
 TYPED_TEST(Mat3, CompoundScalarArithmetic) {
   using T = TypeParam;
-  using M = typename TestFixture::M;
+  using M = TestFixture::M;
   using U = std::size_t;
 
   M m{T{1}, T{2}, T{3}, T{4}, T{5}, T{6}, T{7}, T{8}, T{9}};
@@ -93,7 +96,7 @@ TYPED_TEST(Mat3, CompoundScalarArithmetic) {
 
 TYPED_TEST(Mat3, CompoundMatrixArithmeticWithMixedTypes) {
   using T = TypeParam;
-  using M = typename TestFixture::M;
+  using M = TestFixture::M;
   using U = std::size_t;
 
   M a{T{1}};  // identity
@@ -114,30 +117,30 @@ TYPED_TEST(Mat3, CompoundMatrixArithmeticWithMixedTypes) {
 
 TYPED_TEST(Mat3, IncrementDecrement) {
   using T = TypeParam;
-  using M = typename TestFixture::M;
+  using M = TestFixture::M;
 
   M m{T{1}, T{2}, T{3}, T{4}, T{5}, T{6}, T{7}, T{8}, T{9}};
 
-  M post_inc = m++;
+  const M post_inc = m++;
   EXPECT_MAT3_EQ(post_inc, EX(T, 1, 2, 3, 4, 5, 6, 7, 8, 9));
   EXPECT_MAT3_EQ(m, EX(T, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 
-  M pre_inc = ++m;
+  const M pre_inc = ++m;
   EXPECT_MAT3_EQ(pre_inc, EX(T, 3, 4, 5, 6, 7, 8, 9, 10, 11));
   EXPECT_MAT3_EQ(m, EX(T, 3, 4, 5, 6, 7, 8, 9, 10, 11));
 
-  M post_dec = m--;
+  const M post_dec = m--;
   EXPECT_MAT3_EQ(post_dec, EX(T, 3, 4, 5, 6, 7, 8, 9, 10, 11));
   EXPECT_MAT3_EQ(m, EX(T, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 
-  M pre_dec = --m;
+  const M pre_dec = --m;
   EXPECT_MAT3_EQ(pre_dec, EX(T, 1, 2, 3, 4, 5, 6, 7, 8, 9));
   EXPECT_MAT3_EQ(m, EX(T, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 }
 
 TYPED_TEST(Mat3, UnaryOperators) {
   using T = TypeParam;
-  using M = typename TestFixture::M;
+  using M = TestFixture::M;
 
   const M m{T{1}, T{2}, T{3}, T{4}, T{5}, T{6}, T{7}, T{8}, T{9}};
 
@@ -150,7 +153,7 @@ TYPED_TEST(Mat3, UnaryOperators) {
 
 TYPED_TEST(Mat3, BinaryScalarOperators) {
   using T = TypeParam;
-  using M = typename TestFixture::M;
+  using M = TestFixture::M;
 
   const M m{T{1}, T{2}, T{3}, T{4}, T{5}, T{6}, T{7}, T{8}, T{9}};
 
@@ -175,7 +178,7 @@ TYPED_TEST(Mat3, BinaryScalarOperators) {
 
 TYPED_TEST(Mat3, BinaryMatrixOperators) {
   using T = TypeParam;
-  using M = typename TestFixture::M;
+  using M = TestFixture::M;
 
   const M a{T{1}, T{2}, T{3}, T{4}, T{5}, T{6}, T{7}, T{8}, T{9}};
   const M b{T{9}, T{8}, T{7}, T{6}, T{5}, T{4}, T{3}, T{2}, T{1}};
@@ -193,8 +196,8 @@ TYPED_TEST(Mat3, BinaryMatrixOperators) {
 
 TYPED_TEST(Mat3, MatrixVectorOperators) {
   using T = TypeParam;
-  using M = typename TestFixture::M;
-  using V = typename TestFixture::V;
+  using M = TestFixture::M;
+  using V = TestFixture::V;
 
   const M d{T{2}, T{0}, T{0}, T{0}, T{3}, T{0}, T{0}, T{0}, T{4}};
 
@@ -218,7 +221,7 @@ TYPED_TEST(Mat3, MatrixVectorOperators) {
 
 TYPED_TEST(Mat3, EqualityAndInequality) {
   using T = TypeParam;
-  using M = typename TestFixture::M;
+  using M = TestFixture::M;
 
   const M a{T{1}, T{2}, T{3}, T{4}, T{5}, T{6}, T{7}, T{8}, T{9}};
   const M b{T{1}, T{2}, T{3}, T{4}, T{5}, T{6}, T{7}, T{8}, T{9}};
@@ -232,7 +235,7 @@ TYPED_TEST(Mat3, EqualityAndInequality) {
 
 TYPED_TEST(Mat3, FloatingEqualityUsesEpsilon) {
   using T = TypeParam;
-  using M = typename TestFixture::M;
+  using M = TestFixture::M;
 
   if constexpr (!std::is_floating_point_v<T>) {
     GTEST_SKIP() << "epsilon equality applies only to floating-point types";
@@ -255,7 +258,7 @@ TYPED_TEST(Mat3, FloatingEqualityUsesEpsilon) {
 
 TYPED_TEST(Mat3, FloatingDivisionByMatrix) {
   using T = TypeParam;
-  using M = typename TestFixture::M;
+  using M = TestFixture::M;
 
   if constexpr (!std::is_floating_point_v<T>) {
     GTEST_SKIP() << "matrix division relies on inverse; tested only for floating-point types";

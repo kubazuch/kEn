@@ -38,7 +38,7 @@ struct mat;
 /// @brief Primary template for a quaternion of scalar @p T.
 /// @tparam T Component scalar type.
 template <typename T>
-struct qua;
+struct qua;  // NOLINT(readability-identifier-naming)
 
 /// @brief Type trait: @c true for any @c vec<L,T> specialization, @c false otherwise.
 template <typename>
@@ -74,7 +74,7 @@ struct scalar_of<vec<L, T>> {
 
 /// @brief Convenience alias for @c scalar_of<T>::type.
 template <typename T>
-using scalar_of_t = typename scalar_of<T>::type;
+using scalar_of_t = scalar_of<T>::type;
 
 /// @brief Maps a @c VecOrScalar to its boolean counterpart.
 ///
@@ -93,7 +93,7 @@ struct bool_result<vec<L, T>> {
 
 /// @brief Convenience alias for @c bool_result<T>::type.
 template <typename T>
-using bool_result_t = typename bool_result<T>::type;
+using bool_result_t = bool_result<T>::type;
 
 /// @brief The default scalar type, equal to @c config::default_scalar_t (@c float).
 using default_scalar_t = config::default_scalar_t;

@@ -4,6 +4,7 @@
 
 #include <mEn/fwd.hpp>
 
+// NOLINTBEGIN(bugprone-std-namespace-modification)
 namespace std {
 
 /// @brief @c std::formatter specialization for @c mEn::vec<L,T>.
@@ -22,5 +23,6 @@ template <typename T>
 struct formatter<mEn::qua<T>>;
 
 }  // namespace std
+// NOLINTEND(bugprone-std-namespace-modification)
 
 #include "format.inl"

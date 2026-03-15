@@ -12,7 +12,7 @@
 namespace mEn {
 
 namespace detail {
-// NOLINTBEGIN(readability-identifier-naming)
+// NOLINTBEGIN(readability-identifier-naming, cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 template <class T>
 using lane_arg_t = std::add_lvalue_reference_t<std::add_const_t<T>>;
 
@@ -64,7 +64,7 @@ struct first_vec_clean<Last> {
 };
 
 template <class... Args>
-using first_vec_t = typename first_vec_clean<std::remove_cvref_t<Args>...>::type;
+using first_vec_t = first_vec_clean<std::remove_cvref_t<Args>...>::type;
 
 template <class X, length_t L, bool = is_vec_v<X>>
 struct len_ok : std::true_type {};
@@ -124,7 +124,7 @@ template <auto Func, length_t L, class T, class Acc>
   }(std::make_index_sequence<static_cast<std::size_t>(L)>{});
 }
 
-// NOLINTEND(readability-identifier-naming)
+// NOLINTEND(readability-identifier-naming, cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace detail
 
 }  // namespace mEn

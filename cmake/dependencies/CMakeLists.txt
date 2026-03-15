@@ -193,8 +193,8 @@ FetchContent_Declare(
   GIT_TAG "v1.3.0"
   GIT_SHALLOW TRUE
   PATCH_COMMAND git apply --ignore-whitespace
-                "${CMAKE_CURRENT_LIST_DIR}/../../patches/nfd.patch")
-  #UPDATE_DISCONNECTED 1)
+                "${CMAKE_CURRENT_LIST_DIR}/../../patches/nfd.patch"
+  UPDATE_DISCONNECTED 1)
 FetchContent_MakeAvailable(nfd)
 
 list(POP_BACK CMAKE_MESSAGE_INDENT)

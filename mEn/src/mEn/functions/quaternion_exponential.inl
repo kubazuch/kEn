@@ -8,7 +8,7 @@ namespace mEn {
 
 template <typename T>
 MEN_FORCE_INLINE qua<T> exp(const qua<T>& q) noexcept {
-  vec<3, T> u(q.x, q.y, q.z);
+  const vec<3, T> u(q.x, q.y, q.z);
   const T angle = length(u);
   const T scale = exp(q.w);
   if (angle < kEpsilon<T>) {
@@ -21,7 +21,7 @@ MEN_FORCE_INLINE qua<T> exp(const qua<T>& q) noexcept {
 
 template <typename T>
 MEN_FORCE_INLINE qua<T> log(const qua<T>& q) noexcept {
-  vec<3, T> u(q.x, q.y, q.z);
+  const vec<3, T> u(q.x, q.y, q.z);
   const T len = length(u);
 
   if (len < kEpsilon<T>) {

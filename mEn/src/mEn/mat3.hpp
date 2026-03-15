@@ -167,14 +167,14 @@ template <typename T, typename U>
 /// @c operator*(vec, mat) applies the matrix to a row vector.
 /// @{
 template <typename T, typename U>
-[[nodiscard]] constexpr typename mat<3, T>::col_t operator*(const mat<3, T>& m, const vec<3, U>& v) noexcept;
+[[nodiscard]] constexpr mat<3, T>::col_t operator*(const mat<3, T>& m, const vec<3, U>& v) noexcept;
 template <typename T, typename U>
-[[nodiscard]] constexpr typename mat<3, T>::row_t operator*(const vec<3, U>& v, const mat<3, T>& m) noexcept;
+[[nodiscard]] constexpr mat<3, T>::row_t operator*(const vec<3, U>& v, const mat<3, T>& m) noexcept;
 
 template <typename T, typename U>
-[[nodiscard]] constexpr typename mat<3, T>::col_t operator/(const mat<3, T>& m, const vec<3, U>& v) noexcept;
+[[nodiscard]] constexpr mat<3, T>::col_t operator/(const mat<3, T>& m, const vec<3, U>& v) noexcept;
 template <typename T, typename U>
-[[nodiscard]] constexpr typename mat<3, T>::row_t operator/(const vec<3, U>& v, const mat<3, T>& m) noexcept;
+[[nodiscard]] constexpr mat<3, T>::row_t operator/(const vec<3, U>& v, const mat<3, T>& m) noexcept;
 /// @}
 
 /// @name Equality operators

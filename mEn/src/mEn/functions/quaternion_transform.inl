@@ -5,6 +5,7 @@
 #include <mEn/vec3.hpp>
 
 namespace mEn {
+// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 template <typename T>
 MEN_FORCE_INLINE constexpr qua<T> identity() noexcept {
@@ -17,7 +18,7 @@ MEN_FORCE_INLINE constexpr qua<T> rotate(const qua<T>& q, T angle, const vec<3, 
   const T c = mEn::cos(T{0.5} * a);
   const T s = mEn::sin(T{0.5} * a);
 
-  vec<3, T> axis(normalize(v));
+  const vec<3, T> axis(normalize(v));
   return q * qua<T>(c, axis.x * s, axis.y * s, axis.z * s);
 }
 
@@ -35,4 +36,5 @@ MEN_FORCE_INLINE constexpr qua<T> quatLookAt(const vec<3, T>& direction, const v
   return qua<T>(ret);
 }
 
+// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace mEn

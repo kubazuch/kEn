@@ -5,6 +5,7 @@
 #include <type_traits>
 
 #include <mEn/constants.hpp>
+#include <mEn/fwd.hpp>
 #include <mEn/vec3.hpp>
 
 #include "assert/vec3_eq.hpp"
@@ -23,8 +24,9 @@ TYPED_TEST_SUITE(Vec3, TestedTypes);
 }  // namespace
 
 TYPED_TEST(Vec3, LengthAndIndexing) {
+  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
 
   V v{T{1}, T{2}, T{3}};
   EXPECT_EQ(v.length(), 3U);
@@ -42,11 +44,12 @@ TYPED_TEST(Vec3, LengthAndIndexing) {
   EXPECT_EQ(cv[0], cv.x);
   EXPECT_EQ(cv[1], cv.y);
   EXPECT_EQ(cv[2], cv.z);
+  // NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }
 
 TYPED_TEST(Vec3, AliasesShareStorage) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
 
   V v{T{1}, T{2}, T{3}};
 
@@ -89,26 +92,26 @@ TYPED_TEST(Vec3, AliasesShareStorage) {
 
 TYPED_TEST(Vec3, Constructors) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
   using U = std::size_t;
 
-  V splat{T{5}};
+  const V splat{T{5}};
   EXPECT_VEC3_EQ(splat, EX(T, 5, 5, 5));
 
-  V triple{T{6}, T{7}, T{8}};
+  const V triple{T{6}, T{7}, T{8}};
   EXPECT_VEC3_EQ(triple, EX(T, 6, 7, 8));
 
-  V mixed{1, U{2}, 3};
+  const V mixed{1, U{2}, 3};
   EXPECT_VEC3_EQ(mixed, EX(T, 1, 2, 3));
 
-  mEn::vec<3, U> u{U{1}, U{2}, U{3}};
-  V from_u{u};
+  const mEn::vec<3, U> u{U{1}, U{2}, U{3}};
+  const V from_u{u};
   EXPECT_VEC3_EQ(from_u, EX(T, 1, 2, 3));
 }
 
 TYPED_TEST(Vec3, CompoundScalarArithmetic) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
   using U = std::size_t;
 
   V v{T{1}, T{2}, T{3}};
@@ -128,11 +131,11 @@ TYPED_TEST(Vec3, CompoundScalarArithmetic) {
 
 TYPED_TEST(Vec3, CompoundVectorArithmeticWithMixedTypes) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
   using U = std::size_t;
 
   V v{T{1}, T{2}, T{3}};
-  mEn::vec<3, U> i{2, 3, 4};
+  const mEn::vec<3, U> i{2, 3, 4};
 
   v += i;
   EXPECT_VEC3_EQ(v, EX(T, 3, 5, 7));
@@ -152,43 +155,43 @@ TYPED_TEST(Vec3, CompoundVectorArithmeticWithMixedTypes) {
 
 TYPED_TEST(Vec3, IncrementDecrement) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
 
   V v{T{1}, T{2}, T{3}};
 
-  V post_inc = v++;
+  const V post_inc = v++;
   EXPECT_VEC3_EQ(post_inc, EX(T, 1, 2, 3));
   EXPECT_VEC3_EQ(v, EX(T, 2, 3, 4));
 
-  V pre_inc = ++v;
+  const V pre_inc = ++v;
   EXPECT_VEC3_EQ(pre_inc, EX(T, 3, 4, 5));
   EXPECT_VEC3_EQ(v, EX(T, 3, 4, 5));
 
-  V post_dec = v--;
+  const V post_dec = v--;
   EXPECT_VEC3_EQ(post_dec, EX(T, 3, 4, 5));
   EXPECT_VEC3_EQ(v, EX(T, 2, 3, 4));
 
-  V pre_dec = --v;
+  const V pre_dec = --v;
   EXPECT_VEC3_EQ(pre_dec, EX(T, 1, 2, 3));
   EXPECT_VEC3_EQ(v, EX(T, 1, 2, 3));
 }
 
 TYPED_TEST(Vec3, UnaryOperators) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
 
-  V v{T{2}, T{3}, T{4}};
+  const V v{T{2}, T{3}, T{4}};
 
-  V plus = +v;
+  const V plus = +v;
   EXPECT_VEC3_EQ(plus, EX(T, 2, 3, 4));
 
-  V neg = -v;
+  const V neg = -v;
   EXPECT_VEC3_EQ(neg, EX(T, -2, -3, -4));
 }
 
 TYPED_TEST(Vec3, BinaryScalarOperators) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
 
   const V v{T{1}, T{2}, T{3}};
 
@@ -212,7 +215,7 @@ TYPED_TEST(Vec3, BinaryScalarOperators) {
 
 TYPED_TEST(Vec3, BinaryVectorOperators) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
 
   const V a{T{1}, T{2}, T{3}};
   const V b{T{3}, T{5}, T{7}};
@@ -230,7 +233,7 @@ TYPED_TEST(Vec3, BinaryVectorOperators) {
 
 TYPED_TEST(Vec3, EqualityAndInequality) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
 
   const V a{T{1}, T{2}, T{3}};
   const V b{T{1}, T{2}, T{3}};
@@ -244,7 +247,7 @@ TYPED_TEST(Vec3, EqualityAndInequality) {
 
 TYPED_TEST(Vec3, FloatingEqualityUsesEpsilon) {
   using T = TypeParam;
-  using V = typename TestFixture::V;
+  using V = TestFixture::V;
 
   if constexpr (!std::is_floating_point_v<T>) {
     GTEST_SKIP() << "epsilon equality applies only to floating-point types";

@@ -1,5 +1,6 @@
 #pragma once
 
+// NOLINTBEGIN(cppcoreguidelines-macro-usage)
 #if defined(MEN_USE_GLM) && !defined(MEN_GLM)
 #define MEN_GLM 1
 #endif
@@ -10,7 +11,7 @@
 #include <numbers>
 #include <utility>
 
-#if defined(_MSC_VER)
+#ifdef _MSC_VER
 #define MEN_FORCE_INLINE __forceinline
 #define MEN_NOINLINE __declspec(noinline)
 #else
@@ -33,15 +34,16 @@
 #define MEN_ASSERT(expr) ((void)0)
 #define MEN_UNREACHABLE() ::std::unreachable()
 #endif
+// NOLINTEND(cppcoreguidelines-macro-usage)
 
 namespace mEn {  // NOLINT(readability-identifier-naming)
 
 namespace config {
 
 #ifdef MEN_GLM
-inline constexpr bool use_glm = true;
+inline constexpr bool use_glm = true;  // NOLINT(readability-identifier-naming)
 #else
-inline constexpr bool use_glm = false;
+inline constexpr bool use_glm = false;  // NOLINT(readability-identifier-naming)
 #endif
 
 using default_scalar_t = float;

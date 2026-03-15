@@ -3,7 +3,7 @@
 #include <limits>
 #include <type_traits>
 
-#include <mEn/config.hpp>
+#include <mEn/constants.hpp>
 #include <mEn/detail/vectorize.hpp>
 #include <mEn/fwd.hpp>
 #include <mEn/vec3.hpp>

@@ -40,7 +40,7 @@ template <length_t L>
 ///
 /// Named @c not_ with a trailing underscore to avoid conflict with the C++ keyword @c not.
 template <length_t L>
-[[nodiscard]] constexpr vec<L, bool> not_(const vec<L, bool>& v) noexcept;
+[[nodiscard]] constexpr vec<L, bool> not_(const vec<L, bool>& v) noexcept;  // NOLINT(readability-identifier-naming)
 
 }  // namespace mEn
 

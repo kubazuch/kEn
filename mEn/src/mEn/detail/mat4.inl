@@ -1,4 +1,5 @@
 namespace mEn {
+// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 namespace detail {
 
@@ -46,30 +47,30 @@ template <typename T>
   const T minor201 = m[1][0] * m[3][1] - m[3][0] * m[1][1];
   const T minor301 = m[1][0] * m[2][1] - m[2][0] * m[1][1];
 
-  vec<4, T> factors23(minor123, minor123, minor223, minor323);
-  vec<4, T> factors13(minor113, minor113, minor213, minor313);
-  vec<4, T> factors12(minor112, minor112, minor212, minor312);
-  vec<4, T> factors03(minor103, minor103, minor203, minor303);
-  vec<4, T> factors02(minor102, minor102, minor202, minor302);
-  vec<4, T> factors01(minor101, minor101, minor201, minor301);
+  const vec<4, T> factors23(minor123, minor123, minor223, minor323);
+  const vec<4, T> factors13(minor113, minor113, minor213, minor313);
+  const vec<4, T> factors12(minor112, minor112, minor212, minor312);
+  const vec<4, T> factors03(minor103, minor103, minor203, minor303);
+  const vec<4, T> factors02(minor102, minor102, minor202, minor302);
+  const vec<4, T> factors01(minor101, minor101, minor201, minor301);
 
-  vec<4, T> multipliers0(m[1][0], m[0][0], m[0][0], m[0][0]);
-  vec<4, T> multipliers1(m[1][1], m[0][1], m[0][1], m[0][1]);
-  vec<4, T> multipliers2(m[1][2], m[0][2], m[0][2], m[0][2]);
-  vec<4, T> multipliers3(m[1][3], m[0][3], m[0][3], m[0][3]);
+  const vec<4, T> multipliers0(m[1][0], m[0][0], m[0][0], m[0][0]);
+  const vec<4, T> multipliers1(m[1][1], m[0][1], m[0][1], m[0][1]);
+  const vec<4, T> multipliers2(m[1][2], m[0][2], m[0][2], m[0][2]);
+  const vec<4, T> multipliers3(m[1][3], m[0][3], m[0][3], m[0][3]);
 
-  vec<4, T> cofactors0(multipliers1 * factors23 - multipliers2 * factors13 + multipliers3 * factors12);
-  vec<4, T> cofactors1(multipliers0 * factors23 - multipliers2 * factors03 + multipliers3 * factors02);
-  vec<4, T> cofactors2(multipliers0 * factors13 - multipliers1 * factors03 + multipliers3 * factors01);
-  vec<4, T> cofactors3(multipliers0 * factors12 - multipliers1 * factors02 + multipliers2 * factors01);
+  const vec<4, T> cofactors0(multipliers1 * factors23 - multipliers2 * factors13 + multipliers3 * factors12);
+  const vec<4, T> cofactors1(multipliers0 * factors23 - multipliers2 * factors03 + multipliers3 * factors02);
+  const vec<4, T> cofactors2(multipliers0 * factors13 - multipliers1 * factors03 + multipliers3 * factors01);
+  const vec<4, T> cofactors3(multipliers0 * factors12 - multipliers1 * factors02 + multipliers2 * factors01);
 
-  vec<4, T> signs1(+1, -1, +1, -1);
-  vec<4, T> signs2(-1, +1, -1, +1);
+  const vec<4, T> signs1(+1, -1, +1, -1);
+  const vec<4, T> signs2(-1, +1, -1, +1);
   mat<4, T> inverse(cofactors0 * signs1, cofactors1 * signs2, cofactors2 * signs1, cofactors3 * signs2);
 
-  vec<4, T> row0(inverse[0][0], inverse[1][0], inverse[2][0], inverse[3][0]);
+  const vec<4, T> row0(inverse[0][0], inverse[1][0], inverse[2][0], inverse[3][0]);
 
-  vec<4, T> dot0(m[0] * row0);
+  const vec<4, T> dot0(m[0] * row0);
   T dot1 = (dot0.x + dot0.y) + (dot0.z + dot0.w);
 
   T inv_det = static_cast<T>(1) / dot1;
@@ -81,7 +82,7 @@ template <typename T>
 
 // Components
 template <typename T>
-MEN_FORCE_INLINE constexpr typename mat<4, T>::col_t& mat<4, T>::operator[](length_t i) noexcept {
+MEN_FORCE_INLINE constexpr mat<4, T>::col_t& mat<4, T>::operator[](length_t i) noexcept {
   if (!std::is_constant_evaluated()) {
     MEN_ASSERT(i < length());
   }
@@ -89,7 +90,7 @@ MEN_FORCE_INLINE constexpr typename mat<4, T>::col_t& mat<4, T>::operator[](leng
 }
 
 template <typename T>
-MEN_FORCE_INLINE constexpr const typename mat<4, T>::col_t& mat<4, T>::operator[](length_t i) const noexcept {
+MEN_FORCE_INLINE constexpr const mat<4, T>::col_t& mat<4, T>::operator[](length_t i) const noexcept {
   if (!std::is_constant_evaluated()) {
     MEN_ASSERT(i < length());
   }
@@ -127,7 +128,7 @@ template <typename T>
 template <glm::qualifier Q>
 MEN_FORCE_INLINE constexpr mat<4, T>::operator glm::mat<4, 4, T, Q>() const noexcept {
   using gm_t  = glm::mat<4, 4, T, Q>;
-  using col_g = typename gm_t::col_type;
+  using col_g = gm_t::col_type;
   return gm_t{col_g{value_[0]}, col_g{value_[1]}, col_g{value_[2]}, col_g{value_[3]}};
 }
 #endif
@@ -371,7 +372,7 @@ MEN_FORCE_INLINE constexpr mat<4, T> operator/(mat<4, T> lhs, const mat<4, U>& r
 
 // Matrix / vector operators
 template <typename T, typename U>
-MEN_FORCE_INLINE constexpr typename mat<4, T>::col_t operator*(const mat<4, T>& m, const vec<4, U>& v) noexcept {
+MEN_FORCE_INLINE constexpr mat<4, T>::col_t operator*(const mat<4, T>& m, const vec<4, U>& v) noexcept {
   const T x = static_cast<T>(v[0]);
   const T y = static_cast<T>(v[1]);
   const T z = static_cast<T>(v[2]);
@@ -380,7 +381,7 @@ MEN_FORCE_INLINE constexpr typename mat<4, T>::col_t operator*(const mat<4, T>& 
 }
 
 template <typename T, typename U>
-MEN_FORCE_INLINE constexpr typename mat<4, T>::row_t operator*(const vec<4, U>& v, const mat<4, T>& m) noexcept {
+MEN_FORCE_INLINE constexpr mat<4, T>::row_t operator*(const vec<4, U>& v, const mat<4, T>& m) noexcept {
   const T x = static_cast<T>(v[0]);
   const T y = static_cast<T>(v[1]);
   const T z = static_cast<T>(v[2]);
@@ -395,12 +396,12 @@ MEN_FORCE_INLINE constexpr typename mat<4, T>::row_t operator*(const vec<4, U>& 
 }
 
 template <typename T, typename U>
-MEN_FORCE_INLINE constexpr typename mat<4, T>::col_t operator/(const mat<4, T>& m, const vec<4, U>& v) noexcept {
+MEN_FORCE_INLINE constexpr mat<4, T>::col_t operator/(const mat<4, T>& m, const vec<4, U>& v) noexcept {
   return detail::inv(m) * vec<4, T>{v};
 }
 
 template <typename T, typename U>
-MEN_FORCE_INLINE constexpr typename mat<4, T>::row_t operator/(const vec<4, U>& v, const mat<4, T>& m) noexcept {
+MEN_FORCE_INLINE constexpr mat<4, T>::row_t operator/(const vec<4, U>& v, const mat<4, T>& m) noexcept {
   return vec<4, T>{v} * detail::inv(m);
 }
 
@@ -415,4 +416,5 @@ MEN_FORCE_INLINE constexpr bool operator!=(const mat<4, T>& m1, const mat<4, U>&
   return !(m1 == m2);
 }
 
+// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace mEn

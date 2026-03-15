@@ -1,9 +1,11 @@
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <sstream>
 
-#include <mEn/features/ostream.hpp>
+#include <mEn/features/ostream.hpp>  //NOLINT(misc-include-cleaner)
 #include <mEn/functions/matrix_transform.hpp>
+#include <mEn/fwd.hpp>
 
 namespace {
 
