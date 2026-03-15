@@ -43,7 +43,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NUMBER: ${{ github.event.pull_request.number }}
       - name: Apply size label to PR
-        run: gh pr edit "$NUMBER" --add-label "$LABEL"
+        run: |
+          EXISTING=$(gh pr view "$NUMBER" --json labels --jq '[.labels[].name | select(startswith("size/"))] | join(" ")')
+          if [ -n "$EXISTING" ]; then
+            echo "Removing existing size labels: $EXISTING"
+            gh pr edit "$NUMBER" --remove-label "$EXISTING"
+          fi
+          echo "Applying label: $LABEL"
+          gh pr edit "$NUMBER" --add-label "$LABEL"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
