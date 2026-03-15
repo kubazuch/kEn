@@ -7,13 +7,14 @@
 
 namespace mEn {
 
-/// @brief Machine epsilon for floating-point type @p T.
+/// @brief A small value suitable for practical floating-point comparisons.
 ///
-/// The smallest value such that @f$ 1 + \varepsilon \neq 1 @f$.
-/// Wraps @c std::numeric_limits<T>::epsilon().
+/// Used to test whether values are "close enough to zero" for geometric
+/// operations (e.g. degenerate vectors, near-zero lengths). Intentionally
+/// larger than machine epsilon to tolerate single-precision accumulation.
 /// @tparam T Floating-point type. Defaults to @c config::default_scalar_t.
 template <std::floating_point T = config::default_scalar_t>
-inline constexpr T kEpsilon = std::numeric_limits<T>::epsilon();
+inline constexpr T kEpsilon = T{1e-6};
 
 /// @brief Euler's number @f$ e \approx 2.71828 @f$.
 /// @tparam T Floating-point type. Defaults to @c config::default_scalar_t.

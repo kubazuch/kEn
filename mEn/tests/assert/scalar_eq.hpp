@@ -11,7 +11,7 @@ template <class T>
     const auto da   = static_cast<long double>(a);
     const auto db   = static_cast<long double>(b);
     const auto diff = std::fabsl(da - db);
-    const auto eps  = static_cast<long double>(T{10} * mEn::kEpsilon<T>);
+    const auto eps  = static_cast<long double>(mEn::kEpsilon<T>);
 
     if (diff <= eps) {
       return ::testing::AssertionSuccess();

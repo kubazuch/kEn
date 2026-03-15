@@ -81,7 +81,6 @@ if(NOT BUILD_ASSIMP)
   find_package(assimp 5.4.3)
 endif()
 
-# TODO(): bump versions
 add_subdirectory(cmake/dependencies)
 
 add_subdirectory(mEn)
