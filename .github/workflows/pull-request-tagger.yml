@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Determine new tag
         id: determine-tag
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           # Fetch the highest tag
           current_tag=$(gh api repos/$GITHUB_REPOSITORY/tags --jq '[.[].name | select(startswith("v"))] | sort | last // "v0.0.0"')
