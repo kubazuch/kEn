@@ -1,14 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(mEn)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 message(STATUS "Configuring " ${PROJECT_NAME})
 
 # Option to switch between GLM and native implementations
 option(MEN_USE_GLM "Use GLM library instead of internal implementations" OFF)
 option(MEN_BUILD_GLM "Fetch and build GLM. When OFF, CMake will look for proper GLM version on your operating system." ON)
-
-set(CMAKE_CXX_STANDARD 23) 
 
 add_library(${PROJECT_NAME} INTERFACE)
 
@@ -16,6 +13,7 @@ add_library(${PROJECT_NAME} INTERFACE)
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_23)
 target_include_directories(${PROJECT_NAME}
         INTERFACE src "${CMAKE_BINARY_DIR}/generated")
 
@@ -51,9 +49,9 @@ if (BUILD_TESTING)
     file(GLOB_RECURSE TESTS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp")
 
     add_executable("${PROJECT_NAME}_tests" ${TESTS_SOURCES})
-    target_compile_definitions("${PROJECT_NAME}_tests" PRIVATE MEN_USE_GLM GLM_ENABLE_EXPERIMENTAL)
+    target_compile_definitions("${PROJECT_NAME}_tests" PRIVATE MEN_GLM GLM_ENABLE_EXPERIMENTAL)
     target_link_libraries("${PROJECT_NAME}_tests" PRIVATE ${PROJECT_NAME} glm::glm GTest::gtest_main)
 
     include(GoogleTest)
-    gtest_discover_tests("${PROJECT_NAME}_tests")
+    gtest_discover_tests("${PROJECT_NAME}_tests" TEST_PREFIX "mEn.")
 endif ()

@@ -25,12 +25,12 @@
 
 // Matrix functions
 #include <mEn/functions/matrix_common.hpp>
-#include <mEn/functions/matrix_transform.hpp>
 #include <mEn/functions/matrix_projection.hpp>
+#include <mEn/functions/matrix_transform.hpp>
 
 // Quaternion functions
 #include <mEn/functions/quaternion_common.hpp>
+#include <mEn/functions/quaternion_exponential.hpp>
 #include <mEn/functions/quaternion_geometric.hpp>
 #include <mEn/functions/quaternion_transform.hpp>
-#include <mEn/functions/quaternion_exponential.hpp>
 #include <mEn/functions/quaternion_trigonometric.hpp>

@@ -1,4 +1,4 @@
-name: Run formatter 📝 and linter 🧹
+name: Run formatter 📝, linter 🧹 and tests 🧪
 on:
   push:
     branches: [ main ]
@@ -37,7 +37,7 @@ jobs:
         id: run-clang-tidy
         if: success() || failure()
         run: |
-          python3 run-clang-tidy.py -j 4 -p build -warnings-as-errors * -header-filter "(k|m)En[\\\/]src[\\\/].*"
+          python3 run-clang-tidy.py -j 4 -p build -warnings-as-errors="*" -source-filter=".*(k|m)En[\\\/]src[\\\/].*\.(c|cc|cpp|cxx)$" -header-filter "(k|m)En[\\\/]src[\\\/].*"
       
       - name: Run tests
         id: run-tests 
