@@ -9,7 +9,7 @@
 #include <mEn/config.hpp>
 #include <mEn/fwd.hpp>
 
-namespace mEn {  // NOLINT
+namespace mEn {
 
 namespace detail {
 // NOLINTBEGIN(readability-identifier-naming)

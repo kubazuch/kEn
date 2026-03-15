@@ -1,15 +1,13 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 4a6dece..49f8707 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,4 +1,4 @@
--cmake_minimum_required(VERSION 3.5)
+-cmake_minimum_required(VERSION 3.10)
 +cmake_minimum_required(VERSION 3.20)
- project(nativefiledialog-extended VERSION 1.2.1)
+ project(nativefiledialog-extended VERSION 1.3.0)
  
  set(nfd_ROOT_PROJECT OFF)
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 740b484..a89f1c5 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
 @@ -1,10 +1,10 @@
@@ -43,7 +41,6 @@ diff --git a/src/include/nfd.hpp b/src/include/nfd/nfd.hpp
 similarity index 99%
 rename from src/include/nfd.hpp
 rename to src/include/nfd/nfd.hpp
-index da232ae..199f6f5 100644
 --- a/src/include/nfd.hpp
 +++ b/src/include/nfd/nfd.hpp
 @@ -13,7 +13,7 @@
@@ -64,7 +61,6 @@ similarity index 100%
 rename from src/include/nfd_sdl2.h
 rename to src/include/nfd/nfd_sdl2.h
 diff --git a/src/nfd_cocoa.m b/src/nfd_cocoa.m
-index 4bcea22..070656d 100644
 --- a/src/nfd_cocoa.m
 +++ b/src/nfd_cocoa.m
 @@ -7,7 +7,7 @@
@@ -77,20 +73,18 @@ index 4bcea22..070656d 100644
  // MacOS is deprecating the allowedFileTypes property in favour of allowedContentTypes, so we have
  // to introduce this breaking change.  Define NFD_MACOS_ALLOWEDCONTENTTYPES to 1 to have it set the
 diff --git a/src/nfd_gtk.cpp b/src/nfd_gtk.cpp
-index 86aa797..b24a3e4 100644
 --- a/src/nfd_gtk.cpp
 +++ b/src/nfd_gtk.cpp
-@@ -17,7 +17,7 @@
+@@ -16,7 +16,7 @@
  #include <stdlib.h>
  #include <string.h>
  
 -#include "nfd.h"
 +#include "nfd/nfd.h"
  
- namespace {
- 
+ /*
+ Define NFD_CASE_SENSITIVE_FILTER if you want file filters to be case-sensitive.  The default
 diff --git a/src/nfd_portal.cpp b/src/nfd_portal.cpp
-index 77fd5d5..1cd1a85 100644
 --- a/src/nfd_portal.cpp
 +++ b/src/nfd_portal.cpp
 @@ -26,7 +26,7 @@
@@ -102,28 +96,7 @@ index 77fd5d5..1cd1a85 100644
  
  /*
  Define NFD_APPEND_EXTENSION if you want the file extension to be appended when missing. Linux
-@@ -495,8 +495,7 @@ void AppendSaveFileQueryDictEntryFilters(DBusMessageIter& sub_iter,
-         if (defaultName) {
-             const nfdnchar_t* p = defaultName;
-             while (*p) ++p;
--            while (*--p != '.')
--                ;
-+            while (*--p != '.');
-             ++p;
-             if (*p) extn = p;
-         }
-@@ -1106,8 +1105,7 @@ bool TryGetValidExtension(const char* extn,
-     ++extn;
-     if (*extn != '.') return false;
-     trimmed_extn = extn;
--    for (++extn; *extn != '\0'; ++extn)
--        ;
-+    for (++extn; *extn != '\0'; ++extn);
-     ++extn;
-     trimmed_extn_end = extn;
-     return true;
 diff --git a/src/nfd_win.cpp b/src/nfd_win.cpp
-index 4bf07e2..058802d 100644
 --- a/src/nfd_win.cpp
 +++ b/src/nfd_win.cpp
 @@ -28,7 +28,7 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro

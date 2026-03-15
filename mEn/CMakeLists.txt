@@ -25,7 +25,7 @@ target_include_directories(mEn
 
 if(MEN_USE_GLM OR BUILD_TESTING)
     if(NOT MEN_BUILD_GLM)
-        find_package(GLM 1.0.1)
+        find_package(GLM 1.0.3)
     else()
         message(CHECK_START "Fetching GLM")
         list(APPEND CMAKE_MESSAGE_INDENT "  ")
@@ -33,7 +33,7 @@ if(MEN_USE_GLM OR BUILD_TESTING)
         FetchContent_Declare(
         glm
         GIT_REPOSITORY "https://github.com/g-truc/glm.git"
-        GIT_TAG "1.0.1"
+        GIT_TAG "1.0.3"
         GIT_SHALLOW TRUE
         PATCH_COMMAND git apply --ignore-whitespace
                         "${CMAKE_CURRENT_LIST_DIR}/../patches/glm.patch"
@@ -47,7 +47,9 @@ endif()
 
 if(MEN_USE_GLM)
     target_compile_definitions(mEn INTERFACE MEN_GLM GLM_ENABLE_EXPERIMENTAL)
-    target_link_libraries(mEn INTERFACE glm::glm)
+    target_link_libraries(mEn INTERFACE $<BUILD_INTERFACE:glm::glm>)
+    target_include_directories(mEn SYSTEM INTERFACE
+        $<TARGET_PROPERTY:glm::glm,INTERFACE_INCLUDE_DIRECTORIES>)
 endif()
 
 if(BUILD_TESTING)
@@ -59,7 +61,9 @@ if(BUILD_TESTING)
 
     add_executable(mEn_tests ${TESTS_SOURCES})
     target_compile_definitions(mEn_tests PRIVATE MEN_GLM GLM_ENABLE_EXPERIMENTAL)
-    target_link_libraries(mEn_tests PRIVATE mEn glm::glm GTest::gtest_main)
+    target_link_libraries(mEn_tests PRIVATE mEn GTest::gtest_main)
+    target_include_directories(mEn_tests SYSTEM PRIVATE
+        $<TARGET_PROPERTY:glm::glm,INTERFACE_INCLUDE_DIRECTORIES>)
 
     include(GoogleTest)
     gtest_discover_tests(mEn_tests TEST_PREFIX "mEn.")

@@ -6,7 +6,7 @@
 #include <mEn/vec3.hpp>
 #include <mEn/vec4.hpp>
 
-namespace mEn {  // NOLINT
+namespace mEn {
 
 namespace detail {
 

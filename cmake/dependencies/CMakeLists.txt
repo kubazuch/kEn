@@ -1,8 +1,7 @@
 include(FetchContent)
 set(CMAKE_EXPORT_COMPILE_COMMANDS
     OFF
-    CACHE BOOL "Do not generate compile commands database for dependencies"
-          FORCE)
+    CACHE BOOL "Do not generate compile commands for dependencies" FORCE)
 
 # ##############################################################################
 # GLAD
@@ -77,7 +76,7 @@ list(APPEND CMAKE_MESSAGE_INDENT "  ")
 FetchContent_Declare(
   imgui
   GIT_REPOSITORY "https://github.com/ocornut/imgui.git"
-  GIT_TAG "v1.91.8-docking"
+  GIT_TAG "v1.92.6-docking"
   GIT_SHALLOW TRUE
   PATCH_COMMAND git apply --ignore-whitespace
                 "${CMAKE_CURRENT_LIST_DIR}/../../patches/imgui.patch"
@@ -115,7 +114,7 @@ list(APPEND CMAKE_MESSAGE_INDENT "  ")
 FetchContent_Declare(
   nlohmann_json
   GIT_REPOSITORY "https://github.com/nlohmann/json.git"
-  GIT_TAG "v3.11.3"
+  GIT_TAG "v3.12.0"
   GIT_SHALLOW TRUE
   UPDATE_DISCONNECTED 1)
 FetchContent_MakeAvailable(nlohmann_json)
@@ -165,7 +164,7 @@ if(BUILD_ASSIMP)
   FetchContent_Declare(
     assimp
     GIT_REPOSITORY "https://github.com/assimp/assimp.git"
-    GIT_TAG "v5.4.3"
+    GIT_TAG "v6.0.4"
     GIT_SHALLOW TRUE
     UPDATE_DISCONNECTED 1)
   FetchContent_MakeAvailable(assimp)
@@ -191,11 +190,11 @@ set(NFD_PORTAL
 FetchContent_Declare(
   nfd
   GIT_REPOSITORY "https://github.com/btzy/nativefiledialog-extended.git"
-  GIT_TAG "v1.2.1"
+  GIT_TAG "v1.3.0"
   GIT_SHALLOW TRUE
   PATCH_COMMAND git apply --ignore-whitespace
-                "${CMAKE_CURRENT_LIST_DIR}/../../patches/nfd.patch"
-  UPDATE_DISCONNECTED 1)
+                "${CMAKE_CURRENT_LIST_DIR}/../../patches/nfd.patch")
+  #UPDATE_DISCONNECTED 1)
 FetchContent_MakeAvailable(nfd)
 
 list(POP_BACK CMAKE_MESSAGE_INDENT)
@@ -207,10 +206,14 @@ message(CHECK_PASS "fetched")
 message(CHECK_START "Fetching spdlog")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
+set(SPDLOG_USE_STD_FORMAT 
+    ON 
+    CACHE BOOL "Use C++20 std::format instead of fmt::format" FORCE)
+
 FetchContent_Declare(
   spdlog
   GIT_REPOSITORY "https://github.com/gabime/spdlog.git"
-  GIT_TAG "v1.15.1"
+  GIT_TAG "v1.17.0"
   GIT_SHALLOW TRUE
   UPDATE_DISCONNECTED 1)
 FetchContent_MakeAvailable(spdlog)
@@ -227,7 +230,7 @@ list(APPEND CMAKE_MESSAGE_INDENT "  ")
 FetchContent_Declare(
   stb
   GIT_REPOSITORY "https://github.com/nothings/stb.git"
-  GIT_TAG "5c205738c191bcb0abc65c4febfa9bd25ff35234"
+  GIT_TAG "904aa67e1e2d1dec92959df63e700b166d5c1022"
   PATCH_COMMAND git apply --ignore-whitespace
                 "${CMAKE_CURRENT_LIST_DIR}/../../patches/stb.patch"
   UPDATE_DISCONNECTED 1)

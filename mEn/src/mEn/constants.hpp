@@ -5,7 +5,7 @@
 
 #include <mEn/config.hpp>
 
-namespace mEn {  // NOLINT
+namespace mEn {
 
 /// @brief Machine epsilon for floating-point type @p T.
 ///

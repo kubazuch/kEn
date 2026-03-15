@@ -1,6 +1,6 @@
 #include <mEn/constants.hpp>
 
-namespace mEn {  // NOLINT
+namespace mEn {
 
 // Components
 template <typename T>

@@ -4,7 +4,7 @@
 #include <mEn/functions/trigonometric.hpp>
 #include <mEn/quat.hpp>
 
-namespace mEn {  // NOLINT
+namespace mEn {
 
 template <typename T>
 MEN_FORCE_INLINE qua<T> exp(const qua<T>& q) noexcept {

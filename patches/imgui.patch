@@ -1,6 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 00000000..fe754340
 --- /dev/null
 +++ b/CMakeLists.txt
 @@ -0,0 +1,16 @@

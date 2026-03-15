@@ -3,7 +3,7 @@
 #include <mEn/functions/exponential.hpp>
 #include <mEn/functions/trigonometric.hpp>
 
-namespace mEn {  // NOLINT
+namespace mEn {
 
 template <typename T>
 MEN_FORCE_INLINE T angle(const qua<T>& q) noexcept {

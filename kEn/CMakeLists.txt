@@ -22,8 +22,8 @@ target_include_directories(kEn
         PUBLIC src "${CMAKE_BINARY_DIR}/generated")
 
 target_link_libraries(kEn
-    PUBLIC  mEn glfw imgui imguizmo
-    PRIVATE glad assimp spdlog stb nfd)
+    PUBLIC  mEn glfw spdlog imgui imguizmo
+    PRIVATE glad assimp stb nfd)
 
 # Set compile options and properties of the target
 target_compile_options(kEn PRIVATE ${PROJ_CXX_FLAGS})
