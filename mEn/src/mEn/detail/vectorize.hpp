@@ -107,7 +107,9 @@ template <auto Func, class... Args>
   return [&]<std::size_t... I>(std::index_sequence<I...>) -> vec<L, R> {
     auto lane = [&]<std::size_t J>() -> R { return std::invoke(Func, pick<J>(args)...); };
 
+    // clang-format off
     return vec<L, R>{lane.template operator()<I>()...};
+    // clang-format on
   }(std::make_index_sequence<static_cast<std::size_t>(L)>{});
 }
 
