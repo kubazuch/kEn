@@ -1,0 +1,48 @@
+name: Apply labels to Pull Requests 📝🏷️
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  label-pull-request-version:
+    permissions:
+      pull-requests: write
+      contents: read
+      issues: write
+    runs-on: ubuntu-latest
+    name: Label the PR with size label
+    env:
+      XS_LABEL: 'size/XS 🐜'
+      S_LABEL: 'size/S 🐇'
+      S_THRESHOLD: 10
+      M_LABEL: 'size/M 🦊'
+      M_THRESHOLD: 50
+      L_LABEL: 'size/L 🐻'
+      L_THRESHOLD: 250
+      XL_LABEL: 'size/XL 🐘'
+      XL_THRESHOLD: 750
+      XXL_LABEL: 'size/XXL 🐋'
+      XXL_THRESHOLD: 1500
+    steps:
+      - name: Determine size label
+        id: extract-size-label
+        run: |
+          N=$(gh api repos/$GITHUB_REPOSITORY/pulls/$NUMBER --jq '.additions + .deletions')
+          if   [ "$N" -gt "$XXL_THRESHOLD" ]; then LABEL="$XXL_LABEL"
+          elif [ "$N" -gt "$XL_THRESHOLD"  ]; then LABEL="$XL_LABEL"
+          elif [ "$N" -gt "$L_THRESHOLD"   ]; then LABEL="$L_LABEL"
+          elif [ "$N" -gt "$M_THRESHOLD"   ]; then LABEL="$M_LABEL"
+          elif [ "$N" -gt "$S_THRESHOLD"   ]; then LABEL="$S_LABEL"
+          else LABEL="$XS_LABEL"
+          fi
+          echo "label=$LABEL" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NUMBER: ${{ github.event.pull_request.number }}
+      - run: gh pr edit "$NUMBER" --add-label "$LABEL"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}
+          LABEL: ${{ steps.extract-size-label.outputs.label }}
