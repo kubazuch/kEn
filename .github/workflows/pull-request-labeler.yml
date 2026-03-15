@@ -44,11 +44,11 @@ jobs:
           NUMBER: ${{ github.event.pull_request.number }}
       - name: Apply size label to PR
         run: |
-          EXISTING=$(gh pr view "$NUMBER" --json labels --jq '[.labels[].name | select(startswith("size/"))] | join(" ")')
-          if [ -n "$EXISTING" ]; then
-            echo "Removing existing size labels: $EXISTING"
-            gh pr edit "$NUMBER" --remove-label "$EXISTING"
-          fi
+          gh pr view "$NUMBER" --json labels --jq '[.labels[].name | select(startswith("size/"))][]' | \
+          while IFS= read -r L; do
+            echo "Removing existing size label: $L"
+            gh pr edit "$NUMBER" --remove-label "$L"
+          done
           echo "Applying label: $LABEL"
           gh pr edit "$NUMBER" --add-label "$LABEL"
         env:
