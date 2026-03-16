@@ -39,8 +39,8 @@ jobs:
         id: msvc-build
         shell: pwsh
         run: |
-          cmake --preset=ci-windows-x64-msvc -DPython_EXECUTABLE="$((get-command python3).Path)"
-          cmake --build --preset=ci-windows-x64-msvc
+          cmake --preset=windows-msvc-release -DPython_EXECUTABLE="$((get-command python3).Path)"
+          cmake --build --preset=windows-msvc-release
         
       - name: Create artifact 
         id: create-artifact
@@ -48,7 +48,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path artifact
           Get-ChildItem -Recurse -Include *.exe
-          & 7z a ./artifact/${{ env.BINARY_NAME }}-windows-x64.zip ./build/bin/${{ env.BINARY_NAME }}.exe ./build/bin/assets
+          & 7z a ./artifact/${{ env.BINARY_NAME }}-windows-x64.zip ./build/windows-msvc-release/bin/${{ env.BINARY_NAME }}.exe ./build/windows-msvc-release/bin/assets
       
       - name: Upload artifact 
         uses: actions/upload-artifact@v4  

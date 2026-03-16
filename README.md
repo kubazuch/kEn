@@ -16,12 +16,12 @@ The project structure originates from [resin](https://github.com/gizmokis/resin)
 
 ## Requirements
 
-- CMake 3.20+
-- C++23 compiler: MSVC (VS 2022) or GCC 14 / Clang
+- CMake 3.30+
+- C++23 compiler: MSVC (VS 2022), GCC 14, or Clang
 - Ninja (recommended for dev builds)
 
 All other dependencies are fetched automatically via CMake's `FetchContent`:
-[GLAD](https://github.com/Dav1dde/glad) (OpenGL 4.6), [GLFW](https://github.com/glfw/glfw) 3.4, [ImGui](https://github.com/ocornut/imgui) 1.91.8, [ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo) 1.83, [assimp](https://github.com/assimp/assimp) 5.4.3, [nlohmann/json](https://github.com/nlohmann/json) 3.11.3, [nativefiledialog-extended](https://github.com/btzy/nativefiledialog-extended) 1.2.1, [spdlog](https://github.com/gabime/spdlog) 1.15.1, [stb](https://github.com/nothings/stb)
+[GLAD](https://github.com/Dav1dde/glad) v2.0.8 (OpenGL 4.6), [GLFW](https://github.com/glfw/glfw) 3.4, [ImGui](https://github.com/ocornut/imgui) 1.92.6-docking, [ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo) 1.83, [assimp](https://github.com/assimp/assimp) 6.0.4, [nativefiledialog-extended](https://github.com/btzy/nativefiledialog-extended) 1.3.0, [spdlog](https://github.com/gabime/spdlog) 1.17.0, [stb](https://github.com/nothings/stb)
 
 ## Building
 
@@ -31,24 +31,39 @@ The project uses [CMake Presets](https://cmake.org/cmake/help/latest/manual/cmak
 
 ```bash
 # Debug
-cmake --preset=dev-debug-windows-x64
-cmake --build --preset=dev-debug-windows-x64
+cmake --preset=windows-msvc-debug
+cmake --build --preset=windows-msvc-debug
 
 # Release
-cmake --preset=release-windows-x64
-cmake --build --preset=release-windows-x64
+cmake --preset=windows-msvc-release
+cmake --build --preset=windows-msvc-release
+```
+
+### Windows (Clang + Ninja)
+
+```bash
+# Debug
+cmake --preset=windows-clang-debug
+cmake --build --preset=windows-clang-debug
 ```
 
 ### Linux (GCC 14)
 
 ```bash
 # Debug
-cmake --preset=dev-debug-linux
-cmake --build --preset=dev-debug-linux
+cmake --preset=linux-gcc-debug
+cmake --build --preset=linux-gcc-debug
 
 # Release
-cmake --preset=release-linux
-cmake --build --preset=release-linux
+cmake --preset=linux-gcc-release
+cmake --build --preset=linux-gcc-release
+```
+
+### Linux (Clang)
+
+```bash
+cmake --preset=linux-clang-debug
+cmake --build --preset=linux-clang-debug
 ```
 
 Output: `build/bin/` (executables), `build/lib/` (libraries).
@@ -56,20 +71,20 @@ Output: `build/bin/` (executables), `build/lib/` (libraries).
 ### CMake options
 
 | Option | Default | Description |
-|--------|---------|-------------|
-| `BUILD_TESTING` | `OFF` | Build mEn unit tests (GoogleTest) |
+| ------ | ------- | ----------- |
+| `BUILD_TESTING` | `ON` | Build mEn unit tests (GoogleTest) |
 | `MEN_USE_GLM` | `OFF` | Use GLM types instead of native mEn |
 | `BUILD_GLFW` | `ON` | Fetch GLFW via FetchContent (OFF = system GLFW) |
 | `BUILD_ASSIMP` | `ON` | Fetch assimp via FetchContent (OFF = system assimp) |
 
 ## Tests
 
-Only **mEn** has a test suite. Tests use GoogleTest and live in `mEn/tests/`.
+Only **mEn** has a test suite. Tests use GoogleTest and are enabled by default (`BUILD_TESTING=ON`).
 
 ```bash
-cmake --preset=ci-windows-x64-test
-cmake --build --preset=ci-windows-x64-test
-ctest --preset ci-windows-x64-test
+cmake --preset=windows-msvc-debug
+cmake --build --preset=windows-msvc-debug
+ctest --test-dir build/windows-msvc-debug
 
 # Or run directly with a GTest filter
 ./build/bin/mEn_tests --gtest_filter="Vec3.*"
@@ -83,8 +98,7 @@ Header-only INTERFACE library. Public API: `mEn/src/mEn.hpp`.
 
 - **Vec2/3/4**, **Mat3/4**, **Quat** -- column-major matrices, union-based swizzles (`x/r/s`, `y/g/t`, ...)
 - **GLSL-style free functions** -- `dot`, `cross`, `normalize`, `mix`, `clamp`, `perspective`, `lookAt`, `slerp`, and more; all accept scalars and vectors uniformly
-- **`detail/vectorize.hpp`** -- `map`, `zip`, `reduce` primitives used to implement generic per-component operations
-- Declarations in `.hpp`, implementations in `detail/*.inl` (included at end of each header)
+- Declarations in `.hpp`, implementations in `*.inl` (included at end of each header)
 - Optional GLM interop via `MEN_USE_GLM`
 
 ### kEn -- Engine Library
