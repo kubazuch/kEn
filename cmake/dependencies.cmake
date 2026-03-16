@@ -14,6 +14,8 @@ endif()
 macro(_fetch_begin name)
   message(CHECK_START "Fetching ${name}")
   list(APPEND CMAKE_MESSAGE_INDENT "  ")
+  set(CMAKE_EXPORT_COMPILE_COMMANDS OFF)
+  set(BUILD_SHARED_LIBS OFF)
 endmacro()
 
 macro(_fetch_end)
