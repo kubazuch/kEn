@@ -1,4 +1,6 @@
-function(generate_clangd_file COMPILER_FLAGS BINARY_DIR)
+include_guard(GLOBAL)
+
+function(generate_clangd_file COMPILER_FLAGS)
   if(CMAKE_HOST_UNIX)
     set(CLANGD_COMPILER_STANDARD "-std=c++23")
   elseif(CMAKE_HOST_WIN32)
@@ -9,7 +11,7 @@ function(generate_clangd_file COMPILER_FLAGS BINARY_DIR)
     "Documentation:\n"
     "  CommentFormat: Doxygen\n"
     "CompileFlags:\n"
-    "  CompilationDatabase: ${BINARY_DIR}/\n"
+    "  CompilationDatabase: ${CMAKE_BINARY_DIR}\n"
     "  Add:\n"
     "    - "
     ${CLANGD_COMPILER_STANDARD}
@@ -23,6 +25,12 @@ function(generate_clangd_file COMPILER_FLAGS BINARY_DIR)
       "\n")
     endforeach()
 
+  string(CONCAT CLANGD_FILE_CONTENT
+    "${CLANGD_FILE_CONTENT}"
+    "  Remove:\n"
+    "    - -fmodule*\n"
+    "    - -fdeps*\n"
+    "\n")
 
   file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/.clangd "${CLANGD_FILE_CONTENT}")
 endfunction()
