@@ -2,45 +2,51 @@
 
 #include <imgui/imgui.h>
 
+#include <cstddef>
 #include <cstdint>
+#include <format>
+#include <memory>
 #include <ranges>
+#include <stdexcept>
 
 #include <kEn/renderer/shader.hpp>
+#include <kEn/renderer/texture.hpp>
 
 namespace kEn {
 
-void Material::set_texture(texture_type_t type, const std::shared_ptr<kEn::Texture2D>& texture, size_t id) {
+void Material::set_texture(texture_type_t type, std::shared_ptr<kEn::Texture2D> texture, std::size_t id) {
   auto& texs = textures_[type];
   if (id < texs.size()) {
-    texs[id] = texture;
+    texs[id] = std::move(texture);
     return;
   }
 
   if (id == texs.size()) {
-    texs.push_back(texture);
+    texs.push_back(std::move(texture));
     return;
   }
 
-  throw std::exception("Textures should be added in order!");
+  throw std::runtime_error("Textures should be added in order!");
 }
 
-const std::shared_ptr<Texture2D>& Material::texture(texture_type_t type, size_t id) { return textures_[type][id]; }
+const std::shared_ptr<Texture2D>& Material::texture(texture_type_t type, std::size_t id) const {
+  return textures_.at(type).at(id);
+}
 
-void Material::load(Shader& shader, const std::string& name) const {
-  shader.set_uniform(name + ".ka", ambient_factor);
-  shader.set_uniform(name + ".kd", diffuse_factor);
-  shader.set_uniform(name + ".ks", specular_factor);
-  shader.set_uniform(name + ".m", shininess_factor);
-  shader.set_uniform(name + ".emissive", emissive);
-  shader.set_uniform(name + ".surface_color", surface_color);
+void Material::load(Shader& shader, std::string_view name) const {
+  shader.set_uniform(std::format("{}.ka", name), ambient_factor);
+  shader.set_uniform(std::format("{}.kd", name), diffuse_factor);
+  shader.set_uniform(std::format("{}.ks", name), specular_factor);
+  shader.set_uniform(std::format("{}.m", name), shininess_factor);
+  shader.set_uniform(std::format("{}.emissive", name), emissive);
+  shader.set_uniform(std::format("{}.surface_color", name), surface_color);
 
   uint32_t texture_id = 0;
   for (const auto& [type, textures] : textures_) {
-    for (size_t i = 0; i < textures.size(); i++) {
-      std::stringstream ss;
-      ss << "u_Material." << texture_type::name_of(type) << "[" << i << "]";
-      shader.set_uniform(ss.str(), static_cast<int>(texture_id));
-      texture_id++;
+    for (std::size_t i = 0; i < textures.size(); ++i) {
+      shader.set_uniform(std::format("u_Material.{}[{}]", texture_type::name_of(type), i),
+                         static_cast<int>(texture_id));
+      ++texture_id;
     }
   }
 }
@@ -67,18 +73,19 @@ void Material::imgui() {
 
   if (ImGui::TreeNode("Textures")) {
     for (texture_type_t i = 0; i < texture_type::Last; ++i) {
-      if (!textures_[i].empty()) {
-        if (ImGui::TreeNode(texture_type::name_of(i))) {
-          for (size_t j = 0; j < textures_[i].size(); ++j) {
-            ImGui::PushID(static_cast<int>(j));
-            ImGui::Text("Texture %lld:", j);
+      const auto it = textures_.find(i);
+      if (it == textures_.end() || it->second.empty()) {
+        continue;
+      }
 
-            textures_[i][j]->imgui();
-
-            ImGui::PopID();
-          }
-          ImGui::TreePop();
+      if (ImGui::TreeNode(texture_type::name_of(i))) {
+        for (std::size_t j = 0; j < it->second.size(); ++j) {
+          ImGui::PushID(static_cast<int>(j));
+          ImGui::Text("Texture %zu:", j);
+          it->second[j]->imgui();
+          ImGui::PopID();
         }
+        ImGui::TreePop();
       }
     }
 
