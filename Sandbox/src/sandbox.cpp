@@ -3,7 +3,7 @@
 #include <chrono>
 #include <memory>
 
-#include <mEn/functions.hpp>
+#include <mEn.hpp>
 
 #include <kEn.hpp>  //NOLINT
 #include <kEn/core/input.hpp>

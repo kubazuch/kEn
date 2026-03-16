@@ -2,7 +2,9 @@
 
 #include <glad/gl.h>
 
-#include <mEn/functions.hpp>
+#include <mEn/features/type_ptr.hpp>
+#include <mEn/vec2.hpp>
+#include <mEn/vec4.hpp>
 
 #include <kEn/core/application.hpp>
 #include <kEn/core/assert.hpp>
@@ -136,6 +138,9 @@ void OpenglFramebuffer::invalidate() {
         case FramebufferTextureFormat::RED32:
           attach_color_texture(color_attachments_[i], 1, GL_R32F, GL_RED, spec_.width, spec_.height, i);
           break;
+        case FramebufferTextureFormat::None:
+        case FramebufferTextureFormat::DEPTH24STENCIL8:
+          break;
       }
     }
   }
@@ -147,6 +152,11 @@ void OpenglFramebuffer::invalidate() {
       case FramebufferTextureFormat::DEPTH24STENCIL8:
         attach_depth_texture(depth_attachment_, 1, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, spec_.width,
                              spec_.height);
+        break;
+      case FramebufferTextureFormat::None:
+      case FramebufferTextureFormat::RGBA8:
+      case FramebufferTextureFormat::RED_INT:
+      case FramebufferTextureFormat::RED32:
         break;
     }
   }

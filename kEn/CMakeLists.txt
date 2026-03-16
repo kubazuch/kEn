@@ -5,7 +5,7 @@ include(../cmake/dependencies.cmake)
 include(../cmake/configure_library.cmake)
 
 option(BUILD_TESTS "Fetch GoogleTest and build tests" OFF)
-option(USE_SYSTEM_INCLUDE "Marks includes as system" OFF)
+option(USE_SYSTEM_INCLUDE "Marks includes as system" ON)
 
 fetch_glfw()
 fetch_spdlog()

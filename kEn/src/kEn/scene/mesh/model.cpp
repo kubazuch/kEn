@@ -13,6 +13,27 @@
 #include <assimp/Importer.hpp>
 #pragma warning(pop)
 
+namespace kEn::texture_type {
+namespace {
+aiTextureType to_assimp(const texture_type_t type) {
+  switch (type) {
+    case AmbientOcclusion:
+      return aiTextureType_AMBIENT_OCCLUSION;
+    case Diffuse:
+      return aiTextureType_DIFFUSE;
+    case Height:
+      return aiTextureType_HEIGHT;
+    case Normal:
+      return aiTextureType_NORMALS;
+    case Specular:
+      return aiTextureType_SPECULAR;
+    default:
+      return aiTextureType_NONE;
+  }
+}
+}  // namespace
+}  // namespace kEn::texture_type
+
 #include <algorithm>
 #include <cstdint>
 #include <filesystem>
@@ -143,7 +164,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene, TextureSpec spec) {
     material.transparent = true;
   }
 
-  load_material_textures(mat, kEn::texture_type::diffuse, material, spec);
+  load_material_textures(mat, kEn::texture_type::Diffuse, material, spec);
   // TODO(kuzu): other types
 
   return {mesh->mName.C_Str(), vertices, indices, material};

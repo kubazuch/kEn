@@ -1,92 +1,159 @@
 #pragma once
 
-#ifdef MEN_GLM
-#include <glm/gtx/quaternion.hpp>
+#include <mEn/fwd.hpp>
+
+#if MEN_GLM
+#include <glm/detail/qualifier.hpp>
+#include <glm/detail/type_quat.hpp>
+#endif
 
 namespace mEn {
 
-using Quat = ::glm::quat;
-using ::glm::mat4_cast;
-using ::glm::normalize;
-using ::glm::quatLookAt;
+/// @brief Quaternion with scalar type @p T, representing a rotation in 3D.
+///
+/// Stored as four components @c {x, y, z, w} where @c {x, y, z} is the
+/// vector (imaginary) part and @c w is the scalar (real) part.
+/// A unit quaternion satisfies @f$ x^2 + y^2 + z^2 + w^2 = 1 @f$.
+/// @tparam T Component scalar type. Must satisfy @c Scalar.
+template <typename T>
+struct qua {
+  static_assert(Scalar<T>, "mEn::qua<T> requires an arithmetic scalar type");
 
-}  // namespace mEn
-#else
-#include <ostream>
+  /// @brief Scalar type of the quaternion's components.
+  using value_t = T;
 
-#include "mat3.hpp"
-#include "mat4.hpp"
-#include "vec3.hpp"
+#if MEN_GLM
+  using glm_type = glm::qua<T, glm::defaultp>;
+#endif
 
-namespace mEn {
+  T x, y, z, w;
 
-struct Quat {
-  using value_t = float;
+  /// @brief Returns the number of components (always 4).
+  [[nodiscard]] static constexpr length_t length() noexcept { return 4; }
 
-  float x, y, z, w;
+  /// @brief Returns a reference to the component at index @p i (x=0, y=1, z=2, w=3).
+  /// @pre @p i < 4
+  [[nodiscard]] constexpr T& operator[](length_t i) noexcept;
+  /// @brief Returns a const reference to the component at index @p i (x=0, y=1, z=2, w=3).
+  /// @pre @p i < 4
+  [[nodiscard]] constexpr const T& operator[](length_t i) const noexcept;
 
-  [[nodiscard]] static constexpr int length() { return 4; }
+  // Basic construction and assignment
+  constexpr qua() noexcept                      = default;
+  constexpr qua(const qua& v) noexcept          = default;
+  constexpr qua(qua&&) noexcept                 = default;
+  constexpr qua& operator=(const qua&) noexcept = default;
+  constexpr qua& operator=(qua&&) noexcept      = default;
+  ~qua()                                        = default;
 
-  // Components
-  [[nodiscard]] constexpr float& operator[](int i);
-  [[nodiscard]] constexpr const float& operator[](int i) const;
+  /// @brief Constructs from a scalar (real) part @p s and a vector (imaginary) part @p v.
+  constexpr qua(T s, const vec<3, T>& v) noexcept;
+  /// @brief Constructs from individual components.
+  /// @note Parameters are ordered @c (w, x, y, z) but stored as @c {x, y, z, w}.
+  constexpr qua(T w, T x, T y, T z) noexcept;
 
-  // Implicit constructors
-  constexpr Quat()              = default;
-  constexpr Quat(const Quat& v) = default;
+#if MEN_GLM
+  /// @brief Constructs from a GLM quaternion (implicit for transparent GLM interop).
+  template <Scalar U, glm::qualifier Q>
+  constexpr qua(const glm::qua<U, Q>& q) noexcept;  // NOLINT(google-explicit-constructor)
 
-  // Explicit constructors
-  constexpr Quat(float s, const Vec3& v);
-  constexpr Quat(float w, float x, float y, float z);
-  [[nodiscard]] static constexpr Quat wxyz(float w, float x, float y, float z);
+  /// @brief Converts to a GLM quaternion (implicit for transparent GLM interop).
+  template <glm::qualifier Q = glm::defaultp>
+  [[nodiscard]] constexpr operator glm::qua<T, Q>() const noexcept;  // NOLINT(google-explicit-constructor)
+#endif
 
-  // Conversion constructors
-  [[nodiscard]] explicit operator Mat3() const;
-  [[nodiscard]] explicit operator Mat4() const;
+  /// @brief Narrowing conversion from @c qua<U>.
+  template <typename U>
+  constexpr explicit qua(const qua<U>& q) noexcept;
 
-  Quat(const Vec3& u, const Vec3& v);
+  /// @brief Converts to the equivalent 3x3 rotation matrix.
+  [[nodiscard]] explicit operator mat<3, T>() const noexcept;
+  /// @brief Converts to the equivalent 4x4 rotation matrix.
+  [[nodiscard]] explicit operator mat<4, T>() const noexcept;
 
-  explicit Quat(const Vec3& eulerAngles);
-  explicit Quat(const Mat3& m);
-  explicit Quat(const Mat4& m);
+  /// @brief Constructs the shortest-arc rotation that maps unit vector @p u to unit vector @p v.
+  qua(const vec<3, T>& u, const vec<3, T>& v) noexcept;
+
+  /// @brief Constructs from Euler angles (roll, pitch, yaw) in radians.
+  explicit qua(const vec<3, T>& eulerAngles) noexcept;
+  /// @brief Constructs from a 3x3 rotation matrix.
+  explicit qua(const mat<3, T>& m) noexcept;
+  /// @brief Constructs from the upper-left 3x3 rotation block of a 4x4 matrix.
+  explicit qua(const mat<4, T>& m) noexcept;
 
   // Unary arithmetic operators
-  constexpr Quat& operator=(const Quat& q) = default;
+  template <typename U>
+  constexpr qua& operator=(const qua<U>& q) noexcept;
 
-  constexpr Quat& operator+=(const Quat& q);
-  constexpr Quat& operator-=(const Quat& q);
   template <typename U>
-  constexpr Quat& operator*=(U scalar);
-  constexpr Quat& operator*=(const Quat& q);
+  constexpr qua& operator+=(const qua<U>& q) noexcept;
+
   template <typename U>
-  constexpr Quat& operator/=(U scalar);
+  constexpr qua& operator-=(const qua<U>& q) noexcept;
+
+  /// @brief Multiplies by scalar @p scalar component-wise.
+  template <Scalar U>
+  constexpr qua& operator*=(U scalar) noexcept;
+  /// @brief Multiplies by quaternion @p q (Hamilton product).
+  template <typename U>
+  constexpr qua& operator*=(const qua<U>& q) noexcept;
+
+  template <Scalar U>
+  constexpr qua& operator/=(U scalar) noexcept;
 };
 
-// Unary operators
-[[nodiscard]] constexpr Quat operator+(const Quat& q);
-[[nodiscard]] constexpr Quat operator-(const Quat& q);
+/// @name Unary operators
+/// @{
+template <typename T>
+[[nodiscard]] constexpr qua<T> operator+(qua<T> q) noexcept;
+template <typename T>
+[[nodiscard]] constexpr qua<T> operator-(const qua<T>& q) noexcept;
+/// @}
 
-// Binary arithmetic operators
-[[nodiscard]] constexpr Quat operator+(const Quat& q, const Quat& p);
-[[nodiscard]] constexpr Quat operator-(const Quat& q, const Quat& p);
-[[nodiscard]] constexpr Quat operator*(const Quat& q, const Quat& p);
-[[nodiscard]] constexpr Vec3 operator*(const Quat& q, const Vec3& v);
-[[nodiscard]] constexpr Vec3 operator*(const Vec3& v, const Quat& q);
-[[nodiscard]] constexpr Vec4 operator*(const Quat& q, const Vec4& v);
-[[nodiscard]] constexpr Vec4 operator*(const Vec4& v, const Quat& q);
-[[nodiscard]] constexpr Quat operator*(const Quat& q, float scalar);
-[[nodiscard]] constexpr Quat operator*(float scalar, const Quat& q);
-[[nodiscard]] constexpr Quat operator/(const Quat& q, float scalar);
+/// @name Scalar binary arithmetic operators
+/// @{
+template <typename T, Scalar U>
+[[nodiscard]] constexpr qua<T> operator*(qua<T> q, U scalar) noexcept;
+template <typename T, Scalar U>
+[[nodiscard]] constexpr qua<T> operator*(U scalar, qua<T> q) noexcept;
+template <typename T, Scalar U>
+[[nodiscard]] constexpr qua<T> operator/(qua<T> q, U scalar) noexcept;
+/// @}
 
-// Boolean operators
-[[nodiscard]] constexpr bool operator==(const Quat& q1, const Quat& q2);
-[[nodiscard]] constexpr bool operator!=(const Quat& q1, const Quat& q2);
+/// @name Quaternion / vector operators
+/// Rotates the vector by the quaternion's rotation.
+/// Both @c vec<3> and @c vec<4> variants are provided.
+/// @{
+template <typename T, typename U>
+[[nodiscard]] constexpr vec<3, T> operator*(const qua<T>& q, const vec<3, U>& v) noexcept;
+template <typename T, typename U>
+[[nodiscard]] constexpr vec<3, T> operator*(const vec<3, U>& v, const qua<T>& q) noexcept;
+template <typename T, typename U>
+[[nodiscard]] constexpr vec<4, T> operator*(const qua<T>& q, const vec<4, U>& v) noexcept;
+template <typename T, typename U>
+[[nodiscard]] constexpr vec<4, T> operator*(const vec<4, U>& v, const qua<T>& q) noexcept;
+/// @}
 
-// Ostream
-std::ostream& operator<<(std::ostream& os, const Quat& q);
+/// @name Quaternion binary arithmetic operators
+/// Note: @c operator* performs the Hamilton product (composition of rotations).
+/// @{
+template <typename T, typename U>
+[[nodiscard]] constexpr qua<T> operator+(qua<T> lhs, const qua<U>& rhs) noexcept;
+template <typename T, typename U>
+[[nodiscard]] constexpr qua<T> operator-(qua<T> lhs, const qua<U>& rhs) noexcept;
+template <typename T, typename U>
+[[nodiscard]] constexpr qua<T> operator*(qua<T> lhs, const qua<U>& rhs) noexcept;
+/// @}
+
+/// @name Equality operators
+/// Component-wise comparison. Floating-point components use @c kEpsilon tolerance.
+/// @{
+template <typename T, typename U>
+[[nodiscard]] constexpr bool operator==(const qua<T>& q1, const qua<U>& q2) noexcept;
+template <typename T, typename U>
+[[nodiscard]] constexpr bool operator!=(const qua<T>& q1, const qua<U>& q2) noexcept;
+/// @}
 
 }  // namespace mEn
 
-#include "quat.inl"
-
-#endif
+#include "detail/quat.inl"

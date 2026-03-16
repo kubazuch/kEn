@@ -3,8 +3,13 @@
 #include <chrono>
 #include <memory>
 
-#include <mEn/functions.hpp>
+#include <mEn/constants.hpp>
+#include <mEn/functions/common.hpp>
+#include <mEn/functions/quaternion_transform.hpp>
+#include <mEn/functions/trigonometric.hpp>
 #include <mEn/quat.hpp>
+#include <mEn/vec2.hpp>
+#include <mEn/vec3.hpp>
 
 #include <kEn/core/application.hpp>
 #include <kEn/core/input.hpp>
@@ -59,7 +64,7 @@ void FreeLookComponent::update(duration_t /*delta*/, duration_t /*time*/) {
 
   if (rot_x) {
     pitch_ -= mEn::radians(delta_pos.y) * sensitivity_;
-    pitch_ = mEn::clamp(pitch_, (-mEn::pi<float>() / 2.F) + 0.01F, (mEn::pi<float>() / 2.F) - 0.01F);
+    pitch_ = mEn::clamp(pitch_, (-mEn::kHalfPi<float>)+0.01F, (mEn::kHalfPi<float>)-0.01F);
   }
 
   if (rot_x || rot_y) {
@@ -106,7 +111,7 @@ void FreeMoveComponent::update(duration_t delta, duration_t /*time*/) {
   }
 
   if (direction.x != 0.0F || direction.y != 0.0F || direction.z != 0.0F) {
-    transform().fma(mEn::normalize(direction), move_amount);
+    transform().translate_local(move_amount * mEn::normalize(direction));
   }
 }
 

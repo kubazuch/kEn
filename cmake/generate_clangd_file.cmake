@@ -7,7 +7,7 @@ function(generate_clangd_file COMPILER_FLAGS)
     set(CLANGD_COMPILER_STANDARD "/clang:-std=c++23")
   endif()
 
-  string(CONCAT CLANGD_FILE_CONTENT 
+  string(CONCAT CLANGD_FILE_CONTENT
     "Documentation:\n"
     "  CommentFormat: Doxygen\n"
     "CompileFlags:\n"
@@ -16,22 +16,21 @@ function(generate_clangd_file COMPILER_FLAGS)
     "    - "
     ${CLANGD_COMPILER_STANDARD}
     "\n")
-  
+
     foreach(FLAG ${COMPILER_FLAGS})
-      string(CONCAT CLANGD_FILE_CONTENT 
+      string(CONCAT CLANGD_FILE_CONTENT
       "${CLANGD_FILE_CONTENT}"
       "    - "
       ${FLAG}
       "\n")
     endforeach()
 
-  string(CONCAT CLANGD_FILE_CONTENT 
+  string(CONCAT CLANGD_FILE_CONTENT
     "${CLANGD_FILE_CONTENT}"
     "  Remove:\n"
     "    - -fmodule*\n"
     "    - -fdeps*\n"
     "\n")
-    
 
   file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/.clangd "${CLANGD_FILE_CONTENT}")
 endfunction()
