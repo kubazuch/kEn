@@ -1,5 +1,4 @@
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 463b898d..4ec97d0e 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
 @@ -129,7 +129,7 @@ set_target_properties(glfw PROPERTIES

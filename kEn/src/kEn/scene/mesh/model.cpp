@@ -165,7 +165,7 @@ void Model::load_material_textures(aiMaterial* mat, const texture_type_t type, k
 
 void Model::imgui() {
   if (ImGui::TreeNode("Meshes")) {
-    ImGui::BeginChild("Meshes", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeY);
+    ImGui::BeginChild("Meshes", ImVec2(0, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeY);
     for (size_t i = 0; i < meshes_.size(); ++i) {
       ImGui::PushID(static_cast<int>(i));
       meshes_.at(i).imgui();

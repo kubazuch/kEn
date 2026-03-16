@@ -1,35 +1,34 @@
+project(kEn CXX C)
+
 cmake_minimum_required(VERSION 3.20)
+include(../cmake/dependencies.cmake)
+include(../cmake/configure_library.cmake)
 
-project(kEn)
-message(STATUS "Configuring " ${PROJECT_NAME})
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_STANDARD 23)
+option(BUILD_TESTS "Fetch GoogleTest and build tests" OFF)
+option(USE_SYSTEM_INCLUDE "Marks includes as system" OFF)
 
-file(GLOB_RECURSE SOURCES 
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+fetch_glfw()
+fetch_spdlog()
+fetch_imgui()
+fetch_imguizmo()
+fetch_glad()
+fetch_assimp()
+fetch_stb()
+fetch_nfd()
+
+if(WIN32)
+    list(APPEND KEN_COMPILE_DEFS KEN_PLATFORM_WIN)
+endif()
+
+configure_library(
+    NAME kEn
+    DEPS_PUBLIC mEn glfw spdlog imgui imguizmo glad assimp stb nfd
+    COMPILE_DEFINITIONS
+        GLFW_INCLUDE_NONE
+        STB_IMAGE_IMPLEMENTATION
+        ${KEN_COMPILE_DEFS}
+        $<$<CONFIG:Debug>:_KEN_DEBUG>
 )
-
-add_library(${PROJECT_NAME} ${SOURCES})
-
-# Prevent CMake from adding `lib` before `kEn`
-set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
-
-# GLFW_INCLUDE_NONE makes the GLFW header not include any OpenGL or OpenGL ES
-# API header. This is useful in combination with an extension loading library
-# (GLAD in our case).
-target_compile_definitions(${PROJECT_NAME} PUBLIC GLFW_INCLUDE_NONE)
-
-target_include_directories(${PROJECT_NAME}
-        PUBLIC src "${CMAKE_BINARY_DIR}/generated")
-target_link_libraries(${PROJECT_NAME} PUBLIC mEn glad glfw assimp spdlog stb imgui imguizmo)
-
-# Set compile options and properties of the target
-target_compile_options(${PROJECT_NAME} PRIVATE ${PROJ_CXX_FLAGS})
-
-# This is required when kEn is built as a shared library and is linked with shared libraries
-target_link_options(${PROJECT_NAME} PRIVATE ${PROJ_SHARED_LINKER_FLAGS})
-
-target_compile_definitions(${PROJECT_NAME} PUBLIC GLM_ENABLE_EXPERIMENTAL STB_IMAGE_IMPLEMENTATION)
 
 # ##############################################################################
 # Shader embedding
@@ -41,4 +40,4 @@ set(GENERATED_SHADERS_DIR "${CMAKE_BINARY_DIR}/generated")
 # Include the reusable shader-embedding module (assumed to be in the same directory)
 include(../cmake/embed_shaders.cmake)
 embed_shaders(${SHADER_DIR} ${GENERATED_SHADERS_DIR})
-add_dependencies(${PROJECT_NAME} EmbedShaders)
+add_dependencies(kEn EmbedShaders)
