@@ -35,6 +35,11 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install jinja2
 
+      - name: Setup MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
       - name: MSVC Build x64
         id: msvc-build
         shell: pwsh
