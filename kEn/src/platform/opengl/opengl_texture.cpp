@@ -19,6 +19,12 @@ GLenum ken_image_format_to_gl_data(ImageFormat format) {
       return GL_RGB;
     case ImageFormat::RGBA8:
       return GL_RGBA;
+    case ImageFormat::R8:
+      return GL_RED;
+    case ImageFormat::RGBA32F:
+      return GL_RGBA;
+    case ImageFormat::None:
+      break;
   }
 
   KEN_CORE_ASSERT(false);
@@ -31,6 +37,12 @@ GLenum ken_image_format_to_gl_internal(ImageFormat format) {
       return GL_RGB8;
     case ImageFormat::RGBA8:
       return GL_RGBA8;
+    case ImageFormat::R8:
+      return GL_R8;
+    case ImageFormat::RGBA32F:
+      return GL_RGBA32F;
+    case ImageFormat::None:
+      break;
   }
 
   KEN_CORE_ASSERT(false);
@@ -140,6 +152,7 @@ OpenglTexture2D::OpenglTexture2D(const std::filesystem::path& path, const Textur
 OpenglTexture2D::~OpenglTexture2D() { glDeleteTextures(1, &renderer_id_); }
 
 void OpenglTexture2D::set_data(void* data, uint32_t size) {
+  // TODO(kEn): bpp is wrong for R8 (1) and RGBA32F (16)
   uint32_t bpp = data_format_ == GL_RGBA ? 4 : 3;
   KEN_CORE_ASSERT(size == spec_.width.value() * spec_.height.value() * bpp, "Data must be entire texture!");
   if (bpp == 4) {
