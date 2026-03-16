@@ -1,6 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..73513a9
 --- /dev/null
 +++ b/CMakeLists.txt
 @@ -0,0 +1,14 @@
@@ -22,7 +21,6 @@ diff --git a/ImGuizmo.cpp b/src/imguizmo/ImGuizmo.cpp
 similarity index 99%
 rename from ImGuizmo.cpp
 rename to src/imguizmo/ImGuizmo.cpp
-index ed05fd8..b1a3837 100644
 --- a/ImGuizmo.cpp
 +++ b/src/imguizmo/ImGuizmo.cpp
 @@ -23,12 +23,9 @@
@@ -98,7 +96,6 @@ diff --git a/ImGuizmo.h b/src/imguizmo/ImGuizmo.h
 similarity index 97%
 rename from ImGuizmo.h
 rename to src/imguizmo/ImGuizmo.h
-index 155202d..7f7bdcf 100644
 --- a/ImGuizmo.h
 +++ b/src/imguizmo/ImGuizmo.h
 @@ -105,7 +105,7 @@ void EditTransform(const Camera& camera, matrix_t& matrix)

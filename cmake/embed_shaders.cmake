@@ -1,7 +1,14 @@
 set(CURRENT_DIR ${CMAKE_CURRENT_LIST_DIR})  
 function(embed_shaders SHADER_DIR GENERATED_SHADERS_DIR)
   # Find all shader files in SHADER_DIR
-  file(GLOB SHADER_FILES "${SHADER_DIR}/*")
+  file(GLOB SHADER_FILES
+    "${SHADER_DIR}/*.vert"
+    "${SHADER_DIR}/*.frag"
+    "${SHADER_DIR}/*.geom"
+    "${SHADER_DIR}/*.comp"
+    "${SHADER_DIR}/*.tesc"
+    "${SHADER_DIR}/*.tese"
+    "${SHADER_DIR}/*.glsl")
   file(MAKE_DIRECTORY "${GENERATED_SHADERS_DIR}")
 
   # Lists to store generated header paths and mapping info
