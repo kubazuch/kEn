@@ -47,7 +47,7 @@ WindowsWindow::WindowsWindow(const WindowProperties& properties) {
     api_init();
   }
 
-#ifdef _KEN_DEBUG
+#ifdef KEN_DEBUG_BUILD
   if (RendererApi::get_api() == RendererApi::Api::OpenGL) {
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
   }

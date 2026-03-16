@@ -301,7 +301,7 @@ void OpenglShader::link_shader() const {
     KEN_CORE_ASSERT(false, "Shader program linking failed!");
   }
 
-#ifdef _KEN_DEBUG
+#ifdef KEN_DEBUG_BUILD
   glValidateProgram(renderer_id_);
 
   status = 0;

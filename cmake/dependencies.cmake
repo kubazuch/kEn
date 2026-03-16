@@ -281,11 +281,13 @@ function(fetch_stb)
   block()
     _fetch_begin("stb")
 
-    _declare_dep(
+    FetchContent_Declare(
       stb
-      "https://github.com/nothings/stb.git"
-      "904aa67e1e2d1dec92959df63e700b166d5c1022"
-      PATCH_FILE "${PATCHES_DIR}/stb.patch"
+      GIT_REPOSITORY "https://github.com/nothings/stb.git"
+      GIT_TAG        "904aa67e1e2d1dec92959df63e700b166d5c1022"
+      GIT_SHALLOW    FALSE
+      UPDATE_DISCONNECTED ON
+      PATCH_COMMAND "${GIT_EXECUTABLE}" apply --ignore-whitespace "${PATCHES_DIR}/stb.patch"
     )
 
     FetchContent_MakeAvailable(stb)

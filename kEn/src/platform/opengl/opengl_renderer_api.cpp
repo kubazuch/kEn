@@ -63,7 +63,7 @@ void gl_message_callback(unsigned /*src*/, unsigned /*type*/, unsigned /*id*/, u
 }  // namespace
 
 void OpenglRendererApi::init() {
-#ifdef _KEN_DEBUG
+#ifdef KEN_DEBUG_BUILD
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
   glDebugMessageCallback(gl_message_callback, nullptr);
