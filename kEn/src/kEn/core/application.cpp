@@ -20,7 +20,7 @@
 namespace kEn {
 Application* Application::instance_ = nullptr;
 
-Application::Application() {
+Application::Application() : imgui_layer_(new ImguiLayer()) {  // NOLINT(cppcoreguidelines-owning-memory)
   KEN_CORE_ASSERT(!instance_, "App already exists!");
   instance_ = this;
 
@@ -34,7 +34,6 @@ Application::Application() {
 
   RenderCommand::init();
 
-  imgui_layer_ = new ImguiLayer();  // NOLINT(cppcoreguidelines-owning-memory)
   push_overlay(imgui_layer_);
 }
 

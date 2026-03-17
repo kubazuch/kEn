@@ -494,7 +494,7 @@ GLint OpenglShader::get_uniform_location(std::string_view name) const {
 
 void OpenglShader::bind_uniform_buffer(std::string_view name, size_t binding) const {
   const std::string tmp(name);
-  GLuint block_index = glGetUniformBlockIndex(renderer_id_, tmp.c_str());
+  const GLuint block_index = glGetUniformBlockIndex(renderer_id_, tmp.c_str());
   if (block_index == GL_INVALID_INDEX) {
     KEN_CORE_WARN("Unable to find uniform block '{0}' in shader '{1}'", name, name_);
     return;
@@ -508,7 +508,7 @@ void OpenglShader::bind_uniform_buffer(std::string_view name, size_t binding) co
 
 void OpenglShader::bind_uniform_buffer(std::string_view name, const UniformBuffer& ubo) const {
   const std::string tmp(name);
-  GLuint block_index = glGetUniformBlockIndex(renderer_id_, tmp.c_str());
+  const GLuint block_index = glGetUniformBlockIndex(renderer_id_, tmp.c_str());
   if (block_index == GL_INVALID_INDEX) {
     KEN_CORE_WARN("Unable to find uniform block '{0}' in shader '{1}'", name, name_);
     return;

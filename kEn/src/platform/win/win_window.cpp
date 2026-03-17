@@ -12,7 +12,6 @@
 #include <kEn/event/key_events.hpp>
 #include <kEn/event/mouse_events.hpp>
 #include <kEn/renderer/graphics_context.hpp>
-#include <kEn/renderer/renderer_api.hpp>
 
 namespace kEn {
 
