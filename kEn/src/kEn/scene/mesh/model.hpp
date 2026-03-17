@@ -7,10 +7,12 @@
 #include <kEn/renderer/texture.hpp>
 #include <kEn/scene/mesh/mesh.hpp>
 
+// NOLINTBEGIN(readability-identifier-naming)
 struct aiNode;
 struct aiScene;
 struct aiMesh;
 struct aiMaterial;
+// NOLINTEND(readability-identifier-naming)
 
 namespace kEn {
 
@@ -32,7 +34,7 @@ class Model {
   void load_model(const std::filesystem::path& path, const TextureSpec& spec);
   void process_node(aiNode* node, const aiScene* scene, const TextureSpec& spec);
   Mesh process_mesh(aiMesh* mesh, const aiScene* scene, TextureSpec spec);
-  void load_material_textures(aiMaterial* mat, texture_type_t type, kEn::Material& material,
+  void load_material_textures(aiMaterial* mat, TextureType type, kEn::Material& material,
                               const TextureSpec& spec) const;
 
  public:

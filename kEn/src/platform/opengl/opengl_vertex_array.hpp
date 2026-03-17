@@ -22,8 +22,8 @@ class OpenglVertexArray final : public VertexArray {
   const std::shared_ptr<Buffer>& index_buffer() const override { return index_buffer_; }
 
  private:
-  uint32_t renderer_id_;
-  uint32_t vertex_buffer_index_ = 0;
+  uint32_t renderer_id_{0};
+  uint32_t vertex_buffer_index_{0};
 
   std::vector<std::shared_ptr<Buffer>> vertex_buffers_;
   std::shared_ptr<Buffer> index_buffer_;

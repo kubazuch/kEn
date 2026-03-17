@@ -29,12 +29,12 @@ class Material {
    * Assigning to an existing @p id replaces it; assigning to `id == size`
    * appends.
    *
-   * @param type    Semantic category (e.g. @c texture_type::Diffuse).
+   * @param type    Semantic category (e.g. @c TextureType::Diffuse).
    * @param texture Shared ownership of the texture to store.
    * @param id      Index within the type's array (default 0).
    * @throws std::runtime_error if @p id skips beyond the current array size.
    */
-  void set_texture(texture_type_t type, std::shared_ptr<Texture2D> texture, size_t id = 0);
+  void set_texture(TextureType type, std::shared_ptr<Texture2D> texture, size_t id = 0);
 
   /**
    * @brief Retrieve a texture by type and index.
@@ -44,7 +44,7 @@ class Material {
    * @return Const reference to the stored shared pointer.
    * @throws std::out_of_range if @p type or @p id is not present.
    */
-  const std::shared_ptr<Texture2D>& texture(texture_type_t type, size_t id = 0) const;
+  const std::shared_ptr<Texture2D>& texture(TextureType type, size_t id = 0) const;
 
   /**
    * @brief Upload Phong uniforms and texture-unit indices to @p shader.
@@ -81,7 +81,7 @@ class Material {
  private:
   friend class Shader;
 
-  std::unordered_map<texture_type_t, std::vector<std::shared_ptr<kEn::Texture2D>>> textures_;
+  std::unordered_map<TextureType, std::vector<std::shared_ptr<kEn::Texture2D>>> textures_;
 };
 
 }  // namespace kEn

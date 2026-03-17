@@ -25,7 +25,6 @@ TYPED_TEST_SUITE(Mat3, TestedTypes);
 }  // namespace
 
 TYPED_TEST(Mat3, LengthAndIndexing) {
-  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
   using T = TypeParam;
   using M = TestFixture::M;
 
@@ -48,7 +47,6 @@ TYPED_TEST(Mat3, LengthAndIndexing) {
 
   const M cm{T{1}, T{2}, T{3}, T{4}, T{5}, T{6}, T{7}, T{8}, T{9}};
   EXPECT_MAT3_EQ(cm, EX(T, 1, 2, 3, 4, 5, 6, 7, 8, 9));
-  // NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }
 
 TYPED_TEST(Mat3, Constructors) {

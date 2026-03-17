@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string_view>
+
 #include <mEn/vec3.hpp>
 
 #include <kEn/core/core.hpp>
@@ -15,13 +17,15 @@ struct Attenuation {
   float linear    = 0.0F;
   float quadratic = 0.0F;
 
-  inline void load(const std::string& name, Shader& shader) const;
+  // TODO(kuzu): rework attenuation to receive "effective radius" as input, not just raw coefficients
+
+  void load(std::string_view name, Shader& shader) const;
 };
 
 class BaseLight : public GameComponent {
  public:
-  BaseLight()          = default;
-  virtual ~BaseLight() = default;
+  BaseLight()           = default;
+  ~BaseLight() override = default;
 
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override = 0;
   void update(duration_t, duration_t) override {}
@@ -30,7 +34,7 @@ class BaseLight : public GameComponent {
 
   VIRTUAL_FIVE(BaseLight);
 
-  virtual void load(const std::string& name, Shader& shader) const = 0;
+  virtual void load(std::string_view name, Shader& shader) const = 0;
 
  public:
   mEn::Vec3 color{1.F};
@@ -42,7 +46,7 @@ class DirectionalLight : public BaseLight {
 
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
-  void load(const std::string& name, Shader& shader) const override;
+  void load(std::string_view name, Shader& shader) const override;
 };
 
 class PointLight : public BaseLight {
@@ -51,7 +55,7 @@ class PointLight : public BaseLight {
 
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
-  void load(const std::string& name, Shader& shader) const override;
+  void load(std::string_view name, Shader& shader) const override;
 
  public:
   Attenuation atten;
@@ -63,7 +67,7 @@ class SpotLight : public BaseLight {
 
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 
-  void load(const std::string& name, Shader& shader) const override;
+  void load(std::string_view name, Shader& shader) const override;
 
  public:
   Attenuation atten;

@@ -6,16 +6,16 @@
 #include <mEn/vec4.hpp>
 
 #include <kEn/core/core.hpp>
+#include <kEn/renderer/texture_format.hpp>
 
 namespace kEn {
 
-enum class FramebufferTextureFormat { None = 0, RGBA8, RED_INT, RED32, DEPTH24STENCIL8, Depth = DEPTH24STENCIL8 };
-
 struct FramebufferTextureSpec {
   FramebufferTextureSpec() = default;
-  FramebufferTextureSpec(FramebufferTextureFormat format) : texture_format(format) {}
+  FramebufferTextureSpec(TextureFormat format)  // NOLINT(google-explicit-constructor)
+      : texture_format(format) {}
 
-  FramebufferTextureFormat texture_format = FramebufferTextureFormat::None;
+  TextureFormat texture_format;
 };
 
 struct FramebufferAttachmentSpec {

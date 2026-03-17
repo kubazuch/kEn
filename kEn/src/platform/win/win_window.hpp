@@ -14,15 +14,15 @@ namespace kEn {
 class WindowsWindow : public Window {
  public:
   explicit WindowsWindow(const WindowProperties& properties);
-  virtual ~WindowsWindow() override;
+  ~WindowsWindow() override;
 
   void on_update() override;
 
-  inline unsigned int width() const override { return data_.width; }
-  inline unsigned int height() const override { return data_.height; }
-  inline mEn::Vec2 size() const override { return {data_.width, data_.height}; }
+  unsigned int width() const override { return data_.width; }
+  unsigned int height() const override { return data_.height; }
+  mEn::Vec2 size() const override { return {data_.width, data_.height}; }
 
-  inline void set_event_handler(const handler_t& handler) override { data_.handler = handler; }
+  void set_event_handler(const handler_t& handler) override { data_.handler = handler; }
 
   void set_vsync(bool enabled) override;
   bool vsync() const override;
@@ -43,13 +43,13 @@ class WindowsWindow : public Window {
 
   struct Data {
     std::string title;
-    unsigned int width, height;
+    unsigned int width{}, height{};
 
-    bool vsync;
+    bool vsync{};
 
-    bool dragging[GLFW_MOUSE_BUTTON_LAST];
-    float drag_from_x[GLFW_MOUSE_BUTTON_LAST];
-    float drag_from_y[GLFW_MOUSE_BUTTON_LAST];
+    bool dragging[GLFW_MOUSE_BUTTON_LAST]{};
+    float drag_from_x[GLFW_MOUSE_BUTTON_LAST]{};
+    float drag_from_y[GLFW_MOUSE_BUTTON_LAST]{};
     ModKeys active_mods;
 
     handler_t handler;

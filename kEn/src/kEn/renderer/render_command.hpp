@@ -7,8 +7,6 @@
 namespace kEn {
 
 class RenderCommand {
-  using RenderMode = RendererApi::RenderMode;
-
  public:
   static void init() { renderer_api_->init(); }
   static void set_viewport(uint32_t x, uint32_t y, uint32_t w, uint32_t h) { renderer_api_->set_viewport(x, y, w, h); }

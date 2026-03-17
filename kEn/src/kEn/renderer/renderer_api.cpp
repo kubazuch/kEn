@@ -8,7 +8,7 @@
 
 namespace kEn {
 
-std::unique_ptr<RendererApi> RendererApi::create() {
+std::unique_ptr<RendererApi> RendererApi::create() noexcept {
   switch (get_api()) {
     case Api::None:
       KEN_CORE_ASSERT(false, "Renderer has no api!");

@@ -1,5 +1,9 @@
 #include "shader.hpp"
 
+#include <filesystem>
+#include <memory>
+#include <string_view>
+
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/renderer_api.hpp>
 

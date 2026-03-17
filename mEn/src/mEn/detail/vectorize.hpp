@@ -12,7 +12,7 @@
 namespace mEn {
 
 namespace detail {
-// NOLINTBEGIN(readability-identifier-naming, cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
+// NOLINTBEGIN(readability-identifier-naming)
 template <class T>
 using lane_arg_t = std::add_lvalue_reference_t<std::add_const_t<T>>;
 
@@ -124,7 +124,7 @@ template <auto Func, length_t L, class T, class Acc>
   }(std::make_index_sequence<static_cast<std::size_t>(L)>{});
 }
 
-// NOLINTEND(readability-identifier-naming, cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
+// NOLINTEND(readability-identifier-naming)
 }  // namespace detail
 
 }  // namespace mEn

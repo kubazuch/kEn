@@ -8,13 +8,15 @@
 #include <memory>
 #include <ranges>
 #include <stdexcept>
+#include <string_view>
+#include <utility>
 
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
 
 namespace kEn {
 
-void Material::set_texture(texture_type_t type, std::shared_ptr<kEn::Texture2D> texture, std::size_t id) {
+void Material::set_texture(TextureType type, std::shared_ptr<kEn::Texture2D> texture, std::size_t id) {
   auto& texs = textures_[type];
   if (id < texs.size()) {
     texs[id] = std::move(texture);
@@ -29,7 +31,7 @@ void Material::set_texture(texture_type_t type, std::shared_ptr<kEn::Texture2D> 
   throw std::runtime_error("Textures should be added in order!");
 }
 
-const std::shared_ptr<Texture2D>& Material::texture(texture_type_t type, std::size_t id) const {
+const std::shared_ptr<Texture2D>& Material::texture(TextureType type, std::size_t id) const {
   return textures_.at(type).at(id);
 }
 
@@ -72,13 +74,14 @@ void Material::imgui() {
   }
 
   if (ImGui::TreeNode("Textures")) {
-    for (texture_type_t i = 0; i < texture_type::Last; ++i) {
-      const auto it = textures_.find(i);
+    for (auto i = std::uint8_t{0}; i < std::to_underlying(TextureType::Count); ++i) {
+      const auto type = static_cast<TextureType>(i);
+      const auto it   = textures_.find(type);
       if (it == textures_.end() || it->second.empty()) {
         continue;
       }
 
-      if (ImGui::TreeNode(texture_type::name_of(i))) {
+      if (ImGui::TreeNode(texture_type::name_of(type).data())) {  // NOLINT(bugprone-suspicious-stringview-data-usage)
         for (std::size_t j = 0; j < it->second.size(); ++j) {
           ImGui::PushID(static_cast<int>(j));
           ImGui::Text("Texture %zu:", j);

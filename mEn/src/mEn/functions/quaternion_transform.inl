@@ -5,7 +5,6 @@
 #include <mEn/vec3.hpp>
 
 namespace mEn {
-// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 template <typename T>
 MEN_FORCE_INLINE constexpr qua<T> identity() noexcept {
@@ -36,5 +35,4 @@ MEN_FORCE_INLINE constexpr qua<T> quatLookAt(const vec<3, T>& direction, const v
   return qua<T>(ret);
 }
 
-// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace mEn

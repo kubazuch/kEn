@@ -1,14 +1,18 @@
 #include "game_object.hpp"
 
 #include <functional>
+#include <initializer_list>
 #include <memory>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
-#include <mEn/quat.hpp>
-#include <mEn/vec3.hpp>
+#include <mEn/fwd.hpp>
 
 #include <kEn/core/log.hpp>
+#include <kEn/event/event.hpp>
+#include <kEn/renderer/shader.hpp>
 #include <kEn/scene/id_registry.hpp>
 
 namespace kEn {

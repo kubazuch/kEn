@@ -1,7 +1,5 @@
 #include "model.hpp"
 
-#include <imgui/imgui.h>
-
 #pragma warning(push)
 #pragma warning(disable : 4619 4365 4351)
 #include <assimp/material.h>
@@ -13,28 +11,10 @@
 #include <assimp/Importer.hpp>
 #pragma warning(pop)
 
-namespace kEn::texture_type {
-namespace {
-aiTextureType to_assimp(const texture_type_t type) {
-  switch (type) {
-    case AmbientOcclusion:
-      return aiTextureType_AMBIENT_OCCLUSION;
-    case Diffuse:
-      return aiTextureType_DIFFUSE;
-    case Height:
-      return aiTextureType_HEIGHT;
-    case Normal:
-      return aiTextureType_NORMALS;
-    case Specular:
-      return aiTextureType_SPECULAR;
-    default:
-      return aiTextureType_NONE;
-  }
-}
-}  // namespace
-}  // namespace kEn::texture_type
+#include <imgui/imgui.h>
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <filesystem>
 #include <memory>
@@ -42,6 +22,7 @@ aiTextureType to_assimp(const texture_type_t type) {
 #include <utility>
 #include <vector>
 
+#include <mEn/fwd.hpp>
 #include <mEn/vec2.hpp>
 #include <mEn/vec3.hpp>
 
@@ -50,8 +31,10 @@ aiTextureType to_assimp(const texture_type_t type) {
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
 #include <kEn/scene/mesh/vertex.hpp>
+#include <kEn/util/enum_map.hpp>
 
 namespace kEn {
+
 std::unordered_map<std::filesystem::path, std::shared_ptr<Model>> Model::loaded_resources_;
 const std::filesystem::path Model::kModelPath("assets/models");
 
@@ -164,22 +147,30 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene, TextureSpec spec) {
     material.transparent = true;
   }
 
-  load_material_textures(mat, kEn::texture_type::Diffuse, material, spec);
+  load_material_textures(mat, TextureType::Diffuse, material, spec);
   // TODO(kuzu): other types
 
   return {mesh->mName.C_Str(), vertices, indices, material};
 }
 
-void Model::load_material_textures(aiMaterial* mat, const texture_type_t type, kEn::Material& material,
+void Model::load_material_textures(aiMaterial* mat, const TextureType type, kEn::Material& material,
                                    const TextureSpec& spec) const {
-  aiTextureType ai_type = texture_type::to_assimp(type);
+  static constexpr util::EnumMap kAssimpTextureTypes{{
+      std::pair{TextureType::AmbientOcclusion, aiTextureType_AMBIENT_OCCLUSION},
+      std::pair{TextureType::Diffuse, aiTextureType_DIFFUSE},
+      std::pair{TextureType::Height, aiTextureType_HEIGHT},
+      std::pair{TextureType::Normal, aiTextureType_NORMALS},
+      std::pair{TextureType::Specular, aiTextureType_SPECULAR},
+  }};
+
+  const aiTextureType ai_type = kAssimpTextureTypes[type];
   for (unsigned int i = 0; i < mat->GetTextureCount(ai_type); ++i) {
     aiString str;
     mat->GetTexture(ai_type, i, &str);
 
     auto path = directory_ / str.C_Str();
 
-    std::shared_ptr<Texture2D> texture = Texture2D::create(absolute(path), spec);
+    const std::shared_ptr<Texture2D> texture = Texture2D::create(absolute(path), spec);
     material.set_texture(type, texture, i);
   }
 }
@@ -187,7 +178,7 @@ void Model::load_material_textures(aiMaterial* mat, const texture_type_t type, k
 void Model::imgui() {
   if (ImGui::TreeNode("Meshes")) {
     ImGui::BeginChild("Meshes", ImVec2(0, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeY);
-    for (size_t i = 0; i < meshes_.size(); ++i) {
+    for (std::size_t i = 0; i < meshes_.size(); ++i) {
       ImGui::PushID(static_cast<int>(i));
       meshes_.at(i).imgui();
       ImGui::PopID();

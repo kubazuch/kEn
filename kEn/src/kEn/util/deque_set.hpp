@@ -6,11 +6,13 @@
 #include <unordered_set>
 #include <utility>
 
+#include <kEn/core/core.hpp>
+
 /** @file
  *  @ingroup ken
  */
 
-namespace kEn {  // NOLINT
+namespace kEn {
 
 /**
  * @brief An insertion-ordered set.

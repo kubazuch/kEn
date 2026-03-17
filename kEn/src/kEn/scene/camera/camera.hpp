@@ -10,7 +10,7 @@ namespace kEn {
 
 class Camera : public GameComponent {
  public:
-  virtual ~Camera() = default;
+  ~Camera() override = default;
 
   mEn::Mat4 projection_matrix() const { return projection_matrix_; }
   mEn::Mat4 view_matrix() const { return transform().world_to_local_matrix(); }

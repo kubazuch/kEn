@@ -1,9 +1,29 @@
 ﻿#pragma once
 
+#include <glad/gl.h>
+
 #include <kEn/renderer/renderer_api.hpp>
 #include <kEn/renderer/vertex_array.hpp>
 
 namespace kEn {
+
+namespace render_mode {
+
+inline constexpr auto kOpenglRenderModes = util::make_enum_map<GLenum>({
+    std::pair{Points, GL_POINTS},
+    std::pair{LineStrip, GL_LINE_STRIP},
+    std::pair{LineLoop, GL_LINE_LOOP},
+    std::pair{Lines, GL_LINES},
+    std::pair{TriangleStrip, GL_TRIANGLE_STRIP},
+    std::pair{TriangleFan, GL_TRIANGLE_FAN},
+    std::pair{Triangles, GL_TRIANGLES},
+    std::pair{Patches, GL_PATCHES},
+    std::pair{LinesAdjacency, GL_LINES_ADJACENCY},
+});
+
+[[nodiscard]] constexpr GLenum get_opengl_mode(RenderMode mode) { return kOpenglRenderModes[mode]; }
+
+}  // namespace render_mode
 
 class OpenglRendererApi : public RendererApi {
  public:
@@ -16,12 +36,12 @@ class OpenglRendererApi : public RendererApi {
   void clear() override;
   void depth_testing(bool enabled) override;
 
-  void draw_indexed(const VertexArray& vertex_array, size_t index_count, RendererApi::RenderMode mode) override;
-  void draw(const VertexArray& vertex_array, size_t vertex_count, RendererApi::RenderMode mode) override;
+  void draw_indexed(const VertexArray& vertex_array, size_t index_count, RenderMode mode) override;
+  void draw(const VertexArray& vertex_array, size_t vertex_count, RenderMode mode) override;
   void draw_indexed_instanced(const VertexArray& vertex_array, size_t index_count, size_t instance_count,
-                              RendererApi::RenderMode mode) override;
+                              RenderMode mode) override;
   void draw_instanced(const VertexArray& vertex_array, size_t vertex_count, size_t instance_count,
-                      RendererApi::RenderMode mode) override;
+                      RenderMode mode) override;
 
   void set_tessellation_patch_vertices(size_t count) override;
   void set_wireframe(bool wireframe) override;

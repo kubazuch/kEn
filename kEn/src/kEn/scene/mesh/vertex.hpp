@@ -3,7 +3,9 @@
 #include <mEn/vec2.hpp>
 #include <mEn/vec3.hpp>
 
-namespace kEn {  // NOLINT
+#include <kEn/core/core.hpp>
+
+namespace kEn {
 
 struct Vertex {
   mEn::Vec3 pos;

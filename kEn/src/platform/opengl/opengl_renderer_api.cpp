@@ -4,6 +4,9 @@
 
 #include <cstddef>
 
+#include <mEn/fwd.hpp>
+
+#include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
 #include <kEn/renderer/renderer_api.hpp>
 #include <kEn/renderer/vertex_array.hpp>
@@ -14,35 +17,9 @@ RendererApi::Api RendererApi::api_ = Api::OpenGL;
 
 namespace {
 
-constexpr GLenum draw_mode(RendererApi::RenderMode mode) {
-  switch (mode) {
-    case RendererApi::RenderMode::Points:
-      return GL_POINTS;
-    case RendererApi::RenderMode::LineStrip:
-      return GL_LINE_STRIP;
-    case RendererApi::RenderMode::LineLoop:
-      return GL_LINE_LOOP;
-    case RendererApi::RenderMode::Lines:
-      return GL_LINES;
-    case RendererApi::RenderMode::TriangleStrip:
-      return GL_TRIANGLE_STRIP;
-    case RendererApi::RenderMode::TriangleFan:
-      return GL_TRIANGLE_FAN;
-    case RendererApi::RenderMode::Triangles:
-      return GL_TRIANGLES;
-    case RendererApi::RenderMode::Patches:
-      return GL_PATCHES;
-    case kEn::RendererApi::RenderMode::LinesAdjacency:
-      return GL_LINES_ADJACENCY;
-    default:
-      KEN_CORE_ASSERT(false, "Unknown draw mode!");
-      return 0;
-  }
-}
-
 void gl_message_callback(unsigned /*src*/, unsigned /*type*/, unsigned /*id*/, unsigned lvl, int /*len*/,
                          const char* msg, const void* /*params*/) {
-  switch (lvl) {  // NOLINT
+  switch (lvl) {
     case GL_DEBUG_SEVERITY_HIGH:
       KEN_CORE_CRITICAL(msg);
       return;
@@ -53,6 +30,7 @@ void gl_message_callback(unsigned /*src*/, unsigned /*type*/, unsigned /*id*/, u
       KEN_CORE_WARN(msg);
       return;
     case GL_DEBUG_SEVERITY_NOTIFICATION:
+    default:
       KEN_CORE_TRACE(msg);
       return;
   }
@@ -100,28 +78,28 @@ void OpenglRendererApi::depth_testing(bool enabled) {
   }
 }
 
-void OpenglRendererApi::draw_indexed(const VertexArray& vertex_array, size_t index_count,
-                                     RendererApi::RenderMode mode) {
+void OpenglRendererApi::draw_indexed(const VertexArray& vertex_array, size_t index_count, RenderMode mode) {
   vertex_array.bind();
-  glDrawElements(draw_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT, nullptr);
+  glDrawElements(render_mode::get_opengl_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT, nullptr);
 }
 
-void OpenglRendererApi::draw(const VertexArray& vertex_array, size_t vertex_count, RendererApi::RenderMode mode) {
+void OpenglRendererApi::draw(const VertexArray& vertex_array, size_t vertex_count, RenderMode mode) {
   vertex_array.bind();
-  glDrawArrays(draw_mode(mode), 0, static_cast<GLsizei>(vertex_count));
+  glDrawArrays(render_mode::get_opengl_mode(mode), 0, static_cast<GLsizei>(vertex_count));
 }
 
 void OpenglRendererApi::draw_indexed_instanced(const VertexArray& vertex_array, size_t index_count,
-                                               size_t instance_count, RendererApi::RenderMode mode) {
+                                               size_t instance_count, RenderMode mode) {
   vertex_array.bind();
-  glDrawElementsInstanced(draw_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT, nullptr,
-                          static_cast<GLsizei>(instance_count));
+  glDrawElementsInstanced(render_mode::get_opengl_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT,
+                          nullptr, static_cast<GLsizei>(instance_count));
 }
 
 void OpenglRendererApi::draw_instanced(const VertexArray& vertex_array, size_t vertex_count, size_t instance_count,
-                                       RendererApi::RenderMode mode) {
+                                       RenderMode mode) {
   vertex_array.bind();
-  glDrawArraysInstanced(draw_mode(mode), 0, static_cast<GLsizei>(vertex_count), static_cast<GLsizei>(instance_count));
+  glDrawArraysInstanced(render_mode::get_opengl_mode(mode), 0, static_cast<GLsizei>(vertex_count),
+                        static_cast<GLsizei>(instance_count));
 }
 
 void OpenglRendererApi::set_tessellation_patch_vertices(size_t count) {

@@ -30,7 +30,6 @@ TYPED_TEST_SUITE(Quat, TestedTypes);
 }  // namespace
 
 TYPED_TEST(Quat, LengthAndIndexing) {
-  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
   using T = TypeParam;
   using Q = TestFixture::Q;
 
@@ -54,7 +53,6 @@ TYPED_TEST(Quat, LengthAndIndexing) {
   EXPECT_EQ(cq[1], cq.y);
   EXPECT_EQ(cq[2], cq.z);
   EXPECT_EQ(cq[3], cq.w);
-  // NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }
 
 TYPED_TEST(Quat, ConstructorWXYZ) {

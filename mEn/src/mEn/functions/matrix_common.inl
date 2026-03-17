@@ -5,7 +5,6 @@
 #include <mEn/vec4.hpp>
 
 namespace mEn {
-// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 namespace detail {
 
@@ -87,5 +86,4 @@ MEN_FORCE_INLINE constexpr mat<N, T> inverse(const mat<N, T>& m) noexcept {
   return detail::inv(m);
 }
 
-// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace mEn

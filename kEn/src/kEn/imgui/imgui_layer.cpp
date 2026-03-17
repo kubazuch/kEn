@@ -61,7 +61,7 @@ void ImguiLayer::on_imgui() {
 
 bool ImguiLayer::on_event(BaseEvent& event) { return dispatcher_.dispatch(event); }
 
-void ImguiLayer::begin() {  // NOLINT
+void ImguiLayer::begin() {  // NOLINT(readability-convert-member-functions-to-static)
   // (Your code calls glfwPollEvents())
   // ...
   // Start the Dear ImGui frame
@@ -71,7 +71,7 @@ void ImguiLayer::begin() {  // NOLINT
   ImGuizmo::BeginFrame();
 }
 
-void ImguiLayer::end() {  // NOLINT
+void ImguiLayer::end() {  // NOLINT(readability-convert-member-functions-to-static)
   // Rendering
   // (Your code clears your framebuffer, renders your other stuff etc.)
   ImGuiIO& io            = ImGui::GetIO();
@@ -91,12 +91,12 @@ void ImguiLayer::end() {  // NOLINT
   }
 }
 
-bool ImguiLayer::on_mouse_event(BaseEvent&) {  // NOLINT
+bool ImguiLayer::on_mouse_event(BaseEvent&) {  // NOLINT(readability-convert-member-functions-to-static)
   const ImGuiIO& io = ImGui::GetIO();
   return io.WantCaptureMouse;
 }
 
-bool ImguiLayer::on_keyboard_event(BaseEvent&) {  // NOLINT
+bool ImguiLayer::on_keyboard_event(BaseEvent&) {  // NOLINT(readability-convert-member-functions-to-static)
   const ImGuiIO& io = ImGui::GetIO();
   return io.WantCaptureKeyboard;
 }

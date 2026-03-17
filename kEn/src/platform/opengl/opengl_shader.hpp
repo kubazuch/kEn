@@ -155,7 +155,7 @@ class OpenglShader final : public Shader {
   void set_uniform_array_any(std::string_view name, const UniformArray& values) const override {
     std::visit(
         [&](auto span) {
-          GLint location = get_uniform_location(name);
+          const GLint location = get_uniform_location(name);
           kEn::set_uniform_array(renderer_id_, location, span);
         },
         values);

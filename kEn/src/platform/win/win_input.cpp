@@ -1,5 +1,6 @@
 #include <GLFW/glfw3.h>
 
+#include <mEn/fwd.hpp>
 #include <mEn/vec2.hpp>
 
 #include <kEn/core/application.hpp>

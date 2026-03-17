@@ -7,7 +7,6 @@
 #include <mEn/vec4.hpp>
 
 namespace mEn {
-// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 namespace detail {
 
@@ -337,5 +336,4 @@ MEN_FORCE_INLINE constexpr bool operator!=(const qua<T>& q1, const qua<U>& q2) n
   return !(q1 == q2);
 }
 
-// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace mEn

@@ -3,7 +3,9 @@
 #include <string>
 #include <string_view>
 
-namespace kEn {  // NOLINT
+#include <kEn/core/core.hpp>
+
+namespace kEn {
 
 struct StringHash {
   using is_transparent = void;

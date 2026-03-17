@@ -6,11 +6,13 @@
 #include <type_traits>
 #include <utility>
 
+#include <kEn/core/core.hpp>
+
 /** @file
  *  @ingroup ken
  */
 
-namespace kEn::util {  // NOLINT
+namespace kEn::util {
 
 /**
  * @brief Opt-in trait enabling the enum flag operators in this header.

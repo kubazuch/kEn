@@ -2,20 +2,28 @@
 
 #include <glad/gl.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <utility>
+
 #include <mEn/features/type_ptr.hpp>
+#include <mEn/fwd.hpp>
 #include <mEn/vec2.hpp>
-#include <mEn/vec4.hpp>
 
 #include <kEn/core/application.hpp>
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
 #include <kEn/renderer/framebuffer.hpp>
+#include <kEn/renderer/texture_format.hpp>
+
+#include "opengl_texture_format.hpp"
 
 namespace kEn {
 
 static constexpr uint32_t kMaxFramebufferSize = 8192;
 
 namespace {
+
 GLenum texture_target(bool multisampled) {
   return static_cast<GLenum>(multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D);
 }
@@ -26,74 +34,48 @@ void create_textures(bool multisampled, uint32_t* outId, size_t count) {
 
 void bind_texture(bool multisampled, uint32_t id) { glBindTexture(texture_target(multisampled), id); }
 
-void attach_color_texture(uint32_t id, int samples, GLint internalFormat, GLenum format, uint32_t width,
-                          uint32_t height, size_t index) {
-  bool multisampled = samples > 1;
+void attach_color_texture(uint32_t id, int samples, TextureFormat fmt, uint32_t width, uint32_t height, size_t index) {
+  const bool multisampled = samples > 1;
+  const auto gl           = texture_format::opengl_describe(fmt);
   if (multisampled) {
-    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, static_cast<GLenum>(internalFormat),
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, static_cast<GLenum>(gl.internal_format),
                             static_cast<GLsizei>(width), static_cast<GLsizei>(height), GL_FALSE);
   } else {
-    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, static_cast<GLsizei>(width), static_cast<GLsizei>(height), 0, format,
-                 GL_UNSIGNED_BYTE, nullptr);
-
+    glTexImage2D(GL_TEXTURE_2D, 0, gl.internal_format, static_cast<GLsizei>(width), static_cast<GLsizei>(height), 0,
+                 gl.pixel_format, gl.pixel_type, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   }
-
   glFramebufferTexture2D(GL_FRAMEBUFFER, static_cast<GLenum>(GL_COLOR_ATTACHMENT0 + index),
                          texture_target(multisampled), id, 0);
 }
 
-void attach_depth_texture(uint32_t id, int samples, GLenum format, GLenum attachmentType, uint32_t width,
-                          uint32_t height) {
-  bool multisampled = samples > 1;
+void attach_depth_texture(uint32_t id, int samples, TextureFormat fmt, uint32_t width, uint32_t height) {
+  const bool multisampled = samples > 1;
+  const auto gl           = texture_format::opengl_describe(fmt);
   if (multisampled) {
-    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, static_cast<GLsizei>(width),
-                            static_cast<GLsizei>(height), GL_FALSE);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, static_cast<GLenum>(gl.internal_format),
+                            static_cast<GLsizei>(width), static_cast<GLsizei>(height), GL_FALSE);
   } else {
-    glTexStorage2D(GL_TEXTURE_2D, 1, format, static_cast<GLsizei>(width), static_cast<GLsizei>(height));
-
+    glTexStorage2D(GL_TEXTURE_2D, 1, static_cast<GLenum>(gl.internal_format), static_cast<GLsizei>(width),
+                   static_cast<GLsizei>(height));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   }
-
-  glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, texture_target(multisampled), id, 0);
-}
-
-bool is_depth_format(FramebufferTextureFormat format) {
-  switch (format) {
-    case FramebufferTextureFormat::DEPTH24STENCIL8:
-      return true;
-    default:
-      return false;
-  }
-}
-
-GLenum texture_format_to_GL(FramebufferTextureFormat format) {
-  switch (format) {
-    case FramebufferTextureFormat::RGBA8:
-      return GL_RGBA;
-    case FramebufferTextureFormat::RED_INT:
-      return GL_RED_INTEGER;
-    case FramebufferTextureFormat::RED32:
-      return GL_RED;
-    default:
-      KEN_CORE_ASSERT(false);
-      return 0;
-  }
+  glFramebufferTexture2D(GL_FRAMEBUFFER, gl.attachment, texture_target(multisampled), id, 0);
 }
 
 }  // namespace
 
-OpenglFramebuffer::OpenglFramebuffer(const FramebufferSpec& spec) : spec_(spec) {
+OpenglFramebuffer::OpenglFramebuffer(FramebufferSpec spec) : spec_(std::move(spec)) {
   for (auto s : spec_.attachments.attachments) {
-    if (!is_depth_format(s.texture_format)) {
+    if (!texture_format::supports_depth(s.texture_format)) {
       color_attachment_specs_.emplace_back(s);
     } else {
       depth_attachment_spec_ = s;
@@ -128,37 +110,15 @@ void OpenglFramebuffer::invalidate() {
 
     for (size_t i = 0; i < color_attachments_.size(); i++) {
       bind_texture(false, color_attachments_[i]);
-      switch (color_attachment_specs_[i].texture_format) {
-        case FramebufferTextureFormat::RGBA8:
-          attach_color_texture(color_attachments_[i], 1, GL_RGBA8, GL_RGBA, spec_.width, spec_.height, i);
-          break;
-        case FramebufferTextureFormat::RED_INT:
-          attach_color_texture(color_attachments_[i], 1, GL_R32I, GL_RED_INTEGER, spec_.width, spec_.height, i);
-          break;
-        case FramebufferTextureFormat::RED32:
-          attach_color_texture(color_attachments_[i], 1, GL_R32F, GL_RED, spec_.width, spec_.height, i);
-          break;
-        case FramebufferTextureFormat::None:
-        case FramebufferTextureFormat::DEPTH24STENCIL8:
-          break;
-      }
+      attach_color_texture(color_attachments_[i], 1, color_attachment_specs_[i].texture_format, spec_.width,
+                           spec_.height, i);
     }
   }
 
-  if (depth_attachment_spec_.texture_format != FramebufferTextureFormat::None) {
+  if (depth_attachment_spec_.has_value()) {
     create_textures(false, &depth_attachment_, 1);
     bind_texture(false, depth_attachment_);
-    switch (depth_attachment_spec_.texture_format) {
-      case FramebufferTextureFormat::DEPTH24STENCIL8:
-        attach_depth_texture(depth_attachment_, 1, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, spec_.width,
-                             spec_.height);
-        break;
-      case FramebufferTextureFormat::None:
-      case FramebufferTextureFormat::RGBA8:
-      case FramebufferTextureFormat::RED_INT:
-      case FramebufferTextureFormat::RED32:
-        break;
-    }
+    attach_depth_texture(depth_attachment_, 1, depth_attachment_spec_->texture_format, spec_.width, spec_.height);
   }
 
   if (color_attachments_.size() > 1) {
@@ -181,7 +141,7 @@ void OpenglFramebuffer::bind() {
 void OpenglFramebuffer::unbind() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-  mEn::Vec2 window_size = kEn::Application::instance().main_window().size();
+  const mEn::Vec2 window_size = kEn::Application::instance().main_window().size();
   glViewport(0, 0, static_cast<GLsizei>(window_size.x), static_cast<GLsizei>(window_size.y));
 }
 
@@ -227,22 +187,22 @@ void OpenglFramebuffer::bind_depth_as_texture(uint32_t slot) const {
 void OpenglFramebuffer::clear_attachment(uint32_t attachment_id, int value) {
   KEN_CORE_ASSERT(attachment_id < color_attachments_.size());
 
-  auto& spec = color_attachment_specs_[attachment_id];
-  glClearTexImage(color_attachments_[attachment_id], 0, texture_format_to_GL(spec.texture_format), GL_INT, &value);
+  const auto fmt = color_attachment_specs_[attachment_id].texture_format;
+  glClearTexImage(color_attachments_[attachment_id], 0, texture_format::pixel_format(fmt), GL_INT, &value);
 }
 
 void OpenglFramebuffer::clear_attachment(uint32_t attachment_id, float value) {
   KEN_CORE_ASSERT(attachment_id < color_attachments_.size());
 
-  auto& spec = color_attachment_specs_[attachment_id];
-  glClearTexImage(color_attachments_[attachment_id], 0, texture_format_to_GL(spec.texture_format), GL_FLOAT, &value);
+  const auto fmt = color_attachment_specs_[attachment_id].texture_format;
+  glClearTexImage(color_attachments_[attachment_id], 0, texture_format::pixel_format(fmt), GL_FLOAT, &value);
 }
 
 void OpenglFramebuffer::clear_attachment(uint32_t attachment_id, mEn::Vec4 value) {
   KEN_CORE_ASSERT(attachment_id < color_attachments_.size());
 
-  auto& spec = color_attachment_specs_[attachment_id];
-  glClearTexImage(color_attachments_[attachment_id], 0, texture_format_to_GL(spec.texture_format), GL_FLOAT,
+  const auto fmt = color_attachment_specs_[attachment_id].texture_format;
+  glClearTexImage(color_attachments_[attachment_id], 0, texture_format::pixel_format(fmt), GL_FLOAT,
                   mEn::value_ptr(value));
 }
 

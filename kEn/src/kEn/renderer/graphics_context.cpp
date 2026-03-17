@@ -1,5 +1,7 @@
 #include "graphics_context.hpp"
 
+#include <memory>
+
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/renderer_api.hpp>
 

@@ -6,13 +6,14 @@
 #include <string_view>
 #include <utility>
 
+#include <kEn/core/core.hpp>
 #include <kEn/util/flags.hpp>
 
 /** @file
  *  @ingroup ken
  */
 
-namespace kEn {  // NOLINT
+namespace kEn {
 
 /**
  * @brief Modifier key bit flags.
@@ -22,13 +23,13 @@ namespace kEn {  // NOLINT
  * @note @ref kEn::util::Flags is used to represent combinations via @ref kEn::ModKeys.
  */
 enum class ModKey : std::uint8_t {
-  None     = 0U,
-  Shift    = static_cast<std::uint8_t>(1U << 0U),
-  Control  = static_cast<std::uint8_t>(1U << 1U),
-  Alt      = static_cast<std::uint8_t>(1U << 2U),
-  Super    = static_cast<std::uint8_t>(1U << 3U),
-  CapsLock = static_cast<std::uint8_t>(1U << 4U),
-  NumLock  = static_cast<std::uint8_t>(1U << 5U),
+  None     = 0,
+  Shift    = 1 << 0,
+  Control  = 1 << 1,
+  Alt      = 1 << 2,
+  Super    = 1 << 3,
+  CapsLock = 1 << 4,
+  NumLock  = 1 << 5,
 };
 
 /**

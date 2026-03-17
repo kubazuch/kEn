@@ -4,11 +4,13 @@
 #include <string_view>
 #include <utility>
 
+#include <kEn/core/core.hpp>
+
 /** @file
  *  @ingroup ken
  */
 
-namespace kEn {  // NOLINT
+namespace kEn {
 
 /**
  * @def MOUSE_CODES(X)

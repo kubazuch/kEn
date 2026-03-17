@@ -37,7 +37,7 @@
 #define MAP(f, ...) EVAL(MAP1(f, __VA_ARGS__, (), 0))
 
 template <class>
-inline constexpr bool always_false_v = false;  // NOLINT
+inline constexpr bool always_false_v = false;  // NOLINT(readability-identifier-naming)
 
 // NOLINTNEXTLINE(readability-identifier-naming)
 namespace kEn {}  // namespace kEn

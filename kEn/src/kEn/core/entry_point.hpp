@@ -8,7 +8,7 @@
 
 extern kEn::Application* kEn::create_application();
 
-int main(int /*argc*/, char** /*argv*/) {  // NOLINT
+int main(int /*argc*/, char** /*argv*/) {  // NOLINT(misc-definitions-in-headers)
   std::unique_ptr<kEn::Application> app(kEn::create_application());
   app->run();
 }

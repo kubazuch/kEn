@@ -1,6 +1,10 @@
 #include "log.hpp"
 
+#include <spdlog/common.h>
+#include <spdlog/logger.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+
+#include <memory>
 
 namespace kEn {
 
