@@ -36,7 +36,7 @@ rename to src/imguizmo/ImGuizmo.cpp
 +#include <imgui/imgui.h>
 +#include <imgui/imgui_internal.h>
  #include "ImGuizmo.h"
-
+ 
  #if defined(_MSC_VER) || defined(__MINGW32__)
 @@ -1878,7 +1875,7 @@ namespace ImGuizmo
        // move
@@ -46,7 +46,7 @@ rename to src/imguizmo/ImGuizmo.cpp
 +         ImGui::SetNextFrameWantCaptureMouse(true);
           const float len = fabsf(IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mTranslationPlan)); // near plan
           vec_t newPos = gContext.mRayOrigin + gContext.mRayVector * len;
-
+ 
 @@ -1948,7 +1945,7 @@ namespace ImGuizmo
           type = GetMoveType(op, &gizmoHitProportion);
           if (type != MT_NONE)
@@ -75,13 +75,13 @@ rename to src/imguizmo/ImGuizmo.cpp
           vec_t newPos = gContext.mRayOrigin + gContext.mRayVector * len;
           vec_t newOrigin = newPos - gContext.mRelativeOrigin * gContext.mScreenFactor;
 @@ -2107,7 +2104,7 @@ namespace ImGuizmo
-
+ 
           if (type != MT_NONE)
           {
 -            ImGui::CaptureMouseFromApp();
 +            ImGui::SetNextFrameWantCaptureMouse(true);
           }
-
+ 
           if (type == MT_ROTATE_SCREEN)
 @@ -2141,7 +2138,7 @@ namespace ImGuizmo
        // rotation
@@ -100,7 +100,7 @@ rename to src/imguizmo/ImGuizmo.h
 +++ b/src/imguizmo/ImGuizmo.h
 @@ -105,7 +105,7 @@ void EditTransform(const Camera& camera, matrix_t& matrix)
  #pragma once
-
+ 
  #ifdef USE_IMGUI_API
 -#include "imconfig.h"
 +#include <imgui/imconfig.h>

@@ -1,0 +1,5 @@
+# Normalize line endings on checkout
+* text=auto
+
+# Patch files must always use LF or git apply will see \r as trailing whitespace
+patches/*.patch text eol=lf

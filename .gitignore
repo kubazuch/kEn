@@ -106,3 +106,4 @@ shell.nix
 # Ignore log directories
 logs/
 log/
+kEn2/
