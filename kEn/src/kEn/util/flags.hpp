@@ -34,11 +34,15 @@ template <typename E>
 inline constexpr bool enable_flags_v = enable_flags<E>::value;  // NOLINT(readability-identifier-naming)
 
 /**
- * @brief Concept satisfied by enum types used as flags.
+ * @brief Concept satisfied by any enum type.
+ *
+ * Used to constrain @ref Flags and the free flag operators. It does not imply that flag
+ * operators are enabled; that opt-in is controlled separately by @ref enable_flags_v.
+ *
  * @tparam E Type to test.
  */
 template <typename E>
-concept EnumFlag = std::is_enum_v<E>;
+concept AnyEnum = std::is_enum_v<std::remove_cvref_t<E>>;
 
 /**
  * @brief Type-safe wrapper around a bitmask of enum flags.
@@ -49,7 +53,7 @@ concept EnumFlag = std::is_enum_v<E>;
  *       It does not validate that enum values are powers of two; iteration helpers assume
  *       one flag per set bit.
  */
-template <EnumFlag E>
+template <AnyEnum E>
 class Flags final {
  public:
   /** @brief The enum type represented by this flag set. */
@@ -284,7 +288,8 @@ class Flags final {
    * @brief Bitwise NOT of a flag mask.
    * @param v Mask to invert.
    * @return Inverted mask.
-   * @note Flips all bits in the underlying storage type; it does not mask off unused bits.
+   * @warning Flips all bits in the underlying storage type, including bit positions that do not
+   *          correspond to any enumerator.
    */
   friend constexpr Flags operator~(Flags v) noexcept { return Flags{static_cast<underlying_type>(~v.bits_)}; }
 
@@ -300,7 +305,7 @@ class Flags final {
  * @return A flag mask containing the combined bits.
  * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
  */
-template <EnumFlag E>
+template <AnyEnum E>
   requires enable_flags_v<E>
 [[nodiscard]] constexpr Flags<E> operator|(E lhs, E rhs) noexcept {
   Flags<E> out{lhs};
@@ -316,7 +321,7 @@ template <EnumFlag E>
  * @return A flag mask containing the intersected bits.
  * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
  */
-template <EnumFlag E>
+template <AnyEnum E>
   requires enable_flags_v<E>
 [[nodiscard]] constexpr Flags<E> operator&(E lhs, E rhs) noexcept {
   Flags<E> out{lhs};
@@ -332,7 +337,7 @@ template <EnumFlag E>
  * @return A flag mask containing the XORed bits.
  * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
  */
-template <EnumFlag E>
+template <AnyEnum E>
   requires enable_flags_v<E>
 [[nodiscard]] constexpr Flags<E> operator^(E lhs, E rhs) noexcept {
   Flags<E> out{lhs};
@@ -347,7 +352,7 @@ template <EnumFlag E>
  * @return A flag mask with all bits flipped in the underlying storage type.
  * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
  */
-template <EnumFlag E>
+template <AnyEnum E>
   requires enable_flags_v<E>
 [[nodiscard]] constexpr Flags<E> operator~(E v) noexcept {
   return ~Flags<E>{v};
@@ -361,7 +366,7 @@ template <EnumFlag E>
  * @return Combined mask.
  * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
  */
-template <EnumFlag E>
+template <AnyEnum E>
   requires enable_flags_v<E>
 [[nodiscard]] constexpr Flags<E> operator|(Flags<E> lhs, E rhs) noexcept {
   lhs |= rhs;
@@ -376,7 +381,7 @@ template <EnumFlag E>
  * @return Intersected mask.
  * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
  */
-template <EnumFlag E>
+template <AnyEnum E>
   requires enable_flags_v<E>
 [[nodiscard]] constexpr Flags<E> operator&(Flags<E> lhs, E rhs) noexcept {
   lhs &= rhs;
@@ -391,7 +396,7 @@ template <EnumFlag E>
  * @return XORed mask.
  * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
  */
-template <EnumFlag E>
+template <AnyEnum E>
   requires enable_flags_v<E>
 [[nodiscard]] constexpr Flags<E> operator^(Flags<E> lhs, E rhs) noexcept {
   lhs ^= rhs;
@@ -406,7 +411,7 @@ template <EnumFlag E>
  * @return Combined mask.
  * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
  */
-template <EnumFlag E>
+template <AnyEnum E>
   requires enable_flags_v<E>
 [[nodiscard]] constexpr Flags<E> operator|(E lhs, Flags<E> rhs) noexcept {
   rhs |= lhs;
@@ -421,7 +426,7 @@ template <EnumFlag E>
  * @return Intersected mask.
  * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
  */
-template <EnumFlag E>
+template <AnyEnum E>
   requires enable_flags_v<E>
 [[nodiscard]] constexpr Flags<E> operator&(E lhs, Flags<E> rhs) noexcept {
   rhs &= lhs;
@@ -436,7 +441,7 @@ template <EnumFlag E>
  * @return XORed mask.
  * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
  */
-template <EnumFlag E>
+template <AnyEnum E>
   requires enable_flags_v<E>
 [[nodiscard]] constexpr Flags<E> operator^(E lhs, Flags<E> rhs) noexcept {
   rhs ^= lhs;
@@ -460,7 +465,6 @@ template <EnumFlag E>
  *
  * @note Invoke this macro at namespace scope (not inside a class or function).
  */
-#ifndef KEN_ENABLE_FLAGS
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define KEN_ENABLE_FLAGS(EnumType)                                \
   template <>                                                     \
@@ -469,4 +473,3 @@ template <EnumFlag E>
   using ::kEn::util::operator&;                                   \
   using ::kEn::util::operator^;                                   \
   using ::kEn::util::operator~
-#endif

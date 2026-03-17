@@ -6,6 +6,7 @@
 #include <unordered_set>
 #include <utility>
 
+#include <kEn/core/assert.hpp>
 #include <kEn/core/core.hpp>
 
 /** @file
@@ -21,14 +22,15 @@ namespace kEn {
  * Duplicate inserts are ignored.
  *
  * ### Complexity
- * - contains / count: average O(1)
+ * - contains: average O(1)
  * - insert / emplace: average O(1)
  * - iteration: O(n)
  * - erase(value): O(n) (search in deque) + average O(1) (erase in set)
  *
  * ### Exception safety
  * - `insert/emplace` provide a strong guarantee: on failure the container remains unchanged.
- * - `erase` attempts to avoid desynchronizing internal structures by mutating the deque first.
+ * - `erase` does not provide a strong guarantee for move-throwing element types: a throwing
+ *   `deque::erase` leaves both internal containers in an unspecified (potentially inconsistent) state.
  *
  * @tparam T Element type. Must be hashable and equality comparable for `std::unordered_set<T>`.
  *
@@ -99,13 +101,6 @@ class DequeSet {
    * @return True if present, false otherwise.
    */
   [[nodiscard]] bool contains(const T& item) const { return set_.contains(item); }
-
-  /**
-   * @brief Count occurrences of a value (0 or 1).
-   * @param item Value to count.
-   * @return 1 if present, otherwise 0.
-   */
-  [[nodiscard]] size_type count(const T& item) const { return set_.count(item); }
 
   // ---- Capacity ----
 
@@ -192,8 +187,7 @@ class DequeSet {
    * @return True if erased, false if not present.
    *
    * @note Complexity is O(n) due to searching the deque for the value.
-   * @note The implementation mutates the deque first to reduce the chance of internal desynchronization
-   *       if `deque_.erase()` throws for some `T`.
+   * @note Does not provide a strong exception guarantee for move-throwing element types.
    */
   [[nodiscard]] bool erase(const T& item) {
     auto sit = set_.find(item);
@@ -201,11 +195,11 @@ class DequeSet {
       return false;
     }
 
-    const auto eq = set_.key_eq();
-    auto dit      = std::find_if(deque_.begin(), deque_.end(), [&](const T& v) { return eq(v, *sit); });
+    auto dit = std::find(deque_.begin(), deque_.end(), item);
 
     if (dit == deque_.end()) {
-      // Invariant already broken; salvage by removing from set.
+      // Invariant broken: element in set but not in deque.
+      KEN_CORE_ASSERT(false, "DequeSet invariant broken: element in set but not in deque");
       set_.erase(sit);
       return true;
     }

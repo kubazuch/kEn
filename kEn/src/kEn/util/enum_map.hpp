@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <utility>
 
+#include <kEn/core/assert.hpp>
 #include <kEn/core/core.hpp>
 
 /** @file
@@ -19,8 +20,10 @@ namespace kEn::util {
 /**
  * @brief Concept satisfied by enum types that can index an EnumMap.
  *
- * Values are expected to be 0-based and contiguous; the EnumMap constructor
- * validates full coverage at compile time.
+ * This concept only checks that @p E is an enum; it does not enforce the 0-based contiguous
+ * value requirement stated in @ref EnumMap. That contract is validated at compile time by the
+ * @c consteval constructor: a mis-shaped enum (values starting at 1, or with gaps) produces a
+ * compile-time error via the out-of-range or missing-entry checks.
  *
  * @tparam E Type to test.
  */
@@ -87,20 +90,21 @@ class EnumMap {
       static_assert(N == std::to_underlying(E::Count), "Missing mapping for enum value");
     }
 
+    std::array<bool, N> present{};
     for (std::size_t i = 0; i < N; ++i) {
       const auto idx = static_cast<std::size_t>(std::to_underlying(pairs[i].first));
       if (idx >= N) {
         throw "Enum value is out of range [0, N)";
       }
-      if (present_[idx]) {
+      if (present[idx]) {
         throw "Duplicate mapping for enum value";
       }
-      values_[idx]  = pairs[i].second;
-      present_[idx] = true;
+      values_[idx] = pairs[i].second;
+      present[idx] = true;
     }
 
     for (std::size_t i = 0; i < N; ++i) {
-      if (!present_[i]) {
+      if (!present[i]) {
         throw "Missing mapping for enum value";
       }
     }
@@ -112,7 +116,9 @@ class EnumMap {
    * @return The corresponding mapped value.
    */
   [[nodiscard]] constexpr V operator[](enum_type e) const noexcept {
-    return values_[static_cast<std::size_t>(std::to_underlying(e))];
+    const auto idx = static_cast<std::size_t>(std::to_underlying(e));
+    KEN_CORE_ASSERT(idx < N, "EnumMap index out of range");
+    return values_[idx];
   }
 
   /**
@@ -171,8 +177,7 @@ class EnumMap {
   [[nodiscard]] constexpr iterator end() const noexcept { return {this, N}; }
 
  private:
-  std::array<V, N> values_     = {};
-  std::array<bool, N> present_ = {};
+  std::array<V, N> values_ = {};
 };
 
 /**
@@ -199,6 +204,19 @@ EnumMap(const std::pair<E, V> (&)[N]) -> EnumMap<E, V, N>;
 template <typename E, std::size_t N>
 EnumMap(const std::pair<E, const char*> (&)[N]) -> EnumMap<E, std::string_view, N>;
 
+/**
+ * @brief Construct an @ref EnumMap with an explicit value type different from the initializer type.
+ *
+ * Useful when the initializer pairs carry a type @p T that is convertible to @p V but not identical
+ * (e.g. initializing an @c EnumMap<E, int> from @c std::pair<E, short> literals).
+ *
+ * @tparam V Target mapped value type.
+ * @tparam E Enum type (deduced).
+ * @tparam T Source value type in the pair array; must satisfy @c std::convertible_to<T, V>.
+ * @tparam N Number of entries (deduced from @p pairs).
+ * @param pairs Array of (enum, value) mappings; same constraints as the @ref EnumMap constructor.
+ * @return An @ref EnumMap<E, V, N> with all entries converted to @p V.
+ */
 template <typename V, typename E, typename T, std::size_t N>
   requires std::convertible_to<T, V>
 consteval auto make_enum_map(const std::pair<E, T> (&pairs)[N]) -> EnumMap<E, V, N> {
