@@ -52,10 +52,10 @@ class Log {
  * KEN_CORE_DEBUG, which is stripped in non-debug builds.
  * @{
  */
-#define KEN_CORE_TRACE(...)    ::kEn::Log::core_logger().log(KEN_SOURCE_LOC, spdlog::level::trace,    __VA_ARGS__)
-#define KEN_CORE_INFO(...)     ::kEn::Log::core_logger().log(KEN_SOURCE_LOC, spdlog::level::info,     __VA_ARGS__)
-#define KEN_CORE_WARN(...)     ::kEn::Log::core_logger().log(KEN_SOURCE_LOC, spdlog::level::warn,     __VA_ARGS__)
-#define KEN_CORE_ERROR(...)    ::kEn::Log::core_logger().log(KEN_SOURCE_LOC, spdlog::level::err,      __VA_ARGS__)
+#define KEN_CORE_TRACE(...) ::kEn::Log::core_logger().log(KEN_SOURCE_LOC, spdlog::level::trace, __VA_ARGS__)
+#define KEN_CORE_INFO(...) ::kEn::Log::core_logger().log(KEN_SOURCE_LOC, spdlog::level::info, __VA_ARGS__)
+#define KEN_CORE_WARN(...) ::kEn::Log::core_logger().log(KEN_SOURCE_LOC, spdlog::level::warn, __VA_ARGS__)
+#define KEN_CORE_ERROR(...) ::kEn::Log::core_logger().log(KEN_SOURCE_LOC, spdlog::level::err, __VA_ARGS__)
 #define KEN_CORE_CRITICAL(...) ::kEn::Log::core_logger().log(KEN_SOURCE_LOC, spdlog::level::critical, __VA_ARGS__)
 /** @} */
 
@@ -65,10 +65,10 @@ class Log {
  * except KEN_DEBUG, which is stripped in non-debug builds.
  * @{
  */
-#define KEN_TRACE(...)    ::kEn::Log::client_logger().log(KEN_SOURCE_LOC, spdlog::level::trace,    __VA_ARGS__)
-#define KEN_INFO(...)     ::kEn::Log::client_logger().log(KEN_SOURCE_LOC, spdlog::level::info,     __VA_ARGS__)
-#define KEN_WARN(...)     ::kEn::Log::client_logger().log(KEN_SOURCE_LOC, spdlog::level::warn,     __VA_ARGS__)
-#define KEN_ERROR(...)    ::kEn::Log::client_logger().log(KEN_SOURCE_LOC, spdlog::level::err,      __VA_ARGS__)
+#define KEN_TRACE(...) ::kEn::Log::client_logger().log(KEN_SOURCE_LOC, spdlog::level::trace, __VA_ARGS__)
+#define KEN_INFO(...) ::kEn::Log::client_logger().log(KEN_SOURCE_LOC, spdlog::level::info, __VA_ARGS__)
+#define KEN_WARN(...) ::kEn::Log::client_logger().log(KEN_SOURCE_LOC, spdlog::level::warn, __VA_ARGS__)
+#define KEN_ERROR(...) ::kEn::Log::client_logger().log(KEN_SOURCE_LOC, spdlog::level::err, __VA_ARGS__)
 #define KEN_CRITICAL(...) ::kEn::Log::client_logger().log(KEN_SOURCE_LOC, spdlog::level::critical, __VA_ARGS__)
 /** @} */
 
@@ -82,7 +82,7 @@ class Log {
  */
 #ifdef KEN_DEBUG_BUILD
 #define KEN_CORE_DEBUG(...) ::kEn::Log::core_logger().log(KEN_SOURCE_LOC, spdlog::level::debug, __VA_ARGS__)
-#define KEN_DEBUG(...)      ::kEn::Log::client_logger().log(KEN_SOURCE_LOC, spdlog::level::debug, __VA_ARGS__)
+#define KEN_DEBUG(...) ::kEn::Log::client_logger().log(KEN_SOURCE_LOC, spdlog::level::debug, __VA_ARGS__)
 #else
 #define KEN_CORE_DEBUG(...)
 #define KEN_DEBUG(...)
