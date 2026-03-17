@@ -23,7 +23,6 @@ namespace kEn {
  * @note @ref kEn::util::Flags is used to represent combinations via @ref kEn::ModKeys.
  */
 enum class ModKey : std::uint8_t {
-  None     = 0,
   Shift    = 1 << 0,
   Control  = 1 << 1,
   Alt      = 1 << 2,
@@ -53,29 +52,16 @@ namespace mod_key {
 using enum ModKey;
 
 /**
- * @brief Internal mapping of modifier flags to their display names.
- *
- * Used by @ref active() to format active modifiers in a consistent order.
- */
-inline constexpr std::array<std::pair<ModKey, std::string_view>, 6> kNames{{
-    {ModKey::Shift, "Shift"},
-    {ModKey::Control, "Control"},
-    {ModKey::Alt, "Alt"},
-    {ModKey::Super, "Super"},
-    {ModKey::CapsLock, "CapsLock"},
-    {ModKey::NumLock, "NumLock"},
-}};
-
-/**
  * @brief Get a human-readable name for a single modifier key.
  *
  * @param key Modifier key value.
- * @return A stable string view naming @p key. Returns @c "Unknown" for values not handled.
+ * @return A stable string view naming @p key.
  *
  * @note This function names single enum values; it does not format combinations.
  *       For combinations, use @ref active().
+ * @note Passing a value not in @ref kEn::ModKey is undefined behaviour (`std::unreachable`).
  */
-[[nodiscard]] constexpr std::string_view name(ModKey key) noexcept {
+[[nodiscard]] constexpr std::string_view name_of(ModKey key) noexcept {
   switch (key) {
     case ModKey::Shift:
       return "Shift";
@@ -89,16 +75,15 @@ inline constexpr std::array<std::pair<ModKey, std::string_view>, 6> kNames{{
       return "CapsLock";
     case ModKey::NumLock:
       return "NumLock";
-    case ModKey::None:
-      return "None";
+    default:
+      std::unreachable();
   }
-  return "Unknown";
 }
 
 /**
  * @brief Get a @ref kEn::ModKeys mask containing all supported modifier flags (excluding None).
  *
- * @return A mask with Shift, Control, Alt, Super, CapsLock, and NumLock set.
+ * @return A mask with all six modifier flags set.
  */
 [[nodiscard]] constexpr ModKeys all() noexcept {
   return ModKey::Shift | ModKey::Control | ModKey::Alt | ModKey::Super | ModKey::CapsLock | ModKey::NumLock;
@@ -122,12 +107,21 @@ inline constexpr std::array<std::pair<ModKey, std::string_view>, 6> kNames{{
     return result;
   }
 
-  for (const auto& [flag, text] : kNames) {
+  static constexpr std::array<ModKey, 6> kOrder{{
+      ModKey::Shift,
+      ModKey::Control,
+      ModKey::Alt,
+      ModKey::Super,
+      ModKey::CapsLock,
+      ModKey::NumLock,
+  }};
+
+  for (ModKey flag : kOrder) {
     if (keys.test(flag)) {
       if (!result.empty()) {
         result.push_back(' ');
       }
-      result.append(text);
+      result.append(name_of(flag));
     }
   }
   return result;
