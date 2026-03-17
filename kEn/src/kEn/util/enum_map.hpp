@@ -202,9 +202,11 @@ EnumMap(const std::pair<E, const char*> (&)[N]) -> EnumMap<E, std::string_view, 
 template <typename V, typename E, typename T, std::size_t N>
   requires std::convertible_to<T, V>
 consteval auto make_enum_map(const std::pair<E, T> (&pairs)[N]) -> EnumMap<E, V, N> {
-  return [&]<std::size_t... I>(std::index_sequence<I...>) {
-    return EnumMap<E, V, N>{{std::pair<E, V>{pairs[I].first, static_cast<V>(pairs[I].second)}...}};
-  }(std::make_index_sequence<N>{});
+  std::pair<E, V> converted[N]{};
+  for (std::size_t i = 0; i < N; ++i) {
+    converted[i] = {pairs[i].first, static_cast<V>(pairs[i].second)};
+  }
+  return EnumMap<E, V, N>{converted};
 }
 
 }  // namespace kEn::util
