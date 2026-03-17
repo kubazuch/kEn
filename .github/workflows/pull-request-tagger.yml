@@ -25,7 +25,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           # Fetch the highest tag
-          current_tag=$(gh api repos/$GITHUB_REPOSITORY/tags --jq '[.[].name | select(startswith("v"))] | sort | last // "v0.0.0"')
+          current_tag=$(gh api repos/$GITHUB_REPOSITORY/tags --jq '[.[].name | select(startswith("v"))] | sort_by(ltrimstr("v") | split(".") | map(tonumber)) | last // "v0.0.0"')
           echo "The current tag is: $current_tag"
 
           # Parse the current version into major, minor, patch parts
