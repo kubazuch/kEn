@@ -104,17 +104,15 @@ class KeyReleasedEvent : public Event<KeyReleasedEvent>, public KeyEvent {
  * @brief Event fired when a key is typed (character input).
  *
  * Unlike press/release events, this typically represents text input semantics.
- * This event is constructed with @ref kEn::ModKey::None for modifiers.
+ * This event carries no modifier state; modifiers are always empty.
  */
 class KeyTypedEvent : public Event<KeyTypedEvent>, public KeyEvent {
  public:
   /**
    * @brief Construct the event.
    * @param key Key code / character source.
-   *
-   * @note Modifiers are set to @ref kEn::ModKey::None for this event.
    */
-  explicit KeyTypedEvent(const Key& key) : KeyEvent(key, ModKey::None) {}
+  explicit KeyTypedEvent(const Key& key) : KeyEvent(key, ModKeys{}) {}
 
   void write(std::ostream& os) const override {
     os << kName << ": " << key::code(key_) << " (" << static_cast<char>(key_) << ")";
