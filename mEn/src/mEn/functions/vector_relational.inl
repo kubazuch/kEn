@@ -2,7 +2,6 @@
 #include <mEn/fwd.hpp>
 
 namespace mEn {
-// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 template <length_t L, typename T>
 MEN_FORCE_INLINE constexpr vec<L, bool> lessThan(const vec<L, T>& x, const vec<L, T>& y) noexcept {
@@ -87,5 +86,4 @@ MEN_FORCE_INLINE constexpr vec<L, bool> not_(const vec<L, bool>& v) noexcept {  
   return ret;
 }
 
-// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace mEn

@@ -1,53 +1,24 @@
 #include "opengl_texture.hpp"
 
+#include <glad/gl.h>
 #include <imgui/imgui.h>
 #include <stb_image.h>
+
+#include <cstdint>
+#include <filesystem>
 
 #include <mEn/functions/common.hpp>
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
 #include <kEn/renderer/texture.hpp>
+#include <kEn/renderer/texture_format.hpp>
+
+#include "opengl_texture_format.hpp"
 
 namespace kEn {
 
 namespace {
-
-GLenum ken_image_format_to_gl_data(ImageFormat format) {
-  switch (format) {
-    case ImageFormat::RGB8:
-      return GL_RGB;
-    case ImageFormat::RGBA8:
-      return GL_RGBA;
-    case ImageFormat::R8:
-      return GL_RED;
-    case ImageFormat::RGBA32F:
-      return GL_RGBA;
-    case ImageFormat::None:
-      break;
-  }
-
-  KEN_CORE_ASSERT(false);
-  return 0;
-}
-
-GLenum ken_image_format_to_gl_internal(ImageFormat format) {
-  switch (format) {
-    case ImageFormat::RGB8:
-      return GL_RGB8;
-    case ImageFormat::RGBA8:
-      return GL_RGBA8;
-    case ImageFormat::R8:
-      return GL_R8;
-    case ImageFormat::RGBA32F:
-      return GL_RGBA32F;
-    case ImageFormat::None:
-      break;
-  }
-
-  KEN_CORE_ASSERT(false);
-  return 0;
-}
 
 GLint ken_filter_to_gl(TextureSpec::filter filter, bool mipmap = false) {
   switch (filter) {
@@ -76,8 +47,8 @@ GLint ken_wrap_to_gl(TextureSpec::wrap wrap) {
 OpenglTexture2D::OpenglTexture2D(const TextureSpec& specification)
     : spec_(specification),
       renderer_id_(0),
-      internal_format_(ken_image_format_to_gl_internal(specification.format.value())),
-      data_format_(ken_image_format_to_gl_data(specification.format.value())) {
+      internal_format_(static_cast<GLenum>(texture_format::internal_format(specification.format.value()))),
+      data_format_(texture_format::pixel_format(specification.format.value())) {
   glCreateTextures(GL_TEXTURE_2D, 1, &renderer_id_);
   glTextureStorage2D(renderer_id_, 1, internal_format_, static_cast<GLsizei>(spec_.width.value()),
                      static_cast<GLsizei>(spec_.height.value()));
@@ -101,26 +72,18 @@ OpenglTexture2D::OpenglTexture2D(const std::filesystem::path& path, const Textur
     spec_.width  = width;
     spec_.height = height;
 
-    GLenum internal_f = 0;
-    GLenum data_f     = 0;
     if (channels == 4) {
-      internal_f   = GL_RGBA8;
-      data_f       = GL_RGBA;
-      spec_.format = ImageFormat::RGBA8;
+      spec_.format = TextureFormat::RGBA8;
     } else if (channels == 3) {
-      internal_f   = GL_RGB8;
-      data_f       = GL_RGB;
-      spec_.format = ImageFormat::RGB8;
+      spec_.format = TextureFormat::RGB8;
     } else if (channels == 1) {
-      internal_f   = GL_R8;
-      data_f       = GL_RED;
-      spec_.format = ImageFormat::R8;
+      spec_.format = TextureFormat::R8;
     }
 
     KEN_CORE_INFO("Loaded texture with {} channels", channels);
 
-    internal_format_ = internal_f;
-    data_format_     = data_f;
+    internal_format_ = static_cast<GLenum>(texture_format::internal_format(spec_.format.value()));
+    data_format_     = texture_format::pixel_format(spec_.format.value());
 
     glCreateTextures(GL_TEXTURE_2D, 1, &renderer_id_);
     glTextureStorage2D(renderer_id_, static_cast<GLsizei>(spec_.mipmap_levels), internal_format_,
@@ -139,7 +102,7 @@ OpenglTexture2D::OpenglTexture2D(const std::filesystem::path& path, const Textur
       glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     }
 
-    glTextureSubImage2D(renderer_id_, 0, 0, 0, width, height, data_f, GL_UNSIGNED_BYTE, data);
+    glTextureSubImage2D(renderer_id_, 0, 0, 0, width, height, data_format_, GL_UNSIGNED_BYTE, data);
 
     glGenerateTextureMipmap(renderer_id_);
 
@@ -151,15 +114,10 @@ OpenglTexture2D::OpenglTexture2D(const std::filesystem::path& path, const Textur
 
 OpenglTexture2D::~OpenglTexture2D() { glDeleteTextures(1, &renderer_id_); }
 
-void OpenglTexture2D::set_data(void* data, uint32_t size) {
-  // TODO(kEn): bpp is wrong for R8 (1) and RGBA32F (16)
-  uint32_t bpp = data_format_ == GL_RGBA ? 4 : 3;
+void OpenglTexture2D::set_data(void* data, uint32_t /*size*/) {
+  const uint32_t bpp = texture_format::bytes_per_texel(spec_.format.value());
   KEN_CORE_ASSERT(size == spec_.width.value() * spec_.height.value() * bpp, "Data must be entire texture!");
-  if (bpp == 4) {
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-  } else {
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-  }
+  glPixelStorei(GL_UNPACK_ALIGNMENT, bpp == 1 ? 1 : (bpp % 4 == 0 ? 4 : 2));  // NOLINT
   glTextureSubImage2D(renderer_id_, 0, 0, 0, static_cast<GLsizei>(spec_.width.value()),
                       static_cast<GLsizei>(spec_.height.value()), data_format_, GL_UNSIGNED_BYTE, data);
 }
@@ -167,8 +125,8 @@ void OpenglTexture2D::set_data(void* data, uint32_t size) {
 void OpenglTexture2D::bind(uint32_t slot) const { glBindTextureUnit(slot, renderer_id_); }
 
 void OpenglTexture2D::imgui() {
-  float height = mEn::max(mEn::min(static_cast<float>(spec_.height.value()), 250.F), 100.F);
-  float width  = static_cast<float>(spec_.width.value()) / static_cast<float>(spec_.height.value()) * height;
+  const float height = mEn::max(mEn::min(static_cast<float>(spec_.height.value()), 250.F), 100.F);
+  const float width  = static_cast<float>(spec_.width.value()) / static_cast<float>(spec_.height.value()) * height;
 
   ImGui::Image(static_cast<ImTextureID>(renderer_id_), ImVec2{width, height}, ImVec2{0.0F, 1.0F}, ImVec2{1.0F, 0.0F});
 }

@@ -3,7 +3,6 @@
 #include <mEn/mat4.hpp>
 
 namespace mEn {
-// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 template <typename T>
 MEN_FORCE_INLINE constexpr mat<4, T> ortho(T left, T right, T bottom, T top, T zNear, T zFar) noexcept {
@@ -32,5 +31,4 @@ MEN_FORCE_INLINE constexpr mat<4, T> perspective(T fov, T aspect, T zNear, T zFa
   return ret;
 }
 
-// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace mEn

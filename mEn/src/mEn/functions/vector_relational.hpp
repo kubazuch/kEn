@@ -4,6 +4,8 @@
 
 namespace mEn {
 
+// TODO(kuzu): replace with operators and allow comparisons vec<L,T> < T
+
 /// @brief Returns a bool vector where component @p i is @c true if @f$ x_i < y_i @f$.
 template <length_t L, typename T>
 [[nodiscard]] constexpr vec<L, bool> lessThan(const vec<L, T>& x, const vec<L, T>& y) noexcept;

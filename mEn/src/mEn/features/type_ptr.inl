@@ -6,7 +6,6 @@
 #include <mEn/vec4.hpp>
 
 namespace mEn {
-// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 template <typename T>
 MEN_FORCE_INLINE constexpr const T* value_ptr(const vec<2, T>& v) noexcept {
@@ -100,5 +99,4 @@ MEN_FORCE_INLINE constexpr qua<T> make_quat(const T* ptr) noexcept {
   return qua<T>{ptr[3], ptr[0], ptr[1], ptr[2]};
 }
 
-// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace mEn

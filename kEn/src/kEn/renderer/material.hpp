@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string_view>
 #include <unordered_map>
 
 #include <mEn.hpp>
@@ -10,22 +11,63 @@ namespace kEn {
 
 class Shader;
 
+/**
+ * @brief Phong-shaded surface description passed to a @ref Shader.
+ *
+ * Stores per-type texture arrays alongside scalar Phong coefficients and
+ * surface flags. Call @ref load to upload uniforms, then @ref bind to activate
+ * texture units before drawing.
+ */
 class Material {
  public:
   Material() = default;
 
-  void set_texture(texture_type_t type, const std::shared_ptr<Texture2D>& texture, size_t id = 0);
-  const std::shared_ptr<Texture2D>& texture(texture_type_t type, size_t id = 0);
+  /**
+   * @brief Assign a texture to a slot within a given type array.
+   *
+   * Textures must be added in ascending @p id order; gaps are not allowed.
+   * Assigning to an existing @p id replaces it; assigning to `id == size`
+   * appends.
+   *
+   * @param type    Semantic category (e.g. @c TextureType::Diffuse).
+   * @param texture Shared ownership of the texture to store.
+   * @param id      Index within the type's array (default 0).
+   * @throws std::runtime_error if @p id skips beyond the current array size.
+   */
+  void set_texture(TextureType type, std::shared_ptr<Texture2D> texture, size_t id = 0);
 
-  void load(Shader& shader, const std::string& name = "u_Material") const;
+  /**
+   * @brief Retrieve a texture by type and index.
+   *
+   * @param type Semantic category.
+   * @param id   Index within the type's array (default 0).
+   * @return Const reference to the stored shared pointer.
+   * @throws std::out_of_range if @p type or @p id is not present.
+   */
+  const std::shared_ptr<Texture2D>& texture(TextureType type, size_t id = 0) const;
+
+  /**
+   * @brief Upload Phong uniforms and texture-unit indices to @p shader.
+   *
+   * Sets `<name>.ka/kd/ks/m/emissive/surface_color` and one sampler uniform
+   * per stored texture. Texture units are assigned in iteration order of the
+   * internal map; call @ref bind afterwards to activate the same units.
+   *
+   * @param shader Target shader program.
+   * @param name   GLSL struct name prefix (default @c "u_Material").
+   */
+  void load(Shader& shader, std::string_view name = "u_Material") const;
+
+  /**
+   * @brief Bind all stored textures to consecutive texture units.
+   *
+   * Unit assignment matches the order used by @ref load.
+   */
   void bind() const;
 
+  /** @brief Render an ImGui inspector panel for this material. */
   void imgui();
 
- private:
-  friend class shader;
-
- public:
   float ambient_factor   = 0.5F;
   float diffuse_factor   = 0.5F;
   float specular_factor  = 0.5F;
@@ -37,7 +79,9 @@ class Material {
   bool emissive    = false;
 
  private:
-  std::unordered_map<texture_type_t, std::vector<std::shared_ptr<kEn::Texture2D>>> textures_;
+  friend class Shader;
+
+  std::unordered_map<TextureType, std::vector<std::shared_ptr<kEn::Texture2D>>> textures_;
 };
 
 }  // namespace kEn

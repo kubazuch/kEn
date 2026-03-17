@@ -17,9 +17,9 @@
 
 namespace kEn {
 
-BufferLayout Mesh::vertex_layout_ = {{shader_data_types::float3, "a_Position"},
-                                     {shader_data_types::float3, "a_Normal"},
-                                     {shader_data_types::float2, "a_TexCoord"}};
+BufferLayout Mesh::vertex_layout_ = {{shader_data_type::Float3, "a_Position"},
+                                     {shader_data_type::Float3, "a_Normal"},
+                                     {shader_data_type::Float2, "a_TexCoord"}};
 
 Mesh::Mesh(std::string_view name, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices,
            kEn::Material material)

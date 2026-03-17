@@ -1,16 +1,26 @@
 #include "opengl_shader.hpp"
 
+#include <glad/gl.h>
+
+#include <cstddef>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <memory>
+#include <regex>
 #include <sstream>
+#include <stdexcept>
+#include <string>
 #include <string_view>
+#include <system_error>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
+#include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/shader.hpp>
 
 namespace kEn {
@@ -72,8 +82,8 @@ std::string annotate_glsl_log(std::string_view raw, const std::vector<std::strin
   std::string line;
   std::ostringstream out;
 
-  std::regex nvidia(R"(^\s*(\d+)\((\d+)\)\s*:\s*(.*)$)");  // 2(15): error ...
-  std::regex mesa(R"(^\s*(\d+):(\d+):\s*(.*)$)");          // 2:15: error ...
+  const std::regex nvidia(R"(^\s*(\d+)\((\d+)\)\s*:\s*(.*)$)");  // 2(15): error ...
+  const std::regex mesa(R"(^\s*(\d+):(\d+):\s*(.*)$)");          // 2:15: error ...
   while (std::getline(in, line)) {
     std::smatch m;
     if (std::regex_match(line, m, nvidia) || std::regex_match(line, m, mesa)) {
@@ -184,7 +194,7 @@ std::string OpenglShader::read_shader_src_internal(const std::filesystem::path& 
 
     std::smatch include_match;
     if (std::regex_match(line, include_match, kIncludeRegex)) {
-      std::string include_file_name = include_match[1].str();
+      const std::string include_file_name = include_match[1].str();
       std::string included_source;
 
       size_t child_id = 0;
@@ -301,7 +311,7 @@ void OpenglShader::link_shader() const {
     KEN_CORE_ASSERT(false, "Shader program linking failed!");
   }
 
-#ifdef _KEN_DEBUG
+#ifdef KEN_DEBUG_BUILD
   glValidateProgram(renderer_id_);
 
   status = 0;
@@ -325,12 +335,12 @@ void OpenglShader::create_program(std::string_view vertex_src, std::string_view 
   const std::string vlabel = name_ + " (vertex)";
   const std::string flabel = name_ + " (fragment)";
 
-  GLuint vertex_shader = create_shader(vertex_src, GL_VERTEX_SHADER, vlabel);
+  const GLuint vertex_shader = create_shader(vertex_src, GL_VERTEX_SHADER, vlabel);
   if (vertex_shader == 0) {
     return;
   }
 
-  GLuint fragment_shader = create_shader(fragment_src, GL_FRAGMENT_SHADER, flabel);
+  const GLuint fragment_shader = create_shader(fragment_src, GL_FRAGMENT_SHADER, flabel);
   if (fragment_shader == 0) {
     glDeleteShader(vertex_shader);
     return;
@@ -483,8 +493,8 @@ GLint OpenglShader::get_uniform_location(std::string_view name) const {
 }
 
 void OpenglShader::bind_uniform_buffer(std::string_view name, size_t binding) const {
-  std::string tmp(name);
-  GLuint block_index = glGetUniformBlockIndex(renderer_id_, tmp.c_str());  // NOLINT
+  const std::string tmp(name);
+  const GLuint block_index = glGetUniformBlockIndex(renderer_id_, tmp.c_str());
   if (block_index == GL_INVALID_INDEX) {
     KEN_CORE_WARN("Unable to find uniform block '{0}' in shader '{1}'", name, name_);
     return;
@@ -497,8 +507,8 @@ void OpenglShader::bind_uniform_buffer(std::string_view name, size_t binding) co
 }
 
 void OpenglShader::bind_uniform_buffer(std::string_view name, const UniformBuffer& ubo) const {
-  std::string tmp(name);
-  GLuint block_index = glGetUniformBlockIndex(renderer_id_, tmp.c_str());  // NOLINT
+  const std::string tmp(name);
+  const GLuint block_index = glGetUniformBlockIndex(renderer_id_, tmp.c_str());
   if (block_index == GL_INVALID_INDEX) {
     KEN_CORE_WARN("Unable to find uniform block '{0}' in shader '{1}'", name, name_);
     return;
@@ -508,7 +518,7 @@ void OpenglShader::bind_uniform_buffer(std::string_view name, const UniformBuffe
   glGetActiveUniformBlockiv(renderer_id_, block_index, GL_UNIFORM_BLOCK_DATA_SIZE, &size);
 
   // TODO(kuzu): handle padding
-  if (size != static_cast<GLint>(ubo.underlying_buffer()->size())) {
+  if (std::cmp_not_equal(size, ubo.underlying_buffer()->size())) {
     KEN_CORE_ERROR("Unexpected uniform block size: {0}. Expected: {1}", size, ubo.underlying_buffer()->size());
     return;
   }

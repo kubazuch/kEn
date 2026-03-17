@@ -5,9 +5,10 @@
 
 #include <mEn/constants.hpp>
 #include <mEn/functions/common.hpp>
+#include <mEn/functions/geometric.hpp>
 #include <mEn/functions/quaternion_transform.hpp>
 #include <mEn/functions/trigonometric.hpp>
-#include <mEn/quat.hpp>
+#include <mEn/fwd.hpp>
 #include <mEn/vec2.hpp>
 #include <mEn/vec3.hpp>
 
@@ -54,7 +55,8 @@ void FreeLookComponent::update(duration_t /*delta*/, duration_t /*time*/) {
     return;
   }
 
-  auto delta_pos   = kEn::Input::get_mouse_pos() - window_center_;
+  auto delta_pos = kEn::Input::get_mouse_pos() - window_center_;
+  // TODO(kuzu): comparison operators
   const bool rot_y = delta_pos.x != 0;
   const bool rot_x = delta_pos.y != 0;
 
@@ -64,7 +66,7 @@ void FreeLookComponent::update(duration_t /*delta*/, duration_t /*time*/) {
 
   if (rot_x) {
     pitch_ -= mEn::radians(delta_pos.y) * sensitivity_;
-    pitch_ = mEn::clamp(pitch_, (-mEn::kHalfPi<float>)+0.01F, (mEn::kHalfPi<float>)-0.01F);
+    pitch_ = mEn::clamp(pitch_, (-mEn::kHalfPi<float>)+0.01F, mEn::kHalfPi<float> - 0.01F);
   }
 
   if (rot_x || rot_y) {

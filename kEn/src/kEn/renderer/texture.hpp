@@ -4,23 +4,22 @@
 #include <filesystem>
 #include <optional>
 #include <unordered_map>
+#include <utility>
 
 #include <kEn/core/core.hpp>
+#include <kEn/renderer/texture_format.hpp>
+#include <kEn/util/enum_map.hpp>
 
 namespace kEn {
 
-class Texture;
-
-enum class ImageFormat : std::uint8_t { None = 0, R8, RGB8, RGBA8, RGBA32F };
-
 struct TextureSpec {
-  enum class filter { Linear, Nearest };
+  enum class filter : uint8_t { Linear, Nearest };
 
-  enum class wrap { Repeat, Clamp, MirroredRepeat };
+  enum class wrap : uint8_t { Repeat, Clamp, MirroredRepeat };
 
   std::optional<uint32_t> width;
   std::optional<uint32_t> height;
-  std::optional<ImageFormat> format;
+  std::optional<TextureFormat> format;
 
   uint32_t mipmap_levels = 1;
 
@@ -51,28 +50,30 @@ struct TextureSpec {
   }
 };
 
-using texture_type_t = uint8_t;
+/**
+ * @brief Strongly-typed texture semantic category.
+ */
+enum class TextureType : std::uint8_t { AmbientOcclusion, Diffuse, Height, Normal, Specular, Count };
 
 namespace texture_type {
 
-enum : texture_type_t { AmbientOcclusion, Diffuse, Height, Normal, Specular, Last };
+/// @brief C++20 convenience: brings enumerators into `kEn::texture_type` namespace.
+using enum TextureType;
 
-inline const char* name_of(const texture_type_t type) {
-  switch (type) {
-    case AmbientOcclusion:
-      return "ambient_occlusion";
-    case Diffuse:
-      return "diffuse";
-    case Height:
-      return "height";
-    case Normal:
-      return "normal";
-    case Specular:
-      return "specular";
-    default:
-      return "INVALID";
-  }
-}
+inline constexpr util::EnumMap kNames{{
+    std::pair{AmbientOcclusion, "ambient_occlusion"},
+    std::pair{Diffuse, "diffuse"},
+    std::pair{Height, "height"},
+    std::pair{Normal, "normal"},
+    std::pair{Specular, "specular"},
+}};
+
+/**
+ * @brief Get a stable, human-readable name for a texture type.
+ * @param type Texture type enum value.
+ * @return A string view describing the type (e.g. @c "diffuse").
+ */
+[[nodiscard]] constexpr std::string_view name_of(TextureType type) noexcept { return kNames[type]; }
 
 }  // namespace texture_type
 

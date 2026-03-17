@@ -1,11 +1,23 @@
 #include "transform.hpp"
 
-#include <mEn.hpp>
+#include <cstdlib>
+#include <span>
+#include <vector>
+
+#include <mEn/constants.hpp>
+#include <mEn/features/mat_decompose.hpp>
+#include <mEn/functions/geometric.hpp>
+#include <mEn/functions/matrix_common.hpp>
+#include <mEn/functions/matrix_transform.hpp>
+#include <mEn/functions/quaternion_common.hpp>
+#include <mEn/functions/quaternion_geometric.hpp>
+#include <mEn/functions/quaternion_transform.hpp>
+#include <mEn/fwd.hpp>
 
 #include <kEn/core/assert.hpp>
 #include <kEn/scene/game_object.hpp>
 
-namespace kEn {  // NOLINT
+namespace kEn {
 
 Transform::Transform(mEn::Vec3 pos, mEn::Quat rot, mEn::Vec3 scale)
     : pos_(pos), rot_(mEn::normalize(rot)), scale_(scale) {}
@@ -59,7 +71,7 @@ bool Transform::try_set_parent(Transform& parent) {
 
 void Transform::set_parent(Transform& parent) {
   const bool ok = try_set_parent(parent);
-  (void)(ok);
+  (void)ok;
   KEN_CORE_ASSERT(ok, "Transform::set_parent would create a cycle or self-parenting");
 }
 
@@ -111,6 +123,7 @@ const mEn::Mat4& Transform::world_to_local_matrix() const {
     (void)local_to_world_matrix();
   }
 
+  // TODO(kuzu): don't use inverse, those transformation have easy formulas
   inv_model_mat_ = mEn::inverse(model_mat_);
   inverse_dirty_ = false;
   return inv_model_mat_;
@@ -171,7 +184,7 @@ void Transform::look_at(const mEn::Vec3& point, const mEn::Vec3& up) {
   direction = mEn::normalize(direction);
 
   const mEn::Vec3 current_front = local_front();
-  if (std::abs(direction.x - current_front.x) <= kLookAtTol && std::abs(direction.y - current_front.y) <= kLookAtTol &&
+  if (std::abs(direction.x - current_front.y) <= kLookAtTol && std::abs(direction.y - current_front.y) <= kLookAtTol &&
       std::abs(direction.z - current_front.z) <= kLookAtTol) {
     return;
   }

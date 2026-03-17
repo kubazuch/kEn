@@ -1,21 +1,28 @@
 #include "renderer.hpp"
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+
 #include <kEn/renderer/render_command.hpp>
+#include <kEn/renderer/renderer_api.hpp>
+#include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/vertex_array.hpp>
-#include <kEn/scene/core_components.hpp>
+#include <kEn/scene/camera/camera.hpp>
 
 namespace kEn {
 
 std::unique_ptr<Renderer::SceneData> Renderer::scene_data_ = std::make_unique<SceneData>();
 
-void Renderer::begin_scene(const std::shared_ptr<Camera>& camera) {  // NOLINT
+void Renderer::begin_scene(const std::shared_ptr<Camera>& camera) {
   scene_data_->V_matrix   = camera->view_matrix();
   scene_data_->P_matrix   = camera->projection_matrix();
   scene_data_->VP_matrix  = camera->view_projection_matrix();
   scene_data_->camera_pos = camera->transform().pos();
 }
 
-void Renderer::begin_scene(const mEn::Vec3& camera_pos, const mEn::Mat4& view, const mEn::Mat4& projection) {  // NOLINT
+void Renderer::begin_scene(const mEn::Vec3& camera_pos, const mEn::Mat4& view, const mEn::Mat4& projection) {
   scene_data_->V_matrix   = view;
   scene_data_->P_matrix   = projection;
   scene_data_->VP_matrix  = projection * view;
@@ -91,7 +98,7 @@ void Renderer::submit_tessellated(Shader& shader, const VertexArray& vertex_arra
   shader.set_uniform("u_Ambient", scene_data_->ambient);
 
   shader.bind();
-  RenderCommand::draw(vertex_array, count, RenderMode::Patches);
+  RenderCommand::draw(vertex_array, count, render_mode::Patches);
 }
 
 }  // namespace kEn

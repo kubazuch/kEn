@@ -3,14 +3,15 @@
 #include <chrono>
 #include <memory>
 
-#include <mEn.hpp>
+#include <mEn/functions/trigonometric.hpp>
 
 #include <kEn.hpp>  //NOLINT
+#include <kEn/core/application.hpp>
 #include <kEn/core/input.hpp>
-#include <kEn/core/key_codes.hpp>
 #include <kEn/core/layer.hpp>
 #include <kEn/core/log.hpp>
 #include <kEn/core/transform.hpp>
+#include <kEn/event/event.hpp>
 #include <kEn/event/key_events.hpp>
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/render_command.hpp>
@@ -45,8 +46,8 @@ class FizzbuzzLayer : public kEn::Layer {
     vertex_array_      = kEn::VertexArray::create();
     auto vertex_buffer = kEn::Buffer::create(vertices, sizeof(vertices));
     {
-      const kEn::BufferLayout layout = {{kEn::shader_data_types::float3, "a_Position"},
-                                        {kEn::shader_data_types::float4, "a_Color"}};
+      const kEn::BufferLayout layout = {{kEn::shader_data_type::Float3, "a_Position"},
+                                        {kEn::shader_data_type::Float4, "a_Color"}};
 
       vertex_buffer->set_layout(layout);
     }
@@ -94,6 +95,7 @@ class FizzbuzzLayer : public kEn::Layer {
 
   bool on_event(kEn::BaseEvent& event) override { return dispatcher_.dispatch(event); }
 
+  // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
   bool on_key_pressed(kEn::KeyPressedEvent& event) {
     KEN_INFO("{}", event);
     return false;

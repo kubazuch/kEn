@@ -1,25 +1,34 @@
 #pragma once
 
+#include <cstdint>
+
 #include <mEn/vec4.hpp>
 
 #include <kEn/renderer/vertex_array.hpp>
 
 namespace kEn {
 
+enum class RenderMode : uint8_t {
+  Points,
+  LineStrip,
+  LineLoop,
+  Lines,
+  TriangleStrip,
+  TriangleFan,
+  Triangles,
+  Patches,
+  LinesAdjacency
+};
+
+namespace render_mode {
+
+using enum RenderMode;
+
+}
+
 class RendererApi {
  public:
-  enum class Api { None = 0, OpenGL = 1 };
-  enum class RenderMode {
-    Points,
-    LineStrip,
-    LineLoop,
-    Lines,
-    TriangleStrip,
-    TriangleFan,
-    Triangles,
-    Patches,
-    LinesAdjacency
-  };
+  enum class Api : uint8_t { None = 0, OpenGL = 1 };
 
  public:
   virtual ~RendererApi() = default;
@@ -44,7 +53,7 @@ class RendererApi {
   virtual int max_tesselation_level() const = 0;
 
   static Api get_api() { return api_; }
-  static std::unique_ptr<RendererApi> create();
+  static std::unique_ptr<RendererApi> create() noexcept;
 
  private:
   static Api api_;

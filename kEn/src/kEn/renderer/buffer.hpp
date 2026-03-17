@@ -3,79 +3,82 @@
 #include <functional>
 #include <memory>
 #include <string_view>
+#include <utility>
 #include <vector>
 
-#define SHADER_FLOAT_SIZE 4
-#define SHADER_INT_SIZE 4
-#define SHADER_BOOL_SIZE 1
-
-// X-macro of form X(type, size, component count)
-#define DATA_TYPES(X)                   \
-  X(float_, SHADER_FLOAT_SIZE, 1)       \
-  X(float2, 2 * SHADER_FLOAT_SIZE, 2)   \
-  X(float3, 3 * SHADER_FLOAT_SIZE, 3)   \
-  X(float4, 4 * SHADER_FLOAT_SIZE, 4)   \
-  X(mat3, 3 * 3 * SHADER_FLOAT_SIZE, 3) \
-  X(mat4, 4 * 4 * SHADER_FLOAT_SIZE, 4) \
-  X(int_, SHADER_INT_SIZE, 1)           \
-  X(int2, 2 * SHADER_INT_SIZE, 2)       \
-  X(int3, 3 * SHADER_INT_SIZE, 3)       \
-  X(int4, 4 * SHADER_INT_SIZE, 4)       \
-  X(bool_, SHADER_BOOL_SIZE, 1)
-
 #include <kEn/core/assert.hpp>
+#include <kEn/core/core.hpp>
+#include <kEn/util/enum_map.hpp>
 
 namespace kEn {
 
-using shader_data_type = uint8_t;
+enum class ShaderDataType : uint8_t { Float, Float2, Float3, Float4, Mat3, Mat4, Int, Int2, Int3, Int4, Bool, Count };
 
-namespace shader_data_types {
-#define ENUM_ENTRY(id, size, comps) id,
-#define SIZE_ENTRY(id, size, comps) \
-  case id:                          \
-    return size;
-#define COMPS_ENTRY(id, size, comps) \
-  case id:                           \
-    return comps;
+namespace shader_data_type {
 
-enum : shader_data_type { None = 0, DATA_TYPES(ENUM_ENTRY) };
+using enum ShaderDataType;
 
-inline constexpr uint32_t get_size(shader_data_type type) {
-  switch (type) { DATA_TYPES(SIZE_ENTRY) }
+inline constexpr std::uint32_t kFloatSize = 4;
+inline constexpr std::uint32_t kIntSize   = 4;
+inline constexpr std::uint32_t kBoolSize  = 1;
 
-  KEN_CORE_ASSERT(false, "Unknown shader data type!");
-  return 0;
-}
+inline constexpr util::EnumMap kSizes{{
+    std::pair{Float, 1 * kFloatSize},
+    std::pair{Float2, 2 * kFloatSize},
+    std::pair{Float3, 3 * kFloatSize},
+    std::pair{Float4, 4 * kFloatSize},
+    std::pair{Mat3, 9 * kFloatSize},
+    std::pair{Mat4, 16 * kFloatSize},
+    std::pair{Int, 1 * kIntSize},
+    std::pair{Int2, 2 * kIntSize},
+    std::pair{Int3, 3 * kIntSize},
+    std::pair{Int4, 4 * kIntSize},
+    std::pair{Bool, kBoolSize},
+}};
 
-inline constexpr uint8_t get_component_count(shader_data_type type) {
-  switch (type) { DATA_TYPES(COMPS_ENTRY) }
+inline constexpr auto kComponents = util::make_enum_map<std::uint8_t>({
+    std::pair{Float, 1},
+    std::pair{Float2, 2},
+    std::pair{Float3, 3},
+    std::pair{Float4, 4},
+    std::pair{Mat3, 3},
+    std::pair{Mat4, 4},
+    std::pair{Int, 1},
+    std::pair{Int2, 2},
+    std::pair{Int3, 3},
+    std::pair{Int4, 4},
+    std::pair{Bool, 1},
+});
 
-  KEN_CORE_ASSERT(false, "Unknown shader data type!");
-  return 0;
-}
+[[nodiscard]] constexpr std::uint32_t get_size(ShaderDataType type) { return kSizes[type]; }
 
-#undef ENUM_ENTRY
-#undef SIZE_ENTRY
-#undef COMPS_ENTRY
-}  // namespace shader_data_types
+[[nodiscard]] constexpr std::uint8_t get_component_count(ShaderDataType type) { return kComponents[type]; }
 
-enum class BufferType : uint8_t { Vertex, Index, Uniform, ShaderStorage };
+}  // namespace shader_data_type
+
+enum class BufferType : std::uint8_t { Vertex, Index, Uniform, ShaderStorage };
+
+namespace buffer_type {
+
+using enum BufferType;
+
+}  // namespace buffer_type
 
 struct BufferElement {
   std::string_view name;
-  shader_data_type type{};
-  uint32_t size{};
+  ShaderDataType type{};
+  std::uint32_t size{};
   size_t offset{};
   bool normalized{};
 
-  constexpr BufferElement(shader_data_type type, std::string_view name, bool normalized = false)
-      : name(name), type(type), size(shader_data_types::get_size(type)), normalized(normalized) {}
+  constexpr BufferElement(ShaderDataType type, std::string_view name, bool normalized = false)
+      : name(name), type(type), size(shader_data_type::get_size(type)), normalized(normalized) {}
 };
 
 struct BufferLayout {
   BufferLayout() = default;
 
-  BufferLayout(std::initializer_list<BufferElement> elements) : elements_(elements) {
+  BufferLayout(std::initializer_list<BufferElement> elements) noexcept : elements_(elements) {
     size_t offset = 0;
     for (auto& element : elements_) {
       element.offset = offset;

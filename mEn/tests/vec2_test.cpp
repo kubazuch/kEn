@@ -24,7 +24,6 @@ TYPED_TEST_SUITE(Vec2, TestedTypes);
 }  // namespace
 
 TYPED_TEST(Vec2, LengthAndIndexing) {
-  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
   using T = TypeParam;
   using V = TestFixture::V;
 
@@ -41,7 +40,6 @@ TYPED_TEST(Vec2, LengthAndIndexing) {
   const V cv{T{3}, T{4}};
   EXPECT_EQ(cv[0], cv.x);
   EXPECT_EQ(cv[1], cv.y);
-  // NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }
 
 TYPED_TEST(Vec2, AliasesShareStorage) {

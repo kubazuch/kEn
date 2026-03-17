@@ -108,9 +108,9 @@ struct Id {
   bool operator==(const Id<T>& other) const { return raw_id_ == other.raw_id_; }
   bool operator!=(const Id<T>& other) const { return raw_id_ != other.raw_id_; }
 
-  inline size_t raw_id() const { return raw_id_; }
-  inline bool is_valid() const { return raw_id_ != std::numeric_limits<size_t>::max(); }
-  inline bool expired() const { return !registry_.get().is_registered(raw_id_); }
+  size_t raw_id() const { return raw_id_; }
+  bool is_valid() const { return raw_id_ != std::numeric_limits<size_t>::max(); }
+  bool expired() const { return !registry_.get().is_registered(raw_id_); }
 
   const IdRegistry<T>& registry() const { return registry_.get(); }
 
@@ -123,7 +123,7 @@ template <typename IdType>
   requires std::is_base_of_v<Id<typename IdType::object_type>, IdType>
 struct IdView {
   IdView() = delete;
-  IdView(const IdType& id) : raw_id_(id.raw_id()), registry_(id.registry()) {}  // NOLINT
+  IdView(const IdType& id) : raw_id_(id.raw_id()), registry_(id.registry()) {}  // NOLINT(google-explicit-constructor)
   IdView(size_t raw_id, const IdRegistry<typename IdType::object_type>& registry)
       : raw_id_(raw_id), registry_(registry) {}
 
@@ -132,9 +132,9 @@ struct IdView {
   bool operator==(const IdType& other) const { return raw_id_ == other.raw(); }
   bool operator!=(const IdType& other) const { return raw_id_ != other.raw(); }
 
-  inline size_t raw_id() const { return raw_id_; }
-  inline bool is_valid() const { return raw_id_ != std::numeric_limits<size_t>::max(); }
-  inline bool expired() const { return !registry_.get().is_registered(raw_id_); }
+  size_t raw_id() const { return raw_id_; }
+  bool is_valid() const { return raw_id_ != std::numeric_limits<size_t>::max(); }
+  bool expired() const { return !registry_.get().is_registered(raw_id_); }
 
  private:
   size_t raw_id_;

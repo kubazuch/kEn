@@ -7,11 +7,11 @@
 #include <kEn/core/log.hpp>
 #include <kEn/core/mod_keys.hpp>
 #include <kEn/core/mouse_codes.hpp>
+#include <kEn/core/window.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/key_events.hpp>
 #include <kEn/event/mouse_events.hpp>
 #include <kEn/renderer/graphics_context.hpp>
-#include <kEn/renderer/renderer_api.hpp>  // NOLINT
 
 namespace kEn {
 
@@ -27,14 +27,16 @@ void api_error_callback(int error_code, const char* description) {
 
 void WindowsWindow::api_init() {
   const int status = glfwInit();
-  KEN_CORE_ASSERT(status, "GLFW init failed!");  // NOLINT
+  KEN_CORE_ASSERT(status, "GLFW init failed!");
 
   glfwSetErrorCallback(api_error_callback);
 }
 
 void WindowsWindow::api_shutdown() { glfwTerminate(); }
 
-Window* Window::create(const WindowProperties& props) { return new WindowsWindow(props); }  // NOLINT
+Window* Window::create(const WindowProperties& props) {
+  return new WindowsWindow(props);  // NOLINT(cppcoreguidelines-owning-memory)
+}
 
 WindowsWindow::WindowsWindow(const WindowProperties& properties) {
   data_.title  = properties.title;
@@ -47,7 +49,7 @@ WindowsWindow::WindowsWindow(const WindowProperties& properties) {
     api_init();
   }
 
-#ifdef _KEN_DEBUG
+#ifdef KEN_DEBUG_BUILD
   if (RendererApi::get_api() == RendererApi::Api::OpenGL) {
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
   }
@@ -88,7 +90,7 @@ void WindowsWindow::set_glfw_callbacks() const {
     Data& win_data       = *static_cast<Data*>(glfwGetWindowUserPointer(window));
     win_data.active_mods = static_cast<ModKeys>(static_cast<ModKeys::underlying_type>(mods));
 
-    switch (action) {  // NOLINT
+    switch (action) {
       case GLFW_PRESS: {
         KeyPressedEvent event(static_cast<Key>(key), win_data.active_mods, false);
         win_data.handler(event);
@@ -104,6 +106,8 @@ void WindowsWindow::set_glfw_callbacks() const {
         win_data.handler(event);
         break;
       }
+      default:
+        break;
     }
   });
 
@@ -117,12 +121,13 @@ void WindowsWindow::set_glfw_callbacks() const {
     Data& win_data       = *static_cast<Data*>(glfwGetWindowUserPointer(window));
     win_data.active_mods = static_cast<ModKeys>(static_cast<ModKeys::underlying_type>(mods));
 
-    double dx, dy;  // NOLINT
+    double dx{};
+    double dy{};
     glfwGetCursorPos(window, &dx, &dy);
     auto x = static_cast<float>(dx);
     auto y = static_cast<float>(dy);
 
-    switch (action) {  // NOLINT
+    switch (action) {
       case GLFW_PRESS: {
         MouseButtonPressedEvent event({x, y}, static_cast<MouseButton>(button), win_data.active_mods);
         win_data.handler(event);
@@ -137,6 +142,8 @@ void WindowsWindow::set_glfw_callbacks() const {
         win_data.dragging[button] = false;
         break;
       }
+      default:
+        break;
     }
   });
 

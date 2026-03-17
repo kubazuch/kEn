@@ -13,8 +13,6 @@ namespace kEn {
 
 class Renderer {
  public:
-  using RenderMode = RendererApi::RenderMode;
-
   static void begin_scene(const std::shared_ptr<Camera>& camera);
   static void begin_scene(const mEn::Vec3& camera_pos, const mEn::Mat4& view, const mEn::Mat4& projection);
   static void end_scene();
@@ -41,12 +39,12 @@ class Renderer {
     mEn::Mat4 V_matrix;
     mEn::Mat4 P_matrix;
     mEn::Mat4 VP_matrix;
-    mEn::Vec3 camera_pos;
+    mEn::Vec3 camera_pos{};
     std::vector<std::shared_ptr<PointLight>> point_lights;
     std::vector<std::shared_ptr<DirectionalLight>> directional_lights;
     std::vector<std::shared_ptr<SpotLight>> spot_lights;
-    mEn::Vec3 ambient;
-    float fog;
+    mEn::Vec3 ambient{};
+    float fog{};
   };
 
   static std::unique_ptr<SceneData> scene_data_;

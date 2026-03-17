@@ -7,41 +7,20 @@
 #include <memory>
 #include <utility>
 
-#include <kEn/core/assert.hpp>
 #include <kEn/renderer/buffer.hpp>
 
 namespace kEn {
 
-namespace {
-
-constexpr GLenum get_buffer_type(BufferType type) {
-  switch (type) {
-    case BufferType::Vertex:
-      return GL_ARRAY_BUFFER;
-    case BufferType::Index:
-      return GL_ELEMENT_ARRAY_BUFFER;
-    case BufferType::Uniform:
-      return GL_UNIFORM_BUFFER;
-    case BufferType::ShaderStorage:
-      return GL_SHADER_STORAGE_BUFFER;
-    default:
-      KEN_CORE_ASSERT(false, "Unknown buffer type!");
-      return 0;
-  }
-}
-
-}  // namespace
-
-OpenglBuffer::OpenglBuffer(const void* data, size_t size) : size_(size), renderer_id_(0) {
+OpenglBuffer::OpenglBuffer(const void* data, size_t size) : size_(size) {
   glCreateBuffers(1, &renderer_id_);
   set_data_int(data, size);
 }
 
 OpenglBuffer::~OpenglBuffer() { glDeleteBuffers(1, &renderer_id_); }
 
-void OpenglBuffer::bind(BufferType type) const { glBindBuffer(get_buffer_type(type), renderer_id_); }
+void OpenglBuffer::bind(BufferType type) const { glBindBuffer(buffer_type::get_opengl_type(type), renderer_id_); }
 
-void OpenglBuffer::unbind(BufferType type) const { glBindBuffer(get_buffer_type(type), 0); }
+void OpenglBuffer::unbind(BufferType type) const { glBindBuffer(buffer_type::get_opengl_type(type), 0); }
 
 void OpenglBuffer::set_data_int(const void* data, size_t size) const {
   glNamedBufferData(renderer_id_, static_cast<GLsizeiptr>(size), data, GL_STATIC_DRAW);

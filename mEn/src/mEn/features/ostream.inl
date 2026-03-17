@@ -9,7 +9,6 @@
 #include <mEn/vec4.hpp>
 
 namespace mEn {
-// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 template <length_t L, typename T>
 MEN_FORCE_INLINE std::ostream& operator<<(std::ostream& os, const vec<L, T>& v) {
@@ -47,5 +46,4 @@ MEN_FORCE_INLINE std::ostream& operator<<(std::ostream& os, const qua<T>& q) {
   return os << '(' << q.w << ", " << q.x << ", " << q.y << ", " << q.z << ')';
 }
 
-// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace mEn

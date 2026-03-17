@@ -44,6 +44,8 @@ Checks: >
   -bugprone-unchecked-optional-access,
   -bugprone-exception-escape,
   -portability-avoid-pragma-once,
+  -bugprone-throwing-static-initialization,
+  -cppcoreguidelines-pro-bounds-avoid-unchecked-container-access,
 
 HeaderFilterRegex: ""
 

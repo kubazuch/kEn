@@ -21,7 +21,6 @@ TYPED_TEST_SUITE(TypePtr, TestedTypes);
 
 }  // namespace
 
-// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 TYPED_TEST(TypePtr, ValuePtrVec2PointsToX) {
   using T = TypeParam;
 
@@ -156,4 +155,3 @@ TYPED_TEST(TypePtr, MutableValuePtrQuatWritesBack) {
   ptr[0] = T{5};
   EXPECT_EQ(q.x, T{5});
 }
-// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)

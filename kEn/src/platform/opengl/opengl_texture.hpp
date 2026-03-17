@@ -12,7 +12,7 @@ class OpenglTexture2D : public Texture2D {
  public:
   explicit OpenglTexture2D(const TextureSpec& specification);
   explicit OpenglTexture2D(const std::filesystem::path& path, const TextureSpec& specification = TextureSpec());
-  virtual ~OpenglTexture2D() override;
+  ~OpenglTexture2D() override;
 
   const TextureSpec& get_specification() const override { return spec_; }
   uint32_t width() const override { return spec_.width.value(); }

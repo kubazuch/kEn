@@ -1,5 +1,6 @@
 #include "buffer.hpp"
 
+#include <cstddef>
 #include <memory>
 
 #include <kEn/core/assert.hpp>

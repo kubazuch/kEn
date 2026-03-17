@@ -14,7 +14,6 @@
 #include "../util/vec_test_utils.hpp"
 
 namespace {
-// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 using men_test::ExpectMatEq;
 using men_test::GV;
@@ -134,7 +133,6 @@ using TestedTypes = ::testing::Types<std::int32_t, float, double>;
 TYPED_TEST_SUITE(Mat3Common, TestedTypes);
 TYPED_TEST_SUITE(Mat4Common, TestedTypes);
 
-// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace
 
 TYPED_TEST(Mat3Common, MatrixCompMult) { RunMatrixCompMult<3, TypeParam>(); }

@@ -4,13 +4,13 @@
 #include <span>
 #include <vector>
 
-#include <mEn.hpp>
 #include <mEn/features/mat_decompose.hpp>
 #include <mEn/features/type_ptr.hpp>
 
 #include <kEn/core/assert.hpp>
+#include <kEn/core/core.hpp>
 
-namespace kEn {  // NOLINT
+namespace kEn {
 
 class GameObject;
 

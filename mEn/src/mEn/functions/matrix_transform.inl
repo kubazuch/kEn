@@ -6,7 +6,6 @@
 #include <mEn/vec3.hpp>
 
 namespace mEn {
-// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 template <length_t N, typename T>
 MEN_FORCE_INLINE constexpr mat<N, T> identity() noexcept {
@@ -120,5 +119,4 @@ MEN_FORCE_INLINE constexpr mat<4, T> lookAt(const vec<3, T>& eye, const vec<3, T
   return ret;
 }
 
-// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace mEn

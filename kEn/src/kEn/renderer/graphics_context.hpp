@@ -2,7 +2,9 @@
 
 #include <memory>
 
-namespace kEn {  // NOLINT
+#include <kEn/core/core.hpp>
+
+namespace kEn {
 
 class GraphicsContext {
  public:

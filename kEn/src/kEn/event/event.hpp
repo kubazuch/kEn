@@ -55,7 +55,7 @@
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define KEN_BIND_EVENT_HANDLER(member_fn) std::bind_front(&std::remove_reference_t<decltype(*this)>::member_fn, this)
 
-namespace kEn {  // NOLINT
+namespace kEn {
 
 namespace detail {
 

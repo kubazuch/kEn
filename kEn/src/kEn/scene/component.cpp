@@ -1,5 +1,6 @@
 #include "component.hpp"
 
+#include <kEn/core/transform.hpp>
 #include <kEn/scene/game_object.hpp>
 
 namespace kEn {

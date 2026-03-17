@@ -1,5 +1,4 @@
 namespace mEn {
-// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 namespace detail {
 
@@ -416,5 +415,4 @@ MEN_FORCE_INLINE constexpr bool operator!=(const mat<4, T>& m1, const mat<4, U>&
   return !(m1 == m2);
 }
 
-// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace mEn

@@ -28,10 +28,10 @@ class GameObject {
   GameObject& add_component(std::shared_ptr<GameComponent> to_add);
   GameObject& add_components(std::initializer_list<std::shared_ptr<GameComponent>> components);
 
-  inline IdView<GameObjectId> id() const { return id_; }
-  inline size_t raw_id() const { return id_.raw_id(); }
-  inline std::string_view name() const { return name_; }
-  inline void set_name(std::string_view name) { name_ = name; }
+  IdView<GameObjectId> id() const { return id_; }
+  size_t raw_id() const { return id_.raw_id(); }
+  std::string_view name() const { return name_; }
+  void set_name(std::string_view name) { name_ = name; }
 
   void render(Shader& shader, double alpha) const;
   void render_all(Shader& shader, double alpha) const;

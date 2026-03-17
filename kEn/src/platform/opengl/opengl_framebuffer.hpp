@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 
@@ -7,8 +9,8 @@ namespace kEn {
 
 class OpenglFramebuffer : public Framebuffer {
  public:
-  explicit OpenglFramebuffer(const FramebufferSpec& spec);
-  virtual ~OpenglFramebuffer();
+  explicit OpenglFramebuffer(FramebufferSpec spec);
+  ~OpenglFramebuffer() override;
 
   void invalidate();
 
@@ -38,7 +40,7 @@ class OpenglFramebuffer : public Framebuffer {
   FramebufferSpec spec_;
 
   std::vector<FramebufferTextureSpec> color_attachment_specs_;
-  FramebufferTextureSpec depth_attachment_spec_ = FramebufferTextureFormat::None;
+  std::optional<FramebufferTextureSpec> depth_attachment_spec_;
 
   std::vector<uint32_t> color_attachments_;
   uint32_t depth_attachment_ = 0;

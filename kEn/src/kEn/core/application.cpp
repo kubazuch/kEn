@@ -1,21 +1,30 @@
 #include "application.hpp"
 
-#include <GLFW/glfw3.h>
 #include <imgui/imgui.h>
 
 #include <chrono>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <ranges>
+#include <ratio>
 
 #include <kEn/core/assert.hpp>
+#include <kEn/core/layer.hpp>
+#include <kEn/core/window.hpp>
 #include <kEn/event/application_events.hpp>
+#include <kEn/event/event.hpp>
+#include <kEn/imgui/imgui_layer.hpp>
 #include <kEn/renderer/render_command.hpp>
-#include <kEn/renderer/renderer.hpp>
 
 namespace kEn {
 Application* Application::instance_ = nullptr;
 
-Application::Application() {
-  KEN_CORE_ASSERT(!instance_, "App already exists!");  // NOLINT
+Application::Application() : imgui_layer_(new ImguiLayer()) {  // NOLINT(cppcoreguidelines-owning-memory)
+  KEN_CORE_ASSERT(!instance_, "App already exists!");
   instance_ = this;
+
+  // TODO(kuzu): main window name?
 
   window_ = std::unique_ptr<Window>(Window::create());
   window_->set_event_handler([this](auto& event) { window_event_handler(event); });
@@ -25,7 +34,6 @@ Application::Application() {
 
   RenderCommand::init();
 
-  imgui_layer_ = new ImguiLayer();  // NOLINT
   push_overlay(imgui_layer_);
 }
 
@@ -62,7 +70,7 @@ void Application::run() {
 
     ++frames;
     if (second > 1s) {
-      uint16_t seconds = static_cast<uint16_t>(std::chrono::duration_cast<std::chrono::seconds>(second).count());
+      const uint16_t seconds = static_cast<uint16_t>(std::chrono::duration_cast<std::chrono::seconds>(second).count());
 
       fps_   = static_cast<uint16_t>(frames / seconds);
       tps_   = static_cast<uint16_t>(ticks / seconds);
@@ -120,8 +128,8 @@ void Application::window_event_handler(BaseEvent& e) {
     return;
   }
 
-  for (auto it = layer_stack_.rbegin(); it != layer_stack_.rend(); ++it) {
-    if ((*it)->on_event(e)) {
+  for (auto& it : std::ranges::reverse_view(layer_stack_)) {
+    if (it->on_event(e)) {
       break;
     }
   }

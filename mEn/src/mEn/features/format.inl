@@ -10,7 +10,6 @@
 
 // NOLINTBEGIN(bugprone-std-namespace-modification)
 namespace std {
-// NOLINTBEGIN(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
 template <mEn::length_t L, typename T>
 struct formatter<mEn::vec<L, T>> {
@@ -60,6 +59,5 @@ struct formatter<mEn::qua<T>> {
   }
 };
 
-// NOLINTEND(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }  // namespace std
 // NOLINTEND(bugprone-std-namespace-modification)

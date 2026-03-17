@@ -27,7 +27,7 @@ configure_library(
         GLFW_INCLUDE_NONE
         STB_IMAGE_IMPLEMENTATION
         ${KEN_COMPILE_DEFS}
-        $<$<CONFIG:Debug>:_KEN_DEBUG>
+        $<$<CONFIG:Debug>:KEN_DEBUG_BUILD>
 )
 
 # ##############################################################################

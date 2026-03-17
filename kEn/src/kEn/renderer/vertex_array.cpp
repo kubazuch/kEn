@@ -1,5 +1,8 @@
 #include "vertex_array.hpp"
 
+#include <memory>
+
+#include <kEn/core/assert.hpp>
 #include <kEn/renderer/renderer_api.hpp>
 
 #include <platform/opengl/opengl_vertex_array.hpp>
