@@ -21,6 +21,7 @@
 #include <kEn/scene/camera/camera.hpp>
 #include <kEn/scene/game_object.hpp>
 
+// TODO(kuzu): make this sandbox make more sense, it should showcase almost all elements of kEn
 namespace {
 class FizzbuzzLayer : public kEn::Layer {
  public:
@@ -114,7 +115,7 @@ class FizzbuzzLayer : public kEn::Layer {
 
 class Sandbox : public kEn::Application {
  public:
-  Sandbox() { push_layer(new FizzbuzzLayer()); }  // NOLINT
+  Sandbox() { push_layer(std::make_unique<FizzbuzzLayer>()); }
 };
 
 }  // namespace

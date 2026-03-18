@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mEn/features/ostream.hpp>
+#include <mEn/features/format.hpp>
 #include <mEn/vec2.hpp>
 
 #include <kEn/core/mod_keys.hpp>
@@ -25,12 +25,12 @@ class MouseButtonEvent {
    * @brief Get the mouse button associated with the event.
    * @return Mouse button code.
    */
-  MouseButton button() const { return button_; }
+  [[nodiscard]] MouseButton button() const { return button_; }
   /**
    * @brief Get the modifier keys active for the event.
    * @return Modifier key mask.
    */
-  ModKeys mod_keys() const { return mod_keys_; }
+  [[nodiscard]] ModKeys mod_keys() const { return mod_keys_; }
 
  protected:
   /**
@@ -38,8 +38,9 @@ class MouseButtonEvent {
    * @param button Mouse button code.
    * @param mod Active modifier keys.
    */
-  MouseButtonEvent(const MouseButton& button, const ModKeys& mod) : button_(button), mod_keys_(mod) {}
+  MouseButtonEvent(MouseButton button, ModKeys mod) : button_(button), mod_keys_(mod) {}
 
+ private:
   /** @brief Mouse button for the event. */
   MouseButton button_;
   /** @brief Modifier keys active at the time of the event. */
@@ -47,11 +48,40 @@ class MouseButtonEvent {
 };
 
 /**
+ * @brief Shared payload for mouse button events that include a cursor position.
+ *
+ * Extends @ref MouseButtonEvent with a cursor position, eliminating the duplication
+ * between @ref MouseButtonPressedEvent and @ref MouseButtonReleasedEvent.
+ */
+class MouseButtonActionEvent : public MouseButtonEvent {
+ public:
+  /**
+   * @brief Get the cursor position for the event.
+   * @return Cursor position.
+   */
+  [[nodiscard]] const mEn::Vec2& pos() const { return pos_; }
+
+ protected:
+  /**
+   * @brief Construct the payload.
+   * @param pos Cursor position.
+   * @param button Mouse button code.
+   * @param mod Active modifier keys.
+   */
+  MouseButtonActionEvent(const mEn::Vec2& pos, MouseButton button, ModKeys mod)
+      : MouseButtonEvent(button, mod), pos_(pos) {}
+
+ private:
+  /** @brief Cursor position at the time of the event. */
+  mEn::Vec2 pos_;
+};
+
+/**
  * @brief Event fired when a mouse button is pressed.
  *
  * Includes cursor position at the time of the press.
  */
-class MouseButtonPressedEvent : public MouseButtonEvent, public Event<MouseButtonPressedEvent> {
+class MouseButtonPressedEvent : public MouseButtonActionEvent, public Event<MouseButtonPressedEvent> {
  public:
   /**
    * @brief Construct the event.
@@ -59,25 +89,15 @@ class MouseButtonPressedEvent : public MouseButtonEvent, public Event<MouseButto
    * @param button Mouse button code.
    * @param mod Active modifier keys.
    */
-  MouseButtonPressedEvent(const mEn::Vec2& pos, const MouseButton& button, const ModKeys& mod)
-      : MouseButtonEvent(button, mod), pos_(pos) {}
+  MouseButtonPressedEvent(const mEn::Vec2& pos, MouseButton button, ModKeys mod)
+      : MouseButtonActionEvent(pos, button, mod) {}
 
-  /**
-   * @brief Get the cursor position for the press.
-   * @return Cursor position.
-   */
-  const mEn::Vec2& pos() const { return pos_; }
-
-  void write(std::ostream& os) const override {
-    os << kName << ": " << pos_ << ", button " << mouse::code(button_) << " (" << mouse::name_of(button_)
-       << "), mod keys: " << mod_key::active(mod_keys_);
+  [[nodiscard]] std::string to_string() const override {
+    return std::format("{}: {}, button {} ({}), mod keys: {}", kName, pos(), mouse::code(button()),
+                       mouse::name_of(button()), mod_key::active(mod_keys()));
   }
 
   static constexpr std::string_view kName = "MouseButtonPressedEvent";
-
- private:
-  /** @brief Cursor position at the time of the press. */
-  mEn::Vec2 pos_;
 };
 
 /**
@@ -85,7 +105,7 @@ class MouseButtonPressedEvent : public MouseButtonEvent, public Event<MouseButto
  *
  * Includes cursor position at the time of the release.
  */
-class MouseButtonReleasedEvent : public MouseButtonEvent, public Event<MouseButtonReleasedEvent> {
+class MouseButtonReleasedEvent : public MouseButtonActionEvent, public Event<MouseButtonReleasedEvent> {
  public:
   /**
    * @brief Construct the event.
@@ -93,25 +113,15 @@ class MouseButtonReleasedEvent : public MouseButtonEvent, public Event<MouseButt
    * @param button Mouse button code.
    * @param mod Active modifier keys.
    */
-  MouseButtonReleasedEvent(const mEn::Vec2& pos, const MouseButton& button, const ModKeys& mod)
-      : MouseButtonEvent(button, mod), pos_(pos) {}
+  MouseButtonReleasedEvent(const mEn::Vec2& pos, MouseButton button, ModKeys mod)
+      : MouseButtonActionEvent(pos, button, mod) {}
 
-  /**
-   * @brief Get the cursor position for the release.
-   * @return Cursor position.
-   */
-  const mEn::Vec2& pos() const { return pos_; }
-
-  void write(std::ostream& os) const override {
-    os << kName << ": " << pos_ << ", button " << mouse::code(button_) << " (" << mouse::name_of(button_)
-       << "), mod keys: " << mod_key::active(mod_keys_);
+  [[nodiscard]] std::string to_string() const override {
+    return std::format("{}: {}, button {} ({}), mod keys: {}", kName, pos(), mouse::code(button()),
+                       mouse::name_of(button()), mod_key::active(mod_keys()));
   }
 
   static constexpr std::string_view kName = "MouseButtonReleasedEvent";
-
- private:
-  /** @brief Cursor position at the time of the release. */
-  mEn::Vec2 pos_;
 };
 
 /**
@@ -119,22 +129,21 @@ class MouseButtonReleasedEvent : public MouseButtonEvent, public Event<MouseButt
  *
  * Carries a 2D scroll offset (commonly x = horizontal, y = vertical).
  */
-
 class MouseScrollEvent : public Event<MouseScrollEvent> {
  public:
   /**
    * @brief Construct the event.
    * @param offset Scroll offset.
    */
-  explicit MouseScrollEvent(const mEn::Vec2 offset) : offset_(offset) {}
+  explicit MouseScrollEvent(const mEn::Vec2& offset) : offset_(offset) {}
 
   /**
    * @brief Get the scroll offset.
    * @return Scroll offset.
    */
-  const mEn::Vec2& offset() const { return offset_; }
+  [[nodiscard]] const mEn::Vec2& offset() const { return offset_; }
 
-  void write(std::ostream& os) const override { os << kName << ": " << offset_; }
+  [[nodiscard]] std::string to_string() const override { return std::format("{}: {}", kName, offset_); }
 
   static constexpr std::string_view kName = "MouseScrollEvent";
 
@@ -152,15 +161,15 @@ class MouseMoveEvent : public Event<MouseMoveEvent> {
    * @brief Construct the event.
    * @param pos New cursor position.
    */
-  explicit MouseMoveEvent(const mEn::Vec2 pos) : pos_(pos) {}
+  explicit MouseMoveEvent(const mEn::Vec2& pos) : pos_(pos) {}
 
   /**
    * @brief Get the current cursor position.
    * @return Cursor position.
    */
-  const mEn::Vec2& pos() const { return pos_; }
+  [[nodiscard]] const mEn::Vec2& pos() const { return pos_; }
 
-  void write(std::ostream& os) const override { os << kName << ": " << pos_; }
+  [[nodiscard]] std::string to_string() const override { return std::format("{}: {}", kName, pos_); }
 
   static constexpr std::string_view kName = "MouseMoveEvent";
 
@@ -184,30 +193,32 @@ class MouseDragEvent : public MouseButtonEvent, public Event<MouseDragEvent> {
    * @param button Mouse button code being held.
    * @param mod Active modifier keys.
    */
-  MouseDragEvent(const mEn::Vec2& from, const mEn::Vec2& to, const MouseButton& button, const ModKeys& mod)
+  MouseDragEvent(const mEn::Vec2& from, const mEn::Vec2& to, MouseButton button, ModKeys mod)
       : MouseButtonEvent(button, mod), from_(from), to_(to) {}
 
   /**
    * @brief Get the drag start position.
    * @return Start position.
    */
-  const mEn::Vec2& from() const { return from_; }
+  [[nodiscard]] const mEn::Vec2& from() const { return from_; }
   /**
    * @brief Get the drag end position.
    * @return End position.
    */
-  const mEn::Vec2& to() const { return to_; }
+  [[nodiscard]] const mEn::Vec2& to() const { return to_; }
 
-  void write(std::ostream& os) const override {
-    os << kName << ": " << from_ << " to " << to_ << ", button " << mouse::code(button_) << " ("
-       << mouse::name_of(button_) << "), mod keys: " << mod_key::active(mod_keys_);
+  [[nodiscard]] std::string to_string() const override {
+    return std::format("{}: {} to {}, button {} ({}), mod keys: {}", kName, from_, to_, mouse::code(button()),
+                       mouse::name_of(button()), mod_key::active(mod_keys()));
   }
 
   static constexpr std::string_view kName = "MouseDragEvent";
 
  private:
-  /** @brief Drag start and end positions. */
-  mEn::Vec2 from_, to_;
+  /** @brief Drag start position. */
+  mEn::Vec2 from_;
+  /** @brief Drag end position. */
+  mEn::Vec2 to_;
 };
 
 }  // namespace kEn

@@ -1,6 +1,7 @@
 #pragma once
 
-#include <ostream>
+#include <format>
+#include <utility>
 
 #include <kEn/core/key_codes.hpp>
 #include <kEn/core/mod_keys.hpp>
@@ -24,13 +25,13 @@ class KeyEvent {
    * @brief Get the key associated with the event.
    * @return Key code.
    */
-  Key key() const { return key_; }
+  [[nodiscard]] Key key() const { return key_; }
 
   /**
    * @brief Get the modifier keys active for the event.
    * @return Modifier key mask.
    */
-  ModKeys mod_keys() const { return mod_keys_; }
+  [[nodiscard]] ModKeys mod_keys() const { return mod_keys_; }
 
  protected:
   /**
@@ -38,8 +39,9 @@ class KeyEvent {
    * @param key Key code.
    * @param mod Active modifier keys.
    */
-  KeyEvent(const Key& key, const ModKeys& mod) : key_(key), mod_keys_(mod) {}
+  KeyEvent(Key key, ModKeys mod) : key_(key), mod_keys_(mod) {}
 
+ private:
   /** @brief Key code for the event. */
   Key key_;
   /** @brief Modifier keys active at the time of the event. */
@@ -60,17 +62,17 @@ class KeyPressedEvent : public Event<KeyPressedEvent>, public KeyEvent {
    * @param mod Active modifier keys.
    * @param repeat True if this press is an auto-repeat press while the key is held.
    */
-  KeyPressedEvent(const Key& key, const ModKeys& mod, bool repeat = false) : KeyEvent(key, mod), is_repeat_(repeat) {}
+  KeyPressedEvent(Key key, ModKeys mod, bool repeat = false) : KeyEvent(key, mod), is_repeat_(repeat) {}
 
   /**
    * @brief Check whether this press is an auto-repeat.
    * @return True if repeated (auto-repeat), false otherwise.
    */
-  bool is_repeat() const { return is_repeat_; }
+  [[nodiscard]] bool is_repeat() const { return is_repeat_; }
 
-  void write(std::ostream& os) const override {
-    os << kName << ": " << key::code(key_) << " (" << key::name_of(key_)
-       << "), mod keys: " << mod_key::active(mod_keys_) << ", repeating = " << is_repeat_;
+  [[nodiscard]] std::string to_string() const override {
+    return std::format("{}: {} ({}), mod keys: {}, repeating = {}", kName, key::code(key()), key::name_of(key()),
+                       mod_key::active(mod_keys()), is_repeat_);
   }
 
   static constexpr std::string_view kName = "KeyPressedEvent";
@@ -90,11 +92,11 @@ class KeyReleasedEvent : public Event<KeyReleasedEvent>, public KeyEvent {
    * @param key Key code.
    * @param mod Active modifier keys.
    */
-  KeyReleasedEvent(const Key& key, const ModKeys& mod) : KeyEvent(key, mod) {}
+  KeyReleasedEvent(Key key, ModKeys mod) : KeyEvent(key, mod) {}
 
-  void write(std::ostream& os) const override {
-    os << kName << ": " << key::code(key_) << " (" << key::name_of(key_)
-       << "), mod keys: " << mod_key::active(mod_keys_);
+  [[nodiscard]] std::string to_string() const override {
+    return std::format("{}: {} ({}), mod keys: {}", kName, key::code(key()), key::name_of(key()),
+                       mod_key::active(mod_keys()));
   }
 
   static constexpr std::string_view kName = "KeyReleasedEvent";
@@ -112,10 +114,11 @@ class KeyTypedEvent : public Event<KeyTypedEvent>, public KeyEvent {
    * @brief Construct the event.
    * @param key Key code / character source.
    */
-  explicit KeyTypedEvent(const Key& key) : KeyEvent(key, ModKeys{}) {}
+  explicit KeyTypedEvent(Key key) : KeyEvent(key, ModKeys{}) {}
 
-  void write(std::ostream& os) const override {
-    os << kName << ": " << key::code(key_) << " (" << static_cast<char>(key_) << ")";
+  [[nodiscard]] std::string to_string() const override {
+    return std::format("{}: {} ({})", kName, key::code(key()),
+                       static_cast<char>(static_cast<unsigned char>(std::to_underlying(key()))));
   }
 
   static constexpr std::string_view kName = "KeyTypedEvent";

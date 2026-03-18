@@ -8,19 +8,21 @@
 #include <memory>
 #include <ranges>
 #include <ratio>
+#include <utility>
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/layer.hpp>
 #include <kEn/core/window.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/event.hpp>
+#include <kEn/imgui/imgui_frame.hpp>
 #include <kEn/imgui/imgui_layer.hpp>
 #include <kEn/renderer/render_command.hpp>
 
 namespace kEn {
 Application* Application::instance_ = nullptr;
 
-Application::Application() : imgui_layer_(new ImguiLayer()) {  // NOLINT(cppcoreguidelines-owning-memory)
+Application::Application() {
   KEN_CORE_ASSERT(!instance_, "App already exists!");
   instance_ = this;
 
@@ -34,12 +36,12 @@ Application::Application() : imgui_layer_(new ImguiLayer()) {  // NOLINT(cppcore
 
   RenderCommand::init();
 
-  push_overlay(imgui_layer_);
+  push_overlay(std::make_unique<ImguiLayer>());
 }
 
-void Application::push_layer(Layer* layer) { layer_stack_.push_layer(layer); }
+void Application::push_layer(std::unique_ptr<Layer> layer) { layer_stack_.push_layer(std::move(layer)); }
 
-void Application::push_overlay(Layer* overlay) { layer_stack_.push_overlay(overlay); }
+void Application::push_overlay(std::unique_ptr<Layer> overlay) { layer_stack_.push_overlay(std::move(overlay)); }
 
 void Application::run() {
   using clock = std::chrono::high_resolution_clock;
@@ -89,20 +91,21 @@ void Application::update() {
   }
 
   if (!minimized_) {
-    for (Layer* layer : layer_stack_) {
+    for (const auto& layer : layer_stack_) {
       layer->on_update(tick_time_, time_);
     }
   }
 }
 
 void Application::render(double alpha) {
-  for (Layer* layer : layer_stack_) {
+  for (const auto& layer : layer_stack_) {
     layer->on_render(alpha);
   }
 
-  imgui_layer_->begin();
   {
-    for (Layer* layer : layer_stack_) {
+    const ImguiFrame frame;
+
+    for (const auto& layer : layer_stack_) {
       layer->on_imgui();
     }
 
@@ -118,7 +121,6 @@ void Application::render(double alpha) {
     }
     ImGui::End();
   }
-  imgui_layer_->end();
 
   window_->on_update();
 }
@@ -128,7 +130,7 @@ void Application::window_event_handler(BaseEvent& e) {
     return;
   }
 
-  for (auto& it : std::ranges::reverse_view(layer_stack_)) {
+  for (const auto& it : std::ranges::reverse_view(layer_stack_)) {
     if (it->on_event(e)) {
       break;
     }

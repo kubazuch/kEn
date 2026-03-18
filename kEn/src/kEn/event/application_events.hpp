@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ostream>
+#include <format>
 
 #include <kEn/event/event.hpp>
 
@@ -42,20 +42,22 @@ class WindowResizeEvent : public Event<WindowResizeEvent> {
    * @brief Get the new window width in pixels.
    * @return Width in pixels.
    */
-  unsigned int width() const { return width_; }
+  [[nodiscard]] unsigned int width() const { return width_; }
   /**
    * @brief Get the new window height in pixels.
    * @return Height in pixels.
    */
-  unsigned int height() const { return height_; }
+  [[nodiscard]] unsigned int height() const { return height_; }
 
-  void write(std::ostream& os) const override { os << kName << ": " << width() << "x" << height(); }
+  [[nodiscard]] std::string to_string() const override { return std::format("{}: {}x{}", kName, width(), height()); }
 
   static constexpr std::string_view kName = "WindowResizeEvent";
 
  private:
-  /** @brief New window dimensions (pixels). */
-  unsigned int width_, height_;
+  /** @brief New window width in pixels. */
+  unsigned int width_;
+  /** @brief New window height in pixels. */
+  unsigned int height_;
 };
 
 }  // namespace kEn

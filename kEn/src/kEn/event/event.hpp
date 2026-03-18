@@ -4,7 +4,6 @@
 #include <format>
 #include <functional>
 #include <ostream>
-#include <sstream>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -12,32 +11,12 @@
 #include <unordered_map>
 #include <utility>
 
+#include <kEn/core/assert.hpp>
 #include <kEn/core/core.hpp>
 
 /** @file
  *  @ingroup ken
  */
-
-/**
- * @def KEN_EVENT_SUBSCRIBER(function)
- * @brief Convenience wrapper to adapt a member-call style function into a subscriber lambda.
- *
- * Expands to a lambda that captures @c this and forwards an event to @p function:
- * @code
- * dispatcher.subscribe<MyEvent>(KEN_EVENT_SUBSCRIBER(on_my_event));
- * @endcode
- *
- * @param function A callable expression that can be invoked as @c function(event).
- *
- * @deprecated Use @ref KEN_BIND_EVENT_HANDLER instead. This macro is kept only for backward
- *             compatibility and may be removed in a future release.
- *
- * @note This macro assumes it is used in a context where @c this is valid (i.e., inside a non-static
- *       member function).
- * @see KEN_BIND_EVENT_HANDLER
- */
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define KEN_EVENT_SUBSCRIBER(function) [this](auto& event) { return function(event); }
 
 /**
  * @def KEN_BIND_EVENT_HANDLER(member_fn)
@@ -176,20 +155,10 @@ struct BaseEvent {
   virtual std::type_index event_id() const noexcept = 0;
 
   /**
-   * @brief Write a human-readable representation of the event.
-   * @param os Output stream to write to.
+   * @brief Convert the event to a human-readable string.
+   * @return The string representation of the event.
    */
-  virtual void write(std::ostream& os) const = 0;
-
-  /**
-   * @brief Convert the event to a string by streaming @ref write().
-   * @return The string representation produced by @ref write().
-   */
-  [[nodiscard]] std::string to_string() const {
-    std::ostringstream oss;
-    write(oss);
-    return oss.str();
-  }
+  [[nodiscard]] virtual std::string to_string() const = 0;
 
   VIRTUAL_FIVE(BaseEvent);
 };
@@ -200,25 +169,7 @@ struct BaseEvent {
  * @param e Event to write.
  * @return @p os.
  */
-inline std::ostream& operator<<(std::ostream& os, const BaseEvent& e) {
-  e.write(os);
-  return os;
-}
-
-/**
- * @brief Customization for fmt::format that formats events via @ref BaseEvent::to_string().
- *
- * @tparam T Any type derived from @ref kEn::BaseEvent.
- * @param e Event instance.
- * @return String form of @p e.
- *
- * @note This participates in spdlog customization.
- */
-template <class T>
-  requires std::derived_from<std::remove_cvref_t<T>, BaseEvent>
-inline std::string format_as(const T& e) {
-  return e.to_string();
-}
+inline std::ostream& operator<<(std::ostream& os, const BaseEvent& e) { return os << e.to_string(); }
 
 /**
  * @brief Convenience base class for concrete event types.
@@ -226,14 +177,13 @@ inline std::string format_as(const T& e) {
  * Inherit your event type from @c Event<YourType> to get:
  * - a stable type identifier via @ref static_id()
  * - a default name via @ref static_name()
- * - default implementations of @ref BaseEvent::event_id() and @ref BaseEvent::write()
+ * - default implementations of @ref BaseEvent::event_id() and @ref BaseEvent::to_string()
  *
  * @tparam EventType The concrete event type (usually the derived type).
  *
  * @note Naming preference order for @ref static_name():
  *       1) @c EventType::kName (a static string_view-like constant)
- *       2) @c EventType::static_name()
- *       3) @c typeid(EventType).name() (may be compiler-mangled)
+ *       2) @c typeid(EventType).name() (may be compiler-mangled)
  */
 template <typename EventType>
 struct Event : public BaseEvent {
@@ -253,22 +203,17 @@ struct Event : public BaseEvent {
   static constexpr std::string_view static_name() noexcept {
     if constexpr (requires { EventType::kName; }) {
       return EventType::kName;
-    } else if constexpr (requires { EventType::static_name(); }) {
-      return EventType::static_name();
     } else {
       // Fallback: may be compiler-mangled
       return typeid(EventType).name();
     }
   }
 
-  /** @brief @copydoc kEn::BaseEvent::event_id */
+  /** @copydoc kEn::BaseEvent::event_id */
   std::type_index event_id() const noexcept override { return static_id(); }
 
-  /**
-   * @brief Default stream output: writes @ref static_name().
-   * @param os Output stream.
-   */
-  void write(std::ostream& os) const override { os << static_name(); }
+  /** @copydoc kEn::BaseEvent::to_string */
+  [[nodiscard]] std::string to_string() const override { return std::string{static_name()}; }
 };
 
 /**
@@ -392,8 +337,13 @@ class EventDispatcher {
    * @param memfn Member function pointer.
    */
   template <class Obj, class MemFn>
-    requires std::is_member_function_pointer_v<std::decay_t<MemFn>>
+    requires std::is_member_function_pointer_v<std::decay_t<MemFn>> && detail::deducible_single_arg_callable<MemFn> &&
+             std::derived_from<std::remove_cvref_t<detail::callable_arg1_t<MemFn>>, BaseEvent> &&
+             std::invocable<MemFn, Obj&, std::remove_cvref_t<detail::callable_arg1_t<MemFn>>&> &&
+             std::convertible_to<
+                 std::invoke_result_t<MemFn, Obj&, std::remove_cvref_t<detail::callable_arg1_t<MemFn>>&>, bool>
   void subscribe(Obj* obj, MemFn memfn) {
+    KEN_CORE_ASSERT(obj != nullptr, "subscribe: null object pointer");
     subscribe(*obj, memfn);
   }
 
@@ -437,9 +387,15 @@ class EventDispatcher {
   /** @brief Remove all subscribers. */
   void clear() noexcept { subscribers_.clear(); }
 
-  /** @brief @return True if there are no subscribers. */
+  /**
+   * @brief Check whether the container is empty.
+   * @return True if there are no elements.
+   */
   [[nodiscard]] bool empty() const noexcept { return subscribers_.empty(); }
-  /** @brief @return Number of stored subscribers (across all event types). */
+  /**
+   * @brief Check total number of event subscribers.
+   * @return Number of stored subscribers (across all event types).
+   */
   [[nodiscard]] std::size_t size() const noexcept { return subscribers_.size(); }
 
  private:
