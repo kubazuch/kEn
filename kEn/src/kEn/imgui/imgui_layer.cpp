@@ -4,7 +4,6 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
-#include <imguizmo/ImGuizmo.h>
 
 #include <kEn/core/application.hpp>
 #include <kEn/core/layer.hpp>
@@ -27,24 +26,34 @@ ImguiLayer::ImguiLayer() : Layer("ImGuiLayer") {
 }
 
 // https://github.com/ocornut/imgui/wiki/Getting-Started#example-if-you-are-using-glfw--openglwebgl
+// https://github.com/ocornut/imgui/blob/master/examples/example_glfw_opengl3/main.cpp
 void ImguiLayer::on_attach() {
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO& io = ImGui::GetIO();
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
-  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;      // IF using Docking Branch
-  io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
-  // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;    // Enable Keyboard Controls
+  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;        // Enable Docking
+  io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;  // Don't change cursor automatically
+  // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;      // Enable Multi-Viewport / Platform Windows
 
+  // Setup Dear ImGui style
   ImGui::StyleColorsDark();
+
+  // Setup scaling
+  const float main_scale = ImGui_ImplGlfw_GetContentScaleForMonitor(glfwGetPrimaryMonitor());
+  ImGuiStyle& style      = ImGui::GetStyle();
+  style.ScaleAllSizes(main_scale);
+  style.FontScaleDpi     = main_scale;  // Set initial font scale.
+  io.ConfigDpiScaleFonts = true;  // [Experimental] Automatically overwrite style.FontScaleDpi in Begin() when Monitor
+                                  // DPI changes. This will scale fonts but _NOT_ scale sizes/padding for now.
+  io.ConfigDpiScaleViewports = true;  // [Experimental] Scale Dear ImGui and Platform Windows when Monitor DPI changes.
 
   // Setup Platform/Renderer backends
   const Application& app = Application::instance();
   auto* window           = static_cast<GLFWwindow*>(app.main_window().native_window());
-  ImGui_ImplGlfw_InitForOpenGL(
-      window, true);  // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
-  ImGui_ImplOpenGL3_Init("#version 410");
+  ImGui_ImplGlfw_InitForOpenGL(window, true);
+  ImGui_ImplOpenGL3_Init("#version 410 core");
 }
 
 void ImguiLayer::on_detach() {
@@ -60,36 +69,6 @@ void ImguiLayer::on_imgui() {
 }
 
 bool ImguiLayer::on_event(BaseEvent& event) { return dispatcher_.dispatch(event); }
-
-void ImguiLayer::begin() {  // NOLINT(readability-convert-member-functions-to-static)
-  // (Your code calls glfwPollEvents())
-  // ...
-  // Start the Dear ImGui frame
-  ImGui_ImplOpenGL3_NewFrame();
-  ImGui_ImplGlfw_NewFrame();
-  ImGui::NewFrame();
-  ImGuizmo::BeginFrame();
-}
-
-void ImguiLayer::end() {  // NOLINT(readability-convert-member-functions-to-static)
-  // Rendering
-  // (Your code clears your framebuffer, renders your other stuff etc.)
-  ImGuiIO& io            = ImGui::GetIO();
-  const Application& app = Application::instance();
-  io.DisplaySize =
-      ImVec2(static_cast<float>(app.main_window().width()), static_cast<float>(app.main_window().height()));
-
-  ImGui::Render();
-  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-  // (Your code calls glfwSwapBuffers() etc.)
-
-  if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-    GLFWwindow* context = glfwGetCurrentContext();
-    ImGui::UpdatePlatformWindows();
-    ImGui::RenderPlatformWindowsDefault();
-    glfwMakeContextCurrent(context);
-  }
-}
 
 bool ImguiLayer::on_mouse_event(BaseEvent&) {  // NOLINT(readability-convert-member-functions-to-static)
   const ImGuiIO& io = ImGui::GetIO();

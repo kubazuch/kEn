@@ -8,7 +8,6 @@
 
 namespace kEn {
 
-using namespace std::chrono_literals;
 using duration_t = std::chrono::nanoseconds;
 
 class Layer {
@@ -23,7 +22,7 @@ class Layer {
   virtual void on_imgui() {}
   virtual bool on_event(BaseEvent& /*event*/) { return false; }
 
-  const std::string& name() const { return debug_name_; }
+  [[nodiscard]] const std::string& name() const { return debug_name_; }
 
   VIRTUAL_FIVE(Layer);
 

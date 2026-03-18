@@ -1,13 +1,13 @@
 #pragma once
 
 #include <chrono>
+#include <memory>
 
 #include <kEn/core/core.hpp>
 #include <kEn/core/layer_stack.hpp>
 #include <kEn/core/window.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/event.hpp>
-#include <kEn/imgui/imgui_layer.hpp>
 
 int main(int argc, char** argv);
 
@@ -23,8 +23,8 @@ class Application {
 
   void window_event_handler(BaseEvent& e);
 
-  void push_layer(Layer* layer);
-  void push_overlay(Layer* overlay);
+  void push_layer(std::unique_ptr<Layer> layer);
+  void push_overlay(std::unique_ptr<Layer> overlay);
 
   Window& main_window() const { return *window_; }
   static Application& instance() { return *instance_; }
@@ -45,7 +45,6 @@ class Application {
  private:
   std::unique_ptr<Window> window_;
   EventDispatcher dispatcher_;
-  ImguiLayer* imgui_layer_;
   bool running_   = true;
   bool minimized_ = false;
   LayerStack layer_stack_;

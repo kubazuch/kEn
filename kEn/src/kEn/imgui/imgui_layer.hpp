@@ -12,13 +12,8 @@ class ImguiLayer final : public Layer {
 
   void on_attach() override;
   void on_detach() override;
-  void on_update(duration_t, duration_t) override {}
-  void on_render(double) override {}
   void on_imgui() override;
   bool on_event(BaseEvent& event) override;
-
-  void begin();
-  void end();
 
  private:
   bool on_mouse_event(BaseEvent&);
