@@ -209,10 +209,10 @@ struct Event : public BaseEvent {
     }
   }
 
-  /** @brief @copydoc kEn::BaseEvent::event_id */
+  /** @copydoc kEn::BaseEvent::event_id */
   std::type_index event_id() const noexcept override { return static_id(); }
 
-  /** @brief @copydoc kEn::BaseEvent::to_string */
+  /** @copydoc kEn::BaseEvent::to_string */
   [[nodiscard]] std::string to_string() const override { return std::string{static_name()}; }
 };
 
@@ -387,9 +387,15 @@ class EventDispatcher {
   /** @brief Remove all subscribers. */
   void clear() noexcept { subscribers_.clear(); }
 
-  /** @brief @return True if there are no subscribers. */
+  /**
+   * @brief Check whether the container is empty.
+   * @return True if there are no elements.
+   */
   [[nodiscard]] bool empty() const noexcept { return subscribers_.empty(); }
-  /** @brief @return Number of stored subscribers (across all event types). */
+  /**
+   * @brief Check total number of event subscribers.
+   * @return Number of stored subscribers (across all event types).
+   */
   [[nodiscard]] std::size_t size() const noexcept { return subscribers_.size(); }
 
  private:
