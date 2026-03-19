@@ -272,9 +272,7 @@ void Transform::set_world_scale(const mEn::Vec3& desired_world_scale) {
   }
 
   const mEn::Vec3 parent_world_scale = parent_->world_scale();
-  KEN_CORE_ASSERT(std::abs(parent_world_scale.x) > mEn::kEpsilon<float> &&
-                      std::abs(parent_world_scale.y) > mEn::kEpsilon<float> &&
-                      std::abs(parent_world_scale.z) > mEn::kEpsilon<float>,
+  KEN_CORE_ASSERT(mEn::all(mEn::qreaterThan(parent_world_scale, 0.F)),
                   "set_world_scale: parent has a zero scale component");
   set_local_scale(desired_world_scale / parent_world_scale);
 }

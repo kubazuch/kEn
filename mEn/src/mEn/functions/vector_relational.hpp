@@ -7,31 +7,53 @@
 
 namespace mEn {
 
-// TODO(kuzu): replace with operators and allow comparisons vec<L,T> < T
-
 /// @brief Returns a bool vector where component @p i is @c true if @f$ x_i < y_i @f$.
 template <length_t L, typename T>
 [[nodiscard]] constexpr vec<L, bool> lessThan(const vec<L, T>& x, const vec<L, T>& y) noexcept;
+
+/// @brief Returns a bool vector where component @p i is @c true if @f$ x_i < s @f$.
+template <length_t L, typename T>
+[[nodiscard]] constexpr vec<L, bool> lessThan(const vec<L, T>& x, T s) noexcept;
 
 /// @brief Returns a bool vector where component @p i is @c true if @f$ x_i \leq y_i @f$.
 template <length_t L, typename T>
 [[nodiscard]] constexpr vec<L, bool> lessThanEqual(const vec<L, T>& x, const vec<L, T>& y) noexcept;
 
+/// @brief Returns a bool vector where component @p i is @c true if @f$ x_i \leq s @f$.
+template <length_t L, typename T>
+[[nodiscard]] constexpr vec<L, bool> lessThanEqual(const vec<L, T>& x, T s) noexcept;
+
 /// @brief Returns a bool vector where component @p i is @c true if @f$ x_i > y_i @f$.
 template <length_t L, typename T>
 [[nodiscard]] constexpr vec<L, bool> greaterThan(const vec<L, T>& x, const vec<L, T>& y) noexcept;
+
+/// @brief Returns a bool vector where component @p i is @c true if @f$ x_i > s @f$.
+template <length_t L, typename T>
+[[nodiscard]] constexpr vec<L, bool> greaterThan(const vec<L, T>& x, T s) noexcept;
 
 /// @brief Returns a bool vector where component @p i is @c true if @f$ x_i \geq y_i @f$.
 template <length_t L, typename T>
 [[nodiscard]] constexpr vec<L, bool> greaterThanEqual(const vec<L, T>& x, const vec<L, T>& y) noexcept;
 
+/// @brief Returns a bool vector where component @p i is @c true if @f$ x_i \geq s @f$.
+template <length_t L, typename T>
+[[nodiscard]] constexpr vec<L, bool> greaterThanEqual(const vec<L, T>& x, T s) noexcept;
+
 /// @brief Returns a bool vector where component @p i is @c true if @f$ x_i = y_i @f$.
 template <length_t L, typename T>
 [[nodiscard]] constexpr vec<L, bool> equal(const vec<L, T>& x, const vec<L, T>& y) noexcept;
 
+/// @brief Returns a bool vector where component @p i is @c true if @f$ x_i = s @f$.
+template <length_t L, typename T>
+[[nodiscard]] constexpr vec<L, bool> equal(const vec<L, T>& x, T s) noexcept;
+
 /// @brief Returns a bool vector where component @p i is @c true if @f$ x_i \neq y_i @f$.
 template <length_t L, typename T>
 [[nodiscard]] constexpr vec<L, bool> notEqual(const vec<L, T>& x, const vec<L, T>& y) noexcept;
+
+/// @brief Returns a bool vector where component @p i is @c true if @f$ x_i \neq s @f$.
+template <length_t L, typename T>
+[[nodiscard]] constexpr vec<L, bool> notEqual(const vec<L, T>& x, T s) noexcept;
 
 /// @brief Returns @c true if any component of @p v is @c true.
 template <length_t L>

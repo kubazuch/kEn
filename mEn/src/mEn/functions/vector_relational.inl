@@ -13,12 +13,22 @@ MEN_FORCE_INLINE constexpr vec<L, bool> lessThan(const vec<L, T>& x, const vec<L
 }
 
 template <length_t L, typename T>
+MEN_FORCE_INLINE constexpr vec<L, bool> lessThan(const vec<L, T>& x, T s) noexcept {
+  return lessThan(x, vec<L, T>(s));
+}
+
+template <length_t L, typename T>
 MEN_FORCE_INLINE constexpr vec<L, bool> lessThanEqual(const vec<L, T>& x, const vec<L, T>& y) noexcept {
   vec<L, bool> ret(true);
   for (length_t i = 0; i < L; ++i) {
     ret[i] = x[i] <= y[i];
   }
   return ret;
+}
+
+template <length_t L, typename T>
+MEN_FORCE_INLINE constexpr vec<L, bool> lessThanEqual(const vec<L, T>& x, T s) noexcept {
+  return lessThanEqual(x, vec<L, T>(s));
 }
 
 template <length_t L, typename T>
@@ -31,12 +41,22 @@ MEN_FORCE_INLINE constexpr vec<L, bool> greaterThan(const vec<L, T>& x, const ve
 }
 
 template <length_t L, typename T>
+MEN_FORCE_INLINE constexpr vec<L, bool> greaterThan(const vec<L, T>& x, T s) noexcept {
+  return greaterThan(x, vec<L, T>(s));
+}
+
+template <length_t L, typename T>
 MEN_FORCE_INLINE constexpr vec<L, bool> greaterThanEqual(const vec<L, T>& x, const vec<L, T>& y) noexcept {
   vec<L, bool> ret(true);
   for (length_t i = 0; i < L; ++i) {
     ret[i] = x[i] >= y[i];
   }
   return ret;
+}
+
+template <length_t L, typename T>
+MEN_FORCE_INLINE constexpr vec<L, bool> greaterThanEqual(const vec<L, T>& x, T s) noexcept {
+  return greaterThanEqual(x, vec<L, T>(s));
 }
 
 template <length_t L, typename T>
@@ -57,6 +77,16 @@ MEN_FORCE_INLINE constexpr vec<L, bool> equal(const vec<L, T>& x, const vec<L, T
 template <length_t L, typename T>
 MEN_FORCE_INLINE constexpr vec<L, bool> notEqual(const vec<L, T>& x, const vec<L, T>& y) noexcept {
   return not_(equal(x, y));
+}
+
+template <length_t L, typename T>
+MEN_FORCE_INLINE constexpr vec<L, bool> equal(const vec<L, T>& x, T s) noexcept {
+  return equal(x, vec<L, T>(s));
+}
+
+template <length_t L, typename T>
+MEN_FORCE_INLINE constexpr vec<L, bool> notEqual(const vec<L, T>& x, T s) noexcept {
+  return notEqual(x, vec<L, T>(s));
 }
 
 template <length_t L>
