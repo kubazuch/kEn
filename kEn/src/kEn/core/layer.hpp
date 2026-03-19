@@ -45,14 +45,13 @@ class Layer {
 
   /**
    * Called every fixed tick.
-   * @param delta  Time elapsed since the previous tick.
-   * @param time   Total engine time elapsed since startup.
+   * @p delta is the time elapsed since the previous tick; @p time is total elapsed since startup.
    */
   virtual void on_update(duration_t /*delta*/, duration_t /*time*/) {}
 
   /**
    * Called every frame for rendering.
-   * @param alpha  Interpolation factor [0, 1) between the previous and current tick state.
+   * @p alpha is the interpolation factor [0, 1) between the previous and current tick state.
    */
   virtual void on_render(double /*alpha*/) {}
 

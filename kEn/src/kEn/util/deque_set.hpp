@@ -39,9 +39,9 @@ namespace kEn {
 template <typename T>
 class DequeSet {
  public:
-  /// Container type that defines iteration order.
+  /** Container type that defines iteration order. */
   using order_container = std::deque<T>;
-  /// Container type that provides uniqueness / fast membership tests.
+  /** Container type that provides uniqueness / fast membership tests. */
   using set_container = std::unordered_set<T>;
 
   using value_type     = T;
@@ -66,17 +66,17 @@ class DequeSet {
 
   // ---- Iteration (in insertion order) ----
 
-  /// @return Iterator to the first element (in insertion order).
+  /** @return Iterator to the first element (in insertion order). */
   iterator begin() noexcept { return deque_.begin(); }
-  /// @return Iterator past the last element.
+  /** @return Iterator past the last element. */
   iterator end() noexcept { return deque_.end(); }
-  /// @return Const iterator to the first element (in insertion order).
+  /** @return Const iterator to the first element (in insertion order). */
   const_iterator begin() const noexcept { return deque_.begin(); }
-  /// @return Const iterator past the last element.
+  /** @return Const iterator past the last element. */
   const_iterator end() const noexcept { return deque_.end(); }
-  /// @return Const iterator to the first element.
+  /** @return Const iterator to the first element. */
   const_iterator cbegin() const noexcept { return deque_.cbegin(); }
-  /// @return Const iterator past the last element.
+  /** @return Const iterator past the last element. */
   const_iterator cend() const noexcept { return deque_.cend(); }
 
   /**

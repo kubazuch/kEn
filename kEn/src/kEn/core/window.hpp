@@ -8,6 +8,10 @@
 #include <kEn/core/core.hpp>
 #include <kEn/event/event.hpp>
 
+/** @file
+ *  @ingroup ken
+ */
+
 namespace kEn {
 
 struct WindowProperties {

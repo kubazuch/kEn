@@ -1,6 +1,10 @@
 // NOLINTBEGIN(cppcoreguidelines-macro-usage)
 #pragma once
 
+/** @file
+ *  @ingroup ken
+ */
+
 #ifdef KEN_DEBUG_BUILD
 #define KEN_ENABLE_ASSERTS
 #endif

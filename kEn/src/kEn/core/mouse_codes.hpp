@@ -56,7 +56,7 @@ enum class MouseButton : std::uint8_t {
 
 namespace mouse {
 
-/// @brief C++20 convenience: brings enumerators into `kEn::mouse` namespace.
+/** @brief C++20 convenience: brings enumerators into `kEn::mouse` namespace. */
 using enum MouseButton;
 
 // NOLINTBEGIN(readability-identifier-naming)

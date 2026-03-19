@@ -27,7 +27,7 @@ template <typename E>
 struct enable_flags : std::false_type {};  // NOLINT(readability-identifier-naming)
 
 /**
- * @brief Convenience variable template for @ref enable_flags.
+ * @brief Convenience variable template for @ref kEn::util::enable_flags.
  * @tparam E Enum type.
  */
 template <typename E>
@@ -36,8 +36,8 @@ inline constexpr bool enable_flags_v = enable_flags<E>::value;  // NOLINT(readab
 /**
  * @brief Concept satisfied by any enum type.
  *
- * Used to constrain @ref Flags and the free flag operators. It does not imply that flag
- * operators are enabled; that opt-in is controlled separately by @ref enable_flags_v.
+ * Used to constrain @ref kEn::util::Flags and the free flag operators. It does not imply that flag
+ * operators are enabled; that opt-in is controlled separately by @ref kEn::util::enable_flags_v.
  *
  * @tparam E Type to test.
  */
@@ -455,7 +455,7 @@ template <AnyEnum E>
  * @brief Enable enum-flag operators for @p EnumType.
  *
  * Expands to a specialization of @ref kEn::util::enable_flags for @p EnumType and brings the operators
- * from @ref kEn::util into the current scope via @c using declarations.
+ * from the @c kEn::util namespace into the current scope via @c using declarations.
  *
  * Typical usage:
  * @code

@@ -21,7 +21,7 @@ namespace kEn::util {
  * @brief Concept satisfied by enum types that can index an EnumMap.
  *
  * This concept only checks that @p E is an enum; it does not enforce the 0-based contiguous
- * value requirement stated in @ref EnumMap. That contract is validated at compile time by the
+ * value requirement stated in @ref kEn::util::EnumMap. That contract is validated at compile time by the
  * @c consteval constructor: a mis-shaped enum (values starting at 1, or with gaps) produces a
  * compile-time error via the out-of-range or missing-entry checks.
  *
@@ -205,7 +205,7 @@ template <typename E, std::size_t N>
 EnumMap(const std::pair<E, const char*> (&)[N]) -> EnumMap<E, std::string_view, N>;
 
 /**
- * @brief Construct an @ref EnumMap with an explicit value type different from the initializer type.
+ * @brief Construct an @ref kEn::util::EnumMap with an explicit value type different from the initializer type.
  *
  * Useful when the initializer pairs carry a type @p T that is convertible to @p V but not identical
  * (e.g. initializing an @c EnumMap<E, int> from @c std::pair<E, short> literals).
@@ -214,8 +214,8 @@ EnumMap(const std::pair<E, const char*> (&)[N]) -> EnumMap<E, std::string_view, 
  * @tparam E Enum type (deduced).
  * @tparam T Source value type in the pair array; must satisfy @c std::convertible_to<T, V>.
  * @tparam N Number of entries (deduced from @p pairs).
- * @param pairs Array of (enum, value) mappings; same constraints as the @ref EnumMap constructor.
- * @return An @ref EnumMap<E, V, N> with all entries converted to @p V.
+ * @param pairs Array of (enum, value) mappings; same constraints as the @ref kEn::util::EnumMap constructor.
+ * @return An @ref kEn::util::EnumMap "EnumMap<E,V,N>" with all entries converted to @p V.
  */
 template <typename V, typename E, typename T, std::size_t N>
   requires std::convertible_to<T, V>

@@ -2,6 +2,9 @@
 
 #include <mEn/fwd.hpp>
 
+/// @file
+/// @ingroup men
+
 namespace mEn {
 
 // TODO(kuzu): replace with operators and allow comparisons vec<L,T> < T

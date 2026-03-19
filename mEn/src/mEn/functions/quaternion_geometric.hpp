@@ -2,6 +2,9 @@
 
 #include <mEn/fwd.hpp>
 
+/// @file
+/// @ingroup men
+
 namespace mEn {
 
 /// @brief Returns the norm (magnitude) of quaternion @p q: @f$ \|q\| = \sqrt{w^2+x^2+y^2+z^2} @f$.

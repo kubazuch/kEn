@@ -130,7 +130,7 @@ using callable_result_t = typename callable_traits<std::decay_t<F>>::result_t;
  *
  * Events are dispatched via @ref kEn::EventDispatcher. Each event provides:
  * - a stable runtime type identifier via @ref event_id()
- * - a textual representation written to a stream via @ref write()
+ * - a textual representation via @ref kEn::BaseEvent::to_string()
  *
  * The @ref handled flag is used by the dispatcher to stop propagation early.
  */
@@ -220,7 +220,7 @@ struct Event : public BaseEvent {
  * @brief Minimal event dispatcher with type-based subscription.
  *
  * Subscribers are stored in a type-erased callable wrapper:
- * @ref base_callback_t, which takes a @ref kEn::BaseEvent& and returns @c bool.
+ * @ref base_callback_t, which takes a @ref kEn::BaseEvent reference and returns @c bool.
  *
  * Dispatch behavior:
  * - First, invoke subscribers registered for the event's dynamic type.
@@ -265,7 +265,7 @@ class EventDispatcher {
   /**
    * @brief Type-erased subscriber callable type.
    *
-   * The callable receives a @ref kEn::BaseEvent& and returns @c true if the event is handled.
+   * The callable receives a @ref kEn::BaseEvent reference and returns @c true if the event is handled.
    */
   using base_callback_t = std::move_only_function<bool(BaseEvent&)>;
 

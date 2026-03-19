@@ -178,7 +178,7 @@ enum class Key : std::uint16_t {
 
 namespace key {
 
-/// @brief C++20 convenience: brings enumerators into `kEn::key` namespace (e.g. `kEn::key::a`).
+/** @brief C++20 convenience: brings enumerators into `kEn::key` namespace (e.g. `kEn::key::a`). */
 using enum Key;
 
 /**

@@ -108,11 +108,11 @@ class OpenglShader final : public Shader {
    * @brief Construct and compile/link by loading sources from disk.
    *
    * The loader typically resolves:
-   * - <stem>.vert
-   * - <stem>.frag
+   * - \<stem\>.vert
+   * - \<stem\>.frag
    * and optionally:
-   * - <stem>.geom            if config.geometry
-   * - <stem>.tesc/.tese      if config.tessellation
+   * - \<stem\>.geom            if config.geometry
+   * - \<stem\>.tesc/.tese      if config.tessellation
    *
    * Additionally supports basic preprocessing:
    * - `#include "file"` resolved relative to the current file, then Shader::kShaderPath
@@ -133,15 +133,15 @@ class OpenglShader final : public Shader {
    */
   ~OpenglShader() override;
 
-  /// @copydoc Shader::bind
+  /** @copydoc Shader::bind */
   void bind() const override;
 
-  /// @copydoc Shader::unbind
+  /** @copydoc Shader::unbind */
   void unbind() const override;
 
   // <Uniforms>
 
-  /// @copydoc Shader::set_uniform_any
+  /** @copydoc Shader::set_uniform_any */
   void set_uniform_any(std::string_view name, const UniformValue& value) const override {
     std::visit(
         [&](auto const& x) {
@@ -151,7 +151,7 @@ class OpenglShader final : public Shader {
         value);
   }
 
-  /// @copydoc Shader::set_uniform_array_any
+  /** @copydoc Shader::set_uniform_array_any */
   void set_uniform_array_any(std::string_view name, const UniformArray& values) const override {
     std::visit(
         [&](auto span) {
@@ -161,15 +161,12 @@ class OpenglShader final : public Shader {
         values);
   }
 
-  /// @copydoc Shader::bind_uniform_buffer(std::string_view, size_t)
   void bind_uniform_buffer(std::string_view name, size_t binding) const override;
-
-  /// @copydoc Shader::bind_uniform_buffer(std::string_view, const UniformBuffer&)
   void bind_uniform_buffer(std::string_view name, const UniformBuffer& ubo) const override;
 
   // </Uniforms>
 
-  /// @copydoc Shader::get_name
+  /** @copydoc Shader::get_name */
   std::string_view get_name() const override { return name_; }
 
   VIRTUAL_FIVE(OpenglShader);

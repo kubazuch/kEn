@@ -7,6 +7,9 @@
 #include <glm/vec3.hpp>
 #endif
 
+/// @file
+/// @ingroup men
+
 namespace mEn {
 
 /// @brief 3-component vector with scalar type @p T.

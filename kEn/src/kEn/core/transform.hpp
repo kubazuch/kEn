@@ -10,6 +10,10 @@
 #include <kEn/core/assert.hpp>
 #include <kEn/core/core.hpp>
 
+/** @file
+ *  @ingroup ken
+ */
+
 namespace kEn {
 
 class GameObject;

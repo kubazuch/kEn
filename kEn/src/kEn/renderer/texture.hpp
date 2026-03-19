@@ -10,6 +10,10 @@
 #include <kEn/renderer/texture_format.hpp>
 #include <kEn/util/enum_map.hpp>
 
+/** @file
+ *  @ingroup ken
+ */
+
 namespace kEn {
 
 struct TextureSpec {
@@ -57,7 +61,7 @@ enum class TextureType : std::uint8_t { AmbientOcclusion, Diffuse, Height, Norma
 
 namespace texture_type {
 
-/// @brief C++20 convenience: brings enumerators into `kEn::texture_type` namespace.
+/** @brief C++20 convenience: brings enumerators into `kEn::texture_type` namespace. */
 using enum TextureType;
 
 inline constexpr util::EnumMap kNames{{

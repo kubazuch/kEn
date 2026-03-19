@@ -1,3 +1,7 @@
+/** @file
+ *  @ingroup ken
+ */
+
 #pragma once
 
 #include <string_view>

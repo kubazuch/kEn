@@ -4,6 +4,9 @@
 
 #include <mEn/fwd.hpp>
 
+/// @file
+/// @ingroup men
+
 // NOLINTBEGIN(bugprone-std-namespace-modification)
 namespace std {
 

@@ -9,6 +9,10 @@
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/event.hpp>
 
+/** @file
+ *  @ingroup ken
+ */
+
 int main(int argc, char** argv);
 
 namespace kEn {

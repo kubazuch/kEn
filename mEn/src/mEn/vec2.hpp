@@ -7,6 +7,9 @@
 #include <glm/vec2.hpp>
 #endif
 
+/// @file
+/// @ingroup men
+
 namespace mEn {
 
 /// @brief 2-component vector with scalar type @p T.

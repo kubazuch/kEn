@@ -1,5 +1,9 @@
 #pragma once
 
+/** @file
+ *  @ingroup ken
+ */
+
 #include <memory>
 
 #include <kEn/core/application.hpp>
