@@ -52,6 +52,7 @@ void OpenglRendererApi::init() {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+  // TODO(kuzu): Add mask as some vendors dont care bout depth testing
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
   glEnable(GL_LINE_SMOOTH);

@@ -1,5 +1,7 @@
 #include "imgui_backend.hpp"
 
+#include <memory>
+
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/renderer_api.hpp>
 

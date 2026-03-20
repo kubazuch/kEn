@@ -11,6 +11,7 @@
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/key_events.hpp>
 #include <kEn/event/mouse_events.hpp>
+#include <kEn/renderer/graphics_context.hpp>
 
 #ifdef KEN_DEBUG_BUILD
 #include <kEn/renderer/renderer_api.hpp>
@@ -141,13 +142,13 @@ void Window::set_glfw_callbacks() {
       case GLFW_PRESS: {
         MouseButtonPressedEvent event({x, y}, static_cast<MouseButton>(button), win_data.active_mods);
         win_data.handler(event);
-        win_data.drag_state[static_cast<size_t>(button)] = {.active = true, .from = {x, y}};
+        win_data.drag_state[static_cast<std::size_t>(button)] = {.active = true, .from = {x, y}};
         break;
       }
       case GLFW_RELEASE: {
         MouseButtonReleasedEvent event({x, y}, static_cast<MouseButton>(button), win_data.active_mods);
         win_data.handler(event);
-        win_data.drag_state[static_cast<size_t>(button)].active = false;
+        win_data.drag_state[static_cast<std::size_t>(button)].active = false;
         break;
       }
       default:
@@ -168,7 +169,7 @@ void Window::set_glfw_callbacks() {
     MouseMoveEvent event({x, y});
     win_data.handler(event);
 
-    for (size_t i = 0; i < GLFW_MOUSE_BUTTON_LAST; ++i) {
+    for (std::size_t i = 0; i < GLFW_MOUSE_BUTTON_LAST; ++i) {
       if (win_data.drag_state[i].active) {
         MouseDragEvent drag_event(win_data.drag_state[i].from, {x, y}, static_cast<MouseButton>(i),
                                   win_data.active_mods);
