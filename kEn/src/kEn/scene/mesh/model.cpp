@@ -54,9 +54,8 @@ void Model::render(Shader& shader, const Transform& transform) const {
 
 void Model::load_model(const std::filesystem::path& path, const TextureSpec& spec, bool flip_uvs) {
   Assimp::Importer importer;
-  const unsigned int flags =
-      aiProcess_Triangulate | aiProcess_GenSmoothNormals | (flip_uvs ? aiProcess_FlipUVs : 0U);
-  const aiScene* scene = importer.ReadFile(path.string(), flags);
+  const unsigned int flags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | (flip_uvs ? aiProcess_FlipUVs : 0U);
+  const aiScene* scene     = importer.ReadFile(path.string(), flags);
 
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
     KEN_CORE_ERROR("ASSIMP: {}", importer.GetErrorString());

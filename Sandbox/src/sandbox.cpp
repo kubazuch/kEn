@@ -10,6 +10,7 @@
 
 #include <kEn.hpp>  //NOLINT
 #include <kEn/core/application.hpp>
+#include <kEn/core/key_codes.hpp>
 #include <kEn/core/layer.hpp>
 #include <kEn/core/log.hpp>
 #include <kEn/core/window.hpp>
