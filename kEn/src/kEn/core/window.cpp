@@ -1,17 +1,13 @@
-#include "win_window.hpp"
-
-#include <GLFW/glfw3.h>
+#include <cstdint>
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/key_codes.hpp>
 #include <kEn/core/log.hpp>
-#include <kEn/core/mod_keys.hpp>
 #include <kEn/core/mouse_codes.hpp>
 #include <kEn/core/window.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/key_events.hpp>
 #include <kEn/event/mouse_events.hpp>
-#include <kEn/renderer/graphics_context.hpp>
 
 #ifdef KEN_DEBUG_BUILD
 #include <kEn/renderer/renderer_api.hpp>
@@ -19,37 +15,33 @@
 
 namespace kEn {
 
-namespace {
+uint8_t Window::glfw_window_count_ = 0;
 
-uint8_t GLFW_window_count = 0;  // NOLINT
+namespace {
 
 void api_error_callback(int error_code, const char* description) {
   KEN_CORE_ERROR("GLFW Error #{0}: {1}", error_code, description);
 }
 
-}  // namespace
-
-void WindowsWindow::api_init() {
+void api_init() {
   const int status = glfwInit();
   KEN_CORE_ASSERT(status, "GLFW init failed!");
 
   glfwSetErrorCallback(api_error_callback);
 }
 
-void WindowsWindow::api_shutdown() { glfwTerminate(); }
+void api_shutdown() { glfwTerminate(); }
 
-Window* Window::create(const WindowProperties& props) {
-  return new WindowsWindow(props);  // NOLINT(cppcoreguidelines-owning-memory)
-}
+}  // namespace
 
-WindowsWindow::WindowsWindow(const WindowProperties& properties) {
+Window::Window(const WindowProperties& properties) {
   data_.title  = properties.title;
   data_.width  = properties.width;
   data_.height = properties.height;
 
   KEN_CORE_DEBUG("Creating window {0} ({1} x {2})", properties.title, properties.width, properties.height);
 
-  if (GLFW_window_count == 0) {
+  if (glfw_window_count_ == 0) {
     api_init();
   }
 
@@ -62,18 +54,29 @@ WindowsWindow::WindowsWindow(const WindowProperties& properties) {
 
   window_ptr_ = glfwCreateWindow(static_cast<int>(data_.width), static_cast<int>(data_.height), data_.title.c_str(),
                                  nullptr, nullptr);
-  ++GLFW_window_count;
+  KEN_CORE_ASSERT(window_ptr_, "glfwCreateWindow failed!");
+  ++glfw_window_count_;
 
   context_ = GraphicsContext::create(window_ptr_);
   context_->init();
 
   glfwSetWindowUserPointer(window_ptr_, &data_);
-  WindowsWindow::set_vsync(true);
+  Window::set_vsync(true);
 
   set_glfw_callbacks();
 }
 
-void WindowsWindow::set_glfw_callbacks() const {
+Window::~Window() {
+  context_.reset();
+  glfwDestroyWindow(window_ptr_);
+  --glfw_window_count_;
+
+  if (glfw_window_count_ == 0) {
+    api_shutdown();
+  }
+}
+
+void Window::set_glfw_callbacks() {
   // events purr!
   glfwSetWindowCloseCallback(window_ptr_, [](GLFWwindow* window) {
     const Data& win_data = *static_cast<Data*>(glfwGetWindowUserPointer(window));
@@ -135,15 +138,13 @@ void WindowsWindow::set_glfw_callbacks() const {
       case GLFW_PRESS: {
         MouseButtonPressedEvent event({x, y}, static_cast<MouseButton>(button), win_data.active_mods);
         win_data.handler(event);
-        win_data.dragging[button]    = true;
-        win_data.drag_from_x[button] = x;
-        win_data.drag_from_y[button] = y;
+        win_data.drag_state[static_cast<size_t>(button)] = {.active = true, .from = {x, y}};
         break;
       }
       case GLFW_RELEASE: {
         MouseButtonReleasedEvent event({x, y}, static_cast<MouseButton>(button), win_data.active_mods);
         win_data.handler(event);
-        win_data.dragging[button] = false;
+        win_data.drag_state[static_cast<size_t>(button)].active = false;
         break;
       }
       default:
@@ -164,35 +165,26 @@ void WindowsWindow::set_glfw_callbacks() const {
     MouseMoveEvent event({x, y});
     win_data.handler(event);
 
-    for (int i = 0; i < GLFW_MOUSE_BUTTON_LAST; ++i) {
-      if (win_data.dragging[i]) {
-        MouseDragEvent drag_event({win_data.drag_from_x[i], win_data.drag_from_y[i]}, {x, y},
-                                  static_cast<MouseButton>(i), win_data.active_mods);
+    for (size_t i = 0; i < GLFW_MOUSE_BUTTON_LAST; ++i) {
+      if (win_data.drag_state[i].active) {
+        MouseDragEvent drag_event(win_data.drag_state[i].from, {x, y}, static_cast<MouseButton>(i),
+                                  win_data.active_mods);
         win_data.handler(drag_event);
       }
     }
   });
 }
 
-WindowsWindow::~WindowsWindow() {
-  glfwDestroyWindow(window_ptr_);
-  --GLFW_window_count;
-
-  if (GLFW_window_count == 0) {
-    api_shutdown();
-  }
-}
-
-void WindowsWindow::on_update() {
+void Window::on_update() {
   glfwPollEvents();
   context_->swap_buffers();
 }
 
-void WindowsWindow::set_vsync(const bool enabled) {
+void Window::set_vsync(const bool enabled) {
   glfwSwapInterval(enabled ? 1 : 0);
   data_.vsync = enabled;
 }
 
-bool WindowsWindow::vsync() const { return data_.vsync; }
+bool Window::vsync() const { return data_.vsync; }
 
 }  // namespace kEn

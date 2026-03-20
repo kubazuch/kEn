@@ -21,6 +21,7 @@ namespace kEn {
  *       With GLFW, the origin is the upper-left corner of the client area and
  *       units are screen coordinates (double precision in GLFW, converted to float here).
  */
+// TODO: [INPUT-01] Input is a class with only static members and no deleted constructor; should be a namespace
 class Input {
  public:
   /**
@@ -28,6 +29,8 @@ class Input {
    * @param key The key to query.
    * @return `true` if the key is down (pressed or repeated), otherwise `false`.
    */
+  // TODO: [INPUT-03] noexcept on all functions is misleading; Application::instance() is UB (not an exception) if
+  // singleton is null
   [[nodiscard]] static bool is_key_pressed(Key key) noexcept;
 
   /**
@@ -47,6 +50,7 @@ class Input {
    * @brief Get the current mouse cursor X position in window coordinates.
    * @return Cursor x coordinate.
    */
+  // TODO: [INPUT-02] get_mouse_x/y each invoke a full glfwGetCursorPos; calling both in one frame = two GLFW queries
   [[nodiscard]] static float get_mouse_x() noexcept;
 
   /**

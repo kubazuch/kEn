@@ -51,7 +51,7 @@ void ImguiLayer::on_attach() {
 
   // Setup Platform/Renderer backends
   const Application& app = Application::instance();
-  auto* window           = static_cast<GLFWwindow*>(app.main_window().native_window());
+  auto* window           = app.main_window().native_window();
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init("#version 410 core");
 }

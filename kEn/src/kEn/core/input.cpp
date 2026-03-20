@@ -1,10 +1,11 @@
+#include <kEn/core/input.hpp>
+
 #include <GLFW/glfw3.h>
 
 #include <mEn/fwd.hpp>
 #include <mEn/vec2.hpp>
 
 #include <kEn/core/application.hpp>
-#include <kEn/core/input.hpp>
 #include <kEn/core/key_codes.hpp>
 #include <kEn/core/mouse_codes.hpp>
 
@@ -12,7 +13,7 @@ namespace kEn {
 
 namespace {
 [[nodiscard]] GLFWwindow* glfw_window() noexcept {
-  return static_cast<GLFWwindow*>(Application::instance().main_window().native_window());
+  return Application::instance().main_window().native_window();
 }
 
 }  // namespace

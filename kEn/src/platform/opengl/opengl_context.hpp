@@ -2,12 +2,12 @@
 
 #include <kEn/renderer/graphics_context.hpp>
 
-#include <platform/win/win_window.hpp>
+struct GLFWwindow;
 
 namespace kEn {
 class OpenglContext final : public GraphicsContext {
  public:
-  explicit OpenglContext(void* window);
+  explicit OpenglContext(GLFWwindow* window);
 
   void init() override;
   void swap_buffers() override;

@@ -10,7 +10,7 @@
 
 namespace kEn {
 
-OpenglContext::OpenglContext(void* window) : window_ptr_(static_cast<GLFWwindow*>(window)) {
+OpenglContext::OpenglContext(GLFWwindow* window) : window_ptr_(window) {
   KEN_CORE_ASSERT(window, "Window handle is null");
 }
 

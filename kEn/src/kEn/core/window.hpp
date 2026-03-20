@@ -1,12 +1,17 @@
 #pragma once
 
+#include <GLFW/glfw3.h>
+
+#include <array>
 #include <functional>
+#include <memory>
 #include <string>
 
 #include <mEn/vec2.hpp>
 
-#include <kEn/core/core.hpp>
+#include <kEn/core/mod_keys.hpp>
 #include <kEn/event/event.hpp>
+#include <kEn/renderer/graphics_context.hpp>
 
 /** @file
  *  @ingroup ken
@@ -27,24 +32,52 @@ class Window {
  public:
   using handler_t = std::function<void(BaseEvent&)>;
 
-  Window()          = default;
-  virtual ~Window() = default;
+  explicit Window(const WindowProperties& properties = WindowProperties());
+  ~Window();
 
-  virtual void on_update() = 0;
+  Window(const Window&)            = delete;
+  Window& operator=(const Window&) = delete;
+  Window(Window&&)                 = delete;
+  Window& operator=(Window&&)      = delete;
 
-  virtual unsigned int width() const  = 0;
-  virtual unsigned int height() const = 0;
-  virtual mEn::Vec2 size() const      = 0;
+  void on_update();
 
-  virtual void set_event_handler(const handler_t& handler) = 0;
-  virtual void set_vsync(bool enabled)                     = 0;
-  virtual bool vsync() const                               = 0;
+  [[nodiscard]] unsigned int width() const { return data_.width; }
+  [[nodiscard]] unsigned int height() const { return data_.height; }
+  [[nodiscard]] mEn::Vec2 size() const { return {data_.width, data_.height}; }
 
-  virtual void* native_window() const = 0;
+  void set_event_handler(handler_t handler) { data_.handler = std::move(handler); }
+  void set_vsync(bool enabled);
+  [[nodiscard]] bool vsync() const;
 
-  static Window* create(const WindowProperties& props = WindowProperties());
+  [[nodiscard]] GLFWwindow* native_window() const { return window_ptr_; }
 
-  VIRTUAL_FIVE(Window);
+ private:
+  void set_glfw_callbacks();
+
+  static uint8_t glfw_window_count_;
+
+  GLFWwindow* window_ptr_;
+  std::unique_ptr<GraphicsContext> context_;
+
+  struct DragState {
+    bool active{};
+    mEn::Vec2 from{};
+  };
+
+  struct Data {
+    std::string title;
+    unsigned int width{}, height{};
+
+    bool vsync{};
+
+    std::array<DragState, GLFW_MOUSE_BUTTON_LAST> drag_state{};
+    ModKeys active_mods;
+
+    handler_t handler;
+  };
+
+  Data data_;
 };
 
 }  // namespace kEn
