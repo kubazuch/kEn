@@ -3,13 +3,13 @@
 #include <GLFW/glfw3.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
-#include <imgui/imgui_impl_opengl3.h>
 
 #include <kEn/core/application.hpp>
 #include <kEn/core/layer.hpp>
 #include <kEn/event/event.hpp>
 #include <kEn/event/key_events.hpp>
 #include <kEn/event/mouse_events.hpp>
+#include <kEn/imgui/imgui_backend.hpp>
 
 namespace kEn {
 
@@ -25,8 +25,9 @@ ImguiLayer::ImguiLayer() : Layer("ImGuiLayer") {
   dispatcher_.subscribe<KeyTypedEvent>(KEN_BIND_EVENT_HANDLER(on_keyboard_event));
 }
 
+ImguiLayer::~ImguiLayer() = default;
+
 // https://github.com/ocornut/imgui/wiki/Getting-Started#example-if-you-are-using-glfw--openglwebgl
-// https://github.com/ocornut/imgui/blob/master/examples/example_glfw_opengl3/main.cpp
 void ImguiLayer::on_attach() {
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
@@ -49,16 +50,16 @@ void ImguiLayer::on_attach() {
                                   // DPI changes. This will scale fonts but _NOT_ scale sizes/padding for now.
   io.ConfigDpiScaleViewports = true;  // [Experimental] Scale Dear ImGui and Platform Windows when Monitor DPI changes.
 
-  // Setup Platform/Renderer backends
-  const Application& app = Application::instance();
-  auto* window           = app.main_window().native_window();
-  ImGui_ImplGlfw_InitForOpenGL(window, true);
-  ImGui_ImplOpenGL3_Init("#version 410 core");
+  // Setup renderer backend
+  backend_ = ImguiBackend::create();
+  backend_->init(Application::instance().main_window().native_window());
+  ImguiBackend::set_instance(backend_.get());
 }
 
 void ImguiLayer::on_detach() {
-  ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplGlfw_Shutdown();
+  ImguiBackend::set_instance(nullptr);
+  backend_->shutdown();
+  backend_.reset();
   ImGui::DestroyContext();
 }
 

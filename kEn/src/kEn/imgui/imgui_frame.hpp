@@ -11,10 +11,10 @@ namespace kEn {
 /**
  * RAII guard for a single Dear ImGui render frame.
  *
- * Construction calls ImGui_ImplOpenGL3_NewFrame(), ImGui_ImplGlfw_NewFrame(),
- * ImGui::NewFrame(), and ImGuizmo::BeginFrame() to start the frame.
- * Destruction calls ImGui::Render() and ImGui_ImplOpenGL3_RenderDrawData() to
- * finalize and submit the draw data.
+ * Construction calls the active ImguiBackend's new_frame(), then ImGui::NewFrame()
+ * and ImGuizmo::BeginFrame() to start the frame.
+ * Destruction calls ImGui::Render() and delegates final draw submission to the
+ * active ImguiBackend's render().
  *
  * Usage:
  * @code

@@ -1,4 +1,4 @@
-#include <kEn/core/input.hpp>
+#include "input.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -12,9 +12,7 @@
 namespace kEn {
 
 namespace {
-[[nodiscard]] GLFWwindow* glfw_window() noexcept {
-  return Application::instance().main_window().native_window();
-}
+[[nodiscard]] GLFWwindow* glfw_window() noexcept { return Application::instance().main_window().native_window(); }
 
 }  // namespace
 

@@ -1,18 +1,15 @@
 #include "imgui_frame.hpp"
 
-#include <GLFW/glfw3.h>
 #include <imgui/imgui.h>
-#include <imgui/imgui_impl_glfw.h>
-#include <imgui/imgui_impl_opengl3.h>
 #include <imguizmo/ImGuizmo.h>
 
 #include <kEn/core/application.hpp>
+#include <kEn/imgui/imgui_backend.hpp>
 
 namespace kEn {
 
 ImguiFrame::ImguiFrame() {
-  ImGui_ImplOpenGL3_NewFrame();
-  ImGui_ImplGlfw_NewFrame();
+  ImguiBackend::instance().new_frame();
   ImGui::NewFrame();
   ImGuizmo::BeginFrame();
 }
@@ -24,14 +21,7 @@ ImguiFrame::~ImguiFrame() {
       ImVec2(static_cast<float>(app.main_window().width()), static_cast<float>(app.main_window().height()));
 
   ImGui::Render();
-  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-  if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-    GLFWwindow* context = glfwGetCurrentContext();
-    ImGui::UpdatePlatformWindows();
-    ImGui::RenderPlatformWindowsDefault();
-    glfwMakeContextCurrent(context);
-  }
+  ImguiBackend::instance().render();
 }
 
 }  // namespace kEn
