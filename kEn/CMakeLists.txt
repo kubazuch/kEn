@@ -39,5 +39,9 @@ set(GENERATED_SHADERS_DIR "${CMAKE_BINARY_DIR}/generated")
 
 # Include the reusable shader-embedding module (assumed to be in the same directory)
 include(../cmake/embed_shaders.cmake)
-embed_shaders(${SHADER_DIR} ${GENERATED_SHADERS_DIR})
-add_dependencies(kEn EmbedShaders)
+embed_shaders(
+    NAME kEn
+    SHADER_DIR "${SHADER_DIR}"
+    GENERATED_DIR "${GENERATED_SHADERS_DIR}"
+)
+add_dependencies(kEn ${EMBED_SHADERS_TARGET})

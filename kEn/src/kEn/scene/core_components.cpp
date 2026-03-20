@@ -8,6 +8,7 @@
 #include <mEn/functions/geometric.hpp>
 #include <mEn/functions/quaternion_transform.hpp>
 #include <mEn/functions/trigonometric.hpp>
+#include <mEn/functions/vector_relational.hpp>
 #include <mEn/fwd.hpp>
 #include <mEn/vec2.hpp>
 #include <mEn/vec3.hpp>
@@ -40,14 +41,14 @@ FreeLookComponent::FreeLookComponent(float sensitivity) : sensitivity_(sensitivi
 }
 
 void FreeLookComponent::update(duration_t /*delta*/, duration_t /*time*/) {
-  if (kEn::Input::is_key_pressed(kEn::key::escape)) {
-    kEn::Input::set_cursor_visible(true);
+  if (kEn::input::is_key_pressed(kEn::key::escape)) {
+    kEn::input::set_cursor_visible(true);
     update_ = false;
   }
 
-  if (kEn::Input::is_key_pressed(kEn::key::f)) {
-    kEn::Input::set_mouse_pos(window_center_);
-    kEn::Input::set_cursor_visible(false);
+  if (kEn::input::is_key_pressed(kEn::key::f)) {
+    kEn::input::set_mouse_pos(window_center_);
+    kEn::input::set_cursor_visible(false);
     update_ = true;
   }
 
@@ -55,22 +56,20 @@ void FreeLookComponent::update(duration_t /*delta*/, duration_t /*time*/) {
     return;
   }
 
-  auto delta_pos = kEn::Input::get_mouse_pos() - window_center_;
-  // TODO(kuzu): comparison operators
-  const bool rot_y = delta_pos.x != 0;
-  const bool rot_x = delta_pos.y != 0;
+  auto delta_pos              = kEn::input::get_mouse_pos() - window_center_;
+  const mEn::vec<2, bool> rot = mEn::equal(delta_pos, 0.0F);
 
-  if (rot_y) {
+  if (rot.y) {
     yaw_ -= mEn::radians(delta_pos.x) * sensitivity_;
   }
 
-  if (rot_x) {
+  if (rot.x) {
     pitch_ -= mEn::radians(delta_pos.y) * sensitivity_;
     pitch_ = mEn::clamp(pitch_, (-mEn::kHalfPi<float>)+0.01F, mEn::kHalfPi<float> - 0.01F);
   }
 
-  if (rot_x || rot_y) {
-    kEn::Input::set_mouse_pos(window_center_);
+  if (mEn::any(rot)) {
+    kEn::input::set_mouse_pos(window_center_);
 
     mEn::Quat rot(1, 0, 0, 0);
     rot = mEn::rotate(rot, yaw_, mEn::Vec3(0.0F, 1.0F, 0.0F));
@@ -90,25 +89,25 @@ bool FreeLookComponent::on_window_resize(const kEn::WindowResizeEvent& event) {
 
 void FreeMoveComponent::update(duration_t delta, duration_t /*time*/) {
   const float dt          = std::chrono::duration<float>(delta).count();
-  const float move_amount = kEn::Input::is_key_pressed(kEn::key::left_control) ? 3.F * dt * speed_ : dt * speed_;
+  const float move_amount = kEn::input::is_key_pressed(kEn::key::left_control) ? 3.F * dt * speed_ : dt * speed_;
 
   mEn::Vec3 direction{0.F};
-  if (kEn::Input::is_key_pressed(kEn::key::up) || kEn::Input::is_key_pressed(kEn::key::w)) {
+  if (kEn::input::is_key_pressed(kEn::key::up) || kEn::input::is_key_pressed(kEn::key::w)) {
     direction += transform().local_front();
   }
-  if (kEn::Input::is_key_pressed(kEn::key::down) || kEn::Input::is_key_pressed(kEn::key::s)) {
+  if (kEn::input::is_key_pressed(kEn::key::down) || kEn::input::is_key_pressed(kEn::key::s)) {
     direction -= transform().local_front();
   }
-  if (kEn::Input::is_key_pressed(kEn::key::right) || kEn::Input::is_key_pressed(kEn::key::d)) {
+  if (kEn::input::is_key_pressed(kEn::key::right) || kEn::input::is_key_pressed(kEn::key::d)) {
     direction += transform().local_right();
   }
-  if (kEn::Input::is_key_pressed(kEn::key::left) || kEn::Input::is_key_pressed(kEn::key::a)) {
+  if (kEn::input::is_key_pressed(kEn::key::left) || kEn::input::is_key_pressed(kEn::key::a)) {
     direction -= transform().local_right();
   }
-  if (kEn::Input::is_key_pressed(kEn::key::space) || kEn::Input::is_key_pressed(kEn::key::e)) {
+  if (kEn::input::is_key_pressed(kEn::key::space) || kEn::input::is_key_pressed(kEn::key::e)) {
     direction += world_y_ ? mEn::Vec3(0, 1, 0) : transform().local_up();
   }
-  if (kEn::Input::is_key_pressed(kEn::key::left_shift) || kEn::Input::is_key_pressed(kEn::key::q)) {
+  if (kEn::input::is_key_pressed(kEn::key::left_shift) || kEn::input::is_key_pressed(kEn::key::q)) {
     direction -= world_y_ ? mEn::Vec3(0, 1, 0) : transform().local_up();
   }
 

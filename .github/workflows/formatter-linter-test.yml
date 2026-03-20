@@ -27,7 +27,7 @@ jobs:
         shell: pwsh
         run: |
           cmake --preset=windows-clang-release -DPython_EXECUTABLE="$((get-command python3).Path)"
-          cmake --build --preset=windows-clang-release
+          cmake --build --preset=windows-clang-release --parallel
 
       - name: Run clang-format
         id: run-clang-format
@@ -38,7 +38,7 @@ jobs:
         id: run-clang-tidy
         if: success() || failure()
         run: |
-          python3 run-clang-tidy.py -j 4 -p build/windows-clang-release -warnings-as-errors * -header-filter "(k|m)En[\\\/]src[\\\/].*"
+          python3 run-clang-tidy.py -p build/windows-clang-release -warnings-as-errors * -header-filter "(k|m)En[\\\/]src[\\\/].*"
 
       - name: Run tests
         id: run-tests

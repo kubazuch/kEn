@@ -89,7 +89,7 @@ class FizzbuzzLayer : public kEn::Layer {
     ImGui::Begin("Fizzbuzz!");
     ImGui::Text("Fizz or buzz? That is the question...");
 
-    const auto pos = kEn::Input::get_mouse_pos();
+    const auto pos = kEn::input::get_mouse_pos();
     ImGui::Text("Mouse pos: %.1f, %.1f", pos.x, pos.y);
     ImGui::End();
   }

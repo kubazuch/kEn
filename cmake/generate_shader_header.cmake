@@ -8,8 +8,8 @@ file(READ "${INPUT_FILE}" file_content)
 # Prepare header content using "EOF" as the delimiter.
 set(header_content "#pragma once\n\n")
 set(header_content "${header_content}#include <string_view>\n\n")
-set(header_content "${header_content}constexpr std::string_view ${VARIABLE_NAME} = R\"EOF(\n")
-set(header_content "${header_content}${file_content}\n)EOF\";\n")
+set(header_content "${header_content}constexpr std::string_view ${VARIABLE_NAME} = R\"KEN_GLSL(\n")
+set(header_content "${header_content}${file_content}\n)KEN_GLSL\";\n")
 
 # Write the header file
 file(WRITE "${OUTPUT_FILE}" "${header_content}")

@@ -28,7 +28,7 @@ Application::Application() {
 
   // TODO(kuzu): main window name?
 
-  window_ = std::unique_ptr<Window>(Window::create());
+  window_ = std::make_unique<Window>();
   window_->set_event_handler([this](auto& event) { window_event_handler(event); });
 
   dispatcher_.subscribe(this, &Application::on_window_close);

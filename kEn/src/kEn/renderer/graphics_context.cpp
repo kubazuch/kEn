@@ -1,5 +1,7 @@
 #include "graphics_context.hpp"
 
+#include <GLFW/glfw3.h>
+
 #include <memory>
 
 #include <kEn/core/assert.hpp>
@@ -9,7 +11,7 @@
 
 namespace kEn {
 
-std::unique_ptr<GraphicsContext> GraphicsContext::create(void* native_window) {
+std::unique_ptr<GraphicsContext> GraphicsContext::create(GLFWwindow* native_window) {
   switch (RendererApi::get_api()) {
     case RendererApi::Api::None:
       KEN_CORE_ASSERT(false, "Renderer has no api!");
