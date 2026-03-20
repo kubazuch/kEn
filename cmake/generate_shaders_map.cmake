@@ -16,10 +16,6 @@ set(content "#pragma once\n\n")
 set(content "${content}#include <string_view>\n")
 set(content "${content}#include <unordered_map>\n\n")
 
-separate_arguments(SHADER_BASE_NAMES UNIX_COMMAND "${SHADER_BASE_NAMES}")
-separate_arguments(SHADER_VAR_NAMES UNIX_COMMAND "${SHADER_VAR_NAMES}")
-separate_arguments(HEADER_FILES UNIX_COMMAND "${HEADER_FILES}")
-
 # Include all individual shader headers (assumed to be in the same generated directory)
 foreach(header ${HEADER_FILES})
   get_filename_component(header_basename ${header} NAME)
@@ -38,6 +34,6 @@ foreach(i RANGE 0 ${lastIndex})
   set(content "${content}    {\"${shaderKey}\", ${shaderVar}},\\\n")
 endforeach()
 
-set(content "${content}};\\\n")
+set(content "${content}}\n")
 
 file(WRITE "${OUTPUT_FILE}" "${content}")
