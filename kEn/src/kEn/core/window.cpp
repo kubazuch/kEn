@@ -2,6 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include <cstddef>
 #include <cstdint>
 
 #include <kEn/core/assert.hpp>
@@ -29,6 +30,7 @@ void api_error_callback(int error_code, const char* description) {
 
 void api_init() {
   const int status = glfwInit();
+  (void)status;
   KEN_CORE_ASSERT(status, "GLFW init failed!");
 
   glfwSetErrorCallback(api_error_callback);
