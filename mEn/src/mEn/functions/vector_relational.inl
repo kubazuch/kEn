@@ -89,6 +89,30 @@ MEN_FORCE_INLINE constexpr vec<L, bool> notEqual(const vec<L, T>& x, T s) noexce
   return notEqual(x, vec<L, T>(s));
 }
 
+template <length_t L, Floating T>
+MEN_FORCE_INLINE constexpr vec<L, bool> near(const vec<L, T>& x, const vec<L, T>& y, T eps) noexcept {
+  vec<L, bool> ret(true);
+  for (length_t i = 0; i < L; ++i) {
+    ret[i] = ((x[i] > y[i]) ? (x[i] - y[i]) : (y[i] - x[i])) <= eps;
+  }
+  return ret;
+}
+
+template <length_t L, Floating T>
+MEN_FORCE_INLINE constexpr vec<L, bool> near(const vec<L, T>& x, T s, T eps) noexcept {
+  return near(x, vec<L, T>(s), eps);
+}
+
+template <length_t L, Floating T>
+MEN_FORCE_INLINE constexpr vec<L, bool> notNear(const vec<L, T>& x, const vec<L, T>& y, T eps) noexcept {
+  return not_(near(x, y, eps));
+}
+
+template <length_t L, Floating T>
+MEN_FORCE_INLINE constexpr vec<L, bool> notNear(const vec<L, T>& x, T s, T eps) noexcept {
+  return notNear(x, vec<L, T>(s), eps);
+}
+
 template <length_t L>
 MEN_FORCE_INLINE constexpr bool any(const vec<L, bool>& v) noexcept {
   bool ret = false;

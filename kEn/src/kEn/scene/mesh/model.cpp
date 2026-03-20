@@ -38,12 +38,12 @@ namespace kEn {
 std::unordered_map<std::filesystem::path, std::shared_ptr<Model>> Model::loaded_resources_;
 const std::filesystem::path Model::kModelPath("assets/models");
 
-std::shared_ptr<Model> Model::load(const std::filesystem::path& path, const TextureSpec& spec) {
+std::shared_ptr<Model> Model::load(const std::filesystem::path& path, const TextureSpec& spec, bool flip_uvs) {
   if (const auto it = loaded_resources_.find(path); it != loaded_resources_.end()) {
     return it->second;
   }
 
-  return loaded_resources_[path] = std::make_shared<Model>(path, spec);
+  return loaded_resources_[path] = std::make_shared<Model>(path, spec, flip_uvs);
 }
 
 void Model::render(Shader& shader, const Transform& transform) const {
@@ -52,9 +52,10 @@ void Model::render(Shader& shader, const Transform& transform) const {
   }
 }
 
-void Model::load_model(const std::filesystem::path& path, const TextureSpec& spec) {
+void Model::load_model(const std::filesystem::path& path, const TextureSpec& spec, bool flip_uvs) {
   Assimp::Importer importer;
-  const aiScene* scene = importer.ReadFile(path.string(), aiProcess_Triangulate | aiProcess_GenSmoothNormals);
+  const unsigned int flags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | (flip_uvs ? aiProcess_FlipUVs : 0U);
+  const aiScene* scene     = importer.ReadFile(path.string(), flags);
 
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
     KEN_CORE_ERROR("ASSIMP: {}", importer.GetErrorString());

@@ -74,6 +74,24 @@ void RunScalarComparisonTests() {
   ExpectBoolVecEq(mEn::notEqual(a, s), mEn::notEqual(a, mEn::vec<L, T>(s)));
 }
 
+template <mEn::length_t L, typename T>
+void RunNearTests() {
+  auto base   = GV<L, T>(T{1}, T{2}, T{3}, T{4});
+  auto approx = base;
+
+  const T small_eps = mEn::kEpsilon<T>;
+  const T large_eps = small_eps * T{10};
+
+  approx[0] = base[0] + (small_eps * T{0.5});  // within default eps
+  approx[1] = base[1] + (small_eps * T{2});    // outside default eps, inside large_eps
+
+  ExpectBoolVecEq(mEn::near(MV(base), MV(approx)), glm::equal(base, approx, small_eps));
+  ExpectBoolVecEq(mEn::near(MV(base), MV(approx), large_eps), glm::equal(base, approx, large_eps));
+  ExpectBoolVecEq(mEn::notNear(MV(base), MV(approx)), mEn::not_(mEn::near(MV(base), MV(approx))));
+  ExpectBoolVecEq(mEn::near(MV(base), T{2}), mEn::near(MV(base), mEn::vec<L, T>(T{2})));
+  ExpectBoolVecEq(mEn::notNear(MV(base), T{2}), mEn::notNear(MV(base), mEn::vec<L, T>(T{2})));
+}
+
 template <typename T>
 struct Vec2Relational : ::testing::Test {};
 template <typename T>
@@ -92,13 +110,16 @@ TYPED_TEST(Vec2Relational, Comparisons) { RunComparisonTests<2, TypeParam>(); }
 TYPED_TEST(Vec2Relational, ScalarComparisons) { RunScalarComparisonTests<2, TypeParam>(); }
 TYPED_TEST(Vec2Relational, EqualUsesEpsilonForFloating) { RunEqualEpsilonTests<2, TypeParam>(); }
 TYPED_TEST(Vec2Relational, AnyAllNot) { RunAnyAllNotTests<2, TypeParam>(); }
+TYPED_TEST(Vec2Relational, Near) { RunNearTests<2, TypeParam>(); }
 
 TYPED_TEST(Vec3Relational, Comparisons) { RunComparisonTests<3, TypeParam>(); }
 TYPED_TEST(Vec3Relational, ScalarComparisons) { RunScalarComparisonTests<3, TypeParam>(); }
 TYPED_TEST(Vec3Relational, EqualUsesEpsilonForFloating) { RunEqualEpsilonTests<3, TypeParam>(); }
 TYPED_TEST(Vec3Relational, AnyAllNot) { RunAnyAllNotTests<3, TypeParam>(); }
+TYPED_TEST(Vec3Relational, Near) { RunNearTests<3, TypeParam>(); }
 
 TYPED_TEST(Vec4Relational, Comparisons) { RunComparisonTests<4, TypeParam>(); }
 TYPED_TEST(Vec4Relational, ScalarComparisons) { RunScalarComparisonTests<4, TypeParam>(); }
 TYPED_TEST(Vec4Relational, EqualUsesEpsilonForFloating) { RunEqualEpsilonTests<4, TypeParam>(); }
 TYPED_TEST(Vec4Relational, AnyAllNot) { RunAnyAllNotTests<4, TypeParam>(); }
+TYPED_TEST(Vec4Relational, Near) { RunNearTests<4, TypeParam>(); }

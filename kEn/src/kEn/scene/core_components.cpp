@@ -57,13 +57,13 @@ void FreeLookComponent::update(duration_t /*delta*/, duration_t /*time*/) {
   }
 
   auto delta_pos              = kEn::input::get_mouse_pos() - window_center_;
-  const mEn::vec<2, bool> rot = mEn::equal(delta_pos, 0.0F);
+  const mEn::vec<2, bool> rot = mEn::notNear(delta_pos, 0.0F);
 
-  if (rot.y) {
+  if (rot.x) {
     yaw_ -= mEn::radians(delta_pos.x) * sensitivity_;
   }
 
-  if (rot.x) {
+  if (rot.y) {
     pitch_ -= mEn::radians(delta_pos.y) * sensitivity_;
     pitch_ = mEn::clamp(pitch_, (-mEn::kHalfPi<float>)+0.01F, mEn::kHalfPi<float> - 0.01F);
   }
