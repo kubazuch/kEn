@@ -32,7 +32,7 @@ class BaseLight : public GameComponent {
   void render(Shader&, double) override {}
   void on_transform_changed() override {}
 
-  VIRTUAL_FIVE(BaseLight);
+  DELETE_COPY_MOVE(BaseLight);
 
   virtual void load(std::string_view name, Shader& shader) const = 0;
 

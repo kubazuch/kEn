@@ -6,6 +6,10 @@
 
 // https://github.com/TheCherno/Hazel/blob/93af298aa9007f50bc908edb84812b3af8df2409/Hazel/src/Hazel/Core/Assert.h
 // NOLINTBEGIN(cppcoreguidelines-macro-usage)
+#ifdef KEN_DEBUG_BUILD
+#define KEN_ENABLE_ASSERTS
+#endif
+
 #ifdef KEN_ENABLE_ASSERTS
 // NOLINTNEXTLINE(unused-includes)
 #include <filesystem>
@@ -46,7 +50,7 @@
  * int result = dividend / divisor;
  * @endcode
  */
-#define KEN_ASSERT(...) KEN_SEMICOLON(KEN_INT_ASSERT_GET_MACRO(__VA_ARGS__)(_, __VA_ARGS__))
+#define KEN_ASSERT(...) KEN_STMT(KEN_INT_ASSERT_GET_MACRO(__VA_ARGS__)(_, __VA_ARGS__))
 
 /**
  * @brief Assertion macro that checks a condition. If the condition is false, it logs to CORE logger and triggers a
@@ -65,7 +69,7 @@
  * int result = dividend / divisor;
  * @endcode
  */
-#define KEN_CORE_ASSERT(...) KEN_SEMICOLON(KEN_INT_ASSERT_GET_MACRO(__VA_ARGS__)(_CORE_, __VA_ARGS__))
+#define KEN_CORE_ASSERT(...) KEN_STMT(KEN_INT_ASSERT_GET_MACRO(__VA_ARGS__)(_CORE_, __VA_ARGS__))
 #else
 #define KEN_ASSERT(...)
 #define KEN_CORE_ASSERT(...)

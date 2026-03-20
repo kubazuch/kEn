@@ -79,10 +79,7 @@ class LayerStack {
   std::vector<std::unique_ptr<Layer>>::const_reverse_iterator rend() const { return layers_.rend(); }
 
   /** @note Non-copyable and non-movable: owns Layer objects; moving would silently transfer that ownership. */
-  LayerStack(const LayerStack&)            = delete;
-  LayerStack& operator=(const LayerStack&) = delete;
-  LayerStack(LayerStack&&)                 = delete;
-  LayerStack& operator=(LayerStack&&)      = delete;
+  DELETE_COPY_MOVE(LayerStack);
 
  private:
   std::vector<std::unique_ptr<Layer>> layers_;

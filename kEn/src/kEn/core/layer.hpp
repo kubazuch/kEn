@@ -67,7 +67,7 @@ class Layer {
   /** @return The debug name supplied at construction. */
   [[nodiscard]] const std::string& name() const { return debug_name_; }
 
-  VIRTUAL_FIVE(Layer);
+  DELETE_COPY_MOVE(Layer);
 
  private:
   std::string debug_name_;

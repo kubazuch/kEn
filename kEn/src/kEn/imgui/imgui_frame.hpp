@@ -36,10 +36,7 @@ class ImguiFrame {
   /** Finalizes and renders the accumulated Dear ImGui draw data. */
   ~ImguiFrame();
 
-  ImguiFrame(const ImguiFrame&)            = delete;
-  ImguiFrame& operator=(const ImguiFrame&) = delete;
-  ImguiFrame(ImguiFrame&&)                 = delete;
-  ImguiFrame& operator=(ImguiFrame&&)      = delete;
+  DELETE_COPY_MOVE(ImguiFrame);
 };
 
 }  // namespace kEn

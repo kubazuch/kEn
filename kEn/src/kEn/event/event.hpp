@@ -160,7 +160,7 @@ struct BaseEvent {
    */
   [[nodiscard]] virtual std::string to_string() const = 0;
 
-  VIRTUAL_FIVE(BaseEvent);
+  DELETE_COPY_MOVE(BaseEvent);
 };
 
 /**

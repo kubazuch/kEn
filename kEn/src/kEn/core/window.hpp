@@ -35,10 +35,7 @@ class Window {
   explicit Window(const WindowProperties& properties = WindowProperties());
   ~Window();
 
-  Window(const Window&)            = delete;
-  Window& operator=(const Window&) = delete;
-  Window(Window&&)                 = delete;
-  Window& operator=(Window&&)      = delete;
+  DELETE_COPY_MOVE(Window);
 
   void on_update();
 
