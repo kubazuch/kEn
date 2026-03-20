@@ -43,11 +43,17 @@ void Material::load(Shader& shader, std::string_view name) const {
   shader.set_uniform(std::format("{}.emissive", name), emissive);
   shader.set_uniform(std::format("{}.surface_color", name), surface_color);
 
+  for (auto i = std::uint8_t{0}; i < std::to_underlying(TextureType::Count); ++i) {
+    const auto type = static_cast<TextureType>(i);
+    const auto it   = textures_.find(type);
+    const int count = (it != textures_.end()) ? static_cast<int>(it->second.size()) : 0;
+    shader.set_uniform(std::format("{}.{}_count", name, texture_type::name_of(type)), count);
+  }
+
   uint32_t texture_id = 0;
   for (const auto& [type, textures] : textures_) {
     for (std::size_t i = 0; i < textures.size(); ++i) {
-      shader.set_uniform(std::format("u_Material.{}[{}]", texture_type::name_of(type), i),
-                         static_cast<int>(texture_id));
+      shader.set_uniform(std::format("{}.{}[{}]", name, texture_type::name_of(type), i), static_cast<int>(texture_id));
       ++texture_id;
     }
   }

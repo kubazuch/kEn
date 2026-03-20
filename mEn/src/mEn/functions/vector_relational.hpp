@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mEn/constants.hpp>
 #include <mEn/fwd.hpp>
 
 /// @file
@@ -54,6 +55,22 @@ template <length_t L, typename T>
 /// @brief Returns a bool vector where component @p i is @c true if @f$ x_i \neq s @f$.
 template <length_t L, typename T>
 [[nodiscard]] constexpr vec<L, bool> notEqual(const vec<L, T>& x, T s) noexcept;
+
+/// @brief Returns a bool vector where component @p i is @c true if @f$ |x_i - y_i| \leq \varepsilon @f$.
+template <length_t L, Floating T>
+[[nodiscard]] constexpr vec<L, bool> near(const vec<L, T>& x, const vec<L, T>& y, T eps = kEpsilon<T>) noexcept;
+
+/// @brief Returns a bool vector where component @p i is @c true if @f$ |x_i - s| \leq \varepsilon @f$.
+template <length_t L, Floating T>
+[[nodiscard]] constexpr vec<L, bool> near(const vec<L, T>& x, T s, T eps = kEpsilon<T>) noexcept;
+
+/// @brief Returns a bool vector where component @p i is @c true if @f$ |x_i - y_i| > \varepsilon @f$.
+template <length_t L, Floating T>
+[[nodiscard]] constexpr vec<L, bool> notNear(const vec<L, T>& x, const vec<L, T>& y, T eps = kEpsilon<T>) noexcept;
+
+/// @brief Returns a bool vector where component @p i is @c true if @f$ |x_i - s| > \varepsilon @f$.
+template <length_t L, Floating T>
+[[nodiscard]] constexpr vec<L, bool> notNear(const vec<L, T>& x, T s, T eps = kEpsilon<T>) noexcept;
 
 /// @brief Returns @c true if any component of @p v is @c true.
 template <length_t L>
