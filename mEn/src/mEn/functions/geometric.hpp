@@ -2,6 +2,9 @@
 
 #include <mEn/fwd.hpp>
 
+/// @file
+/// @ingroup men
+
 namespace mEn {
 
 /// @brief Returns the Euclidean length (magnitude) of vector @p x: @f$ \|x\| @f$.

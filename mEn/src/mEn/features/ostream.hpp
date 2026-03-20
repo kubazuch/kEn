@@ -4,6 +4,9 @@
 
 #include <mEn/fwd.hpp>
 
+/// @file
+/// @ingroup men
+
 namespace mEn {
 
 /// @brief Writes a vec<L, T> to an output stream as @c (x, y[, z[, w]]).

@@ -7,6 +7,9 @@
 #include <glm/detail/type_quat.hpp>
 #endif
 
+/// @file
+/// @ingroup men
+
 namespace mEn {
 
 /// @brief Quaternion with scalar type @p T, representing a rotation in 3D.
@@ -62,7 +65,7 @@ struct qua {
   [[nodiscard]] constexpr operator glm::qua<T, Q>() const noexcept;  // NOLINT(google-explicit-constructor)
 #endif
 
-  /// @brief Narrowing conversion from @c qua<U>.
+  /// @brief Narrowing conversion from @c qua&lt;U&gt;.
   template <typename U>
   constexpr explicit qua(const qua<U>& q) noexcept;
 

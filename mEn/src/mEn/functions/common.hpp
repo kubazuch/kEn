@@ -2,6 +2,9 @@
 
 #include <mEn/fwd.hpp>
 
+/// @file
+/// @ingroup men
+
 namespace mEn {
 
 /// @brief Returns the absolute value of @p x, component-wise for vectors.

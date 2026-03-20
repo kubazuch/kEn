@@ -2,6 +2,9 @@
 
 #include <mEn/fwd.hpp>
 
+/// @file
+/// @ingroup men
+
 namespace mEn {
 
 /// @brief Raises @p base to the power @p exponent, component-wise.

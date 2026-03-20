@@ -114,8 +114,9 @@ OpenglTexture2D::OpenglTexture2D(const std::filesystem::path& path, const Textur
 
 OpenglTexture2D::~OpenglTexture2D() { glDeleteTextures(1, &renderer_id_); }
 
-void OpenglTexture2D::set_data(void* data, uint32_t /*size*/) {
+void OpenglTexture2D::set_data(void* data, uint32_t size) {
   const uint32_t bpp = texture_format::bytes_per_texel(spec_.format.value());
+  (void)size;
   KEN_CORE_ASSERT(size == spec_.width.value() * spec_.height.value() * bpp, "Data must be entire texture!");
   glPixelStorei(GL_UNPACK_ALIGNMENT, bpp == 1 ? 1 : (bpp % 4 == 0 ? 4 : 2));  // NOLINT
   glTextureSubImage2D(renderer_id_, 0, 0, 0, static_cast<GLsizei>(spec_.width.value()),

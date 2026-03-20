@@ -9,6 +9,9 @@
 
 #include <mEn/vec3.hpp>
 
+/// @file
+/// @ingroup men
+
 namespace mEn {
 
 /// @brief 3x3 square matrix with scalar type @p T.

@@ -2,6 +2,9 @@
 
 #include <mEn/fwd.hpp>
 
+/// @file
+/// @ingroup men
+
 namespace mEn {
 
 /// @brief Returns the identity quaternion @f$ (w=1, x=0, y=0, z=0) @f$.

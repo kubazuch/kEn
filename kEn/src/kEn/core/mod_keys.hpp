@@ -48,7 +48,7 @@ using ModKeys = util::Flags<ModKey>;
 
 namespace mod_key {
 
-/// @brief C++20 convenience: brings enumerators into `kEn::mod_key` namespace (e.g. `kEn::mod_key::Control`).
+/** @brief C++20 convenience: brings enumerators into `kEn::mod_key` namespace (e.g. `kEn::mod_key::Control`). */
 using enum ModKey;
 
 /**
@@ -58,7 +58,7 @@ using enum ModKey;
  * @return A stable string view naming @p key.
  *
  * @note This function names single enum values; it does not format combinations.
- *       For combinations, use @ref active().
+ *       For combinations, use @ref kEn::mod_key::active.
  * @note Passing a value not in @ref kEn::ModKey is undefined behaviour (`std::unreachable`).
  */
 [[nodiscard]] constexpr std::string_view name_of(ModKey key) noexcept {

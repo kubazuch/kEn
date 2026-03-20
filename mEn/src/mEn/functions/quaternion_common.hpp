@@ -2,6 +2,9 @@
 
 #include <mEn/fwd.hpp>
 
+/// @file
+/// @ingroup men
+
 namespace mEn {
 
 /// @brief Spherical linear blend between unit quaternions @p x and @p y.

@@ -2,6 +2,9 @@
 
 #include <mEn/fwd.hpp>
 
+/// @file
+/// @ingroup men
+
 namespace mEn {
 
 /// @brief Converts degrees to radians: @f$ d \cdot \pi / 180 @f$, component-wise.

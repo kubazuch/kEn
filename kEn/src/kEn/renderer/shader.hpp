@@ -175,7 +175,7 @@ class Shader {
   /**
    * @brief Create a shader by loading sources from disk.
    *
-   * The backend typically loads <stem>.vert and <stem>.frag and optionally other
+   * The backend typically loads \<stem\>.vert and \<stem\>.frag and optionally other
    * stages based on @p config.
    *
    * @param path   Path (often relative to kShaderPath) identifying the shader set.

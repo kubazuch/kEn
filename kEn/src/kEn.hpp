@@ -10,7 +10,7 @@
 #include <kEn/core/mouse_codes.hpp>
 #include <kEn/imgui/imgui_layer.hpp>
 
-/// Renderer
+// Renderer
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/render_command.hpp>
@@ -18,10 +18,10 @@
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/vertex_array.hpp>
 
-/// Scene
+// Scene
 #include <kEn/scene/camera/camera.hpp>
 #include <kEn/scene/core_components.hpp>
 #include <kEn/scene/game_object.hpp>
 
-/// Entry Point
+// Entry Point
 #include <kEn/core/entry_point.hpp>

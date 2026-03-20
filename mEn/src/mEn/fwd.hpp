@@ -6,6 +6,9 @@
 
 #include <mEn/config.hpp>
 
+/// @file
+/// @ingroup men
+
 namespace mEn {
 
 /// @brief Unsigned integer type used for vector/matrix dimension parameters.

@@ -61,6 +61,19 @@ void RunAnyAllNotTests() {
   ExpectBoolVecEq(mEn::not_(MV(mixed)), glm::not_(mixed));
 }
 
+template <mEn::length_t L, typename T>
+void RunScalarComparisonTests() {
+  const auto a = MV(GV<L, T>(T{1}, T{2}, T{3}, T{4}));
+  const T s    = T{2};
+
+  ExpectBoolVecEq(mEn::lessThan(a, s), mEn::lessThan(a, mEn::vec<L, T>(s)));
+  ExpectBoolVecEq(mEn::lessThanEqual(a, s), mEn::lessThanEqual(a, mEn::vec<L, T>(s)));
+  ExpectBoolVecEq(mEn::greaterThan(a, s), mEn::greaterThan(a, mEn::vec<L, T>(s)));
+  ExpectBoolVecEq(mEn::greaterThanEqual(a, s), mEn::greaterThanEqual(a, mEn::vec<L, T>(s)));
+  ExpectBoolVecEq(mEn::equal(a, s), mEn::equal(a, mEn::vec<L, T>(s)));
+  ExpectBoolVecEq(mEn::notEqual(a, s), mEn::notEqual(a, mEn::vec<L, T>(s)));
+}
+
 template <typename T>
 struct Vec2Relational : ::testing::Test {};
 template <typename T>
@@ -76,13 +89,16 @@ TYPED_TEST_SUITE(Vec4Relational, TestedTypes);
 }  // namespace
 
 TYPED_TEST(Vec2Relational, Comparisons) { RunComparisonTests<2, TypeParam>(); }
+TYPED_TEST(Vec2Relational, ScalarComparisons) { RunScalarComparisonTests<2, TypeParam>(); }
 TYPED_TEST(Vec2Relational, EqualUsesEpsilonForFloating) { RunEqualEpsilonTests<2, TypeParam>(); }
 TYPED_TEST(Vec2Relational, AnyAllNot) { RunAnyAllNotTests<2, TypeParam>(); }
 
 TYPED_TEST(Vec3Relational, Comparisons) { RunComparisonTests<3, TypeParam>(); }
+TYPED_TEST(Vec3Relational, ScalarComparisons) { RunScalarComparisonTests<3, TypeParam>(); }
 TYPED_TEST(Vec3Relational, EqualUsesEpsilonForFloating) { RunEqualEpsilonTests<3, TypeParam>(); }
 TYPED_TEST(Vec3Relational, AnyAllNot) { RunAnyAllNotTests<3, TypeParam>(); }
 
 TYPED_TEST(Vec4Relational, Comparisons) { RunComparisonTests<4, TypeParam>(); }
+TYPED_TEST(Vec4Relational, ScalarComparisons) { RunScalarComparisonTests<4, TypeParam>(); }
 TYPED_TEST(Vec4Relational, EqualUsesEpsilonForFloating) { RunEqualEpsilonTests<4, TypeParam>(); }
 TYPED_TEST(Vec4Relational, AnyAllNot) { RunAnyAllNotTests<4, TypeParam>(); }

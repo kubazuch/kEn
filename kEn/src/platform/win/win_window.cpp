@@ -13,6 +13,10 @@
 #include <kEn/event/mouse_events.hpp>
 #include <kEn/renderer/graphics_context.hpp>
 
+#ifdef KEN_DEBUG_BUILD
+#include <kEn/renderer/renderer_api.hpp>
+#endif
+
 namespace kEn {
 
 namespace {

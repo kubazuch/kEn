@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+#include <type_traits>
+
 #include <mEn/vec2.hpp>
 #include <mEn/vec3.hpp>
 #include <mEn/vec4.hpp>
@@ -50,7 +52,7 @@ void ExpectVecEq(const V<L, T>& actual, const glm::vec<glm::length_t{L}, T>& exp
 }
 
 template <mEn::length_t L>
-void ExpectBoolVecEq(const mEn::vec<L, bool>& actual, const glm::vec<glm::length_t{L}, bool>& expected) {
+void ExpectBoolVecEq(const mEn::vec<L, bool>& actual, std::type_identity_t<glm::vec<glm::length_t{L}, bool>> expected) {
   for (mEn::length_t i = 0; i < L; ++i) {
     EXPECT_EQ(actual[i], expected[i]) << "component " << i;
   }

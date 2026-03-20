@@ -5,6 +5,9 @@
 
 #include <mEn/config.hpp>
 
+/// @file
+/// @ingroup men
+
 namespace mEn {
 
 /// @brief A small value suitable for practical floating-point comparisons.

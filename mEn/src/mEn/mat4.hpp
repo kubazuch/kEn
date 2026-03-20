@@ -9,6 +9,9 @@
 
 #include <mEn/vec4.hpp>
 
+/// @file
+/// @ingroup men
+
 namespace mEn {
 
 /// @brief 4x4 square matrix with scalar type @p T.

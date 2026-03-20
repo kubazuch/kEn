@@ -7,6 +7,9 @@
 #include <glm/vec4.hpp>
 #endif
 
+/// @file
+/// @ingroup men
+
 namespace mEn {
 
 /// @brief 4-component vector with scalar type @p T.
