@@ -5,16 +5,14 @@
  */
 
 #include <memory>
+#include <string_view>
+#include <vector>
 
 #include <kEn/core/application.hpp>
 
-#ifdef KEN_PLATFORM_WIN
+extern kEn::Application* kEn::create_application(std::vector<std::string_view> args);
 
-extern kEn::Application* kEn::create_application();
-
-int main(int /*argc*/, char** /*argv*/) {  // NOLINT(misc-definitions-in-headers)
-  std::unique_ptr<kEn::Application> app(kEn::create_application());
+int main(int argc, char** argv) {  // NOLINT(misc-definitions-in-headers)
+  std::unique_ptr<kEn::Application> app(kEn::create_application({argv, argv + argc}));
   app->run();
 }
-
-#endif

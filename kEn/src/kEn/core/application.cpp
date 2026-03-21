@@ -23,13 +23,11 @@
 namespace kEn {
 Application* Application::instance_ = nullptr;
 
-Application::Application() {
+Application::Application(ApplicationSpec spec) : spec_(std::move(spec)) {
   KEN_CORE_ASSERT(!instance_, "App already exists!");
   instance_ = this;
 
-  // TODO(kuzu): main window name?
-
-  window_ = std::make_unique<Window>();
+  window_ = std::make_unique<Window>(WindowProperties{spec_.title, spec_.window_width, spec_.window_height});
   window_->set_event_handler([this](auto& event) { window_event_handler(event); });
 
   dispatcher_.subscribe(this, &Application::on_window_close);

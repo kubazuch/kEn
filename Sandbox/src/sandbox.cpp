@@ -263,9 +263,9 @@ class DemoLayer : public kEn::Layer {
 
 class Sandbox : public kEn::Application {
  public:
-  Sandbox() { push_layer(std::make_unique<DemoLayer>()); }
+  Sandbox() : kEn::Application({.title = "Sandbox"}) { push_layer(std::make_unique<DemoLayer>()); }
 };
 
 }  // namespace
 
-kEn::Application* kEn::create_application() { return new Sandbox(); }  // NOLINT
+kEn::Application* kEn::create_application(std::vector<std::string_view> /*args*/) { return new Sandbox(); }  // NOLINT

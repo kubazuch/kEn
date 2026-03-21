@@ -2,6 +2,9 @@
 
 #include <chrono>
 #include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include <kEn/core/core.hpp>
 #include <kEn/core/layer_stack.hpp>
@@ -14,14 +17,19 @@
  *  @ingroup ken
  */
 
-int main(int argc, char** argv);
-
 namespace kEn {
+
+struct ApplicationSpec {
+  std::string title          = "kEngine";
+  unsigned int window_width  = 1280;
+  unsigned int window_height = 720;
+};
 
 class Application {
  public:
-  Application();
+  explicit Application(ApplicationSpec spec = {});
   virtual ~Application() = default;
+  void run();
 
   void push_layer(std::unique_ptr<Layer> layer);
   void push_overlay(std::unique_ptr<Layer> overlay);
@@ -37,7 +45,6 @@ class Application {
   static constexpr duration_t kTickTime = std::chrono::microseconds(16667);  // 60 TPS = 16.(6) ms/t
 
  private:
-  void run();
   void update();
   void render(double alpha);
 
@@ -51,14 +58,13 @@ class Application {
   bool minimized_ = false;
   LayerStack layer_stack_;
 
+  ApplicationSpec spec_;
   duration_t time_{};
   uint16_t fps_ = 0, tps_ = 0;
 
- private:
   static Application* instance_;
-  friend int ::main(int argc, char** argv);
 };
 
 // Client must define this!
-Application* create_application();
+Application* create_application(std::vector<std::string_view> args);
 }  // namespace kEn
