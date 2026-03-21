@@ -6,16 +6,13 @@
 
 #include <mEn/fwd.hpp>
 
-#include <kEn/core/assert.hpp>
-#include <kEn/core/log.hpp>
 #include <kEn/renderer/renderer_api.hpp>
 #include <kEn/renderer/vertex_array.hpp>
 
-namespace kEn {
-
-RendererApi::Api RendererApi::api_ = Api::OpenGL;
-
 #ifdef KEN_DEBUG_BUILD
+#include <kEn/core/assert.hpp>
+#include <kEn/core/log.hpp>
+
 namespace {
 
 void gl_message_callback(unsigned /*src*/, unsigned /*type*/, unsigned /*id*/, unsigned lvl, int /*len*/,
@@ -41,6 +38,10 @@ void gl_message_callback(unsigned /*src*/, unsigned /*type*/, unsigned /*id*/, u
 
 }  // namespace
 #endif
+
+namespace kEn {
+
+RendererApi::Api RendererApi::api_ = Api::OpenGL;
 
 void OpenglRendererApi::init() {
 #ifdef KEN_DEBUG_BUILD
