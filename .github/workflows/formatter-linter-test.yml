@@ -1,9 +1,15 @@
 name: Run formatter 📝, linter 🧹 and tests 🧪
+
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   run-formatter-linter-tests:
     runs-on: windows-2022
@@ -38,7 +44,7 @@ jobs:
         id: run-clang-tidy
         if: success() || failure()
         run: |
-          python3 run-clang-tidy.py -p build/windows-clang-release -warnings-as-errors * -header-filter "(k|m)En[\\\/]src[\\\/].*"
+          python3 run-clang-tidy.py -p build/windows-clang-release -warnings-as-errors * -use-color -quiet -header-filter "(k|m)En[\\\/]src[\\\/].*"
 
       - name: Run tests
         id: run-tests

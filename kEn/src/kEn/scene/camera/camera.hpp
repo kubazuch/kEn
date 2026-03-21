@@ -17,7 +17,7 @@ class Camera : public GameComponent {
   mEn::Mat4 view_projection_matrix() const { return projection_matrix_ * view_matrix(); }
 
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override = 0;
-  void update(duration_t, duration_t) override {}
+  void update(Timestep, Timestep) override {}
   void render(Shader&, double) override {}
   void imgui() override {}
   void on_transform_changed() override {}

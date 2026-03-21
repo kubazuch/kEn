@@ -11,6 +11,7 @@
 #include <mEn/fwd.hpp>
 
 #include <kEn/core/log.hpp>
+#include <kEn/core/timestep.hpp>
 #include <kEn/event/event.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/scene/id_registry.hpp>
@@ -110,13 +111,13 @@ void GameObject::imgui_all() {
   }
 }
 
-void GameObject::update(duration_t delta, duration_t time) {
+void GameObject::update(Timestep delta, Timestep time) {
   for (auto& component : components_) {
     component->update(delta, time);
   }
 }
 
-void GameObject::update_all(duration_t delta, duration_t time) {
+void GameObject::update_all(Timestep delta, Timestep time) {
   update(delta, time);
 
   for (const auto child : children_) {

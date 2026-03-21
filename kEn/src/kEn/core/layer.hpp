@@ -1,9 +1,9 @@
 #pragma once
 
-#include <chrono>
 #include <string>
 #include <string_view>
 
+#include <kEn/core/timestep.hpp>
 #include <kEn/event/event.hpp>
 
 /** @file
@@ -11,9 +11,6 @@
  */
 
 namespace kEn {
-
-/** Tick/frame delta type used throughout the engine's update pipeline. */
-using duration_t = std::chrono::nanoseconds;
 
 /**
  * Abstract base class for all engine layers.
@@ -45,13 +42,14 @@ class Layer {
 
   /**
    * Called every fixed tick.
-   * @p delta is the time elapsed since the previous tick; @p time is total elapsed since startup.
+   * @param delta  Time elapsed since the previous tick.
+   * @param time   Total elapsed time since startup.
    */
-  virtual void on_update(duration_t /*delta*/, duration_t /*time*/) {}
+  virtual void on_update(Timestep /*delta*/, Timestep /*time*/) {}
 
   /**
    * Called every frame for rendering.
-   * @p alpha is the interpolation factor [0, 1) between the previous and current tick state.
+   * @param alpha  Interpolation factor in [0, 1) between the previous and current tick state.
    */
   virtual void on_render(double /*alpha*/) {}
 
@@ -60,6 +58,7 @@ class Layer {
 
   /**
    * Called for each event propagated down the LayerStack (reverse insertion order).
+   * @param event  The event to handle.
    * @return true to mark the event as handled and stop further propagation; false to pass it on.
    */
   virtual bool on_event(BaseEvent& /*event*/) { return false; }

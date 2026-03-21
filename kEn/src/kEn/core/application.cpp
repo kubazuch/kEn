@@ -7,11 +7,11 @@
 #include <cstdint>
 #include <memory>
 #include <ranges>
-#include <ratio>
 #include <utility>
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/layer.hpp>
+#include <kEn/core/timestep.hpp>
 #include <kEn/core/window.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/event.hpp>
@@ -45,8 +45,8 @@ void Application::push_overlay(std::unique_ptr<Layer> overlay) { layer_stack_.pu
 
 void Application::run() {
   using clock = std::chrono::high_resolution_clock;
-  duration_t lag(0ns);
-  duration_t second(0ns);
+  duration_t lag{};
+  duration_t second{};
   auto previous_time = clock::now();
 
   size_t frames = 0;
@@ -62,26 +62,26 @@ void Application::run() {
     lag += std::chrono::duration_cast<duration_t>(delta);
     second += std::chrono::duration_cast<duration_t>(delta);
 
-    while (lag >= tick_time_) {
+    while (lag >= kTickTime) {
       update();
 
-      lag -= tick_time_;
-      time_ += tick_time_;
+      lag -= kTickTime;
+      time_ += kTickTime;
       ++ticks;
     }
 
     ++frames;
-    if (second > 1s) {
+    if (second > std::chrono::seconds(1)) {
       const uint16_t seconds = static_cast<uint16_t>(std::chrono::duration_cast<std::chrono::seconds>(second).count());
 
       fps_   = static_cast<uint16_t>(frames / seconds);
       tps_   = static_cast<uint16_t>(ticks / seconds);
       frames = 0;
       ticks  = 0;
-      second = 0ns;
+      second = duration_t{};
     }
 
-    render(std::chrono::duration<double>(lag).count() / std::chrono::duration<double>(tick_time_).count());
+    render(std::chrono::duration<double>(lag).count() / std::chrono::duration<double>(kTickTime).count());
   }
 }
 
@@ -90,36 +90,31 @@ void Application::update() {
     window_->set_vsync(vsync_);
   }
 
-  if (!minimized_) {
-    for (const auto& layer : layer_stack_) {
-      layer->on_update(tick_time_, time_);
-    }
+  for (const auto& layer : layer_stack_) {
+    layer->on_update(Timestep{kTickTime}, Timestep{time_});
   }
 }
 
 void Application::render(double alpha) {
-  for (const auto& layer : layer_stack_) {
-    layer->on_render(alpha);
-  }
-
-  {
-    const ImguiFrame frame;
-
+  if (!minimized_) {
     for (const auto& layer : layer_stack_) {
-      layer->on_imgui();
+      layer->on_render(alpha);
     }
 
-    if (ImGui::Begin("DEBUG")) {
-      float ms = std::chrono::duration<float, std::milli>(tick_time_).count();
-      if (ImGui::SliderFloat("Tick time", &ms, 1, 1000, "%.3f ms", ImGuiSliderFlags_Logarithmic)) {
-        tick_time_ = std::chrono::duration_cast<duration_t>(std::chrono::duration<float, std::milli>(ms));
+    {
+      const ImguiFrame frame;
+
+      for (const auto& layer : layer_stack_) {
+        layer->on_imgui();
       }
 
-      ImGui::Text("FPS: %d", fps_);
-      ImGui::Text("TPS: %d", tps_);
-      ImGui::Checkbox("VSync", &vsync_);
+      if (ImGui::Begin("DEBUG")) {
+        ImGui::Text("FPS: %d", fps_);
+        ImGui::Text("TPS: %d", tps_);
+        ImGui::Checkbox("VSync", &vsync_);
+      }
+      ImGui::End();
     }
-    ImGui::End();
   }
 
   window_->on_update();
@@ -150,6 +145,6 @@ bool Application::on_window_resize(WindowResizeEvent& e) {
 
   minimized_ = false;
   RenderCommand::set_viewport(0, 0, e.width(), e.height());
-  return e.height() == 0;
+  return false;
 }
 }  // namespace kEn

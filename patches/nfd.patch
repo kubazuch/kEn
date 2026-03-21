@@ -25,14 +25,6 @@ diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
  
  set(SOURCE_FILES ${PUBLIC_HEADER_FILES})
  
-@@ -70,6 +70,7 @@ endif ()
- 
- # Allow includes from include/
- target_include_directories(${TARGET_NAME}
-+  SYSTEM
-   PUBLIC
-     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-     $<INSTALL_INTERFACE:include>
 diff --git a/src/include/nfd.h b/src/include/nfd/nfd.h
 similarity index 100%
 rename from src/include/nfd.h

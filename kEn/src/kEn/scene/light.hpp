@@ -28,7 +28,7 @@ class BaseLight : public GameComponent {
   ~BaseLight() override = default;
 
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override = 0;
-  void update(duration_t, duration_t) override {}
+  void update(Timestep, Timestep) override {}
   void render(Shader&, double) override {}
   void on_transform_changed() override {}
 

@@ -1,13 +1,12 @@
 #pragma once
 
-#include <chrono>
 #include <memory>
 
+#include <kEn/core/timestep.hpp>
 #include <kEn/core/transform.hpp>
 #include <kEn/event/event.hpp>
 
 namespace kEn {
-using duration_t = std::chrono::nanoseconds;
 
 class GameObject;
 class Shader;
@@ -21,9 +20,9 @@ class GameComponent {
   virtual void on_attach() {}
   virtual void on_detach() {}
 
-  virtual void update(duration_t delta, duration_t time) = 0;
-  virtual void render(Shader& shader, double alpha)      = 0;
-  virtual void imgui()                                   = 0;
+  virtual void update(Timestep delta, Timestep time) = 0;
+  virtual void render(Shader& shader, double alpha)  = 0;
+  virtual void imgui()                               = 0;
   virtual bool on_event(BaseEvent& event) { return dispatcher_.dispatch(event); }
   virtual void on_transform_changed() = 0;
 

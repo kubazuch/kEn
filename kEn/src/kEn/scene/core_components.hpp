@@ -2,6 +2,7 @@
 
 #include <mEn/vec2.hpp>
 
+#include <kEn/core/timestep.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/scene/camera/camera.hpp>
 #include <kEn/scene/component.hpp>
@@ -13,7 +14,7 @@ class ModelComponent : public GameComponent {
  public:
   explicit ModelComponent(const std::shared_ptr<Model>& model) : model_(model) {}
 
-  void update(duration_t, duration_t) override {}
+  void update(Timestep, Timestep) override {}
   void render(Shader& shader, double alpha) override;
   void imgui() override {}
   void on_transform_changed() override {}
@@ -27,7 +28,7 @@ class FreeLookComponent : public GameComponent {
  public:
   explicit FreeLookComponent(float sensitivity);
 
-  void update(duration_t delta, duration_t time) override;
+  void update(Timestep delta, Timestep time) override;
   void render(Shader&, double) override {}
   void imgui() override {}
   void on_transform_changed() override {}
@@ -49,7 +50,7 @@ class FreeMoveComponent : public GameComponent {
  public:
   explicit FreeMoveComponent(float speed, bool world_y = true) : speed_(speed), world_y_(world_y) {}
 
-  void update(duration_t delta, duration_t time) override;
+  void update(Timestep delta, Timestep time) override;
   void render(Shader&, double) override {}
   void imgui() override {}
   void on_transform_changed() override {}
@@ -70,7 +71,7 @@ class LookAtComponent : public GameComponent {
   void set_target(const GameObject& target);
   const GameObject& target() const { return target_; }
 
-  void update(duration_t delta, duration_t time) override;
+  void update(Timestep delta, Timestep time) override;
   void render(Shader&, double) override {}
   void imgui() override {}
   void on_transform_changed() override {}

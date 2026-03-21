@@ -13,6 +13,7 @@
 #include <kEn/core/key_codes.hpp>
 #include <kEn/core/layer.hpp>
 #include <kEn/core/log.hpp>
+#include <kEn/core/timestep.hpp>
 #include <kEn/core/window.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/event.hpp>
@@ -114,7 +115,7 @@ class DemoLayer : public kEn::Layer {
 
   void on_detach() override { KEN_INFO("DemoLayer detached"); }
 
-  void on_update(kEn::duration_t delta, kEn::duration_t time) override {
+  void on_update(kEn::Timestep delta, kEn::Timestep time) override {
     camera_obj_.update_all(delta, time);
     model_obj_.update_all(delta, time);
     floor_obj_.update_all(delta, time);

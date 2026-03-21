@@ -16,7 +16,7 @@ new file mode 100644
 +
 +add_library(${PROJECT_NAME} STATIC ${IMGUI_SOURCE_FILES})
 +target_link_libraries(${PROJECT_NAME} PUBLIC imgui)
-+target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC src)
++target_include_directories(${PROJECT_NAME} PUBLIC src)
 diff --git a/ImGuizmo.cpp b/src/imguizmo/ImGuizmo.cpp
 similarity index 99%
 rename from ImGuizmo.cpp
