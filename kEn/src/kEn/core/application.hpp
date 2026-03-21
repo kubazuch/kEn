@@ -5,6 +5,7 @@
 
 #include <kEn/core/core.hpp>
 #include <kEn/core/layer_stack.hpp>
+#include <kEn/core/timestep.hpp>
 #include <kEn/core/window.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/event.hpp>
@@ -16,9 +17,6 @@
 int main(int argc, char** argv);
 
 namespace kEn {
-
-using namespace std::chrono_literals;
-using duration_t = std::chrono::nanoseconds;
 
 class Application {
  public:
@@ -44,7 +42,7 @@ class Application {
   bool on_window_resize(WindowResizeEvent& e);
 
  public:
-  static constexpr duration_t kTickTime = 16667us;  // 60 TPS = 16.(6) ms/t
+  static constexpr duration_t kTickTime = std::chrono::microseconds(16667);  // 60 TPS = 16.(6) ms/t
 
  private:
   std::unique_ptr<Window> window_;
@@ -53,10 +51,9 @@ class Application {
   bool minimized_ = false;
   LayerStack layer_stack_;
 
-  bool vsync_      = true;
-  duration_t time_ = 0ns;
+  bool vsync_ = true;
+  duration_t time_{};
   uint16_t fps_ = 0, tps_ = 0;
-  duration_t tick_time_ = kTickTime;
 
  private:
   static Application* instance_;
