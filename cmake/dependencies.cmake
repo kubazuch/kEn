@@ -106,7 +106,6 @@ function(fetch_glfw)
       glfw
       "https://github.com/glfw/glfw.git"
       "3.4"
-      PATCH_FILE "${PATCHES_DIR}/glfw.patch"
     )
 
     FetchContent_MakeAvailable(glfw)
@@ -291,6 +290,7 @@ function(fetch_stb)
       GIT_SHALLOW    FALSE
       UPDATE_DISCONNECTED ON
       PATCH_COMMAND "${GIT_EXECUTABLE}" apply --ignore-whitespace "${PATCHES_DIR}/stb.patch"
+      SYSTEM
     )
 
     FetchContent_MakeAvailable(stb)
@@ -316,7 +316,6 @@ function(fetch_glm)
       glm
       "https://github.com/g-truc/glm.git"
       "1.0.3"
-      PATCH_FILE "${PATCHES_DIR}/glm.patch"
     )
 
     FetchContent_MakeAvailable(glm)

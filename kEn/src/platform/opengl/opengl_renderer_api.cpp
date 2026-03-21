@@ -15,6 +15,7 @@ namespace kEn {
 
 RendererApi::Api RendererApi::api_ = Api::OpenGL;
 
+#ifdef KEN_DEBUG_BUILD
 namespace {
 
 void gl_message_callback(unsigned /*src*/, unsigned /*type*/, unsigned /*id*/, unsigned lvl, int /*len*/,
@@ -39,6 +40,7 @@ void gl_message_callback(unsigned /*src*/, unsigned /*type*/, unsigned /*id*/, u
 }
 
 }  // namespace
+#endif
 
 void OpenglRendererApi::init() {
 #ifdef KEN_DEBUG_BUILD

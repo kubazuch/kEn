@@ -7,4 +7,4 @@ new file mode 100644
 +project(stb LANGUAGES C)
 +
 +add_library(stb INTERFACE)
-+target_include_directories(stb SYSTEM INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
++target_include_directories(stb INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})

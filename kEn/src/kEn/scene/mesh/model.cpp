@@ -1,16 +1,10 @@
 #include "model.hpp"
 
-#pragma warning(push)
-#pragma warning(disable : 4619 4365 4351)
 #include <assimp/material.h>
 #include <assimp/mesh.h>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <assimp/types.h>
-
-#include <assimp/Importer.hpp>
-#pragma warning(pop)
-
 #include <imgui/imgui.h>
 
 #include <algorithm>
@@ -32,6 +26,8 @@
 #include <kEn/renderer/texture.hpp>
 #include <kEn/scene/mesh/vertex.hpp>
 #include <kEn/util/enum_map.hpp>
+
+#include <assimp/Importer.hpp>
 
 namespace kEn {
 
