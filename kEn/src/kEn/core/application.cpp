@@ -1,7 +1,5 @@
 #include "application.hpp"
 
-#include <imgui/imgui.h>
-
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
@@ -15,6 +13,9 @@
 #include <kEn/core/window.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/event.hpp>
+#ifdef KEN_DEBUG_BUILD
+#include <kEn/imgui/debug_layer.hpp>
+#endif
 #include <kEn/imgui/imgui_frame.hpp>
 #include <kEn/imgui/imgui_layer.hpp>
 #include <kEn/renderer/render_command.hpp>
@@ -37,6 +38,9 @@ Application::Application() {
   RenderCommand::init();
 
   push_overlay(std::make_unique<ImguiLayer>());
+#ifdef KEN_DEBUG_BUILD
+  push_overlay(std::make_unique<DebugLayer>());
+#endif
 }
 
 void Application::push_layer(std::unique_ptr<Layer> layer) { layer_stack_.push_layer(std::move(layer)); }
@@ -52,9 +56,9 @@ void Application::run() {
   size_t frames = 0;
   size_t ticks  = 0;
 
-  vsync_ = window_->vsync();
-
   while (running_) {
+    window_->poll_events();
+
     auto current_time = clock::now();
     auto delta        = current_time - previous_time;
     previous_time     = current_time;
@@ -82,14 +86,11 @@ void Application::run() {
     }
 
     render(std::chrono::duration<double>(lag).count() / std::chrono::duration<double>(kTickTime).count());
+    window_->swap_buffers();
   }
 }
 
 void Application::update() {
-  if (vsync_ != window_->vsync()) {
-    window_->set_vsync(vsync_);
-  }
-
   for (const auto& layer : layer_stack_) {
     layer->on_update(Timestep{kTickTime}, Timestep{time_});
   }
@@ -107,17 +108,8 @@ void Application::render(double alpha) {
       for (const auto& layer : layer_stack_) {
         layer->on_imgui();
       }
-
-      if (ImGui::Begin("DEBUG")) {
-        ImGui::Text("FPS: %d", fps_);
-        ImGui::Text("TPS: %d", tps_);
-        ImGui::Checkbox("VSync", &vsync_);
-      }
-      ImGui::End();
     }
   }
-
-  window_->on_update();
 }
 
 void Application::window_event_handler(BaseEvent& e) {

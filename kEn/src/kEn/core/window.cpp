@@ -181,10 +181,9 @@ void Window::set_glfw_callbacks() {
   });
 }
 
-void Window::on_update() {
-  glfwPollEvents();
-  context_->swap_buffers();
-}
+void Window::poll_events() { glfwPollEvents(); }  // NOLINT(readability-convert-member-functions-to-static)
+
+void Window::swap_buffers() { context_->swap_buffers(); }
 
 void Window::set_vsync(const bool enabled) {
   glfwSwapInterval(enabled ? 1 : 0);

@@ -23,15 +23,18 @@ class Application {
   Application();
   virtual ~Application() = default;
 
-  void window_event_handler(BaseEvent& e);
-
   void push_layer(std::unique_ptr<Layer> layer);
   void push_overlay(std::unique_ptr<Layer> overlay);
 
   Window& main_window() const { return *window_; }
   static Application& instance() { return *instance_; }
 
+  [[nodiscard]] uint16_t fps() const { return fps_; }
+  [[nodiscard]] uint16_t tps() const { return tps_; }
+
   DELETE_COPY_MOVE(Application);
+
+  static constexpr duration_t kTickTime = std::chrono::microseconds(16667);  // 60 TPS = 16.(6) ms/t
 
  private:
   void run();
@@ -40,18 +43,14 @@ class Application {
 
   bool on_window_close(WindowCloseEvent& e);
   bool on_window_resize(WindowResizeEvent& e);
+  void window_event_handler(BaseEvent& e);
 
- public:
-  static constexpr duration_t kTickTime = std::chrono::microseconds(16667);  // 60 TPS = 16.(6) ms/t
-
- private:
   std::unique_ptr<Window> window_;
   EventDispatcher dispatcher_;
   bool running_   = true;
   bool minimized_ = false;
   LayerStack layer_stack_;
 
-  bool vsync_ = true;
   duration_t time_{};
   uint16_t fps_ = 0, tps_ = 0;
 

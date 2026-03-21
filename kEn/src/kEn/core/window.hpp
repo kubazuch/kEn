@@ -37,7 +37,8 @@ class Window {
 
   DELETE_COPY_MOVE(Window);
 
-  void on_update();
+  void poll_events();
+  void swap_buffers();
 
   [[nodiscard]] unsigned int width() const { return data_.width; }
   [[nodiscard]] unsigned int height() const { return data_.height; }
