@@ -5,13 +5,13 @@
 #include <string>
 #include <string_view>
 
+#include <kEn/core/timestep.hpp>
 #include <kEn/core/transform.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/scene/component.hpp>
 #include <kEn/scene/id_registry.hpp>
 
 namespace kEn {
-using duration_t   = std::chrono::nanoseconds;
 using GameObjectId = Id<GameObject>;
 
 class GameObject {
@@ -37,8 +37,8 @@ class GameObject {
   void render_all(Shader& shader, double alpha) const;
   void imgui();
   void imgui_all();
-  void update(duration_t delta, duration_t time);
-  void update_all(duration_t delta, duration_t time);
+  void update(Timestep delta, Timestep time);
+  void update_all(Timestep delta, Timestep time);
   void on_event(BaseEvent& event);
 
   kEn::Transform& transform() { return transform_; }

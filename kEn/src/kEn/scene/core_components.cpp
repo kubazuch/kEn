@@ -1,6 +1,5 @@
 #include "core_components.hpp"
 
-#include <chrono>
 #include <memory>
 
 #include <mEn/constants.hpp>
@@ -16,6 +15,7 @@
 #include <kEn/core/application.hpp>
 #include <kEn/core/input.hpp>
 #include <kEn/core/key_codes.hpp>
+#include <kEn/core/timestep.hpp>
 #include <kEn/core/window.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/event.hpp>
@@ -40,7 +40,7 @@ FreeLookComponent::FreeLookComponent(float sensitivity) : sensitivity_(sensitivi
   window_center_     = {main.width() / 2, main.height() / 2};
 }
 
-void FreeLookComponent::update(duration_t /*delta*/, duration_t /*time*/) {
+void FreeLookComponent::update(Timestep /*delta*/, Timestep /*time*/) {
   if (kEn::input::is_key_pressed(kEn::key::escape)) {
     kEn::input::set_cursor_visible(true);
     update_ = false;
@@ -87,8 +87,8 @@ bool FreeLookComponent::on_window_resize(const kEn::WindowResizeEvent& event) {
   return false;
 }
 
-void FreeMoveComponent::update(duration_t delta, duration_t /*time*/) {
-  const float dt          = std::chrono::duration<float>(delta).count();
+void FreeMoveComponent::update(Timestep delta, Timestep /*time*/) {
+  const auto dt           = static_cast<float>(delta.seconds());
   const float move_amount = kEn::input::is_key_pressed(kEn::key::left_control) ? 3.F * dt * speed_ : dt * speed_;
 
   mEn::Vec3 direction{0.F};
@@ -122,7 +122,7 @@ std::shared_ptr<GameComponent> FreeMoveComponent::clone() const {
 
 void LookAtComponent::set_target(const GameObject& target) { target_ = target; }
 
-void LookAtComponent::update(duration_t /*delta*/, duration_t /*time*/) {
+void LookAtComponent::update(Timestep /*delta*/, Timestep /*time*/) {
   transform().look_at(target_.get().transform().pos());
 }
 
