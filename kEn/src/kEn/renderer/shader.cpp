@@ -17,27 +17,23 @@ std::shared_ptr<Shader> Shader::create(std::string_view name, std::string_view v
                                        std::string_view fragment_src) {
   switch (RendererApi::get_api()) {
     case RendererApi::Api::None:
-      KEN_CORE_ASSERT(false, "Renderer has no api!");
-      return nullptr;
+      KEN_UNREACHABLE();
     case RendererApi::Api::OpenGL:
       return std::make_shared<OpenglShader>(name, vertex_src, fragment_src);
   }
 
-  KEN_CORE_ASSERT(false, "Unknown api!");
-  return nullptr;
+  KEN_UNREACHABLE();
 }
 
 std::shared_ptr<Shader> Shader::create(const std::filesystem::path& path, ShaderConfig config) {
   switch (RendererApi::get_api()) {
     case RendererApi::Api::None:
-      KEN_CORE_ASSERT(false, "Renderer has no api!");
-      return nullptr;
+      KEN_UNREACHABLE();
     case RendererApi::Api::OpenGL:
       return std::make_shared<OpenglShader>(path, config);
   }
 
-  KEN_CORE_ASSERT(false, "Unknown api!");
-  return nullptr;
+  KEN_UNREACHABLE();
 }
 
 }  // namespace kEn

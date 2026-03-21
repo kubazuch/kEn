@@ -14,14 +14,12 @@ namespace kEn {
 std::unique_ptr<GraphicsContext> GraphicsContext::create(GLFWwindow* native_window) {
   switch (RendererApi::get_api()) {
     case RendererApi::Api::None:
-      KEN_CORE_ASSERT(false, "Renderer has no api!");
-      return nullptr;
+      KEN_UNREACHABLE();
     case RendererApi::Api::OpenGL:
       return std::make_unique<OpenglContext>(native_window);
   }
 
-  KEN_CORE_ASSERT(false, "Unknown api!");
-  return nullptr;
+  KEN_UNREACHABLE();
 }
 
 }  // namespace kEn

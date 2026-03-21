@@ -11,14 +11,12 @@ namespace kEn {
 std::unique_ptr<RendererApi> RendererApi::create() noexcept {
   switch (get_api()) {
     case Api::None:
-      KEN_CORE_ASSERT(false, "Renderer has no api!");
-      return nullptr;
+      KEN_UNREACHABLE();
     case Api::OpenGL:
       return std::make_unique<OpenglRendererApi>();
   }
 
-  KEN_CORE_ASSERT(false, "Unknown api!");
-  return nullptr;
+  KEN_UNREACHABLE();
 }
 
 }  // namespace kEn

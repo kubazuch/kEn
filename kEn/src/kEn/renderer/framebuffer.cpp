@@ -12,14 +12,12 @@ namespace kEn {
 std::shared_ptr<Framebuffer> Framebuffer::create(const FramebufferSpec& spec) {
   switch (RendererApi::get_api()) {
     case RendererApi::Api::None:
-      KEN_CORE_ASSERT(false, "Renderer has no api!");
-      return nullptr;
+      KEN_UNREACHABLE();
     case RendererApi::Api::OpenGL:
       return std::make_shared<OpenglFramebuffer>(spec);
   }
 
-  KEN_CORE_ASSERT(false, "Unknown api!");
-  return nullptr;
+  KEN_UNREACHABLE();
 }
 
 }  // namespace kEn
