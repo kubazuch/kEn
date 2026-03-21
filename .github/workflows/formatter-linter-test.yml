@@ -38,7 +38,7 @@ jobs:
         id: run-clang-tidy
         if: success() || failure()
         run: |
-          python3 run-clang-tidy.py -p build/windows-clang-release -warnings-as-errors * -header-filter "(k|m)En[\\\/]src[\\\/].*"
+          python3 run-clang-tidy.py -p build/windows-clang-release -warnings-as-errors * -use-color -quiet -header-filter "(k|m)En[\\\/]src[\\\/].*"
 
       - name: Run tests
         id: run-tests
