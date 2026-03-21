@@ -80,6 +80,7 @@ function(fetch_glad)
       API
       gl:core=4.6)
 
+    set_property(TARGET glad PROPERTY SYSTEM ON)
 
     _fetch_end()
   endblock()
