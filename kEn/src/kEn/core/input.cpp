@@ -13,7 +13,11 @@ namespace kEn::input {
 
 namespace {
 
-[[nodiscard]] GLFWwindow* glfw_window() { return Application::instance().main_window().native_window(); }
+[[nodiscard]] GLFWwindow* glfw_window() {
+  // Assume main window is constant for the whole lifetime of app
+  static GLFWwindow* const kWindow = Application::instance().main_window().native_window();
+  return kWindow;
+}
 
 }  // namespace
 
