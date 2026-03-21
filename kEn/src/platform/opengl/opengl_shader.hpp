@@ -169,7 +169,7 @@ class OpenglShader final : public Shader {
   /** @copydoc Shader::get_name */
   std::string_view get_name() const override { return name_; }
 
-  VIRTUAL_FIVE(OpenglShader);
+  DELETE_COPY_MOVE(OpenglShader);
 
  private:
   struct PreprocessContext;

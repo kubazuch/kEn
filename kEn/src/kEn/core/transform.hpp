@@ -110,10 +110,7 @@ class Transform {
   [[nodiscard]] mEn::Vec3 right() const;
   [[nodiscard]] mEn::Vec3 up() const;
 
-  Transform(const Transform&)                     = delete;
-  Transform(Transform&&)                          = delete;
-  Transform& operator=(const Transform&) noexcept = delete;
-  Transform& operator=(Transform&&) noexcept      = delete;
+  DELETE_COPY_MOVE(Transform);
 
  public:
   class WorldMatrixEdit {
@@ -125,10 +122,7 @@ class Transform {
 
     ~WorldMatrixEdit();
 
-    WorldMatrixEdit(const WorldMatrixEdit&)            = delete;
-    WorldMatrixEdit& operator=(const WorldMatrixEdit&) = delete;
-    WorldMatrixEdit(WorldMatrixEdit&&)                 = delete;
-    WorldMatrixEdit& operator=(WorldMatrixEdit&&)      = delete;
+    DELETE_COPY_MOVE(WorldMatrixEdit);
 
    private:
     friend class Transform;
@@ -159,10 +153,7 @@ class Transform {
 
     ~LocalTRSEdit();
 
-    LocalTRSEdit(const LocalTRSEdit&)            = delete;
-    LocalTRSEdit& operator=(const LocalTRSEdit&) = delete;
-    LocalTRSEdit(LocalTRSEdit&&)                 = delete;
-    LocalTRSEdit& operator=(LocalTRSEdit&&)      = delete;
+    DELETE_COPY_MOVE(LocalTRSEdit);
 
     mEn::Vec3& pos;    // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
     mEn::Quat& rot;    // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)

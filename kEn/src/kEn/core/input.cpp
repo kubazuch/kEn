@@ -45,7 +45,7 @@ void set_cursor_visible(bool visible) {
 
 void set_mouse_pos(mEn::Vec2 pos) {
   auto* window = glfw_window();
-  glfwSetCursorPos(window, pos.x, pos.y);
+  glfwSetCursorPos(window, static_cast<double>(pos.x), static_cast<double>(pos.y));
 }
 
 }  // namespace kEn::input

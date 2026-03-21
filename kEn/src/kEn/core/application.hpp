@@ -33,7 +33,7 @@ class Application {
   Window& main_window() const { return *window_; }
   static Application& instance() { return *instance_; }
 
-  VIRTUAL_FIVE(Application);
+  DELETE_COPY_MOVE(Application);
 
  private:
   void run();

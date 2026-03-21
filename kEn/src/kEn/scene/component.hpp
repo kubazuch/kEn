@@ -33,7 +33,7 @@ class GameComponent {
   const kEn::Transform& transform() const;
   kEn::Transform& transform();
 
-  VIRTUAL_FIVE(GameComponent);
+  DELETE_COPY_MOVE(GameComponent);
 
  protected:
   std::optional<std::reference_wrapper<GameObject>> parent_;

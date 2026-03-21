@@ -88,7 +88,7 @@ class DemoLayer : public kEn::Layer {
     point_light_obj_.add_component(point_light_);
 
     // --- Floor (scaled cube with programmatic white texture) ---
-    floor_obj_.transform().set_local_pos({0.F, -1.F, 0.F});
+    floor_obj_.transform().set_local_pos({0.F, -1.8F, 0.F});
     floor_obj_.transform().set_local_scale({10.F, 0.2F, 10.F});
     auto floor_model = kEn::Model::load("cube/cube.obj");
     floor_obj_.add_component(std::make_shared<kEn::ModelComponent>(floor_model));

@@ -17,7 +17,7 @@ template <typename T>
 class IdRegistry {
  public:
   IdRegistry() = delete;
-  VIRTUAL_FIVE(IdRegistry);
+  DELETE_COPY_MOVE(IdRegistry);
 
   explicit IdRegistry(size_t size) : max_objs_(size) {
     for (size_t i = size; i > 0; --i) {
