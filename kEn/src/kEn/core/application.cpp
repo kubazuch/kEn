@@ -16,6 +16,7 @@
 #include <kEn/imgui/debug_layer.hpp>
 #include <kEn/imgui/imgui_frame.hpp>
 #include <kEn/imgui/imgui_layer.hpp>
+#include <kEn/renderer/device.hpp>
 
 namespace kEn {
 Application* Application::instance_ = nullptr;
@@ -37,7 +38,7 @@ Application::Application(ApplicationSpec spec) : spec_(std::move(spec)) {
   window_->set_vsync(true);
 
   push_overlay(std::make_unique<ImguiLayer>());
-  if (spec.enable_debug) {
+  if (spec_.enable_debug) {
     push_overlay(std::make_unique<DebugLayer>());
   }
 }

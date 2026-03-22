@@ -2,10 +2,17 @@
 
 #include <filesystem>
 #include <memory>
+#include <string_view>
 
 #include <kEn/core/assert.hpp>
+#include <kEn/core/log.hpp>
+#include <kEn/imgui/imgui_backend.hpp>
+#include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/device.hpp>
+#include <kEn/renderer/framebuffer.hpp>
+#include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
+#include <kEn/renderer/vertex_array.hpp>
 
 #include "opengl_buffer.hpp"
 #include "opengl_framebuffer.hpp"
@@ -17,8 +24,13 @@
 namespace kEn {
 
 std::unique_ptr<Device> Device::create(Device::Api api, GLFWwindow* window, bool enable_debug) {
-  KEN_CORE_ASSERT(api == Device::Api::OpenGL, "Only OpenGL is currently supported");
-  return std::make_unique<OpenglDevice>(window, enable_debug);
+  switch (api) {
+    case Device::Api::OpenGL:
+      return std::make_unique<OpenglDevice>(window, enable_debug);
+    default:
+      KEN_CORE_CRITICAL("Only OpenGL is currently supported");
+      KEN_UNREACHABLE();
+  }
 }
 
 OpenglDevice::OpenglDevice(GLFWwindow* window, bool enable_debug) : context_(window) {
@@ -28,21 +40,21 @@ OpenglDevice::OpenglDevice(GLFWwindow* window, bool enable_debug) : context_(win
 
 void OpenglDevice::swap_buffers() { context_.swap_buffers(); }
 
-std::shared_ptr<Buffer> OpenglDevice::create_buffer(const void* data, size_t size) {
+std::shared_ptr<Buffer> OpenglDevice::create_buffer(const void* data, std::size_t size) {
   return std::make_shared<OpenglBuffer>(data, size);
 }
 
-std::shared_ptr<MutableBuffer> OpenglDevice::create_mutable_buffer(const void* data, size_t size) {
+std::shared_ptr<MutableBuffer> OpenglDevice::create_mutable_buffer(const void* data, std::size_t size) {
   return std::make_shared<OpenglMutableBuffer>(data, size);
 }
 
 std::shared_ptr<UniformBuffer> OpenglDevice::create_uniform_buffer(const std::shared_ptr<Buffer>& buffer,
-                                                                   size_t binding_point) {
+                                                                   std::size_t binding_point) {
   return std::make_shared<OpenglUniformBuffer>(std::dynamic_pointer_cast<OpenglBuffer>(buffer), binding_point);
 }
 
 std::shared_ptr<ShaderStorageBuffer> OpenglDevice::create_shader_storage_buffer(const std::shared_ptr<Buffer>& buffer,
-                                                                                size_t binding_point) {
+                                                                                std::size_t binding_point) {
   return std::make_shared<OpenglShaderStorageBuffer>(std::dynamic_pointer_cast<OpenglBuffer>(buffer), binding_point);
 }
 

@@ -24,8 +24,7 @@ void api_error_callback(int error_code, const char* description) {
 }
 
 void api_init() {
-  const int status = glfwInit();
-  (void)status;
+  [[maybe_unused]] const int status = glfwInit();
   KEN_CORE_ASSERT(status, "GLFW init failed!");
 
   glfwSetErrorCallback(api_error_callback);

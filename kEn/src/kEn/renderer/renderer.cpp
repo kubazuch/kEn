@@ -6,6 +6,7 @@
 #include <string>
 
 #include <kEn/core/application.hpp>
+#include <kEn/renderer/command.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/vertex_array.hpp>
 #include <kEn/scene/camera/camera.hpp>
