@@ -110,15 +110,11 @@ struct Buffer {
   virtual const BufferLayout& layout() const          = 0;
   virtual void set_layout(const BufferLayout& layout) = 0;
   virtual size_t size() const                         = 0;
-
-  static std::shared_ptr<Buffer> create(const void* data, size_t size);
 };
 
 struct MutableBuffer : virtual public Buffer {
   virtual void modify_data(std::function<void(void*)> fn) const = 0;
   virtual void set_data(const void* data, size_t size)          = 0;
-
-  static std::shared_ptr<MutableBuffer> create(const void* data, size_t size);
 };
 
 struct UniformBuffer {
@@ -129,8 +125,6 @@ struct UniformBuffer {
 
   virtual std::shared_ptr<Buffer> underlying_buffer() const = 0;
   virtual size_t binding_point() const                      = 0;
-
-  static std::shared_ptr<UniformBuffer> create(const std::shared_ptr<Buffer>& buffer, size_t binding_point);
 };
 
 struct ShaderStorageBuffer {
@@ -141,8 +135,6 @@ struct ShaderStorageBuffer {
 
   virtual std::shared_ptr<Buffer> underlying_buffer() const = 0;
   virtual size_t binding_point() const                      = 0;
-
-  static std::shared_ptr<ShaderStorageBuffer> create(const std::shared_ptr<Buffer>& buffer, size_t binding_point);
 };
 
 }  // namespace kEn

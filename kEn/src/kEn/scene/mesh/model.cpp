@@ -20,6 +20,7 @@
 #include <mEn/vec2.hpp>
 #include <mEn/vec3.hpp>
 
+#include <kEn/core/application.hpp>
 #include <kEn/core/log.hpp>
 #include <kEn/core/transform.hpp>
 #include <kEn/renderer/shader.hpp>
@@ -167,7 +168,7 @@ void Model::load_material_textures(aiMaterial* mat, const TextureType type, kEn:
 
     auto path = directory_ / str.C_Str();
 
-    const std::shared_ptr<Texture2D> texture = Texture2D::create(absolute(path), spec);
+    const std::shared_ptr<Texture2D> texture = device().create_texture(absolute(path), spec);
     material.set_texture(type, texture, i);
   }
 }

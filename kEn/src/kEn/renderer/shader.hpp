@@ -153,40 +153,9 @@ class Shader {
   /**
    * @brief Base directory for file-based shader loading.
    *
-   * Backends may interpret file-based create() paths relative to this directory.
+   * Backends may interpret file-based Device::create_shader() paths relative to this directory.
    */
   static const std::filesystem::path kShaderPath;
-
-  /**
-   * @brief Create a shader from in-memory GLSL sources.
-   *
-   * @param name         Debug/display name for the program.
-   * @param vertex_src   Vertex shader source code.
-   * @param fragment_src Fragment shader source code.
-   *
-   * @return Shared pointer to the created shader, or nullptr on unsupported API.
-   *
-   * @note The concrete backend is selected by RendererApi::get_api().
-   * @warning May assert/abort on compilation or link errors (backend-dependent).
-   */
-  static std::shared_ptr<Shader> create(std::string_view name, std::string_view vertex_src,
-                                        std::string_view fragment_src);
-
-  /**
-   * @brief Create a shader by loading sources from disk.
-   *
-   * The backend typically loads \<stem\>.vert and \<stem\>.frag and optionally other
-   * stages based on @p config.
-   *
-   * @param path   Path (often relative to kShaderPath) identifying the shader set.
-   * @param config Optional stages/features to enable.
-   *
-   * @return Shared pointer to the created shader, or nullptr on unsupported API.
-   *
-   * @note The concrete backend is selected by RendererApi::get_api().
-   * @warning May assert/abort or throw on IO/compilation/link errors (backend-dependent).
-   */
-  static std::shared_ptr<Shader> create(const std::filesystem::path& path, ShaderConfig config = ShaderConfig());
 };
 
 }  // namespace kEn

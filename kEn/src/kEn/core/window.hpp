@@ -4,14 +4,12 @@
 
 #include <array>
 #include <functional>
-#include <memory>
 #include <string>
 
 #include <mEn/vec2.hpp>
 
 #include <kEn/core/mod_keys.hpp>
 #include <kEn/event/event.hpp>
-#include <kEn/renderer/graphics_context.hpp>
 
 /** @file
  *  @ingroup ken
@@ -25,9 +23,10 @@ namespace kEn {
  *  configuration.  Passed by const-reference to the Window constructor.
  */
 struct WindowProperties {
-  std::string title;   /**< Window title bar text. */
-  unsigned int width;  /**< Window width in pixels. */
-  unsigned int height; /**< Window height in pixels. */
+  std::string title;                 /**< Window title bar text. */
+  unsigned int width;                /**< Window width in pixels. */
+  unsigned int height;               /**< Window height in pixels. */
+  bool opengl_debug_context = false; /**< Request an OpenGL debug context (GLFW_OPENGL_DEBUG_CONTEXT). */
 
   explicit WindowProperties(std::string title = "kEngine", unsigned int width = 1280, unsigned int height = 720)
       : title(std::move(title)), width(width), height(height) {}
@@ -79,9 +78,6 @@ class Window {
   /** @brief Processes all pending OS events via @c glfwPollEvents(). */
   void poll_events();
 
-  /** @brief Presents the back buffer by delegating to the GraphicsContext. */
-  void swap_buffers();
-
   /** @brief Current window width in pixels. */
   [[nodiscard]] unsigned int width() const { return data_.width; }
 
@@ -119,7 +115,6 @@ class Window {
   static uint8_t glfw_window_count_;
 
   GLFWwindow* window_ptr_;
-  std::unique_ptr<GraphicsContext> context_;
 
   /** @brief Per-button drag tracking: records whether a drag is active and where it started. */
   struct DragState {

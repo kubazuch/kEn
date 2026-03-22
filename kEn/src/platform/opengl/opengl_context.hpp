@@ -1,18 +1,20 @@
 #pragma once
 
-#include <kEn/renderer/graphics_context.hpp>
+#include <kEn/core/core.hpp>
 
 struct GLFWwindow;
 
 namespace kEn {
-class OpenglContext final : public GraphicsContext {
+
+class OpenglContext final {
  public:
   explicit OpenglContext(GLFWwindow* window);
 
-  void init() override;
-  void swap_buffers() override;
+  void init();
+  void swap_buffers();
 
  private:
-  GLFWwindow* window_ptr_;
+  GLFWwindow* window_ptr_;  // non-owning; lifetime governed by the Window that constructed this context
 };
+
 }  // namespace kEn

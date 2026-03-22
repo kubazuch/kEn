@@ -18,8 +18,6 @@ class VertexArray {
 
   virtual const std::vector<std::shared_ptr<Buffer>>& vertex_buffers() const = 0;
   virtual const std::shared_ptr<Buffer>& index_buffer() const                = 0;
-
-  static std::unique_ptr<VertexArray> create();
 };
 
 }  // namespace kEn
