@@ -25,7 +25,7 @@ void Attenuation::load(std::string_view name, Shader& shader) const {
 void DirectionalLight::imgui() {
   ImGui::PushID(this);
   ImGui::ColorEdit3("Color", mEn::value_ptr(color));
-  mEn::Vec3 front = transform().front();
+  mEn::Vec3 front = transform().world_front();
   // TODO(kuzu): InputFloat3 receives a pointer to a local copy of front(); drive the rotation
   //   through edit_local_trs() or calculate rotation quaternion and multiply it.
   ImGui::InputFloat3("Dir", mEn::value_ptr(front));
@@ -34,7 +34,7 @@ void DirectionalLight::imgui() {
 
 void DirectionalLight::load(std::string_view name, Shader& shader) const {
   shader.set_uniform(std::format("{}.color", name), color);
-  shader.set_uniform(std::format("{}.dir", name), transform().front());
+  shader.set_uniform(std::format("{}.dir", name), transform().world_front());
 }
 
 std::shared_ptr<GameComponent> DirectionalLight::clone() const {
@@ -60,7 +60,7 @@ void PointLight::imgui() {
 void PointLight::load(std::string_view name, Shader& shader) const {
   shader.set_uniform(std::format("{}.color", name), color);
   atten.load(std::format("{}.atten", name), shader);
-  shader.set_uniform(std::format("{}.pos", name), transform().pos());
+  shader.set_uniform(std::format("{}.pos", name), transform().world_pos());
 }
 
 std::shared_ptr<GameComponent> PointLight::clone() const {
@@ -77,7 +77,7 @@ void SpotLight::imgui() {
     auto edit = transform().edit_local_trs();
     edit.set_active(ImGui::DragFloat3("Pos", edit.pos_ptr(), 0.01F));
   }
-  mEn::Vec3 front = transform().front();
+  mEn::Vec3 front = transform().world_front();
   // TODO(kuzu): InputFloat3 receives a pointer to a local copy of front(); drive the rotation
   //   through edit_local_trs() or calculate rotation quaternion and multiply it.
   ImGui::InputFloat3("Dir", mEn::value_ptr(front));
@@ -93,8 +93,8 @@ void SpotLight::imgui() {
 void SpotLight::load(std::string_view name, Shader& shader) const {
   shader.set_uniform(std::format("{}.color", name), color);
   atten.load(std::format("{}.atten", name), shader);
-  shader.set_uniform(std::format("{}.pos", name), transform().pos());
-  shader.set_uniform(std::format("{}.dir", name), transform().front());
+  shader.set_uniform(std::format("{}.pos", name), transform().world_pos());
+  shader.set_uniform(std::format("{}.dir", name), transform().world_front());
   shader.set_uniform(std::format("{}.cutoff", name), mEn::cos(inner_cutoff_angle));
   shader.set_uniform(std::format("{}.outerCutoff", name), mEn::cos(outer_cutoff_angle));
 }

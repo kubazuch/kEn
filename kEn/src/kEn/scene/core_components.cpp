@@ -123,7 +123,7 @@ std::shared_ptr<GameComponent> FreeMoveComponent::clone() const {
 void LookAtComponent::set_target(const GameObject& target) { target_ = target; }
 
 void LookAtComponent::update(Timestep /*delta*/, Timestep /*time*/) {
-  transform().look_at(target_.get().transform().pos());
+  transform().look_at(target_.get().transform().world_pos());
 }
 
 std::shared_ptr<GameComponent> LookAtComponent::clone() const { return std::make_shared<LookAtComponent>(target_); }

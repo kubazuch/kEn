@@ -19,7 +19,7 @@ void Renderer::begin_scene(const std::shared_ptr<Camera>& camera) {
   scene_data_->V_matrix   = camera->view_matrix();
   scene_data_->P_matrix   = camera->projection_matrix();
   scene_data_->VP_matrix  = camera->view_projection_matrix();
-  scene_data_->camera_pos = camera->transform().pos();
+  scene_data_->camera_pos = camera->transform().world_pos();
 }
 
 void Renderer::begin_scene(const mEn::Vec3& camera_pos, const mEn::Mat4& view, const mEn::Mat4& projection) {
