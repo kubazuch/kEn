@@ -166,7 +166,7 @@ class DemoLayer : public kEn::Layer {
     // --- Scene controls ---
     if (ImGui::Begin("Scene Controls")) {
       ImGui::SeparatorText("Camera");
-      const mEn::Vec3 cam_pos = camera_obj_.transform().pos();
+      const mEn::Vec3 cam_pos = camera_obj_.transform().world_pos();
       ImGui::Text("Position: %.2f  %.2f  %.2f", static_cast<double>(cam_pos.x), static_cast<double>(cam_pos.y),
                   static_cast<double>(cam_pos.z));
       ImGui::TextDisabled("F = enter FPS mode   Escape = exit FPS mode");

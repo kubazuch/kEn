@@ -63,6 +63,7 @@ class Transform {
 
   // Matrices
   [[nodiscard]] mEn::Mat4 local_to_parent_matrix() const;
+  [[nodiscard]] mEn::Mat4 parent_to_local_matrix() const;
   [[nodiscard]] const mEn::Mat4& local_to_world_matrix() const;
   [[nodiscard]] const mEn::Mat4& world_to_local_matrix() const;
 
@@ -92,10 +93,10 @@ class Transform {
   void set_local_scale(float uniform_scale);
 
   // World-space derived values
-  [[nodiscard]] mEn::Vec3 pos() const;
+  [[nodiscard]] mEn::Vec3 world_pos() const;
   void set_world_pos(const mEn::Vec3& world_pos);
 
-  [[nodiscard]] mEn::Quat rot() const;
+  [[nodiscard]] mEn::Quat world_rot() const;
   void set_world_rot(const mEn::Quat& world_rot);
 
   [[nodiscard]] mEn::Vec3 world_scale() const;
@@ -106,9 +107,9 @@ class Transform {
   [[nodiscard]] mEn::Vec3 local_right() const;
   [[nodiscard]] mEn::Vec3 local_up() const;
 
-  [[nodiscard]] mEn::Vec3 front() const;
-  [[nodiscard]] mEn::Vec3 right() const;
-  [[nodiscard]] mEn::Vec3 up() const;
+  [[nodiscard]] mEn::Vec3 world_front() const;
+  [[nodiscard]] mEn::Vec3 world_right() const;
+  [[nodiscard]] mEn::Vec3 world_up() const;
 
   DELETE_COPY_MOVE(Transform);
 
@@ -129,7 +130,7 @@ class Transform {
 
     explicit WorldMatrixEdit(Transform& t);
 
-    bool changed_trs_approx() const;
+    bool changed_trs_approx();
 
     void commit_from_world();
 
@@ -138,6 +139,10 @@ class Transform {
     mEn::Vec3 t0_;
     mEn::Quat r0_;
     mEn::Vec3 s0_;
+    mEn::Vec3 t1_{};
+    mEn::Quat r1_{1, 0, 0, 0};
+    mEn::Vec3 s1_{1, 1, 1};
+    bool decomposed_ = false;
     std::optional<bool> hint_using_;
   };
 

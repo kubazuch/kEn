@@ -12,6 +12,7 @@
 #include <mEn/functions/quaternion_common.hpp>
 #include <mEn/functions/quaternion_geometric.hpp>
 #include <mEn/functions/quaternion_transform.hpp>
+#include <mEn/functions/vector_relational.hpp>
 #include <mEn/fwd.hpp>
 
 #include <kEn/core/assert.hpp>
@@ -26,9 +27,7 @@ Transform::~Transform() {
   owner_ = nullptr;
 
   for (auto* child : children_) {
-    if (child == nullptr) {
-      continue;
-    }
+    KEN_CORE_ASSERT(child != nullptr, "children_ invariant violated: null child in Transform destructor");
     child->parent_ = nullptr;
     child->set_dirty();
   }
@@ -71,8 +70,10 @@ bool Transform::try_set_parent(Transform& parent) {
 
 void Transform::set_parent(Transform& parent) {
   const bool ok = try_set_parent(parent);
-  (void)ok;
   KEN_CORE_ASSERT(ok, "Transform::set_parent would create a cycle or self-parenting");
+  if (!ok) {
+    KEN_UNREACHABLE();
+  }
 }
 
 void Transform::detach_from_parent_unsafe() {
@@ -101,6 +102,11 @@ mEn::Mat4 Transform::local_to_parent_matrix() const {
   return mEn::translate(mEn::Mat4(1.0F), pos_) * static_cast<mEn::Mat4>(rot_) * mEn::scale(mEn::Mat4(1.0F), scale_);
 }
 
+mEn::Mat4 Transform::parent_to_local_matrix() const {
+  return mEn::scale(mEn::Mat4(1.0F), 1.0F / scale_) * static_cast<mEn::Mat4>(mEn::conjugate(rot_)) *
+         mEn::translate(mEn::Mat4(1.0F), -pos_);
+}
+
 const mEn::Mat4& Transform::local_to_world_matrix() const {
   if (!dirty_) {
     return model_mat_;
@@ -119,12 +125,12 @@ const mEn::Mat4& Transform::world_to_local_matrix() const {
   if (!inverse_dirty_) {
     return inv_model_mat_;
   }
-  if (dirty_) {
-    (void)local_to_world_matrix();
+
+  inv_model_mat_ = parent_to_local_matrix();
+  if (parent_ != nullptr) {
+    inv_model_mat_ = inv_model_mat_ * parent_->world_to_local_matrix();
   }
 
-  // TODO(kuzu): don't use inverse, those transformation have easy formulas
-  inv_model_mat_ = mEn::inverse(model_mat_);
   inverse_dirty_ = false;
   return inv_model_mat_;
 }
@@ -153,7 +159,7 @@ void Transform::translate_local(const mEn::Vec3& delta) {
   set_dirty();
 }
 
-void Transform::translate_world(const mEn::Vec3& delta) { set_world_pos(pos() + delta); }
+void Transform::translate_world(const mEn::Vec3& delta) { set_world_pos(world_pos() + delta); }
 
 void Transform::rotate(const mEn::Vec3& axis, float angle) {
   KEN_CORE_ASSERT(mEn::length(axis) > mEn::kEpsilon<float>, "rotate: axis must be non-zero");
@@ -162,11 +168,13 @@ void Transform::rotate(const mEn::Vec3& axis, float angle) {
 }
 
 void Transform::rotate(const mEn::Quat& rotation) {
+  KEN_CORE_ASSERT(mEn::length(rotation) > mEn::kEpsilon<float>, "rotate: rotation must be non-zero");
   rot_ = mEn::normalize(rotation * rot_);
   set_dirty();
 }
 
 void Transform::rotate_local(const mEn::Quat& rotation) {
+  KEN_CORE_ASSERT(mEn::length(rotation) > mEn::kEpsilon<float>, "rotate: rotation must be non-zero");
   rot_ = mEn::normalize(rot_ * rotation);
   set_dirty();
 }
@@ -184,14 +192,13 @@ void Transform::look_at(const mEn::Vec3& point, const mEn::Vec3& up) {
   direction = mEn::normalize(direction);
 
   const mEn::Vec3 current_front = local_front();
-  if (std::abs(direction.x - current_front.y) <= kLookAtTol && std::abs(direction.y - current_front.y) <= kLookAtTol &&
-      std::abs(direction.z - current_front.z) <= kLookAtTol) {
+  if (mEn::all(mEn::near(direction, current_front, kLookAtTol))) {
     return;
   }
 
   mEn::Vec3 local_up_vec = up;
   if (parent_ != nullptr) {
-    local_up_vec = mEn::normalize(mEn::inverse(parent_->rot()) * up);
+    local_up_vec = mEn::normalize(mEn::conjugate(parent_->world_rot()) * up);
   }
 
   // Guard against up being parallel to direction (would produce NaN in quatLookAt)
@@ -237,7 +244,7 @@ void Transform::set_local_scale(float uniform_scale) {
   set_dirty();
 }
 
-mEn::Vec3 Transform::pos() const {
+mEn::Vec3 Transform::world_pos() const {
   return parent_ != nullptr ? mEn::Vec3(parent_->local_to_world_matrix() * mEn::Vec4(pos_, 1.F)) : pos_;
 }
 
@@ -247,11 +254,13 @@ void Transform::set_world_pos(const mEn::Vec3& world_pos) {
   set_local_pos(local);
 }
 
-mEn::Quat Transform::rot() const { return parent_ != nullptr ? mEn::normalize(parent_->rot() * rot_) : rot_; }
+mEn::Quat Transform::world_rot() const {
+  return parent_ != nullptr ? mEn::normalize(parent_->world_rot() * rot_) : rot_;
+}
 
 void Transform::set_world_rot(const mEn::Quat& world_rot) {
   const mEn::Quat local =
-      parent_ != nullptr ? mEn::normalize(mEn::inverse(parent_->rot()) * world_rot) : mEn::normalize(world_rot);
+      parent_ != nullptr ? mEn::normalize(mEn::conjugate(parent_->world_rot()) * world_rot) : mEn::normalize(world_rot);
   set_local_rot(local);
 }
 
@@ -285,11 +294,11 @@ mEn::Vec3 Transform::local_front() const { return rot_ * mEn::Vec3(0, 0, -1); }
 
 mEn::Vec3 Transform::local_up() const { return rot_ * mEn::Vec3(0, 1, 0); }
 
-mEn::Vec3 Transform::right() const { return mEn::normalize(rot() * mEn::Vec3(1, 0, 0)); }
+mEn::Vec3 Transform::world_right() const { return world_rot() * mEn::Vec3(1, 0, 0); }
 
-mEn::Vec3 Transform::front() const { return mEn::normalize(rot() * mEn::Vec3(0, 0, -1)); }
+mEn::Vec3 Transform::world_front() const { return world_rot() * mEn::Vec3(0, 0, -1); }
 
-mEn::Vec3 Transform::up() const { return mEn::normalize(rot() * mEn::Vec3(0, 1, 0)); }
+mEn::Vec3 Transform::world_up() const { return world_rot() * mEn::Vec3(0, 1, 0); }
 
 Transform::WorldMatrixEdit::WorldMatrixEdit(Transform& t)
     : t_(t), world_(t.local_to_world_matrix()), t0_(), r0_(1, 0, 0, 0), s0_(1, 1, 1) {
@@ -315,26 +324,19 @@ Transform::WorldMatrixEdit::~WorldMatrixEdit() {
   commit_from_world();
 }
 
-bool Transform::WorldMatrixEdit::changed_trs_approx() const {
-  mEn::Vec3 t1;
-  mEn::Quat r1;
-  mEn::Vec3 s1;
-
-  (void)mEn::decompose(world_, t1, r1, s1);
-
-  return t0_ != t1 || r0_ != r1 || s0_ != s1;
+bool Transform::WorldMatrixEdit::changed_trs_approx() {
+  (void)mEn::decompose(world_, t1_, r1_, s1_);
+  decomposed_ = true;
+  return t0_ != t1_ || r0_ != r1_ || s0_ != s1_;
 }
 
 void Transform::WorldMatrixEdit::commit_from_world() {
-  mEn::Vec3 t;
-  mEn::Quat r;
-  mEn::Vec3 s;
-
-  (void)mEn::decompose(world_, t, r, s);
-
-  t_.set_world_pos(t);
-  t_.set_world_rot(r);
-  t_.set_world_scale(s);
+  if (!decomposed_) {
+    (void)mEn::decompose(world_, t1_, r1_, s1_);
+  }
+  t_.set_world_pos(t1_);
+  t_.set_world_rot(r1_);
+  t_.set_world_scale(s1_);
 }
 
 Transform::LocalTRSEdit::~LocalTRSEdit() {
