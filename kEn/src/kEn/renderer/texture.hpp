@@ -99,7 +99,7 @@ class Texture {
 
 class Texture2D : public Texture {
  public:
-  static const std::filesystem::path kTexturePath;
+  static constexpr std::string_view kTexturePath = "assets/textures";
 
   virtual void imgui() = 0;
 };

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <filesystem>
 #include <span>
 #include <string_view>
 #include <variant>
@@ -155,7 +154,7 @@ class Shader {
    *
    * Backends may interpret file-based Device::create_shader() paths relative to this directory.
    */
-  static const std::filesystem::path kShaderPath;
+  static constexpr std::string_view kShaderPath = "assets/shaders";
 };
 
 }  // namespace kEn

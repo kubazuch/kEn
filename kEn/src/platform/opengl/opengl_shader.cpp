@@ -207,7 +207,7 @@ std::string OpenglShader::read_shader_src_internal(const std::filesystem::path& 
         // Resolve filename relative to current file first
         std::filesystem::path candidate = key_path.parent_path() / include_file_name;
         if (!std::filesystem::exists(candidate)) {
-          candidate = kShaderPath / include_file_name;
+          candidate = std::filesystem::path{kShaderPath} / include_file_name;
         }
         auto child_key  = normalize_key(candidate, false);
         child_id        = ctx.get_id(child_key, display_name_for(child_key, false));
@@ -361,7 +361,7 @@ void OpenglShader::create_program(std::string_view vertex_src, std::string_view 
 }
 
 OpenglShader::OpenglShader(const std::filesystem::path& path, ShaderConfig config) {
-  auto shader_src_path = kShaderPath / path;
+  auto shader_src_path = std::filesystem::path{kShaderPath} / path;
 
   name_ = shader_src_path.stem().string();
 

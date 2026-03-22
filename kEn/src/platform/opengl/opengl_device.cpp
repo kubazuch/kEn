@@ -72,7 +72,7 @@ std::shared_ptr<Texture2D> OpenglDevice::create_texture(const TextureSpec& spec)
 }
 
 std::shared_ptr<Texture2D> OpenglDevice::create_texture(const std::filesystem::path& name, const TextureSpec& spec) {
-  const std::filesystem::path path = Texture2D::kTexturePath / name;
+  const std::filesystem::path path = std::filesystem::path{Texture2D::kTexturePath} / name;
 
   if (const auto it = loaded_textures_.find(path); it != loaded_textures_.end()) {
     return it->second;
