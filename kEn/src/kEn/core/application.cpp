@@ -13,9 +13,7 @@
 #include <kEn/core/window.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/event.hpp>
-#ifdef KEN_DEBUG_BUILD
 #include <kEn/imgui/debug_layer.hpp>
-#endif
 #include <kEn/imgui/imgui_frame.hpp>
 #include <kEn/imgui/imgui_layer.hpp>
 
