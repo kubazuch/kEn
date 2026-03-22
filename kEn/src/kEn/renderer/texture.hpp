@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <filesystem>
 #include <optional>
-#include <unordered_map>
 #include <utility>
 
 #include <kEn/core/core.hpp>
@@ -100,15 +99,9 @@ class Texture {
 
 class Texture2D : public Texture {
  public:
-  static std::shared_ptr<Texture2D> create(const TextureSpec& spec);
-  static std::shared_ptr<Texture2D> create(const std::filesystem::path& name, const TextureSpec& spec = TextureSpec());
-
   static const std::filesystem::path kTexturePath;
 
   virtual void imgui() = 0;
-
- private:
-  static std::unordered_map<std::filesystem::path, std::shared_ptr<Texture2D>> loaded_resources_;
 };
 
 }  // namespace kEn

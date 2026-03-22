@@ -16,8 +16,7 @@ OpenglContext::OpenglContext(GLFWwindow* window) : window_ptr_(window) {
 
 void OpenglContext::init() {
   glfwMakeContextCurrent(window_ptr_);
-  const int glad_version = gladLoadGL(glfwGetProcAddress);
-  (void)glad_version;
+  [[maybe_unused]] const int glad_version = gladLoadGL(glfwGetProcAddress);
   KEN_CORE_ASSERT(glad_version, "Unable to init Glad");
 
   KEN_CORE_INFO("OpenGL Renderer:");

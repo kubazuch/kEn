@@ -1,0 +1,43 @@
+#pragma once
+
+#include <filesystem>
+#include <memory>
+#include <unordered_map>
+
+#include <kEn/renderer/device.hpp>
+
+#include "opengl_command.hpp"
+#include "opengl_context.hpp"
+
+namespace kEn {
+
+class OpenglDevice final : public Device {
+ public:
+  OpenglDevice(GLFWwindow* window, bool enable_debug);
+
+  void swap_buffers() override;
+  Command& command() override { return command_; }
+
+  std::shared_ptr<Buffer> create_buffer(const void* data, size_t size) override;
+  std::shared_ptr<MutableBuffer> create_mutable_buffer(const void* data, size_t size) override;
+  std::shared_ptr<UniformBuffer> create_uniform_buffer(const std::shared_ptr<Buffer>&, size_t) override;
+  std::shared_ptr<ShaderStorageBuffer> create_shader_storage_buffer(const std::shared_ptr<Buffer>&, size_t) override;
+
+  std::shared_ptr<Shader> create_shader(std::string_view, std::string_view, std::string_view) override;
+  std::shared_ptr<Shader> create_shader(const std::filesystem::path&, ShaderConfig) override;
+
+  std::shared_ptr<Texture2D> create_texture(const TextureSpec&) override;
+  std::shared_ptr<Texture2D> create_texture(const std::filesystem::path&, const TextureSpec&) override;
+
+  std::unique_ptr<VertexArray> create_vertex_array() override;
+  std::shared_ptr<Framebuffer> create_framebuffer(const FramebufferSpec&) override;
+
+  std::unique_ptr<ImguiBackend> create_imgui_backend() override;
+
+ private:
+  OpenglContext context_;
+  OpenglCommand command_;
+  std::unordered_map<std::filesystem::path, std::shared_ptr<Texture2D>> loaded_textures_;
+};
+
+}  // namespace kEn

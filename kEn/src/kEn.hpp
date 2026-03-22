@@ -12,8 +12,8 @@
 
 // Renderer
 #include <kEn/renderer/buffer.hpp>
+#include <kEn/renderer/device.hpp>
 #include <kEn/renderer/framebuffer.hpp>
-#include <kEn/renderer/render_command.hpp>
 #include <kEn/renderer/renderer.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/vertex_array.hpp>

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include <kEn/core/core.hpp>
 
 /** @file
@@ -39,9 +37,6 @@ class ImguiBackend {
 
   /** Returns the active backend. Asserts if none is registered. */
   [[nodiscard]] static ImguiBackend& instance();
-
-  /** Creates the backend appropriate for the active RendererApi. */
-  static std::unique_ptr<ImguiBackend> create();
 
   /** Called by ImguiLayer on attach/detach to register or clear the active instance. */
   static void set_instance(ImguiBackend* backend);

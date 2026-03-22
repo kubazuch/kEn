@@ -21,7 +21,6 @@
 #include <kEn/event/mouse_events.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/material.hpp>
-#include <kEn/renderer/render_command.hpp>
 #include <kEn/renderer/renderer.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
@@ -101,14 +100,14 @@ class DemoLayer : public kEn::Layer {
     kEn::Renderer::set_ambient(ambient_color_);
 
     // --- Shader ---
-    phong_shader_ = kEn::Shader::create("phong");
+    phong_shader_ = kEn::device().create_shader("phong");
 
     // --- Framebuffer ---
     kEn::FramebufferSpec fb_spec;
     fb_spec.width       = vp_w_;
     fb_spec.height      = vp_h_;
     fb_spec.attachments = {kEn::TextureFormat::RGBA8, kEn::TextureFormat::Depth24Stencil8};
-    framebuffer_        = kEn::Framebuffer::create(fb_spec);
+    framebuffer_        = kEn::device().create_framebuffer(fb_spec);
 
     KEN_INFO("DemoLayer attached");
   }
@@ -125,10 +124,10 @@ class DemoLayer : public kEn::Layer {
 
   void on_render(double alpha) override {
     framebuffer_->bind();
-    kEn::RenderCommand::set_viewport(0, 0, vp_w_, vp_h_);
-    kEn::RenderCommand::set_clear_color({0.08F, 0.08F, 0.12F, 1.F});
-    kEn::RenderCommand::clear();
-    kEn::RenderCommand::depth_testing();
+    kEn::device().command().set_viewport(0, 0, vp_w_, vp_h_);
+    kEn::device().command().set_clear_color({0.08F, 0.08F, 0.12F, 1.F});
+    kEn::device().command().clear();
+    kEn::device().command().depth_testing(true);
 
     kEn::Renderer::begin_scene(camera_);
     kEn::Renderer::prepare(*phong_shader_);
@@ -177,7 +176,7 @@ class DemoLayer : public kEn::Layer {
 
       ImGui::SeparatorText("Rendering");
       if (ImGui::Checkbox("Wireframe (F1)", &wireframe_)) {
-        kEn::RenderCommand::set_wireframe(wireframe_);
+        kEn::device().command().set_wireframe(wireframe_);
       }
       if (ImGui::ColorEdit3("Ambient", mEn::value_ptr(ambient_color_))) {
         kEn::Renderer::set_ambient(ambient_color_);
@@ -218,7 +217,7 @@ class DemoLayer : public kEn::Layer {
   bool on_key_pressed(kEn::KeyPressedEvent& event) {
     if (event.key() == kEn::key::f1) {
       wireframe_ = !wireframe_;
-      kEn::RenderCommand::set_wireframe(wireframe_);
+      kEn::device().command().set_wireframe(wireframe_);
     }
     return false;
   }

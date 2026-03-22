@@ -12,6 +12,7 @@
 #include <kEn/core/window.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/event.hpp>
+#include <kEn/renderer/device.hpp>
 
 /** @file
  *  @ingroup ken
@@ -25,9 +26,11 @@ namespace kEn {
  *  All fields have sensible defaults; only override what differs.
  */
 struct ApplicationSpec {
-  std::string title          = "kEngine"; /**< Window title bar text. */
-  unsigned int window_width  = 1280;      /**< Initial window width in pixels. */
-  unsigned int window_height = 720;       /**< Initial window height in pixels. */
+  std::string title          = "kEngine";           /**< Window title bar text. */
+  unsigned int window_width  = 1280;                /**< Initial window width in pixels. */
+  unsigned int window_height = 720;                 /**< Initial window height in pixels. */
+  Device::Api api            = Device::Api::OpenGL; /**< Graphics API to use. */
+  bool enable_debug          = false;               /**< Enable GPU debug output. */
 };
 
 /** @brief Core singleton that owns the main loop, window, and layer stack.
@@ -85,6 +88,9 @@ class Application {
   /** @brief Returns a reference to the application's main window. */
   Window& main_window() const { return *window_; }
 
+  /** @brief Returns a reference to the GPU device (command dispatch + resource creation). */
+  Device& device() const { return *device_; }
+
   /** @brief Returns the global Application singleton.
    *  @pre An Application instance must have been constructed.
    */
@@ -119,6 +125,7 @@ class Application {
   void window_event_handler(BaseEvent& e);
 
   std::unique_ptr<Window> window_;
+  std::unique_ptr<Device> device_;
   EventDispatcher dispatcher_;
   bool running_   = true;
   bool minimized_ = false;
@@ -130,6 +137,14 @@ class Application {
 
   static Application* instance_;
 };
+
+/** @brief Convenience accessor -- returns the GPU device of the current application.
+ *
+ *  Equivalent to @c Application::instance().device() but shorter at call sites.
+ *
+ *  @deprecated Will be removed, when complete kEn refactor is finished.
+ */
+inline Device& device() { return Application::instance().device(); }
 
 /** @brief Factory function that the client application must define.
  *
