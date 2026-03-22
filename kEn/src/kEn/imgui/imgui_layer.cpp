@@ -51,7 +51,7 @@ void ImguiLayer::on_attach() {
   io.ConfigDpiScaleViewports = true;  // [Experimental] Scale Dear ImGui and Platform Windows when Monitor DPI changes.
 
   // Setup renderer backend
-  backend_ = ImguiBackend::create();
+  backend_ = device().create_imgui_backend();
   backend_->init(Application::instance().main_window().native_window());
   ImguiBackend::set_instance(backend_.get());
 }

@@ -5,8 +5,8 @@
 #include <memory>
 #include <string>
 
-#include <kEn/renderer/render_command.hpp>
-#include <kEn/renderer/renderer_api.hpp>
+#include <kEn/core/application.hpp>
+#include <kEn/renderer/command.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/vertex_array.hpp>
 #include <kEn/scene/camera/camera.hpp>
@@ -57,7 +57,7 @@ void Renderer::submit(Shader& shader, const VertexArray& vertex_array, RenderMod
   shader.set_uniform("u_Ambient", scene_data_->ambient);
 
   shader.bind();
-  RenderCommand::draw_indexed(vertex_array, vertex_array.element_count(), mode);
+  device().command().draw_indexed(vertex_array, vertex_array.element_count(), mode);
 }
 
 void Renderer::submit(Shader& shader, const VertexArray& vertex_array, const Transform& transform, RenderMode mode) {
@@ -70,9 +70,9 @@ void Renderer::submit(Shader& shader, const VertexArray& vertex_array, const Tra
 
   shader.bind();
   if (vertex_array.index_buffer()) {
-    RenderCommand::draw_indexed(vertex_array, vertex_array.element_count(), mode);
+    device().command().draw_indexed(vertex_array, vertex_array.element_count(), mode);
   } else {
-    RenderCommand::draw(vertex_array, vertex_array.element_count(), mode);
+    device().command().draw(vertex_array, vertex_array.element_count(), mode);
   }
 }
 
@@ -84,9 +84,9 @@ void Renderer::submit_instanced(Shader& shader, const VertexArray& vertex_array,
 
   shader.bind();
   if (vertex_array.index_buffer()) {
-    RenderCommand::draw_indexed_instanced(vertex_array, vertex_array.element_count(), instance_count, mode);
+    device().command().draw_indexed_instanced(vertex_array, vertex_array.element_count(), instance_count, mode);
   } else {
-    RenderCommand::draw_instanced(vertex_array, vertex_array.element_count(), instance_count, mode);
+    device().command().draw_instanced(vertex_array, vertex_array.element_count(), instance_count, mode);
   }
 }
 
@@ -98,7 +98,7 @@ void Renderer::submit_tessellated(Shader& shader, const VertexArray& vertex_arra
   shader.set_uniform("u_Ambient", scene_data_->ambient);
 
   shader.bind();
-  RenderCommand::draw(vertex_array, count, render_mode::Patches);
+  device().command().draw(vertex_array, count, render_mode::Patches);
 }
 
 }  // namespace kEn

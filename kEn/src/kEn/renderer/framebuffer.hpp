@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #include <mEn/vec4.hpp>
@@ -51,8 +50,6 @@ class Framebuffer {
   virtual uint32_t get_color_attachment_renderer_id(uint32_t id) const = 0;
 
   virtual const FramebufferSpec& get_spec() const = 0;
-
-  static std::shared_ptr<Framebuffer> create(const FramebufferSpec& spec);
 };
 
 }  // namespace kEn

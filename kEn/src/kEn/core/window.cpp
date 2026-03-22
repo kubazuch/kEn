@@ -12,11 +12,6 @@
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/key_events.hpp>
 #include <kEn/event/mouse_events.hpp>
-#include <kEn/renderer/graphics_context.hpp>
-
-#ifdef KEN_DEBUG_BUILD
-#include <kEn/renderer/renderer_api.hpp>
-#endif
 
 namespace kEn {
 
@@ -29,8 +24,7 @@ void api_error_callback(int error_code, const char* description) {
 }
 
 void api_init() {
-  const int status = glfwInit();
-  (void)status;
+  [[maybe_unused]] const int status = glfwInit();
   KEN_CORE_ASSERT(status, "GLFW init failed!");
 
   glfwSetErrorCallback(api_error_callback);
@@ -51,29 +45,22 @@ Window::Window(const WindowProperties& properties) {
     api_init();
   }
 
-#ifdef KEN_DEBUG_BUILD
-  if (RendererApi::get_api() == RendererApi::Api::OpenGL) {
+  glfwWindowHint(GLFW_SAMPLES, 4);
+  if (properties.opengl_debug_context) {
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
   }
-#endif
-  glfwWindowHint(GLFW_SAMPLES, 4);
 
   window_ptr_ = glfwCreateWindow(static_cast<int>(data_.width), static_cast<int>(data_.height), data_.title.c_str(),
                                  nullptr, nullptr);
   KEN_CORE_ASSERT(window_ptr_, "glfwCreateWindow failed!");
   ++glfw_window_count_;
 
-  context_ = GraphicsContext::create(window_ptr_);
-  context_->init();
-
   glfwSetWindowUserPointer(window_ptr_, &data_);
-  Window::set_vsync(true);
 
   set_glfw_callbacks();
 }
 
 Window::~Window() {
-  context_.reset();
   glfwDestroyWindow(window_ptr_);
   --glfw_window_count_;
 
@@ -182,8 +169,6 @@ void Window::set_glfw_callbacks() {
 }
 
 void Window::poll_events() { glfwPollEvents(); }  // NOLINT(readability-convert-member-functions-to-static)
-
-void Window::swap_buffers() { context_->swap_buffers(); }
 
 void Window::set_vsync(const bool enabled) {
   glfwSwapInterval(enabled ? 1 : 0);

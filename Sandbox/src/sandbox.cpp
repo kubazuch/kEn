@@ -19,9 +19,9 @@
 #include <kEn/event/event.hpp>
 #include <kEn/event/key_events.hpp>
 #include <kEn/event/mouse_events.hpp>
+#include <kEn/renderer/device.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/material.hpp>
-#include <kEn/renderer/render_command.hpp>
 #include <kEn/renderer/renderer.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
@@ -36,7 +36,7 @@ namespace {
 
 class DemoLayer : public kEn::Layer {
  public:
-  DemoLayer() : Layer("Demo") {}
+  DemoLayer() : Layer("Demo"), device_(kEn::device()) {}
 
   void on_attach() override {
     dispatcher_.subscribe(this, &DemoLayer::on_key_pressed);
@@ -101,14 +101,14 @@ class DemoLayer : public kEn::Layer {
     kEn::Renderer::set_ambient(ambient_color_);
 
     // --- Shader ---
-    phong_shader_ = kEn::Shader::create("phong");
+    phong_shader_ = device_.create_shader("phong");
 
     // --- Framebuffer ---
     kEn::FramebufferSpec fb_spec;
     fb_spec.width       = vp_w_;
     fb_spec.height      = vp_h_;
     fb_spec.attachments = {kEn::TextureFormat::RGBA8, kEn::TextureFormat::Depth24Stencil8};
-    framebuffer_        = kEn::Framebuffer::create(fb_spec);
+    framebuffer_        = device_.create_framebuffer(fb_spec);
 
     KEN_INFO("DemoLayer attached");
   }
@@ -125,10 +125,10 @@ class DemoLayer : public kEn::Layer {
 
   void on_render(double alpha) override {
     framebuffer_->bind();
-    kEn::RenderCommand::set_viewport(0, 0, vp_w_, vp_h_);
-    kEn::RenderCommand::set_clear_color({0.08F, 0.08F, 0.12F, 1.F});
-    kEn::RenderCommand::clear();
-    kEn::RenderCommand::depth_testing();
+    device_.command().set_viewport(0, 0, vp_w_, vp_h_);
+    device_.command().set_clear_color({0.08F, 0.08F, 0.12F, 1.F});
+    device_.command().clear();
+    device_.command().depth_testing(true);
 
     kEn::Renderer::begin_scene(camera_);
     kEn::Renderer::prepare(*phong_shader_);
@@ -138,14 +138,26 @@ class DemoLayer : public kEn::Layer {
 
     kEn::Renderer::end_scene();
     framebuffer_->unbind();
+
+    device_.command().set_clear_color({0.2F, 0.2F, 0.2F, 1.F});
+    device_.command().clear();
   }
 
   void on_imgui() override {
-    ImGui::DockSpaceOverViewport();
+    ImGui::DockSpaceOverViewport(0, nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
 
     // --- Viewport ---
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
     if (ImGui::Begin("Viewport")) {
+      viewport_focused_ = ImGui::IsWindowFocused();
+      viewport_hovered_ = ImGui::IsWindowHovered();
+
+      if (viewport_focused_ || viewport_hovered_) {
+        ImGuiIO& io            = ImGui::GetIO();
+        io.WantCaptureMouse    = false;
+        io.WantCaptureKeyboard = false;
+      }
+
       const ImVec2 size = ImGui::GetContentRegionAvail();
       const auto new_w  = static_cast<uint32_t>(size.x);
       const auto new_h  = static_cast<uint32_t>(size.y);
@@ -177,7 +189,7 @@ class DemoLayer : public kEn::Layer {
 
       ImGui::SeparatorText("Rendering");
       if (ImGui::Checkbox("Wireframe (F1)", &wireframe_)) {
-        kEn::RenderCommand::set_wireframe(wireframe_);
+        device_.command().set_wireframe(wireframe_);
       }
       if (ImGui::ColorEdit3("Ambient", mEn::value_ptr(ambient_color_))) {
         kEn::Renderer::set_ambient(ambient_color_);
@@ -218,7 +230,7 @@ class DemoLayer : public kEn::Layer {
   bool on_key_pressed(kEn::KeyPressedEvent& event) {
     if (event.key() == kEn::key::f1) {
       wireframe_ = !wireframe_;
-      kEn::RenderCommand::set_wireframe(wireframe_);
+      device_.command().set_wireframe(wireframe_);
     }
     return false;
   }
@@ -237,6 +249,7 @@ class DemoLayer : public kEn::Layer {
   }
 
   kEn::EventDispatcher dispatcher_;
+  kEn::Device& device_;
 
   // Parent declared before child so it outlives it (members destroyed in reverse declaration order)
   kEn::GameObject camera_obj_;
@@ -254,6 +267,8 @@ class DemoLayer : public kEn::Layer {
   std::shared_ptr<kEn::Shader> phong_shader_;
   std::shared_ptr<kEn::Framebuffer> framebuffer_;
 
+  bool viewport_focused_   = false;
+  bool viewport_hovered_   = false;
   bool wireframe_          = false;
   mEn::Vec3 ambient_color_ = {0.05F, 0.05F, 0.08F};
   float fov_               = 70.F;
@@ -263,7 +278,9 @@ class DemoLayer : public kEn::Layer {
 
 class Sandbox : public kEn::Application {
  public:
-  Sandbox() : kEn::Application({.title = "Sandbox"}) { push_layer(std::make_unique<DemoLayer>()); }
+  Sandbox() : kEn::Application({.title = "Sandbox", .enable_debug = true}) {
+    push_layer(std::make_unique<DemoLayer>());
+  }
 };
 
 }  // namespace

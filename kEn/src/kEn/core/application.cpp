@@ -13,12 +13,10 @@
 #include <kEn/core/window.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/event.hpp>
-#ifdef KEN_DEBUG_BUILD
 #include <kEn/imgui/debug_layer.hpp>
-#endif
 #include <kEn/imgui/imgui_frame.hpp>
 #include <kEn/imgui/imgui_layer.hpp>
-#include <kEn/renderer/render_command.hpp>
+#include <kEn/renderer/device.hpp>
 
 namespace kEn {
 Application* Application::instance_ = nullptr;
@@ -27,18 +25,22 @@ Application::Application(ApplicationSpec spec) : spec_(std::move(spec)) {
   KEN_CORE_ASSERT(!instance_, "App already exists!");
   instance_ = this;
 
-  window_ = std::make_unique<Window>(WindowProperties{spec_.title, spec_.window_width, spec_.window_height});
+  WindowProperties win_props{spec_.title, spec_.window_width, spec_.window_height};
+  win_props.opengl_debug_context = (spec_.api == Device::Api::OpenGL && spec_.enable_debug);
+
+  window_ = std::make_unique<Window>(win_props);
   window_->set_event_handler([this](auto& event) { window_event_handler(event); });
 
   dispatcher_.subscribe(this, &Application::on_window_close);
   dispatcher_.subscribe(this, &Application::on_window_resize);
 
-  RenderCommand::init();
+  device_ = Device::create(spec_.api, window_->native_window(), spec_.enable_debug);
+  window_->set_vsync(true);
 
   push_overlay(std::make_unique<ImguiLayer>());
-#ifdef KEN_DEBUG_BUILD
-  push_overlay(std::make_unique<DebugLayer>());
-#endif
+  if (spec_.enable_debug) {
+    push_overlay(std::make_unique<DebugLayer>());
+  }
 }
 
 void Application::push_layer(std::unique_ptr<Layer> layer) { layer_stack_.push_layer(std::move(layer)); }
@@ -84,7 +86,6 @@ void Application::run() {
     }
 
     render(std::chrono::duration<double>(lag).count() / std::chrono::duration<double>(kTickTime).count());
-    window_->swap_buffers();
   }
 }
 
@@ -108,6 +109,8 @@ void Application::render(double alpha) {
       }
     }
   }
+
+  device_->swap_buffers();
 }
 
 void Application::window_event_handler(BaseEvent& e) {
@@ -134,7 +137,7 @@ bool Application::on_window_resize(WindowResizeEvent& e) {
   }
 
   minimized_ = false;
-  RenderCommand::set_viewport(0, 0, e.width(), e.height());
+  device_->command().set_viewport(0, 0, e.width(), e.height());
   return false;
 }
 }  // namespace kEn
