@@ -3,6 +3,7 @@
 #include <imgui/imgui.h>
 
 #include <kEn/core/application.hpp>
+#include <kEn/core/layer.hpp>
 
 namespace kEn {
 
@@ -10,7 +11,7 @@ DebugLayer::DebugLayer() : Layer("DebugLayer") {}
 
 void DebugLayer::on_imgui() {
   if (ImGui::Begin("DEBUG")) {
-    Application& app = Application::instance();
+    const Application& app = Application::instance();
     ImGui::Text("FPS: %d", app.fps());
     ImGui::Text("TPS: %d", app.tps());
     bool vsync = app.main_window().vsync();
