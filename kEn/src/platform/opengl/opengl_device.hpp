@@ -29,7 +29,7 @@ class OpenglDevice final : public Device {
   std::shared_ptr<Texture2D> create_texture(const TextureSpec&) override;
   std::shared_ptr<Texture2D> create_texture(const std::filesystem::path&, const TextureSpec&) override;
 
-  std::unique_ptr<VertexArray> create_vertex_array() override;
+  std::unique_ptr<VertexInput> create_vertex_input() override;
   std::shared_ptr<Framebuffer> create_framebuffer(const FramebufferSpec&) override;
 
   std::unique_ptr<ImguiBackend> create_imgui_backend() override;

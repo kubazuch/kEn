@@ -9,25 +9,6 @@
 
 namespace kEn {
 
-namespace shader_data_type {
-inline constexpr auto kOpenglTypes = util::make_enum_map<GLenum>({
-    std::pair{Float, GL_FLOAT},
-    std::pair{Float2, GL_FLOAT},
-    std::pair{Float3, GL_FLOAT},
-    std::pair{Float4, GL_FLOAT},
-    std::pair{Mat3, GL_FLOAT},
-    std::pair{Mat4, GL_FLOAT},
-    std::pair{Int, GL_INT},
-    std::pair{Int2, GL_INT},
-    std::pair{Int3, GL_INT},
-    std::pair{Int4, GL_INT},
-    std::pair{Bool, GL_BOOL},
-});
-
-[[nodiscard]] constexpr GLenum get_opengl_type(ShaderDataType type) { return kOpenglTypes[type]; }
-
-}  // namespace shader_data_type
-
 namespace buffer_type {
 
 inline constexpr auto kOpenglTypes = util::make_enum_map<GLenum>({
@@ -49,8 +30,6 @@ class OpenglBuffer : virtual public Buffer {
   void bind(BufferType type) const override;
   void unbind(BufferType type) const override;
 
-  const BufferLayout& layout() const override { return layout_; }
-  void set_layout(const BufferLayout& layout) override { layout_ = layout; }
   size_t size() const override { return size_; }
 
  protected:
@@ -58,7 +37,6 @@ class OpenglBuffer : virtual public Buffer {
 
   size_t size_;
   uint32_t renderer_id_{};
-  BufferLayout layout_;
 
   friend class OpenglUniformBuffer;
   friend class OpenglShaderStorageBuffer;
@@ -70,9 +48,6 @@ class OpenglMutableBuffer final : public MutableBuffer, public OpenglBuffer {
 
   void bind(BufferType type) const override { OpenglBuffer::bind(type); }
   void unbind(BufferType type) const override { OpenglBuffer::unbind(type); }
-
-  const BufferLayout& layout() const override { return OpenglBuffer::layout(); }
-  void set_layout(const BufferLayout& layout) override { OpenglBuffer::set_layout(layout); }
   size_t size() const override { return OpenglBuffer::size(); }
 
   void modify_data(std::function<void(void*)> fn) const override;

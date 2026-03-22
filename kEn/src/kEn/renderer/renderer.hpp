@@ -5,7 +5,7 @@
 #include <kEn/core/transform.hpp>
 #include <kEn/renderer/command.hpp>
 #include <kEn/renderer/shader.hpp>
-#include <kEn/renderer/vertex_array.hpp>
+#include <kEn/renderer/vertex_input.hpp>
 #include <kEn/scene/camera/camera.hpp>
 #include <kEn/scene/light.hpp>
 
@@ -26,12 +26,12 @@ class Renderer {
   static void set_fog(float fog) { scene_data_->fog = fog; }
   static void prepare(Shader& shader);
 
-  static void submit(Shader& shader, const VertexArray& vertex_array, RenderMode mode = RenderMode::Triangles);
-  static void submit(Shader& shader, const VertexArray& vertex_array, const Transform& transform,
+  static void submit(Shader& shader, const VertexInput& vertex_input, RenderMode mode = RenderMode::Triangles);
+  static void submit(Shader& shader, const VertexInput& vertex_input, const Transform& transform,
                      RenderMode mode = RenderMode::Triangles);
-  static void submit_instanced(Shader& shader, const VertexArray& vertex_array, size_t instance_count,
+  static void submit_instanced(Shader& shader, const VertexInput& vertex_input, size_t instance_count,
                                RenderMode mode = RenderMode::Triangles);
-  static void submit_tessellated(Shader& shader, const VertexArray& vertex_array, const uint32_t& count,
+  static void submit_tessellated(Shader& shader, const VertexInput& vertex_input, const uint32_t& count,
                                  const Transform& transform);
 
  private:

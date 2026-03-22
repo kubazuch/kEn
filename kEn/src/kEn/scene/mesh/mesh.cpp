@@ -10,17 +10,12 @@
 
 #include <kEn/core/application.hpp>
 #include <kEn/core/transform.hpp>
-#include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/material.hpp>
 #include <kEn/renderer/renderer.hpp>
-#include <kEn/renderer/vertex_array.hpp>
+#include <kEn/renderer/vertex_input.hpp>
 #include <kEn/scene/mesh/vertex.hpp>
 
 namespace kEn {
-
-BufferLayout Mesh::vertex_layout_ = {{shader_data_type::Float3, "a_Position"},
-                                     {shader_data_type::Float3, "a_Normal"},
-                                     {shader_data_type::Float2, "a_TexCoord"}};
 
 Mesh::Mesh(std::string_view name, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices,
            kEn::Material material)
@@ -30,11 +25,10 @@ Mesh::Mesh(std::string_view name, const std::vector<Vertex>& vertices, const std
 
 void Mesh::setup_mesh() {
   auto& dev = device();
-  vao_      = dev.create_vertex_array();
+  vao_      = dev.create_vertex_input();
 
-  const std::shared_ptr<Buffer> vbo = dev.create_buffer(this->vertices.data(), vertices.size() * sizeof(Vertex));
-  vbo->set_layout(vertex_layout_);
-  vao_->add_vertex_buffer(vbo);
+  const std::shared_ptr<Buffer> vbo = dev.create_buffer(vertices.data(), vertices.size() * sizeof(Vertex));
+  vao_->add_vertex_stream({.buffer = vbo, .layout = kVertexLayout});
 
   const std::shared_ptr<Buffer> ebo = dev.create_buffer(indices.data(), indices.size() * sizeof(uint32_t));
   vao_->set_index_buffer(ebo);

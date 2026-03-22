@@ -13,14 +13,14 @@
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
-#include <kEn/renderer/vertex_array.hpp>
+#include <kEn/renderer/vertex_input.hpp>
 
 #include "opengl_buffer.hpp"
 #include "opengl_framebuffer.hpp"
 #include "opengl_imgui_backend.hpp"
 #include "opengl_shader.hpp"
 #include "opengl_texture.hpp"
-#include "opengl_vertex_array.hpp"
+#include "opengl_vertex_input.hpp"
 
 namespace kEn {
 
@@ -82,7 +82,7 @@ std::shared_ptr<Texture2D> OpenglDevice::create_texture(const std::filesystem::p
   return loaded_textures_[path] = std::make_shared<OpenglTexture2D>(path, spec);
 }
 
-std::unique_ptr<VertexArray> OpenglDevice::create_vertex_array() { return std::make_unique<OpenglVertexArray>(); }
+std::unique_ptr<VertexInput> OpenglDevice::create_vertex_input() { return std::make_unique<OpenglVertexInput>(); }
 
 std::shared_ptr<Framebuffer> OpenglDevice::create_framebuffer(const FramebufferSpec& spec) {
   return std::make_shared<OpenglFramebuffer>(spec);

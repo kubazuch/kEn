@@ -8,7 +8,7 @@
 #include <kEn/core/application.hpp>
 #include <kEn/renderer/command.hpp>
 #include <kEn/renderer/shader.hpp>
-#include <kEn/renderer/vertex_array.hpp>
+#include <kEn/renderer/vertex_input.hpp>
 #include <kEn/scene/camera/camera.hpp>
 
 namespace kEn {
@@ -51,16 +51,16 @@ void Renderer::prepare(Shader& shader) {
   }
 }
 
-void Renderer::submit(Shader& shader, const VertexArray& vertex_array, RenderMode mode) {
+void Renderer::submit(Shader& shader, const VertexInput& vertex_input, RenderMode mode) {
   shader.set_uniform("u_VP", scene_data_->VP_matrix);
   shader.set_uniform("u_CameraPos", scene_data_->camera_pos);
   shader.set_uniform("u_Ambient", scene_data_->ambient);
 
   shader.bind();
-  device().command().draw_indexed(vertex_array, vertex_array.element_count(), mode);
+  device().command().draw_indexed(vertex_input, vertex_input.element_count(), mode);
 }
 
-void Renderer::submit(Shader& shader, const VertexArray& vertex_array, const Transform& transform, RenderMode mode) {
+void Renderer::submit(Shader& shader, const VertexInput& vertex_input, const Transform& transform, RenderMode mode) {
   shader.set_uniform("u_V", scene_data_->V_matrix);
   shader.set_uniform("u_P", scene_data_->P_matrix);
   shader.set_uniform("u_VP", scene_data_->VP_matrix);
@@ -69,28 +69,28 @@ void Renderer::submit(Shader& shader, const VertexArray& vertex_array, const Tra
   shader.set_uniform("u_Ambient", scene_data_->ambient);
 
   shader.bind();
-  if (vertex_array.index_buffer()) {
-    device().command().draw_indexed(vertex_array, vertex_array.element_count(), mode);
+  if (vertex_input.index_buffer()) {
+    device().command().draw_indexed(vertex_input, vertex_input.element_count(), mode);
   } else {
-    device().command().draw(vertex_array, vertex_array.element_count(), mode);
+    device().command().draw(vertex_input, vertex_input.element_count(), mode);
   }
 }
 
-void Renderer::submit_instanced(Shader& shader, const VertexArray& vertex_array, size_t instance_count,
+void Renderer::submit_instanced(Shader& shader, const VertexInput& vertex_input, size_t instance_count,
                                 RenderMode mode) {
   shader.set_uniform("u_V", scene_data_->V_matrix);
   shader.set_uniform("u_P", scene_data_->P_matrix);
   shader.set_uniform("u_Ambient", scene_data_->ambient);
 
   shader.bind();
-  if (vertex_array.index_buffer()) {
-    device().command().draw_indexed_instanced(vertex_array, vertex_array.element_count(), instance_count, mode);
+  if (vertex_input.index_buffer()) {
+    device().command().draw_indexed_instanced(vertex_input, vertex_input.element_count(), instance_count, mode);
   } else {
-    device().command().draw_instanced(vertex_array, vertex_array.element_count(), instance_count, mode);
+    device().command().draw_instanced(vertex_input, vertex_input.element_count(), instance_count, mode);
   }
 }
 
-void Renderer::submit_tessellated(Shader& shader, const VertexArray& vertex_array, const uint32_t& count,
+void Renderer::submit_tessellated(Shader& shader, const VertexInput& vertex_input, const uint32_t& count,
                                   const Transform& transform) {
   shader.set_uniform("u_VP", scene_data_->VP_matrix);
   shader.set_uniform("u_CameraPos", scene_data_->camera_pos);
@@ -98,7 +98,7 @@ void Renderer::submit_tessellated(Shader& shader, const VertexArray& vertex_arra
   shader.set_uniform("u_Ambient", scene_data_->ambient);
 
   shader.bind();
-  device().command().draw(vertex_array, count, render_mode::Patches);
+  device().command().draw(vertex_input, count, render_mode::Patches);
 }
 
 }  // namespace kEn
