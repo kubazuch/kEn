@@ -58,25 +58,42 @@ jobs:
           cmake --preset=windows-clang-release -DPython_EXECUTABLE="$((get-command python3).Path)"
           cmake --build --preset=windows-clang-release --parallel
 
-      - name: Create artifact
+      - name: Create artifact payload
         id: create-artifact
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Path artifact
-          Get-ChildItem -Recurse -Include *.exe
-          & 7z a ./artifact/${{ env.BINARY_NAME }}-windows-x64.zip ./build/windows-msvc-release/bin/${{ env.BINARY_NAME }}.exe ./build/windows-msvc-release/bin/assets
+          $out = "./artifact/${{ env.BINARY_NAME }}-windows-x64"
+          New-Item -ItemType Directory -Force -Path $out
+
+          Copy-Item "./build/windows-msvc-release/bin/${{ env.BINARY_NAME }}.exe" $out
+          Copy-Item "./build/windows-msvc-release/bin/assets" "$out/assets" -Recurse
+
+          $imguiIni = "./build/windows-msvc-release/bin/imgui.ini"
+          if (Test-Path $imguiIni) {
+            Copy-Item $imguiIni $out
+            Write-Host "Included: imgui.ini"
+          } else {
+            Write-Host "File not found, skipping: imgui.ini"
+          }
+
+      - name: Create release zip
+        id: create-release-zip
+        shell: pwsh
+        run: |
+          & 7z a "./artifact/${{ env.BINARY_NAME }}-windows-x64.zip" `
+            "./artifact/${{ env.BINARY_NAME }}-windows-x64/*"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.BINARY_NAME }}-binary-archives
-          path: artifact
+          path: ./artifact/${{ env.BINARY_NAME }}-windows-x64
 
       - name: Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ./artifact/${{ env.BINARY_NAME }}-linux-x86_x64.tar.gz
+          files: ./artifact/${{ env.BINARY_NAME }}-windows-x64.zip
           generate_release_notes: true
 
       - name: Run latest-tag
