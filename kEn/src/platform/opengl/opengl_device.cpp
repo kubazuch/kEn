@@ -1,5 +1,6 @@
 #include "opengl_device.hpp"
 
+#include <cstddef>
 #include <filesystem>
 #include <memory>
 #include <string_view>
