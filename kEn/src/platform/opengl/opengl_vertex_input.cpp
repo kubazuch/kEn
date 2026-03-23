@@ -8,6 +8,8 @@
 #include <span>
 
 #include <kEn/core/assert.hpp>
+#include <kEn/renderer/buffer.hpp>
+#include <kEn/renderer/shader_data_type.hpp>
 #include <kEn/renderer/vertex_input.hpp>
 
 #include "opengl_shader_data_type.hpp"

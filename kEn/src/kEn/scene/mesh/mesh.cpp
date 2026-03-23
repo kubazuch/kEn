@@ -10,6 +10,7 @@
 
 #include <kEn/core/application.hpp>
 #include <kEn/core/transform.hpp>
+#include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/material.hpp>
 #include <kEn/renderer/renderer.hpp>
 #include <kEn/renderer/vertex_input.hpp>
