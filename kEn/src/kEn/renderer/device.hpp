@@ -11,7 +11,7 @@
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
-#include <kEn/renderer/vertex_array.hpp>
+#include <kEn/renderer/vertex_input.hpp>
 
 struct GLFWwindow;
 
@@ -50,7 +50,7 @@ class Device {
     return create_texture(path, {});
   }
 
-  [[nodiscard]] virtual std::unique_ptr<VertexArray> create_vertex_array()                           = 0;
+  [[nodiscard]] virtual std::unique_ptr<VertexInput> create_vertex_input()                           = 0;
   [[nodiscard]] virtual std::shared_ptr<Framebuffer> create_framebuffer(const FramebufferSpec& spec) = 0;
 
   [[nodiscard]] virtual std::unique_ptr<ImguiBackend> create_imgui_backend() = 0;

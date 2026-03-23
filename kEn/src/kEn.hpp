@@ -16,7 +16,7 @@
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/renderer.hpp>
 #include <kEn/renderer/shader.hpp>
-#include <kEn/renderer/vertex_array.hpp>
+#include <kEn/renderer/vertex_input.hpp>
 
 // Scene
 #include <kEn/scene/camera/camera.hpp>

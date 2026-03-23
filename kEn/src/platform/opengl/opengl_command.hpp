@@ -33,11 +33,11 @@ class OpenglCommand final : public Command {
   void clear() override;
   void depth_testing(bool enabled) override;
 
-  void draw_indexed(const VertexArray& vertex_array, size_t index_count, RenderMode mode) override;
-  void draw(const VertexArray& vertex_array, size_t vertex_count, RenderMode mode) override;
-  void draw_indexed_instanced(const VertexArray& vertex_array, size_t index_count, size_t instance_count,
+  void draw_indexed(const VertexInput& vertex_array, size_t index_count, RenderMode mode) override;
+  void draw(const VertexInput& vertex_array, size_t vertex_count, RenderMode mode) override;
+  void draw_indexed_instanced(const VertexInput& vertex_array, size_t index_count, size_t instance_count,
                               RenderMode mode) override;
-  void draw_instanced(const VertexArray& vertex_array, size_t vertex_count, size_t instance_count,
+  void draw_instanced(const VertexInput& vertex_array, size_t vertex_count, size_t instance_count,
                       RenderMode mode) override;
 
   void set_tessellation_patch_vertices(size_t count) override;

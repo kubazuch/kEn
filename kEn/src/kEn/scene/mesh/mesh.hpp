@@ -1,11 +1,17 @@
 #pragma once
 
+#include <cstddef>
+#include <filesystem>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include <kEn/core/transform.hpp>
-#include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/material.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
-#include <kEn/renderer/vertex_array.hpp>
+#include <kEn/renderer/vertex_input.hpp>
 #include <kEn/scene/mesh/vertex.hpp>
 
 namespace kEn {
@@ -23,13 +29,17 @@ class Mesh {
 
   void imgui();
 
- private:
-  std::unique_ptr<VertexArray> vao_;
-  void setup_mesh();
+  static constexpr auto kVertexLayout = make_vertex_layout<Vertex>({
+      {shader_data_type::Float3, "a_Position", offsetof(Vertex, pos)},
+      {shader_data_type::Float3, "a_Normal", offsetof(Vertex, normal)},
+      {shader_data_type::Float2, "a_TexCoord", offsetof(Vertex, texture_coord)},
+  });
 
- public:
-  static BufferLayout vertex_layout_;
   static const std::filesystem::path kModelPath;
+
+ private:
+  std::unique_ptr<VertexInput> vao_;
+  void setup_mesh();
 };
 
 }  // namespace kEn

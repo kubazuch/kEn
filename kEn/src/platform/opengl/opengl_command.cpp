@@ -9,7 +9,7 @@
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
 #include <kEn/renderer/command.hpp>
-#include <kEn/renderer/vertex_array.hpp>
+#include <kEn/renderer/vertex_input.hpp>
 
 namespace kEn {
 
@@ -77,24 +77,24 @@ void OpenglCommand::depth_testing(bool enabled) {
   }
 }
 
-void OpenglCommand::draw_indexed(const VertexArray& vertex_array, size_t index_count, RenderMode mode) {
+void OpenglCommand::draw_indexed(const VertexInput& vertex_array, size_t index_count, RenderMode mode) {
   vertex_array.bind();
   glDrawElements(render_mode::get_opengl_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT, nullptr);
 }
 
-void OpenglCommand::draw(const VertexArray& vertex_array, size_t vertex_count, RenderMode mode) {
+void OpenglCommand::draw(const VertexInput& vertex_array, size_t vertex_count, RenderMode mode) {
   vertex_array.bind();
   glDrawArrays(render_mode::get_opengl_mode(mode), 0, static_cast<GLsizei>(vertex_count));
 }
 
-void OpenglCommand::draw_indexed_instanced(const VertexArray& vertex_array, size_t index_count, size_t instance_count,
+void OpenglCommand::draw_indexed_instanced(const VertexInput& vertex_array, size_t index_count, size_t instance_count,
                                            RenderMode mode) {
   vertex_array.bind();
   glDrawElementsInstanced(render_mode::get_opengl_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT,
                           nullptr, static_cast<GLsizei>(instance_count));
 }
 
-void OpenglCommand::draw_instanced(const VertexArray& vertex_array, size_t vertex_count, size_t instance_count,
+void OpenglCommand::draw_instanced(const VertexInput& vertex_array, size_t vertex_count, size_t instance_count,
                                    RenderMode mode) {
   vertex_array.bind();
   glDrawArraysInstanced(render_mode::get_opengl_mode(mode), 0, static_cast<GLsizei>(vertex_count),
