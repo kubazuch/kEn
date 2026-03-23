@@ -135,7 +135,7 @@ const mEn::Mat4& Transform::world_to_local_matrix() const {
 }
 
 void Transform::set_dirty() {
-  if (dirty_) {
+  if (dirty_ && inverse_dirty_) {
     return;
   }
 
