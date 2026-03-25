@@ -147,7 +147,7 @@ class Shader {
    *
    * Typically used for logging/debug UI.
    */
-  virtual std::string_view get_name() const = 0;
+  virtual std::string_view name() const = 0;
 
   /**
    * @brief Base directory for file-based shader loading.

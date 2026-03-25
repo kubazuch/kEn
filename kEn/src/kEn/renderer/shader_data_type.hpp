@@ -58,9 +58,9 @@ inline constexpr auto kComponents = util::make_enum_map<std::uint8_t>({
     std::pair{Bool, 1},
 });
 
-[[nodiscard]] constexpr std::uint32_t get_size(ShaderDataType type) { return kSizes[type]; }
+[[nodiscard]] constexpr std::uint32_t size(ShaderDataType type) { return kSizes[type]; }
 
-[[nodiscard]] constexpr std::uint8_t get_component_count(ShaderDataType type) { return kComponents[type]; }
+[[nodiscard]] constexpr std::uint8_t component_count(ShaderDataType type) { return kComponents[type]; }
 
 }  // namespace shader_data_type
 

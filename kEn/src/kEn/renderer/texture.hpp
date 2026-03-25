@@ -84,7 +84,7 @@ class Texture {
  public:
   virtual ~Texture() = default;
 
-  virtual const TextureSpec& get_specification() const = 0;
+  virtual const TextureSpec& spec() const = 0;
 
   virtual uint32_t width() const       = 0;
   virtual uint32_t height() const      = 0;

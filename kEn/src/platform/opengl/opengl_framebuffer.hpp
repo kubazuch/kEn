@@ -28,12 +28,12 @@ class OpenglFramebuffer : public Framebuffer {
   void clear_attachment(uint32_t attachment_id, float value) override;
   void clear_attachment(uint32_t attachment_id, mEn::Vec4 value) override;
 
-  uint32_t get_color_attachment_renderer_id(uint32_t id) const override {
+  uint32_t color_attachment_renderer_id(uint32_t id) const override {
     KEN_CORE_ASSERT(id < color_attachments_.size());
     return color_attachments_[id];
   }
 
-  const FramebufferSpec& get_spec() const override { return spec_; }
+  const FramebufferSpec& spec() const override { return spec_; }
 
  private:
   uint32_t renderer_id_ = 0;

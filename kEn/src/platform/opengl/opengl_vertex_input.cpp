@@ -42,8 +42,8 @@ void OpenglVertexInput::add_vertex_stream(const VertexStreamBinding& stream) {
       case shader_data_type::Float3:
       case shader_data_type::Float4: {
         glEnableVertexAttribArray(attrib_index_);
-        glVertexAttribPointer(attrib_index_, static_cast<GLint>(shader_data_type::get_component_count(element.type)),
-                              shader_data_type::get_opengl_type(element.type),
+        glVertexAttribPointer(attrib_index_, static_cast<GLint>(shader_data_type::component_count(element.type)),
+                              shader_data_type::opengl_type(element.type),
                               static_cast<GLboolean>(element.normalized ? GL_TRUE : GL_FALSE),
                               static_cast<GLsizei>(layout.stride),
                               reinterpret_cast<const void*>(base_offset));  // NOLINT
@@ -58,8 +58,8 @@ void OpenglVertexInput::add_vertex_stream(const VertexStreamBinding& stream) {
       case shader_data_type::Int4:
       case shader_data_type::Bool: {
         glEnableVertexAttribArray(attrib_index_);
-        glVertexAttribIPointer(attrib_index_, static_cast<GLint>(shader_data_type::get_component_count(element.type)),
-                               shader_data_type::get_opengl_type(element.type), static_cast<GLsizei>(layout.stride),
+        glVertexAttribIPointer(attrib_index_, static_cast<GLint>(shader_data_type::component_count(element.type)),
+                               shader_data_type::opengl_type(element.type), static_cast<GLsizei>(layout.stride),
                                reinterpret_cast<const void*>(base_offset));  // NOLINT
         glVertexAttribDivisor(attrib_index_, divisor);
         attrib_index_++;
@@ -68,12 +68,11 @@ void OpenglVertexInput::add_vertex_stream(const VertexStreamBinding& stream) {
 
       case shader_data_type::Mat3:
       case shader_data_type::Mat4: {
-        const uint8_t count = shader_data_type::get_component_count(element.type);
+        const uint8_t count = shader_data_type::component_count(element.type);
         for (uint8_t i = 0; i < count; ++i) {
-          const std::size_t col_offset =
-              base_offset + (shader_data_type::get_size(shader_data_type::Float) * count * i);
+          const std::size_t col_offset = base_offset + (shader_data_type::size(shader_data_type::Float) * count * i);
           glEnableVertexAttribArray(attrib_index_);
-          glVertexAttribPointer(attrib_index_, count, shader_data_type::get_opengl_type(element.type),
+          glVertexAttribPointer(attrib_index_, count, shader_data_type::opengl_type(element.type),
                                 static_cast<GLboolean>(element.normalized ? GL_TRUE : GL_FALSE),
                                 static_cast<GLsizei>(layout.stride),
                                 reinterpret_cast<const void*>(col_offset));  // NOLINT
