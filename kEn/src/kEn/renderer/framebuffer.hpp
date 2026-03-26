@@ -47,9 +47,9 @@ class Framebuffer {
   virtual void clear_attachment(uint32_t attachment_id, float value)     = 0;
   virtual void clear_attachment(uint32_t attachment_id, mEn::Vec4 value) = 0;
 
-  virtual uint32_t get_color_attachment_renderer_id(uint32_t id) const = 0;
+  virtual uint32_t color_attachment_renderer_id(uint32_t id) const = 0;
 
-  virtual const FramebufferSpec& get_spec() const = 0;
+  virtual const FramebufferSpec& spec() const = 0;
 };
 
 }  // namespace kEn

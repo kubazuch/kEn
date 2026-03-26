@@ -169,7 +169,7 @@ class DemoLayer : public kEn::Layer {
                                 200.F);
       }
       const auto tex_id =
-          static_cast<ImTextureID>(static_cast<uintptr_t>(framebuffer_->get_color_attachment_renderer_id(0)));
+          static_cast<ImTextureID>(static_cast<uintptr_t>(framebuffer_->color_attachment_renderer_id(0)));
       ImGui::Image(tex_id, size, ImVec2(0, 1), ImVec2(1, 0));
     }
     ImGui::End();

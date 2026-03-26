@@ -33,7 +33,7 @@ struct VertexElement {
                           std::uint32_t semantic_index = 0)
       : semantic(semantic), type(type), semantic_index(semantic_index), offset(offset), normalized(normalized) {}
 
-  [[nodiscard]] constexpr std::size_t size() const { return shader_data_type::get_size(type); }
+  [[nodiscard]] constexpr std::size_t size() const { return shader_data_type::size(type); }
 };
 
 template <std::size_t N>

@@ -41,22 +41,22 @@ OpenglDevice::OpenglDevice(GLFWwindow* window, bool enable_debug) : context_(win
 
 void OpenglDevice::swap_buffers() { context_.swap_buffers(); }
 
-std::shared_ptr<Buffer> OpenglDevice::create_buffer(const void* data, std::size_t size) {
-  return std::make_shared<OpenglBuffer>(data, size);
+std::shared_ptr<Buffer> OpenglDevice::create_buffer(const BufferDesc& desc, const void* data) {
+  return std::make_shared<OpenglBuffer>(desc, data);
 }
 
-std::shared_ptr<MutableBuffer> OpenglDevice::create_mutable_buffer(const void* data, std::size_t size) {
-  return std::make_shared<OpenglMutableBuffer>(data, size);
+std::shared_ptr<MutableBuffer> OpenglDevice::create_mutable_buffer(const BufferDesc& desc, const void* data) {
+  return std::make_shared<OpenglMutableBuffer>(desc, data);
 }
 
 std::shared_ptr<UniformBuffer> OpenglDevice::create_uniform_buffer(const std::shared_ptr<Buffer>& buffer,
-                                                                   std::size_t binding_point) {
-  return std::make_shared<OpenglUniformBuffer>(std::dynamic_pointer_cast<OpenglBuffer>(buffer), binding_point);
+                                                                   std::size_t slot, ShaderStage stage) {
+  return std::make_shared<OpenglUniformBuffer>(std::dynamic_pointer_cast<OpenglBuffer>(buffer), slot, stage);
 }
 
 std::shared_ptr<ShaderStorageBuffer> OpenglDevice::create_shader_storage_buffer(const std::shared_ptr<Buffer>& buffer,
-                                                                                std::size_t binding_point) {
-  return std::make_shared<OpenglShaderStorageBuffer>(std::dynamic_pointer_cast<OpenglBuffer>(buffer), binding_point);
+                                                                                std::size_t slot, ShaderStage stage) {
+  return std::make_shared<OpenglShaderStorageBuffer>(std::dynamic_pointer_cast<OpenglBuffer>(buffer), slot, stage);
 }
 
 std::shared_ptr<Shader> OpenglDevice::create_shader(std::string_view name, std::string_view vertex_src,

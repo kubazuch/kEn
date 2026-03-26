@@ -21,7 +21,7 @@ inline constexpr auto kOpenglRenderModes = util::make_enum_map<GLenum>({
     std::pair{LinesAdjacency, GL_LINES_ADJACENCY},
 });
 
-[[nodiscard]] constexpr GLenum get_opengl_mode(RenderMode mode) { return kOpenglRenderModes[mode]; }
+[[nodiscard]] constexpr GLenum opengl_mode(RenderMode mode) { return kOpenglRenderModes[mode]; }
 
 }  // namespace render_mode
 

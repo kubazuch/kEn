@@ -23,7 +23,7 @@ inline constexpr auto kOpenglTypes = util::make_enum_map<GLenum>({
     std::pair{Bool, GL_BOOL},
 });
 
-[[nodiscard]] constexpr GLenum get_opengl_type(ShaderDataType type) { return kOpenglTypes[type]; }
+[[nodiscard]] constexpr GLenum opengl_type(ShaderDataType type) { return kOpenglTypes[type]; }
 
 }  // namespace shader_data_type
 

@@ -145,7 +145,7 @@ class OpenglShader final : public Shader {
   void set_uniform_any(std::string_view name, const UniformValue& value) const override {
     std::visit(
         [&](auto const& x) {
-          const GLint location = get_uniform_location(name);
+          const GLint location = uniform_location(name);
           kEn::set_uniform(renderer_id_, location, x);
         },
         value);
@@ -155,7 +155,7 @@ class OpenglShader final : public Shader {
   void set_uniform_array_any(std::string_view name, const UniformArray& values) const override {
     std::visit(
         [&](auto span) {
-          const GLint location = get_uniform_location(name);
+          const GLint location = uniform_location(name);
           kEn::set_uniform_array(renderer_id_, location, span);
         },
         values);
@@ -166,8 +166,8 @@ class OpenglShader final : public Shader {
 
   // </Uniforms>
 
-  /** @copydoc Shader::get_name */
-  std::string_view get_name() const override { return name_; }
+  /** @copydoc Shader::name */
+  std::string_view name() const override { return name_; }
 
   DELETE_COPY_MOVE(OpenglShader);
 
@@ -235,7 +235,7 @@ class OpenglShader final : public Shader {
    *
    * @note Caches lookups in @ref uniform_locations_ to avoid repeated driver queries.
    */
-  GLint get_uniform_location(std::string_view name) const;
+  GLint uniform_location(std::string_view name) const;
 
  private:
   static const std::filesystem::path kVertexExt;

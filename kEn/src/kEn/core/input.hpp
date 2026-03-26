@@ -41,7 +41,7 @@ namespace input {
  * @brief Get the current mouse cursor position in window coordinates.
  * @return Cursor position as (x, y).
  */
-[[nodiscard]] mEn::Vec2 get_mouse_pos();
+[[nodiscard]] mEn::Vec2 mouse_pos();
 
 /**
  * @brief Show or hide the OS cursor.

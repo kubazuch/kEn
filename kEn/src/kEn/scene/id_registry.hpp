@@ -48,7 +48,7 @@ class IdRegistry {
     return ids_[id];
   }
 
-  size_t get_max_objs() const { return max_objs_; }
+  size_t max_objs() const { return max_objs_; }
 
   void unregister_id(size_t id) {
     if (id >= max_objs_) {

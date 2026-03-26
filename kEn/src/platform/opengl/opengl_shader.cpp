@@ -119,7 +119,7 @@ struct OpenglShader::PreprocessContext {
   std::unordered_map<std::filesystem::path, size_t> path_to_id;
   std::vector<std::string> id_to_name;
 
-  size_t get_id(const std::filesystem::path& key, std::string_view display_name) {
+  size_t id(const std::filesystem::path& key, std::string_view display_name) {
     auto [it, inserted] = path_to_id.emplace(key, id_to_name.size());
     if (inserted) {
       id_to_name.emplace_back(display_name);
@@ -131,7 +131,7 @@ struct OpenglShader::PreprocessContext {
 std::string OpenglShader::read_shader_src_internal(const std::filesystem::path& filePath, PreprocessContext& ctx,
                                                    bool internal) {
   const auto key_path = normalize_key(filePath, internal);
-  const auto this_id  = ctx.get_id(key_path, display_name_for(key_path, internal));
+  const auto this_id  = ctx.id(key_path, display_name_for(key_path, internal));
 
   // Detect circular dependencies
   if (ctx.in_progress.contains(key_path)) {
@@ -201,7 +201,7 @@ std::string OpenglShader::read_shader_src_internal(const std::filesystem::path& 
 
       if (auto it = kInternalLibs.find(include_file_name); it != kInternalLibs.end()) {
         auto child_key  = normalize_key(include_file_name, true);
-        child_id        = ctx.get_id(child_key, display_name_for(child_key, true));
+        child_id        = ctx.id(child_key, display_name_for(child_key, true));
         included_source = read_shader_src_internal(include_file_name, ctx, true);
       } else {
         // Resolve filename relative to current file first
@@ -210,7 +210,7 @@ std::string OpenglShader::read_shader_src_internal(const std::filesystem::path& 
           candidate = std::filesystem::path{kShaderPath} / include_file_name;
         }
         auto child_key  = normalize_key(candidate, false);
-        child_id        = ctx.get_id(child_key, display_name_for(child_key, false));
+        child_id        = ctx.id(child_key, display_name_for(child_key, false));
         included_source = read_shader_src_internal(candidate, ctx, false);
       }
 
@@ -235,7 +235,7 @@ std::string OpenglShader::read_shader_src(const std::filesystem::path& file,
                                           std::vector<std::string>* out_source_id_map) {
   PreprocessContext ctx;
   auto root_key = normalize_key(file, false);
-  ctx.get_id(root_key, display_name_for(root_key, false));
+  ctx.id(root_key, display_name_for(root_key, false));
 
   auto src = read_shader_src_internal(file, ctx, false);
 
@@ -474,7 +474,7 @@ void OpenglShader::bind() const { glUseProgram(renderer_id_); }
 void OpenglShader::unbind() const { glUseProgram(0); }
 
 // <Uniforms>
-GLint OpenglShader::get_uniform_location(std::string_view name) const {
+GLint OpenglShader::uniform_location(std::string_view name) const {
   auto it = uniform_locations_.find(name);
   if (it != uniform_locations_.end()) {
     return it->second;
@@ -523,10 +523,10 @@ void OpenglShader::bind_uniform_buffer(std::string_view name, const UniformBuffe
     return;
   }
 
-  uniform_block_bindings_[block_index] = static_cast<GLuint>(ubo.binding_point());
+  uniform_block_bindings_[block_index] = static_cast<GLuint>(ubo.slot());
   glUniformBlockBinding(renderer_id_, block_index, uniform_block_bindings_[block_index]);
   KEN_CORE_DEBUG("Adding new uniform block '{0}' (index: {1}) in shader '{2}' to binding: {3}", name, block_index,
-                 name_, ubo.binding_point());
+                 name_, ubo.slot());
 }
 
 // </Uniforms>

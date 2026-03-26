@@ -33,7 +33,7 @@ bool is_mouse_button_pressed(MouseButton button) {
   return button_state == GLFW_PRESS;
 }
 
-mEn::Vec2 get_mouse_pos() {
+mEn::Vec2 mouse_pos() {
   auto* window = glfw_window();
   double x     = 0.0;
   double y     = 0.0;
