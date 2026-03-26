@@ -23,12 +23,12 @@ namespace kEn {
  * @note @ref kEn::util::Flags is used to represent combinations via @ref kEn::ModKeys.
  */
 enum class ModKey : std::uint8_t {
-  Shift    = 1 << 0,
-  Control  = 1 << 1,
-  Alt      = 1 << 2,
-  Super    = 1 << 3,
-  CapsLock = 1 << 4,
-  NumLock  = 1 << 5,
+  Shift    = 1U << 0,
+  Control  = 1U << 1,
+  Alt      = 1U << 2,
+  Super    = 1U << 3,
+  CapsLock = 1U << 4,
+  NumLock  = 1U << 5,
 };
 
 /**

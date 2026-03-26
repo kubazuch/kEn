@@ -6,13 +6,23 @@
 
 #include <mEn.hpp>
 
-#include <kEn/renderer/buffer.hpp>
+#include <kEn/core/core.hpp>
 
 /** @file
  *  @ingroup ken
  */
 
 namespace kEn {
+
+class UniformBuffer;
+
+enum class ShaderStage : std::uint8_t { Vertex, Fragment, Geometry, TessControl, TessEvaluation, Compute };
+
+namespace shader_stage {
+
+using enum ShaderStage;
+
+}  // namespace shader_stage
 
 /**
  * @brief Variant of supported uniform value types.

@@ -523,10 +523,10 @@ void OpenglShader::bind_uniform_buffer(std::string_view name, const UniformBuffe
     return;
   }
 
-  uniform_block_bindings_[block_index] = static_cast<GLuint>(ubo.binding_point());
+  uniform_block_bindings_[block_index] = static_cast<GLuint>(ubo.slot());
   glUniformBlockBinding(renderer_id_, block_index, uniform_block_bindings_[block_index]);
   KEN_CORE_DEBUG("Adding new uniform block '{0}' (index: {1}) in shader '{2}' to binding: {3}", name, block_index,
-                 name_, ubo.binding_point());
+                 name_, ubo.slot());
 }
 
 // </Uniforms>

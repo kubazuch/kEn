@@ -12,6 +12,7 @@
 #include <kEn/renderer/shader_data_type.hpp>
 #include <kEn/renderer/vertex_input.hpp>
 
+#include "opengl_buffer.hpp"
 #include "opengl_shader_data_type.hpp"
 
 namespace kEn {
@@ -28,7 +29,7 @@ void OpenglVertexInput::add_vertex_stream(const VertexStreamBinding& stream) {
   KEN_CORE_ASSERT(!stream.layout.empty(), "Vertex stream must have a layout!");
 
   glBindVertexArray(renderer_id_);
-  stream.buffer->bind(buffer_type::Vertex);
+  std::dynamic_pointer_cast<OpenglBuffer>(stream.buffer)->bind(buffer_target::Vertex);
 
   const auto& layout   = stream.layout;
   const GLuint divisor = stream.input_rate == VertexInputRate::PerInstance ? stream.instance_step_rate : 0;
@@ -93,7 +94,7 @@ void OpenglVertexInput::add_vertex_stream(const VertexStreamBinding& stream) {
 void OpenglVertexInput::set_index_buffer_impl(const std::shared_ptr<Buffer>& index_buf, IndexType index_type,
                                               std::size_t index_offset) {
   glBindVertexArray(renderer_id_);
-  index_buf->bind(buffer_type::Index);
+  std::dynamic_pointer_cast<OpenglBuffer>(index_buf)->bind(buffer_target::Index);
 
   index_buffer_        = index_buf;
   index_type_          = index_type;

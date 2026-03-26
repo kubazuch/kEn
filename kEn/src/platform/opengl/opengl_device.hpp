@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <filesystem>
 #include <memory>
 #include <unordered_map>
@@ -18,10 +19,12 @@ class OpenglDevice final : public Device {
   void swap_buffers() override;
   Command& command() override { return command_; }
 
-  std::shared_ptr<Buffer> create_buffer(const void* data, size_t size) override;
-  std::shared_ptr<MutableBuffer> create_mutable_buffer(const void* data, size_t size) override;
-  std::shared_ptr<UniformBuffer> create_uniform_buffer(const std::shared_ptr<Buffer>&, size_t) override;
-  std::shared_ptr<ShaderStorageBuffer> create_shader_storage_buffer(const std::shared_ptr<Buffer>&, size_t) override;
+  std::shared_ptr<Buffer> create_buffer(const BufferDesc& desc, const void* data) override;
+  std::shared_ptr<MutableBuffer> create_mutable_buffer(const BufferDesc& desc, const void* data) override;
+  std::shared_ptr<UniformBuffer> create_uniform_buffer(const std::shared_ptr<Buffer>&, std::size_t slot,
+                                                       ShaderStage stage) override;
+  std::shared_ptr<ShaderStorageBuffer> create_shader_storage_buffer(const std::shared_ptr<Buffer>&, std::size_t slot,
+                                                                    ShaderStage stage) override;
 
   std::shared_ptr<Shader> create_shader(std::string_view, std::string_view, std::string_view) override;
   std::shared_ptr<Shader> create_shader(const std::filesystem::path&, ShaderConfig) override;

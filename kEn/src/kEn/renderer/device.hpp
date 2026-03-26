@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <filesystem>
 #include <memory>
@@ -19,7 +20,7 @@ namespace kEn {
 
 class Device {
  public:
-  enum class Api : uint8_t { OpenGL, D3D11 };
+  enum class Api : std::uint8_t { OpenGL, D3D11 };
 
   [[nodiscard]] static std::unique_ptr<Device> create(Api api, GLFWwindow* window, bool enable_debug = false);
 
@@ -28,12 +29,28 @@ class Device {
   virtual void swap_buffers()              = 0;
   [[nodiscard]] virtual Command& command() = 0;
 
-  [[nodiscard]] virtual std::shared_ptr<Buffer> create_buffer(const void* data, size_t size)                = 0;
-  [[nodiscard]] virtual std::shared_ptr<MutableBuffer> create_mutable_buffer(const void* data, size_t size) = 0;
+  [[nodiscard]] virtual std::shared_ptr<Buffer> create_buffer(const BufferDesc& desc, const void* data) = 0;
+  [[nodiscard]] std::shared_ptr<Buffer> create_buffer(const BufferDesc& desc) { return create_buffer(desc, nullptr); }
+
+  [[nodiscard]] virtual std::shared_ptr<MutableBuffer> create_mutable_buffer(const BufferDesc& desc,
+                                                                             const void* data) = 0;
+  [[nodiscard]] std::shared_ptr<MutableBuffer> create_mutable_buffer(const BufferDesc& desc) {
+    return create_mutable_buffer(desc, nullptr);
+  }
+
   [[nodiscard]] virtual std::shared_ptr<UniformBuffer> create_uniform_buffer(const std::shared_ptr<Buffer>&,
-                                                                             size_t binding_point)          = 0;
+                                                                             std::size_t slot, ShaderStage stage) = 0;
+  [[nodiscard]] std::shared_ptr<UniformBuffer> create_uniform_buffer(const std::shared_ptr<Buffer>& buf,
+                                                                     std::size_t slot) {
+    return create_uniform_buffer(buf, slot, ShaderStage::Vertex);
+  }
+
   [[nodiscard]] virtual std::shared_ptr<ShaderStorageBuffer> create_shader_storage_buffer(
-      const std::shared_ptr<Buffer>&, size_t binding_point) = 0;
+      const std::shared_ptr<Buffer>&, std::size_t slot, ShaderStage stage) = 0;
+  [[nodiscard]] std::shared_ptr<ShaderStorageBuffer> create_shader_storage_buffer(const std::shared_ptr<Buffer>& buf,
+                                                                                  std::size_t slot) {
+    return create_shader_storage_buffer(buf, slot, ShaderStage::Compute);
+  }
 
   [[nodiscard]] virtual std::shared_ptr<Shader> create_shader(std::string_view name, std::string_view vertex_src,
                                                               std::string_view fragment_src) = 0;

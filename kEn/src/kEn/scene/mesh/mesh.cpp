@@ -28,10 +28,14 @@ void Mesh::setup_mesh() {
   auto& dev = device();
   vao_      = dev.create_vertex_input();
 
-  const std::shared_ptr<Buffer> vbo = dev.create_buffer(vertices.data(), vertices.size() * sizeof(Vertex));
+  const std::shared_ptr<Buffer> vbo = dev.create_buffer(
+      {.size = vertices.size() * sizeof(Vertex), .usage = BufferUsage::Immutable, .bind_flags = BufferBind::Vertex},
+      vertices.data());
   vao_->add_vertex_stream({.buffer = vbo, .layout = kVertexLayout});
 
-  const std::shared_ptr<Buffer> ebo = dev.create_buffer(indices.data(), indices.size() * sizeof(uint32_t));
+  const std::shared_ptr<Buffer> ebo = dev.create_buffer(
+      {.size = indices.size() * sizeof(uint32_t), .usage = BufferUsage::Immutable, .bind_flags = BufferBind::Index},
+      indices.data());
   vao_->set_index_buffer(ebo);
 }
 
