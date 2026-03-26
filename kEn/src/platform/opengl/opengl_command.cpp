@@ -90,8 +90,8 @@ void OpenglCommand::draw(const VertexInput& vertex_array, size_t vertex_count, R
 void OpenglCommand::draw_indexed_instanced(const VertexInput& vertex_array, size_t index_count, size_t instance_count,
                                            RenderMode mode) {
   vertex_array.bind();
-  glDrawElementsInstanced(render_mode::opengl_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT,
-                          nullptr, static_cast<GLsizei>(instance_count));
+  glDrawElementsInstanced(render_mode::opengl_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT, nullptr,
+                          static_cast<GLsizei>(instance_count));
 }
 
 void OpenglCommand::draw_instanced(const VertexInput& vertex_array, size_t vertex_count, size_t instance_count,
