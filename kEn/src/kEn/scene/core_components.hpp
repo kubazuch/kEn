@@ -16,7 +16,7 @@ class ModelComponent : public GameComponent {
 
   void update(Timestep, Timestep) override {}
   void render(Shader& shader, double alpha) override;
-  void imgui() override {}
+  void imgui() override { model_->imgui(); }
   void on_transform_changed() override {}
   [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
 

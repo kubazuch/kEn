@@ -16,7 +16,7 @@
 
 namespace kEn {
 
-void Material::set_texture(TextureType type, std::shared_ptr<kEn::Texture2D> texture, std::size_t id) {
+void Material::set_texture(TextureType type, std::shared_ptr<kEn::Texture> texture, std::size_t id) {
   auto& texs = textures_[type];
   if (id < texs.size()) {
     texs[id] = std::move(texture);
@@ -31,7 +31,7 @@ void Material::set_texture(TextureType type, std::shared_ptr<kEn::Texture2D> tex
   throw std::runtime_error("Textures should be added in order!");
 }
 
-const std::shared_ptr<Texture2D>& Material::texture(TextureType type, std::size_t id) const {
+const std::shared_ptr<Texture>& Material::texture(TextureType type, std::size_t id) const {
   return textures_.at(type).at(id);
 }
 
@@ -89,10 +89,11 @@ void Material::imgui() {
 
       if (ImGui::TreeNode(texture_type::name_of(type).data())) {  // NOLINT(bugprone-suspicious-stringview-data-usage)
         for (std::size_t j = 0; j < it->second.size(); ++j) {
-          ImGui::PushID(static_cast<int>(j));
-          ImGui::Text("Texture %zu:", j);
-          it->second[j]->imgui();
-          ImGui::PopID();
+          const auto& tex = it->second[j];
+          const float w   = ImGui::GetContentRegionAvail().x;
+          const float h   = w * static_cast<float>(tex->height()) / static_cast<float>(tex->width());
+          ImGui::Text("Texture %zu: %ux%u", j, tex->width(), tex->height());
+          ImGui::Image(tex->imgui_id(), {w, h}, {0, 1}, {1, 0});
         }
         ImGui::TreePop();
       }

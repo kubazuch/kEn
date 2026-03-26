@@ -68,14 +68,15 @@ void attach_depth_texture(uint32_t id, int samples, TextureFormat fmt, uint32_t 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   }
-  glFramebufferTexture2D(GL_FRAMEBUFFER, gl.attachment, texture_target(multisampled), id, 0);
+  const GLenum attachment = texture_format::has_stencil_aspect(fmt) ? GL_DEPTH_STENCIL_ATTACHMENT : GL_DEPTH_ATTACHMENT;
+  glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, texture_target(multisampled), id, 0);
 }
 
 }  // namespace
 
 OpenglFramebuffer::OpenglFramebuffer(FramebufferSpec spec) : spec_(std::move(spec)) {
   for (auto s : spec_.attachments.attachments) {
-    if (!texture_format::supports_depth(s.texture_format)) {
+    if (!texture_format::has_depth_aspect(s.texture_format)) {
       color_attachment_specs_.emplace_back(s);
     } else {
       depth_attachment_spec_ = s;

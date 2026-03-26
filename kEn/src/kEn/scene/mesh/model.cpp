@@ -35,12 +35,12 @@ namespace kEn {
 std::unordered_map<std::filesystem::path, std::shared_ptr<Model>> Model::loaded_resources_;
 const std::filesystem::path Model::kModelPath("assets/models");
 
-std::shared_ptr<Model> Model::load(const std::filesystem::path& path, const TextureSpec& spec, bool flip_uvs) {
+std::shared_ptr<Model> Model::load(const std::filesystem::path& path, const SamplerDesc& sampler, bool flip_uvs) {
   if (const auto it = loaded_resources_.find(path); it != loaded_resources_.end()) {
     return it->second;
   }
 
-  return loaded_resources_[path] = std::make_shared<Model>(path, spec, flip_uvs);
+  return loaded_resources_[path] = std::make_shared<Model>(path, sampler, flip_uvs);
 }
 
 void Model::render(Shader& shader, const Transform& transform) const {
@@ -49,7 +49,7 @@ void Model::render(Shader& shader, const Transform& transform) const {
   }
 }
 
-void Model::load_model(const std::filesystem::path& path, const TextureSpec& spec, bool flip_uvs) {
+void Model::load_model(const std::filesystem::path& path, const SamplerDesc& sampler, bool flip_uvs) {
   Assimp::Importer importer;
   const unsigned int flags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | (flip_uvs ? aiProcess_FlipUVs : 0U);
   const aiScene* scene     = importer.ReadFile(path.string(), flags);
@@ -61,13 +61,13 @@ void Model::load_model(const std::filesystem::path& path, const TextureSpec& spe
 
   directory_ = path.parent_path();
 
-  process_node(scene->mRootNode, scene, spec);
+  process_node(scene->mRootNode, scene, sampler);
 }
 
-void Model::process_node(aiNode* node, const aiScene* scene, const TextureSpec& spec) {
+void Model::process_node(aiNode* node, const aiScene* scene, const SamplerDesc& sampler) {
   for (unsigned int i = 0; i < node->mNumMeshes; ++i) {
     aiMesh* mesh   = scene->mMeshes[node->mMeshes[i]];
-    Mesh processed = process_mesh(mesh, scene, spec);
+    Mesh processed = process_mesh(mesh, scene, sampler);
     if (processed.material.transparent) {
       meshes_.push_back(std::move(processed));
     } else {
@@ -76,11 +76,11 @@ void Model::process_node(aiNode* node, const aiScene* scene, const TextureSpec& 
   }
 
   for (unsigned int i = 0; i < node->mNumChildren; ++i) {
-    process_node(node->mChildren[i], scene, spec);
+    process_node(node->mChildren[i], scene, sampler);
   }
 }
 
-Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene, TextureSpec spec) {
+Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene, const SamplerDesc& sampler) {
   // Vertices
   std::vector<Vertex> vertices;
   for (unsigned int i = 0; i < mesh->mNumVertices; ++i) {
@@ -140,19 +140,20 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene, TextureSpec spec) {
   mat->Get(AI_MATKEY_COLOR_EMISSIVE, color);
   material.emissive = color.r > 0;
 
+  std::uint32_t mip_levels = kFullMipChain;
   if (mat->GetTextureCount(aiTextureType_OPACITY) > 0) {
-    spec.mipmap_levels   = 1;
+    mip_levels           = 1;
     material.transparent = true;
   }
 
-  load_material_textures(mat, TextureType::Diffuse, material, spec);
+  load_material_textures(mat, TextureType::Diffuse, material, sampler, mip_levels);
   // TODO(kuzu): other types
 
   return {mesh->mName.C_Str(), vertices, indices, material};
 }
 
 void Model::load_material_textures(aiMaterial* mat, const TextureType type, kEn::Material& material,
-                                   const TextureSpec& spec) const {
+                                   const SamplerDesc& sampler, std::uint32_t mip_levels) const {
   static constexpr util::EnumMap kAssimpTextureTypes{{
       std::pair{TextureType::AmbientOcclusion, aiTextureType_AMBIENT_OCCLUSION},
       std::pair{TextureType::Diffuse, aiTextureType_DIFFUSE},
@@ -168,7 +169,8 @@ void Model::load_material_textures(aiMaterial* mat, const TextureType type, kEn:
 
     auto path = directory_ / str.C_Str();
 
-    const std::shared_ptr<Texture2D> texture = device().create_texture(absolute(path), spec);
+    const std::shared_ptr<Texture> texture =
+        device().create_texture(absolute(path), sampler, TextureFormat::RGBA8, mip_levels);
     material.set_texture(type, texture, i);
   }
 }

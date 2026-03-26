@@ -16,6 +16,33 @@ namespace kEn {
 class Shader;
 
 /**
+ * @brief Strongly-typed texture semantic category.
+ */
+enum class TextureType : std::uint8_t { AmbientOcclusion, Diffuse, Height, Normal, Specular, Count };
+
+namespace texture_type {
+
+/** @brief C++20 convenience: brings enumerators into `kEn::texture_type` namespace. */
+using enum TextureType;
+
+inline constexpr util::EnumMap kNames{{
+    std::pair{AmbientOcclusion, "ambient_occlusion"},
+    std::pair{Diffuse, "diffuse"},
+    std::pair{Height, "height"},
+    std::pair{Normal, "normal"},
+    std::pair{Specular, "specular"},
+}};
+
+/**
+ * @brief Get a stable, human-readable name for a texture type.
+ * @param type Texture type enum value.
+ * @return A string view describing the type (e.g. @c "diffuse").
+ */
+[[nodiscard]] constexpr std::string_view name_of(TextureType type) noexcept { return kNames[type]; }
+
+}  // namespace texture_type
+
+/**
  * @brief Phong-shaded surface description passed to a @ref Shader.
  *
  * Stores per-type texture arrays alongside scalar Phong coefficients and
@@ -38,7 +65,7 @@ class Material {
    * @param id      Index within the type's array (default 0).
    * @throws std::runtime_error if @p id skips beyond the current array size.
    */
-  void set_texture(TextureType type, std::shared_ptr<Texture2D> texture, size_t id = 0);
+  void set_texture(TextureType type, std::shared_ptr<Texture> texture, size_t id = 0);
 
   /**
    * @brief Retrieve a texture by type and index.
@@ -48,7 +75,7 @@ class Material {
    * @return Const reference to the stored shared pointer.
    * @throws std::out_of_range if @p type or @p id is not present.
    */
-  const std::shared_ptr<Texture2D>& texture(TextureType type, size_t id = 0) const;
+  const std::shared_ptr<Texture>& texture(TextureType type, size_t id = 0) const;
 
   /**
    * @brief Upload Phong uniforms and texture-unit indices to @p shader.
@@ -85,7 +112,7 @@ class Material {
  private:
   friend class Shader;
 
-  std::unordered_map<TextureType, std::vector<std::shared_ptr<kEn::Texture2D>>> textures_;
+  std::unordered_map<TextureType, std::vector<std::shared_ptr<kEn::Texture>>> textures_;
 };
 
 }  // namespace kEn

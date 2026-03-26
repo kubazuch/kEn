@@ -69,7 +69,7 @@ class DemoLayer : public kEn::Layer {
 
     // --- Model ---
     model_obj_.transform().set_local_pos({0.F, 0.F, 0.F});
-    auto backpack = kEn::Model::load("backpack/backpack.obj", kEn::TextureSpec{}, true);
+    auto backpack = kEn::Model::load("backpack/backpack.obj", {}, true);
     model_obj_.add_component(std::make_shared<kEn::ModelComponent>(backpack));
 
     // --- Directional light that always aims at the model (LookAt) ---

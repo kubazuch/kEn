@@ -2,36 +2,44 @@
 
 #include <glad/gl.h>
 
+#include <cstdint>
 #include <filesystem>
 
 #include <kEn/renderer/texture.hpp>
 
 namespace kEn {
 
-class OpenglTexture2D : public Texture2D {
+class OpenglTexture2D : public Texture {
  public:
-  explicit OpenglTexture2D(const TextureSpec& specification);
-  explicit OpenglTexture2D(const std::filesystem::path& path, const TextureSpec& specification = TextureSpec());
+  explicit OpenglTexture2D(TextureDesc desc, SamplerDesc sampler = {});
+  // TODO(remove): texture should represent gpu data, not an asset!
+  explicit OpenglTexture2D(const std::filesystem::path& path, SamplerDesc sampler = {},
+                           TextureFormat format = TextureFormat::RGBA8, std::uint32_t mip_levels = kFullMipChain);
   ~OpenglTexture2D() override;
 
-  const TextureSpec& spec() const override { return spec_; }
-  uint32_t width() const override { return spec_.width.value(); }
-  uint32_t height() const override { return spec_.height.value(); }
-  uint32_t renderer_id() const override { return renderer_id_; }
-  const std::filesystem::path& path() const override { return path_; }
-  void set_data(void* data, uint32_t size) override;
-  void bind(uint32_t slot) const override;
-  bool is_loaded() const override { return is_loaded_; }
-  bool operator==(const Texture& other) const override { return renderer_id_ == other.renderer_id(); }
+  [[nodiscard]] const TextureDesc& desc() const override { return desc_; }
+  void set_data(std::span<const std::byte> data, std::uint32_t mip_level, std::uint32_t layer) override;
 
-  void imgui() override;
+  [[nodiscard]] const SamplerDesc& sampler_desc() const noexcept { return sampler_desc_; }
+  [[nodiscard]] GLuint renderer_id() const noexcept { return renderer_id_; }
+  [[nodiscard]] GLenum target() const noexcept { return target_; }
+
+  void bind(std::uint32_t slot) const noexcept override;
+  [[nodiscard]] ImTextureID imgui_id() const noexcept override { return static_cast<ImTextureID>(renderer_id_); }
+  void bind() const noexcept { bind(0); }
 
  private:
-  TextureSpec spec_;
-  std::filesystem::path path_;
-  bool is_loaded_ = false;
-  uint32_t renderer_id_;
-  GLenum internal_format_, data_format_;
+  void allocate_storage();
+  void apply_sampler_state();
+
+  TextureDesc desc_;
+  SamplerDesc sampler_desc_;
+  GLuint renderer_id_ = 0;
+  GLenum target_      = GL_TEXTURE_2D;
+
+  GLenum internal_format_ = GL_NONE;
+  GLenum upload_format_   = GL_NONE;
+  GLenum upload_type_     = GL_NONE;
 };
 
 }  // namespace kEn
