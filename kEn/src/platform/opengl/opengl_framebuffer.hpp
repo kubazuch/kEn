@@ -9,13 +9,45 @@
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 
+/** @file
+ *  @ingroup ken
+ */
+
 namespace kEn {
 
+/**
+ * @brief OpenGL implementation of @ref Framebuffer.
+ *
+ * Manages an OpenGL framebuffer object (FBO) together with its color and
+ * depth/stencil texture attachments.  The FBO and all associated textures are
+ * created by @ref invalidate(), which is called automatically on construction
+ * and after every @ref resize().
+ *
+ * @note Currently supports only `mip_levels == 1` and `array_size == 1`.
+ *       Up to four simultaneous color attachments are supported.
+ */
 class OpenglFramebuffer : public Framebuffer {
  public:
+  /**
+   * @brief Construct and allocate GPU resources for the given @p spec.
+   *
+   * Calls @ref invalidate() internally to create the FBO and all attachment
+   * textures.
+   * @param spec  Complete framebuffer specification.
+   */
   explicit OpenglFramebuffer(FramebufferSpec spec);
+
+  /** @brief Destroy the FBO and all attachment textures. */
   ~OpenglFramebuffer() override;
 
+  /**
+   * @brief (Re)create the OpenGL FBO and attachment textures from the current spec.
+   *
+   * If an FBO already exists its GPU resources are deleted before new ones are
+   * allocated.  Called automatically by the constructor and by @ref resize().
+   * May also be called manually when attachment specifications change without a
+   * dimension change.
+   */
   void invalidate();
 
   void bind_for_rendering() override;
@@ -58,14 +90,14 @@ class OpenglFramebuffer : public Framebuffer {
   void clear_depth_stencil(float depth, std::uint8_t stencil) override;
 
  private:
-  uint32_t renderer_id_ = 0;
-  FramebufferSpec spec_;
+  uint32_t renderer_id_ = 0; /**< OpenGL framebuffer object name. */
+  FramebufferSpec spec_;     /**< Creation spec; width/height updated on resize. */
 
-  std::vector<FramebufferTextureSpec> color_attachment_specs_;
-  std::optional<FramebufferTextureSpec> depth_attachment_spec_;
+  std::vector<FramebufferTextureSpec> color_attachment_specs_;  /**< Per-attachment format and usage flags. */
+  std::optional<FramebufferTextureSpec> depth_attachment_spec_; /**< Depth/stencil spec, absent if none requested. */
 
-  std::vector<uint32_t> color_attachments_;
-  uint32_t depth_attachment_ = 0;
+  std::vector<uint32_t> color_attachments_; /**< OpenGL texture names for each color attachment. */
+  uint32_t depth_attachment_ = 0;           /**< OpenGL texture name for the depth attachment (0 if absent). */
 };
 
 }  // namespace kEn
