@@ -1,6 +1,7 @@
 #include "opengl_device.hpp"
 
 #include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <memory>
 #include <string_view>
@@ -13,6 +14,7 @@
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
+#include <kEn/renderer/texture_format.hpp>
 #include <kEn/renderer/vertex_input.hpp>
 
 #include "opengl_buffer.hpp"
@@ -68,18 +70,17 @@ std::shared_ptr<Shader> OpenglDevice::create_shader(const std::filesystem::path&
   return std::make_shared<OpenglShader>(path, config);
 }
 
-std::shared_ptr<Texture2D> OpenglDevice::create_texture(const TextureSpec& spec) {
-  return std::make_shared<OpenglTexture2D>(spec);
+std::shared_ptr<Texture> OpenglDevice::create_texture(const TextureDesc& desc, const SamplerDesc& sampler) {
+  return std::make_shared<OpenglTexture2D>(desc, sampler);
 }
 
-std::shared_ptr<Texture2D> OpenglDevice::create_texture(const std::filesystem::path& name, const TextureSpec& spec) {
-  const std::filesystem::path path = std::filesystem::path{Texture2D::kTexturePath} / name;
-
+std::shared_ptr<Texture> OpenglDevice::create_texture(const std::filesystem::path& path, const SamplerDesc& sampler,
+                                                      TextureFormat format, std::uint32_t mip_levels) {
   if (const auto it = loaded_textures_.find(path); it != loaded_textures_.end()) {
     return it->second;
   }
 
-  return loaded_textures_[path] = std::make_shared<OpenglTexture2D>(path, spec);
+  return loaded_textures_[path] = std::make_shared<OpenglTexture2D>(path, sampler, format, mip_levels);
 }
 
 std::unique_ptr<VertexInput> OpenglDevice::create_vertex_input() { return std::make_unique<OpenglVertexInput>(); }

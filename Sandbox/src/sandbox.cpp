@@ -24,7 +24,6 @@
 #include <kEn/renderer/material.hpp>
 #include <kEn/renderer/renderer.hpp>
 #include <kEn/renderer/shader.hpp>
-#include <kEn/renderer/texture.hpp>
 #include <kEn/renderer/texture_format.hpp>
 #include <kEn/scene/camera/camera.hpp>
 #include <kEn/scene/core_components.hpp>
@@ -69,7 +68,7 @@ class DemoLayer : public kEn::Layer {
 
     // --- Model ---
     model_obj_.transform().set_local_pos({0.F, 0.F, 0.F});
-    auto backpack = kEn::Model::load("backpack/backpack.obj", kEn::TextureSpec{}, true);
+    auto backpack = kEn::Model::load("backpack/backpack.obj", {}, true);
     model_obj_.add_component(std::make_shared<kEn::ModelComponent>(backpack));
 
     // --- Directional light that always aims at the model (LookAt) ---
@@ -107,7 +106,8 @@ class DemoLayer : public kEn::Layer {
     kEn::FramebufferSpec fb_spec;
     fb_spec.width       = vp_w_;
     fb_spec.height      = vp_h_;
-    fb_spec.attachments = {kEn::TextureFormat::RGBA8, kEn::TextureFormat::Depth24Stencil8};
+    fb_spec.attachments = {.color_attachments = {kEn::TextureFormat::RGBA8},
+                           .depth_attachment  = kEn::TextureFormat::Depth24Stencil8};
     framebuffer_        = device_.create_framebuffer(fb_spec);
 
     KEN_INFO("DemoLayer attached");
@@ -124,8 +124,7 @@ class DemoLayer : public kEn::Layer {
   }
 
   void on_render(double alpha) override {
-    framebuffer_->bind();
-    device_.command().set_viewport(0, 0, vp_w_, vp_h_);
+    framebuffer_->bind_for_rendering();
     device_.command().set_clear_color({0.08F, 0.08F, 0.12F, 1.F});
     device_.command().clear();
     device_.command().depth_testing(true);
@@ -137,8 +136,10 @@ class DemoLayer : public kEn::Layer {
     model_obj_.render_all(*phong_shader_, alpha);
 
     kEn::Renderer::end_scene();
-    framebuffer_->unbind();
 
+    device_.command().bind_default_framebuffer();
+    const kEn::Window& win = kEn::Application::instance().main_window();
+    device_.command().set_viewport(0, 0, win.width(), win.height());
     device_.command().set_clear_color({0.2F, 0.2F, 0.2F, 1.F});
     device_.command().clear();
   }
@@ -168,8 +169,7 @@ class DemoLayer : public kEn::Layer {
         camera_->set_projection(mEn::radians(fov_), static_cast<float>(vp_w_) / static_cast<float>(vp_h_), 0.01F,
                                 200.F);
       }
-      const auto tex_id =
-          static_cast<ImTextureID>(static_cast<uintptr_t>(framebuffer_->color_attachment_renderer_id(0)));
+      const auto tex_id = static_cast<ImTextureID>(framebuffer_->native_color_attachment_handle(0));
       ImGui::Image(tex_id, size, ImVec2(0, 1), ImVec2(1, 0));
     }
     ImGui::End();

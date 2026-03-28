@@ -18,8 +18,8 @@ namespace kEn {
 
 class Model {
  public:
-  explicit Model(const std::filesystem::path& path, const TextureSpec& spec = TextureSpec(), bool flip_uvs = false) {
-    load_model(kModelPath / path, spec, flip_uvs);
+  explicit Model(const std::filesystem::path& path, const SamplerDesc& sampler = {}, bool flip_uvs = false) {
+    load_model(kModelPath / path, sampler, flip_uvs);
   }
 
   void render(Shader& shader, const Transform& transform) const;
@@ -31,16 +31,16 @@ class Model {
  private:
   std::filesystem::path directory_;
 
-  void load_model(const std::filesystem::path& path, const TextureSpec& spec, bool flip_uvs);
-  void process_node(aiNode* node, const aiScene* scene, const TextureSpec& spec);
-  Mesh process_mesh(aiMesh* mesh, const aiScene* scene, TextureSpec spec);
-  void load_material_textures(aiMaterial* mat, TextureType type, kEn::Material& material,
-                              const TextureSpec& spec) const;
+  void load_model(const std::filesystem::path& path, const SamplerDesc& sampler, bool flip_uvs);
+  void process_node(aiNode* node, const aiScene* scene, const SamplerDesc& sampler);
+  Mesh process_mesh(aiMesh* mesh, const aiScene* scene, const SamplerDesc& sampler);
+  void load_material_textures(aiMaterial* mat, TextureType type, kEn::Material& material, const SamplerDesc& sampler,
+                              std::uint32_t mip_levels) const;
 
  public:
   static const std::filesystem::path kModelPath;
 
-  static std::shared_ptr<Model> load(const std::filesystem::path& path, const TextureSpec& spec = TextureSpec(),
+  static std::shared_ptr<Model> load(const std::filesystem::path& path, const SamplerDesc& sampler = {},
                                      bool flip_uvs = false);
 
  private:

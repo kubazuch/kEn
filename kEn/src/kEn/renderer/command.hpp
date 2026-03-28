@@ -36,6 +36,7 @@ class Command {
   virtual void set_clear_color(const mEn::Vec4& color)              = 0;
   virtual void clear()                                              = 0;
   virtual void depth_testing(bool enabled)                          = 0;
+  virtual void bind_default_framebuffer()                           = 0;
 
   void init() { init(false); }
   void depth_testing() { depth_testing(true); }

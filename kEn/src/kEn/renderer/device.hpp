@@ -60,11 +60,18 @@ class Device {
     return create_shader(path, {});
   }
 
-  [[nodiscard]] virtual std::shared_ptr<Texture2D> create_texture(const TextureSpec& spec) = 0;
-  [[nodiscard]] virtual std::shared_ptr<Texture2D> create_texture(const std::filesystem::path& path,
-                                                                  const TextureSpec& spec) = 0;
-  [[nodiscard]] std::shared_ptr<Texture2D> create_texture(const std::filesystem::path& path) {
-    return create_texture(path, {});
+  [[nodiscard]] virtual std::shared_ptr<Texture> create_texture(const TextureDesc& desc,
+                                                                const SamplerDesc& sampler) = 0;
+  [[nodiscard]] std::shared_ptr<Texture> create_texture(const TextureDesc& desc) { return create_texture(desc, {}); }
+
+  // TODO(remove): transitional path-based loader -- remove when asset pipeline is separate from GPU resources
+  [[nodiscard]] virtual std::shared_ptr<Texture> create_texture(const std::filesystem::path& path,
+                                                                const SamplerDesc& sampler, TextureFormat format,
+                                                                std::uint32_t mip_levels) = 0;
+  [[nodiscard]] std::shared_ptr<Texture> create_texture(const std::filesystem::path& path,
+                                                        const SamplerDesc& sampler = {},
+                                                        TextureFormat format       = TextureFormat::RGBA8) {
+    return create_texture(path, sampler, format, kFullMipChain);
   }
 
   [[nodiscard]] virtual std::unique_ptr<VertexInput> create_vertex_input()                           = 0;
