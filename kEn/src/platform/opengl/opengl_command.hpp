@@ -32,6 +32,7 @@ class OpenglCommand final : public Command {
   void set_clear_color(const mEn::Vec4& color) override;
   void clear() override;
   void depth_testing(bool enabled) override;
+  void bind_default_framebuffer() override;
 
   void draw_indexed(const VertexInput& vertex_array, size_t index_count, RenderMode mode) override;
   void draw(const VertexInput& vertex_array, size_t vertex_count, RenderMode mode) override;

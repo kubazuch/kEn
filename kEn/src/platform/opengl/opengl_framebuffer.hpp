@@ -1,6 +1,10 @@
 #pragma once
 
+#include <cstddef>
+#include <cstdint>
 #include <optional>
+#include <span>
+#include <vector>
 
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/framebuffer.hpp>
@@ -14,26 +18,44 @@ class OpenglFramebuffer : public Framebuffer {
 
   void invalidate();
 
-  void bind() override;
-  void unbind() override;
+  void bind_for_rendering() override;
+  void resize(std::uint32_t width, std::uint32_t height) override;
 
-  void resize(uint32_t width, uint32_t height) override;
-  int read_pixel(uint32_t attachment_id, int x, int y) override;
-  void read_pixels(uint32_t attachment_id, int x, int y, int width, int height, void* buffer) override;
+  [[nodiscard]] const FramebufferSpec& spec() const override { return spec_; }
 
-  void bind_attachment_as_texture(uint32_t attachment_id, uint32_t slot) const override;
-  void bind_depth_as_texture(uint32_t slot) const override;
+  [[nodiscard]] std::size_t color_attachment_count() const override { return color_attachments_.size(); }
 
-  void clear_attachment(uint32_t attachment_id, int value) override;
-  void clear_attachment(uint32_t attachment_id, float value) override;
-  void clear_attachment(uint32_t attachment_id, mEn::Vec4 value) override;
-
-  uint32_t color_attachment_renderer_id(uint32_t id) const override {
-    KEN_CORE_ASSERT(id < color_attachments_.size());
-    return color_attachments_[id];
+  [[nodiscard]] TextureFormat color_attachment_format(std::uint32_t attachment_id) const override {
+    KEN_CORE_ASSERT(attachment_id < color_attachment_specs_.size());
+    return color_attachment_specs_[attachment_id].texture_format;
   }
 
-  const FramebufferSpec& spec() const override { return spec_; }
+  [[nodiscard]] bool has_depth_attachment() const override { return depth_attachment_spec_.has_value(); }
+
+  [[nodiscard]] std::optional<TextureFormat> depth_attachment_format() const override {
+    if (!depth_attachment_spec_.has_value()) {
+      return std::nullopt;
+    }
+    return depth_attachment_spec_->texture_format;
+  }
+
+  void read_pixels(std::uint32_t attachment_id, int x, int y, int width, int height, std::span<std::byte> out_buffer,
+                   std::size_t out_row_pitch) const override;
+
+  [[nodiscard]] std::uintptr_t native_color_attachment_handle(std::uint32_t attachment_id) const override;
+
+  void bind_color_attachment_as_texture(std::uint32_t attachment_id, ShaderStage stage,
+                                        std::uint32_t slot) const override;
+  void bind_depth_as_texture(ShaderStage stage, std::uint32_t slot) const override;
+
+  void clear_color_attachment(std::uint32_t attachment_id, std::int32_t value) override;
+  void clear_color_attachment(std::uint32_t attachment_id, std::uint32_t value) override;
+  void clear_color_attachment(std::uint32_t attachment_id, float value) override;
+  void clear_color_attachment(std::uint32_t attachment_id, const mEn::Vec4& value) override;
+
+  void clear_depth(float depth) override;
+  void clear_stencil(std::uint8_t stencil) override;
+  void clear_depth_stencil(float depth, std::uint8_t stencil) override;
 
  private:
   uint32_t renderer_id_ = 0;

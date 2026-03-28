@@ -69,6 +69,8 @@ void OpenglCommand::set_clear_color(const mEn::Vec4& color) { glClearColor(color
 
 void OpenglCommand::clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
+void OpenglCommand::bind_default_framebuffer() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+
 void OpenglCommand::depth_testing(bool enabled) {
   if (enabled) {
     glEnable(GL_DEPTH_TEST);
