@@ -24,7 +24,6 @@
 #include <kEn/renderer/material.hpp>
 #include <kEn/renderer/renderer.hpp>
 #include <kEn/renderer/shader.hpp>
-#include <kEn/renderer/texture.hpp>
 #include <kEn/renderer/texture_format.hpp>
 #include <kEn/scene/camera/camera.hpp>
 #include <kEn/scene/core_components.hpp>

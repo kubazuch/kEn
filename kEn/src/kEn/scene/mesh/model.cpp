@@ -23,6 +23,7 @@
 #include <kEn/core/application.hpp>
 #include <kEn/core/log.hpp>
 #include <kEn/core/transform.hpp>
+#include <kEn/renderer/material.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
 #include <kEn/scene/mesh/vertex.hpp>

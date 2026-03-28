@@ -1,13 +1,13 @@
 #include "opengl_texture.hpp"
 
 #include <glad/gl.h>
-#include <imgui/imgui.h>
 #include <stb_image.h>
 
+#include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <filesystem>
-
-#include <mEn/functions/common.hpp>
+#include <span>
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
@@ -134,7 +134,8 @@ OpenglTexture2D::OpenglTexture2D(const std::filesystem::path& path, SamplerDesc 
 
 OpenglTexture2D::~OpenglTexture2D() { glDeleteTextures(1, &renderer_id_); }
 
-void OpenglTexture2D::set_data(std::span<const std::byte> data, std::uint32_t mip_level, std::uint32_t layer) {
+void OpenglTexture2D::set_data(std::span<const std::byte> data, std::uint32_t mip_level,
+                               [[maybe_unused]] std::uint32_t layer) {
   KEN_ASSERT(renderer_id_ != 0);
   KEN_ASSERT(layer == 0);
   KEN_ASSERT(mip_level < desc_.resolved_mip_levels());

@@ -1,6 +1,7 @@
 #include "opengl_device.hpp"
 
 #include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <memory>
 #include <string_view>
@@ -13,6 +14,7 @@
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
+#include <kEn/renderer/texture_format.hpp>
 #include <kEn/renderer/vertex_input.hpp>
 
 #include "opengl_buffer.hpp"

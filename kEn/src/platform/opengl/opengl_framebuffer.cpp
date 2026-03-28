@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <utility>
 
 #include <mEn/features/type_ptr.hpp>
@@ -12,6 +13,7 @@
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
 #include <kEn/renderer/framebuffer.hpp>
+#include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture_format.hpp>
 
 #include "opengl_texture_format.hpp"
@@ -71,13 +73,13 @@ void attach_depth_texture(GLuint fbo, uint32_t id, int samples, TextureFormat fm
 
 }  // namespace
 
-OpenglFramebuffer::OpenglFramebuffer(FramebufferSpec spec) : spec_(std::move(spec)) {
+OpenglFramebuffer::OpenglFramebuffer(FramebufferSpec spec)
+    : spec_(std::move(spec)),
+      color_attachment_specs_(spec_.attachments.color_attachments),
+      depth_attachment_spec_(spec_.attachments.depth_attachment) {
   KEN_CORE_ASSERT(spec_.mip_levels == 1, "OpenglFramebuffer currently supports only mip_levels == 1");
   KEN_CORE_ASSERT(spec_.array_size == 1, "OpenglFramebuffer currently supports only array_size == 1");
   KEN_CORE_ASSERT(spec_.samples >= 1, "Framebuffer sample count must be at least 1");
-
-  color_attachment_specs_ = spec_.attachments.color_attachments;
-  depth_attachment_spec_  = spec_.attachments.depth_attachment;
 
   invalidate();
 }
