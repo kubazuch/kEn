@@ -26,6 +26,7 @@
 #include <kEn/renderer/material.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
+#include <kEn/renderer/texture_format.hpp>
 #include <kEn/scene/mesh/vertex.hpp>
 #include <kEn/util/enum_map.hpp>
 
