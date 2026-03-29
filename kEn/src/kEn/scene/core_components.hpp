@@ -12,7 +12,7 @@ namespace kEn {
 
 class ModelComponent : public GameComponent {
  public:
-  explicit ModelComponent(const std::shared_ptr<Model>& model) : model_(model) {}
+  explicit ModelComponent(std::shared_ptr<Model> model) : model_(std::move(model)) {}
 
   void update(Timestep, Timestep) override {}
   void render(Shader& shader, double alpha) override;

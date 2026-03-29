@@ -9,7 +9,6 @@
 
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/buffer.hpp>
-#include <kEn/renderer/shader.hpp>
 
 namespace kEn {
 
@@ -122,35 +121,19 @@ void OpenglMutableBuffer::resize(std::size_t size, const void* data) {
 
 // ---------------- //
 
-OpenglUniformBuffer::OpenglUniformBuffer(std::shared_ptr<OpenglBuffer> buffer, std::size_t slot, ShaderStage stage)
-    : buffer_(std::move(buffer)), slot_(slot), stage_(stage) {
+OpenglUniformBuffer::OpenglUniformBuffer(std::shared_ptr<OpenglBuffer> buffer) : buffer_(std::move(buffer)) {
   KEN_CORE_ASSERT(buffer_ != nullptr, "OpenglUniformBuffer requires a valid buffer");
   KEN_CORE_ASSERT(buffer_->desc().bind_flags.test(BufferBind::Uniform),
                   "Underlying buffer is not marked for uniform binding");
 }
 
-void OpenglUniformBuffer::bind() const {
-  glBindBufferBase(GL_UNIFORM_BUFFER, static_cast<GLuint>(slot_), buffer_->renderer_id());
-}
-
-void OpenglUniformBuffer::unbind() const { glBindBufferBase(GL_UNIFORM_BUFFER, static_cast<GLuint>(slot_), 0); }
-
 // ---------------- //
 
-OpenglShaderStorageBuffer::OpenglShaderStorageBuffer(std::shared_ptr<OpenglBuffer> buffer, std::size_t slot,
-                                                     ShaderStage stage)
-    : buffer_(std::move(buffer)), slot_(slot), stage_(stage) {
+OpenglShaderStorageBuffer::OpenglShaderStorageBuffer(std::shared_ptr<OpenglBuffer> buffer)
+    : buffer_(std::move(buffer)) {
   KEN_CORE_ASSERT(buffer_ != nullptr, "OpenglShaderStorageBuffer requires a valid buffer");
   KEN_CORE_ASSERT(buffer_->desc().bind_flags.test(BufferBind::Storage),
                   "Underlying buffer is not marked for storage binding");
-}
-
-void OpenglShaderStorageBuffer::bind() const {
-  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, static_cast<GLuint>(slot_), buffer_->renderer_id());
-}
-
-void OpenglShaderStorageBuffer::unbind() const {
-  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, static_cast<GLuint>(slot_), 0);
 }
 
 }  // namespace kEn

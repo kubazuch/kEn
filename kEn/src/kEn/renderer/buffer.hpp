@@ -101,6 +101,8 @@ struct Buffer {
   [[nodiscard]] virtual const BufferDesc& desc() const = 0;
   /** Return the buffer size in bytes (shorthand for desc().size). */
   [[nodiscard]] std::size_t size() const { return desc().size; }
+  /** Return the platform-native GPU buffer handle. */
+  [[nodiscard]] virtual std::uintptr_t native_handle() const noexcept = 0;
 };
 
 /**
@@ -182,48 +184,24 @@ struct MutableBuffer {
   [[nodiscard]] virtual std::shared_ptr<Buffer> underlying_buffer() const = 0;
 };
 
-/**
- * Binding view for a uniform buffer object slot.
- *
- * Associates an underlying Buffer with a (slot, shader_stage) binding identity.
- * In OpenGL, binding points are pipeline-global; shader_stage is informational
- * metadata intended for higher-level API backends (Vulkan, D3D12).
- */
+/** Binding view over a GPU buffer used as a uniform buffer object. */
 struct UniformBuffer {
   virtual ~UniformBuffer() = default;
 
-  /** Bind the buffer to its uniform buffer slot. */
-  virtual void bind() const = 0;
-  /** Unbind the buffer from its uniform buffer slot. */
-  virtual void unbind() const = 0;
-
   /** Return the underlying GPU buffer allocation. */
   [[nodiscard]] virtual std::shared_ptr<Buffer> underlying_buffer() const = 0;
-  /** Return the binding slot index. */
-  [[nodiscard]] virtual std::size_t slot() const = 0;
-  /** Return the shader stage this buffer is intended for (informational for OpenGL). */
-  [[nodiscard]] virtual ShaderStage shader_stage() const = 0;
+  /** Return the size of the underlying buffer in bytes. */
+  [[nodiscard]] std::size_t size() const { return underlying_buffer()->size(); }
 };
 
-/**
- * Binding view for a shader storage buffer slot.
- *
- * Same ownership and stage-metadata semantics as UniformBuffer.
- */
+/** Binding view over a GPU buffer used as a shader storage buffer. */
 struct ShaderStorageBuffer {
   virtual ~ShaderStorageBuffer() = default;
 
-  /** Bind the buffer to its shader storage slot. */
-  virtual void bind() const = 0;
-  /** Unbind the buffer from its shader storage slot. */
-  virtual void unbind() const = 0;
-
   /** Return the underlying GPU buffer allocation. */
   [[nodiscard]] virtual std::shared_ptr<Buffer> underlying_buffer() const = 0;
-  /** Return the binding slot index. */
-  [[nodiscard]] virtual std::size_t slot() const = 0;
-  /** Return the shader stage this buffer is intended for (informational for OpenGL). */
-  [[nodiscard]] virtual ShaderStage shader_stage() const = 0;
+  /** Return the size of the underlying buffer in bytes. */
+  [[nodiscard]] std::size_t size() const { return underlying_buffer()->size(); }
 };
 
 }  // namespace kEn

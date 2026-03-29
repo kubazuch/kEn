@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstddef>
 #include <cstdint>
 #include <filesystem>
 #include <memory>
@@ -38,19 +37,10 @@ class Device {
     return create_mutable_buffer(desc, nullptr);
   }
 
-  [[nodiscard]] virtual std::shared_ptr<UniformBuffer> create_uniform_buffer(const std::shared_ptr<Buffer>&,
-                                                                             std::size_t slot, ShaderStage stage) = 0;
-  [[nodiscard]] std::shared_ptr<UniformBuffer> create_uniform_buffer(const std::shared_ptr<Buffer>& buf,
-                                                                     std::size_t slot) {
-    return create_uniform_buffer(buf, slot, ShaderStage::Vertex);
-  }
+  [[nodiscard]] virtual std::shared_ptr<UniformBuffer> create_uniform_buffer(std::shared_ptr<Buffer> buffer) = 0;
 
   [[nodiscard]] virtual std::shared_ptr<ShaderStorageBuffer> create_shader_storage_buffer(
-      const std::shared_ptr<Buffer>&, std::size_t slot, ShaderStage stage) = 0;
-  [[nodiscard]] std::shared_ptr<ShaderStorageBuffer> create_shader_storage_buffer(const std::shared_ptr<Buffer>& buf,
-                                                                                  std::size_t slot) {
-    return create_shader_storage_buffer(buf, slot, ShaderStage::Compute);
-  }
+      std::shared_ptr<Buffer> buffer) = 0;
 
   [[nodiscard]] virtual std::shared_ptr<Shader> create_shader(std::string_view name, std::string_view vertex_src,
                                                               std::string_view fragment_src) = 0;

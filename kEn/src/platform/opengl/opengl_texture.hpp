@@ -58,11 +58,11 @@ class OpenglTexture2D : public Texture {
   /** @brief Returns the OpenGL texture target (always @c GL_TEXTURE_2D). */
   [[nodiscard]] GLenum target() const noexcept { return target_; }
 
-  /** @brief Binds this texture to the given texture unit. */
-  void bind(std::uint32_t slot) const noexcept override;
+  [[nodiscard]] std::uintptr_t native_handle() const noexcept override {
+    return static_cast<std::uintptr_t>(renderer_id_);
+  }
+
   [[nodiscard]] ImTextureID imgui_id() const noexcept override { return static_cast<ImTextureID>(renderer_id_); }
-  /** @brief Binds this texture to texture unit 0. */
-  void bind() const noexcept { bind(0); }
 
  private:
   /** @brief Creates the GL texture object and allocates immutable storage via @c glTextureStorage2D. */

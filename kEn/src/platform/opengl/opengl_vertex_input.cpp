@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <memory>
 #include <span>
+#include <utility>
 
 #include <kEn/core/assert.hpp>
 #include <kEn/renderer/buffer.hpp>
@@ -20,10 +21,6 @@ namespace kEn {
 OpenglVertexInput::OpenglVertexInput() { glGenVertexArrays(1, &renderer_id_); }
 
 OpenglVertexInput::~OpenglVertexInput() { glDeleteVertexArrays(1, &renderer_id_); }
-
-void OpenglVertexInput::bind() const { glBindVertexArray(renderer_id_); }
-
-void OpenglVertexInput::unbind() const { glBindVertexArray(0); }
 
 void OpenglVertexInput::add_vertex_stream(const VertexStreamBinding& stream) {
   KEN_CORE_ASSERT(!stream.layout.empty(), "Vertex stream must have a layout!");
@@ -91,12 +88,12 @@ void OpenglVertexInput::add_vertex_stream(const VertexStreamBinding& stream) {
   streams_.push_back(stream);
 }
 
-void OpenglVertexInput::set_index_buffer_impl(const std::shared_ptr<Buffer>& index_buf, IndexType index_type,
+void OpenglVertexInput::set_index_buffer_impl(std::shared_ptr<Buffer> index_buf, IndexType index_type,
                                               std::size_t index_offset) {
   glBindVertexArray(renderer_id_);
   std::dynamic_pointer_cast<OpenglBuffer>(index_buf)->bind(buffer_target::Index);
 
-  index_buffer_        = index_buf;
+  index_buffer_        = std::move(index_buf);
   index_type_          = index_type;
   index_buffer_offset_ = index_offset;
 }

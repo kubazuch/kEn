@@ -3,12 +3,17 @@
 #include <glad/gl.h>
 
 #include <cstddef>
+#include <cstdint>
 
 #include <mEn/fwd.hpp>
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
+#include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/command.hpp>
+#include <kEn/renderer/framebuffer.hpp>
+#include <kEn/renderer/shader.hpp>
+#include <kEn/renderer/texture.hpp>
 #include <kEn/renderer/vertex_input.hpp>
 
 namespace kEn {
@@ -67,9 +72,11 @@ void OpenglCommand::set_viewport(size_t x, size_t y, size_t width, size_t height
 
 void OpenglCommand::set_clear_color(const mEn::Vec4& color) { glClearColor(color.r, color.g, color.b, color.a); }
 
-void OpenglCommand::clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
+void OpenglCommand::clear_color() { glClear(GL_COLOR_BUFFER_BIT); }
 
-void OpenglCommand::bind_default_framebuffer() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+void OpenglCommand::clear_depth() { glClear(GL_DEPTH_BUFFER_BIT); }
+
+void OpenglCommand::clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
 void OpenglCommand::depth_testing(bool enabled) {
   if (enabled) {
@@ -79,36 +86,55 @@ void OpenglCommand::depth_testing(bool enabled) {
   }
 }
 
-void OpenglCommand::draw_indexed(const VertexInput& vertex_array, size_t index_count, RenderMode mode) {
-  vertex_array.bind();
-  glDrawElements(render_mode::opengl_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT, nullptr);
+void OpenglCommand::set_shader(const Shader& shader) { glUseProgram(static_cast<GLuint>(shader.native_handle())); }
+
+void OpenglCommand::set_vertex_input(const VertexInput& vertex_input) {
+  glBindVertexArray(static_cast<GLuint>(vertex_input.native_handle()));
 }
 
-void OpenglCommand::draw(const VertexInput& vertex_array, size_t vertex_count, RenderMode mode) {
-  vertex_array.bind();
+void OpenglCommand::bind_texture(std::uint32_t slot, ShaderStage /*stage*/, const Texture& texture) {
+  glBindTextureUnit(slot, static_cast<GLuint>(texture.native_handle()));
+}
+
+void OpenglCommand::bind_uniform_buffer(std::uint32_t binding, ShaderStage /*stage*/, const UniformBuffer& ubo) {
+  glBindBufferBase(GL_UNIFORM_BUFFER, binding, static_cast<GLuint>(ubo.underlying_buffer()->native_handle()));
+}
+
+void OpenglCommand::bind_storage_buffer(std::uint32_t binding, ShaderStage /*stage*/, const ShaderStorageBuffer& ssbo) {
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, static_cast<GLuint>(ssbo.underlying_buffer()->native_handle()));
+}
+
+void OpenglCommand::set_render_target(Framebuffer& framebuffer) {
+  glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(framebuffer.native_handle()));
+  glViewport(0, 0, static_cast<GLsizei>(framebuffer.spec().width), static_cast<GLsizei>(framebuffer.spec().height));
+}
+
+void OpenglCommand::bind_default_framebuffer() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+
+void OpenglCommand::bind_attachment(std::uint32_t slot, ShaderStage /*stage*/, std::uintptr_t handle) {
+  glBindTextureUnit(slot, static_cast<GLuint>(handle));
+}
+
+void OpenglCommand::draw(size_t vertex_count, RenderMode mode) {
   glDrawArrays(render_mode::opengl_mode(mode), 0, static_cast<GLsizei>(vertex_count));
 }
 
-void OpenglCommand::draw_indexed_instanced(const VertexInput& vertex_array, size_t index_count, size_t instance_count,
-                                           RenderMode mode) {
-  vertex_array.bind();
-  glDrawElementsInstanced(render_mode::opengl_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT, nullptr,
-                          static_cast<GLsizei>(instance_count));
+void OpenglCommand::draw_indexed(size_t index_count, RenderMode mode) {
+  glDrawElements(render_mode::opengl_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT, nullptr);
 }
 
-void OpenglCommand::draw_instanced(const VertexInput& vertex_array, size_t vertex_count, size_t instance_count,
-                                   RenderMode mode) {
-  vertex_array.bind();
+void OpenglCommand::draw_instanced(size_t vertex_count, size_t instance_count, RenderMode mode) {
   glDrawArraysInstanced(render_mode::opengl_mode(mode), 0, static_cast<GLsizei>(vertex_count),
                         static_cast<GLsizei>(instance_count));
 }
 
-void OpenglCommand::set_tessellation_patch_vertices(size_t count) {
-  glPatchParameteri(GL_PATCH_VERTICES, static_cast<GLsizei>(count));
+void OpenglCommand::draw_indexed_instanced(size_t index_count, size_t instance_count, RenderMode mode) {
+  glDrawElementsInstanced(render_mode::opengl_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT, nullptr,
+                          static_cast<GLsizei>(instance_count));
 }
 
-void OpenglCommand::set_wireframe(bool wireframe) {
-  glPolygonMode(GL_FRONT_AND_BACK, static_cast<GLenum>(wireframe ? GL_LINE : GL_FILL));
+void OpenglCommand::set_tessellation_patch_vertices(size_t count) {
+  glPatchParameteri(GL_PATCH_VERTICES, static_cast<GLsizei>(count));
 }
 
 int OpenglCommand::max_tesselation_level() const {
@@ -118,6 +144,10 @@ int OpenglCommand::max_tesselation_level() const {
 
   glGetIntegerv(GL_MAX_TESS_GEN_LEVEL, &max_tesselation_level_);
   return max_tesselation_level_;
+}
+
+void OpenglCommand::set_wireframe(bool wireframe) {
+  glPolygonMode(GL_FRONT_AND_BACK, static_cast<GLenum>(wireframe ? GL_LINE : GL_FILL));
 }
 
 }  // namespace kEn

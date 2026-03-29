@@ -133,11 +133,9 @@ class OpenglShader final : public Shader {
    */
   ~OpenglShader() override;
 
-  /** @copydoc Shader::bind */
-  void bind() const override;
-
-  /** @copydoc Shader::unbind */
-  void unbind() const override;
+  [[nodiscard]] std::uintptr_t native_handle() const noexcept override {
+    return static_cast<std::uintptr_t>(renderer_id_);
+  }
 
   // <Uniforms>
 
@@ -161,8 +159,9 @@ class OpenglShader final : public Shader {
         values);
   }
 
-  void bind_uniform_buffer(std::string_view name, size_t binding) const override;
-  void bind_uniform_buffer(std::string_view name, const UniformBuffer& ubo) const override;
+  void bind_uniform_block(std::string_view block_name, ShaderStage stage, std::uint32_t binding) const override;
+  [[nodiscard]] std::optional<std::uint32_t> uniform_block_binding(std::string_view block_name,
+                                                                   ShaderStage stage) const override;
 
   // </Uniforms>
 
@@ -238,11 +237,11 @@ class OpenglShader final : public Shader {
   GLint uniform_location(std::string_view name) const;
 
  private:
-  static const std::filesystem::path kVertexExt;
-  static const std::filesystem::path kFragmentExt;
-  static const std::filesystem::path kGeometryExt;
-  static const std::filesystem::path kTessControlExt;
-  static const std::filesystem::path kTessEvalExt;
+  static constexpr std::string_view kVertexExt      = ".vert";
+  static constexpr std::string_view kFragmentExt    = ".frag";
+  static constexpr std::string_view kGeometryExt    = ".geom";
+  static constexpr std::string_view kTessControlExt = ".tesc";
+  static constexpr std::string_view kTessEvalExt    = ".tese";
   static const std::regex kIncludeRegex;
   static const std::regex kPragmaOnceRegex;
   static const std::unordered_map<std::string_view, std::string_view> kInternalLibs;

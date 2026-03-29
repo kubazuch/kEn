@@ -72,6 +72,9 @@ class OpenglBuffer final : public Buffer {
   ~OpenglBuffer() override;
 
   [[nodiscard]] const BufferDesc& desc() const override { return desc_; }
+  [[nodiscard]] std::uintptr_t native_handle() const noexcept override {
+    return static_cast<std::uintptr_t>(renderer_id_);
+  }
   [[nodiscard]] std::uint32_t renderer_id() const { return renderer_id_; }
 
   void bind(BufferTarget target) const;
@@ -120,57 +123,30 @@ class OpenglMutableBuffer final : public MutableBuffer {
   std::shared_ptr<OpenglBuffer> buffer_;
 };
 
-/**
- * OpenGL implementation of UniformBuffer.
- *
- * Binds the underlying buffer to a UBO slot via
- * glBindBufferBase(GL_UNIFORM_BUFFER, slot, ...).
- * The underlying buffer must have BufferBind::Uniform set in its bind_flags.
- */
+/** OpenGL implementation of UniformBuffer. */
 class OpenglUniformBuffer final : public UniformBuffer {
  public:
-  OpenglUniformBuffer(std::shared_ptr<OpenglBuffer> buffer, std::size_t slot, ShaderStage stage = ShaderStage::Vertex);
-
-  void bind() const override;
-  void unbind() const override;
+  explicit OpenglUniformBuffer(std::shared_ptr<OpenglBuffer> buffer);
 
   [[nodiscard]] std::shared_ptr<Buffer> underlying_buffer() const override {
     return std::static_pointer_cast<Buffer>(buffer_);
   }
-  [[nodiscard]] std::size_t slot() const override { return slot_; }
-  [[nodiscard]] ShaderStage shader_stage() const override { return stage_; }
 
  private:
   std::shared_ptr<OpenglBuffer> buffer_;
-  std::size_t slot_;
-  ShaderStage stage_;
 };
 
-/**
- * OpenGL implementation of ShaderStorageBuffer.
- *
- * Binds the underlying buffer to a shader storage buffer slot via
- * glBindBufferBase(GL_SHADER_STORAGE_BUFFER, slot, ...).
- * The underlying buffer must have BufferBind::Storage set in its bind_flags.
- */
+/** OpenGL implementation of ShaderStorageBuffer. */
 class OpenglShaderStorageBuffer final : public ShaderStorageBuffer {
  public:
-  OpenglShaderStorageBuffer(std::shared_ptr<OpenglBuffer> buffer, std::size_t slot,
-                            ShaderStage stage = ShaderStage::Compute);
-
-  void bind() const override;
-  void unbind() const override;
+  explicit OpenglShaderStorageBuffer(std::shared_ptr<OpenglBuffer> buffer);
 
   [[nodiscard]] std::shared_ptr<Buffer> underlying_buffer() const override {
     return std::static_pointer_cast<Buffer>(buffer_);
   }
-  [[nodiscard]] std::size_t slot() const override { return slot_; }
-  [[nodiscard]] ShaderStage shader_stage() const override { return stage_; }
 
  private:
   std::shared_ptr<OpenglBuffer> buffer_;
-  std::size_t slot_;
-  ShaderStage stage_;
 };
 
 }  // namespace kEn

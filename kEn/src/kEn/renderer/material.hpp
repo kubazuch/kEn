@@ -14,6 +14,7 @@
 
 namespace kEn {
 
+class Command;
 class Shader;
 
 /**
@@ -91,11 +92,13 @@ class Material {
   void load(Shader& shader, std::string_view name = "u_Material") const;
 
   /**
-   * @brief Bind all stored textures to consecutive texture units.
+   * @brief Bind all stored textures to consecutive texture units via @p command.
    *
-   * Unit assignment matches the order used by @ref load.
+   * Textures are bound to ShaderStage::Fragment slots in the same order used by @ref load.
+   *
+   * @param command The active Command to route texture binding through.
    */
-  void bind() const;
+  void bind(Command& command) const;
 
   /** @brief Render an ImGui inspector panel for this material. */
   void imgui();

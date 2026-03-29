@@ -209,8 +209,8 @@ class Texture {
   [[nodiscard]] TextureFormat format() const noexcept { return desc().format; }
   [[nodiscard]] std::uint32_t mip_levels() const noexcept { return desc().resolved_mip_levels(); }
 
-  // TODO: [TEX-BIND] transitional -- remove when device/context pattern is implemented
-  virtual void bind(std::uint32_t slot) const = 0;
+  /** @brief Return the platform-native GPU texture handle. */
+  [[nodiscard]] virtual std::uintptr_t native_handle() const noexcept = 0;
 
   /** @brief Returns a handle suitable for passing to ImGui::Image(). */
   [[nodiscard]] virtual ImTextureID imgui_id() const noexcept = 0;

@@ -124,12 +124,12 @@ class DemoLayer : public kEn::Layer {
   }
 
   void on_render(double alpha) override {
-    framebuffer_->bind_for_rendering();
+    device_.command().set_render_target(*framebuffer_);
     device_.command().set_clear_color({0.08F, 0.08F, 0.12F, 1.F});
     device_.command().clear();
     device_.command().depth_testing(true);
 
-    kEn::Renderer::begin_scene(camera_);
+    kEn::Renderer::begin_scene(*camera_);
     kEn::Renderer::prepare(*phong_shader_);
 
     floor_obj_.render_all(*phong_shader_, alpha);
@@ -169,7 +169,7 @@ class DemoLayer : public kEn::Layer {
         camera_->set_projection(mEn::radians(fov_), static_cast<float>(vp_w_) / static_cast<float>(vp_h_), 0.01F,
                                 200.F);
       }
-      const auto tex_id = static_cast<ImTextureID>(framebuffer_->native_color_attachment_handle(0));
+      const auto tex_id = static_cast<ImTextureID>(framebuffer_->color_attachment(0));
       ImGui::Image(tex_id, size, ImVec2(0, 1), ImVec2(1, 0));
     }
     ImGui::End();

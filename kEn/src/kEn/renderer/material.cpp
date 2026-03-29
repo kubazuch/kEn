@@ -11,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include <kEn/renderer/command.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
 
@@ -59,11 +60,11 @@ void Material::load(Shader& shader, std::string_view name) const {
   }
 }
 
-void Material::bind() const {
+void Material::bind(Command& command) const {
   uint32_t texture_id = 0;
   for (const auto& textures : textures_ | std::views::values) {
     for (const auto& texture : textures) {
-      texture->bind(texture_id);
+      command.bind_texture(texture_id, ShaderStage::Fragment, *texture);
       texture_id++;
     }
   }

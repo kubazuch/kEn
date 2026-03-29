@@ -88,15 +88,15 @@ class VertexInput {
  public:
   virtual ~VertexInput() = default;
 
-  virtual void bind() const   = 0;
-  virtual void unbind() const = 0;
+  /** @brief Return the platform-native vertex-input handle. */
+  [[nodiscard]] virtual std::uintptr_t native_handle() const noexcept = 0;
 
   virtual void add_vertex_stream(const VertexStreamBinding& stream) = 0;
   [[nodiscard]] virtual size_t element_count() const                = 0;
 
-  void set_index_buffer(const std::shared_ptr<Buffer>& index_buf, IndexType index_type = IndexType::UInt32,
+  void set_index_buffer(std::shared_ptr<Buffer> index_buf, IndexType index_type = IndexType::UInt32,
                         std::size_t index_offset = 0) {
-    set_index_buffer_impl(index_buf, index_type, index_offset);
+    set_index_buffer_impl(std::move(index_buf), index_type, index_offset);
   }
 
   [[nodiscard]] virtual std::span<const VertexStreamBinding> vertex_streams() const = 0;
@@ -105,7 +105,7 @@ class VertexInput {
   [[nodiscard]] virtual size_t index_buffer_offset() const                          = 0;
 
  protected:
-  virtual void set_index_buffer_impl(const std::shared_ptr<Buffer>& index_buf, IndexType index_type,
+  virtual void set_index_buffer_impl(std::shared_ptr<Buffer> index_buf, IndexType index_type,
                                      std::size_t index_offset) = 0;
 };
 

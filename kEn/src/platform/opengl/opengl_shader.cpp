@@ -3,10 +3,12 @@
 #include <glad/gl.h>
 
 #include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <regex>
 #include <sstream>
 #include <stdexcept>
@@ -20,7 +22,6 @@
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
-#include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/shader.hpp>
 
 namespace kEn {
@@ -103,12 +104,6 @@ std::string annotate_glsl_log(std::string_view raw, const std::vector<std::strin
 }
 
 }  // namespace
-
-const std::filesystem::path OpenglShader::kVertexExt(".vert");
-const std::filesystem::path OpenglShader::kFragmentExt(".frag");
-const std::filesystem::path OpenglShader::kGeometryExt(".geom");
-const std::filesystem::path OpenglShader::kTessControlExt(".tesc");
-const std::filesystem::path OpenglShader::kTessEvalExt(".tese");
 
 const std::regex OpenglShader::kIncludeRegex(R"(^\s*#\s*include\s+\"(.+)\"\s*$)");
 const std::regex OpenglShader::kPragmaOnceRegex(R"(^\s*#\s*pragma\s+once\s*$)");
@@ -469,10 +464,6 @@ OpenglShader::OpenglShader(std::string_view name, std::string_view vertex_src, s
 
 OpenglShader::~OpenglShader() { glDeleteProgram(renderer_id_); }
 
-void OpenglShader::bind() const { glUseProgram(renderer_id_); }
-
-void OpenglShader::unbind() const { glUseProgram(0); }
-
 // <Uniforms>
 GLint OpenglShader::uniform_location(std::string_view name) const {
   auto it = uniform_locations_.find(name);
@@ -492,41 +483,34 @@ GLint OpenglShader::uniform_location(std::string_view name) const {
   return location;
 }
 
-void OpenglShader::bind_uniform_buffer(std::string_view name, size_t binding) const {
-  const std::string tmp(name);
+void OpenglShader::bind_uniform_block(std::string_view block_name, ShaderStage /*stage*/, std::uint32_t binding) const {
+  const std::string tmp(block_name);
   const GLuint block_index = glGetUniformBlockIndex(renderer_id_, tmp.c_str());
   if (block_index == GL_INVALID_INDEX) {
-    KEN_CORE_WARN("Unable to find uniform block '{0}' in shader '{1}'", name, name_);
+    KEN_CORE_WARN("Unable to find uniform block '{0}' in shader '{1}'", block_name, name_);
     return;
   }
 
-  uniform_block_bindings_[block_index] = static_cast<GLuint>(binding);
-  glUniformBlockBinding(renderer_id_, block_index, static_cast<GLuint>(binding));
-  KEN_CORE_DEBUG("Adding new uniform block '{0}' (index: {1}) in shader '{2}' to binding: {3}", name, block_index,
+  uniform_block_bindings_[block_index] = binding;
+  glUniformBlockBinding(renderer_id_, block_index, binding);
+  KEN_CORE_DEBUG("Adding new uniform block '{0}' (index: {1}) in shader '{2}' to binding: {3}", block_name, block_index,
                  name_, binding);
 }
 
-void OpenglShader::bind_uniform_buffer(std::string_view name, const UniformBuffer& ubo) const {
-  const std::string tmp(name);
+std::optional<std::uint32_t> OpenglShader::uniform_block_binding(std::string_view block_name,
+                                                                 ShaderStage /*stage*/) const {
+  const std::string tmp(block_name);
   const GLuint block_index = glGetUniformBlockIndex(renderer_id_, tmp.c_str());
   if (block_index == GL_INVALID_INDEX) {
-    KEN_CORE_WARN("Unable to find uniform block '{0}' in shader '{1}'", name, name_);
-    return;
+    return std::nullopt;
   }
 
-  GLint size = 0;
-  glGetActiveUniformBlockiv(renderer_id_, block_index, GL_UNIFORM_BLOCK_DATA_SIZE, &size);
-
-  // TODO(kuzu): handle padding
-  if (std::cmp_not_equal(size, ubo.underlying_buffer()->size())) {
-    KEN_CORE_ERROR("Unexpected uniform block size: {0}. Expected: {1}", size, ubo.underlying_buffer()->size());
-    return;
+  const auto it = uniform_block_bindings_.find(block_index);
+  if (it == uniform_block_bindings_.end()) {
+    return std::nullopt;
   }
 
-  uniform_block_bindings_[block_index] = static_cast<GLuint>(ubo.slot());
-  glUniformBlockBinding(renderer_id_, block_index, uniform_block_bindings_[block_index]);
-  KEN_CORE_DEBUG("Adding new uniform block '{0}' (index: {1}) in shader '{2}' to binding: {3}", name, block_index,
-                 name_, ubo.slot());
+  return it->second;
 }
 
 // </Uniforms>
