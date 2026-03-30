@@ -15,6 +15,8 @@ class UniformBuffer;
 class ShaderStorageBuffer;
 class Framebuffer;
 
+enum class CullMode : uint8_t { None, Front, Back };
+
 enum class RenderMode : uint8_t {
   Points,
   LineStrip,
@@ -48,6 +50,8 @@ class RenderContext {
 
   virtual void depth_testing(bool enabled) = 0;
   void depth_testing() { depth_testing(true); }
+
+  virtual void set_cull_mode(CullMode mode) = 0;
 
   virtual void set_shader(const Shader& shader)                  = 0;
   virtual void set_vertex_input(const VertexInput& vertex_input) = 0;

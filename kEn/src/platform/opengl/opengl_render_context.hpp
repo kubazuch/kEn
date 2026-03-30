@@ -39,6 +39,7 @@ class OpenglRenderContext final : public RenderContext {
   void clear() override;
 
   void depth_testing(bool enabled) override;
+  void set_cull_mode(CullMode mode) override;
 
   void set_shader(const Shader& shader) override;
   void set_vertex_input(const VertexInput& vertex_input) override;

@@ -86,6 +86,15 @@ void OpenglRenderContext::depth_testing(bool enabled) {
   }
 }
 
+void OpenglRenderContext::set_cull_mode(CullMode mode) {
+  if (mode == CullMode::None) {
+    glDisable(GL_CULL_FACE);
+    return;
+  }
+  glEnable(GL_CULL_FACE);
+  glCullFace(mode == CullMode::Front ? GL_FRONT : GL_BACK);
+}
+
 void OpenglRenderContext::set_shader(const Shader& shader) {
   glUseProgram(static_cast<GLuint>(shader.native_handle()));
 }
