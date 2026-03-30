@@ -10,12 +10,16 @@
 #include <kEn/renderer/shader.hpp>
 #include <kEn/util/flags.hpp>
 
+/** @file
+ *  @ingroup ken
+ */
+
 namespace kEn {
 
-/** GPU buffer binding target (vertex, index, uniform, shader storage). */
+/** @brief GPU buffer binding target (vertex, index, uniform, shader storage). */
 enum class BufferTarget : std::uint8_t { Vertex, Index, Uniform, Storage };
 
-/** Convenience using-declarations for BufferTarget enumerators. */
+/** @brief Convenience using-declarations for BufferTarget enumerators. */
 namespace buffer_target {
 
 using enum BufferTarget;
@@ -32,10 +36,10 @@ enum class BufferBind : std::uint8_t { Vertex = 1U << 0, Index = 1U << 1, Unifor
 
 KEN_ENABLE_FLAGS(::kEn::BufferBind);
 
-/** Bitmask type combining one or more BufferBind flags. */
+/** @brief Bitmask type combining one or more BufferBind flags. */
 using BufferBinds = util::Flags<BufferBind>;
 
-/** Convenience using-declarations for BufferBind enumerators. */
+/** @brief Convenience using-declarations for BufferBind enumerators. */
 namespace buffer_bind {
 
 using enum BufferBind;
@@ -52,7 +56,7 @@ using enum BufferBind;
  */
 enum class BufferUsage : std::uint8_t { Immutable, Default, Dynamic, Staging };
 
-/** Convenience using-declarations for BufferUsage enumerators. */
+/** @brief Convenience using-declarations for BufferUsage enumerators. */
 namespace buffer_usage {
 
 using enum BufferUsage;
@@ -72,14 +76,14 @@ using enum BufferUsage;
  */
 enum class MapMode : std::uint8_t { Read, Write, ReadWrite, WriteDiscard, WriteNoOverwrite };
 
-/** Convenience using-declarations for MapMode enumerators. */
+/** @brief Convenience using-declarations for MapMode enumerators. */
 namespace map_mode {
 
 using enum MapMode;
 
 }  // namespace map_mode
 
-/** Descriptor passed to Device::create_buffer() / Device::create_mutable_buffer(). */
+/** @brief Descriptor passed to Device::create_buffer() / Device::create_mutable_buffer(). */
 struct BufferDesc {
   std::size_t size{};                      /**< Total size in bytes. */
   BufferUsage usage{BufferUsage::Default}; /**< CPU/GPU access pattern hint. */
@@ -88,7 +92,7 @@ struct BufferDesc {
 };
 
 /**
- * Opaque GPU buffer handle.
+ * @brief Opaque GPU buffer handle.
  *
  * Holds an immutable descriptor and a convenience size() accessor.
  * Mutable CPU-side access is provided by MutableBuffer; per-slot binding
@@ -97,16 +101,16 @@ struct BufferDesc {
 struct Buffer {
   virtual ~Buffer() = default;
 
-  /** Return the descriptor this buffer was created with. */
+  /** @brief Return the descriptor this buffer was created with. */
   [[nodiscard]] virtual const BufferDesc& desc() const = 0;
-  /** Return the buffer size in bytes (shorthand for desc().size). */
+  /** @brief Return the buffer size in bytes (shorthand for desc().size). */
   [[nodiscard]] std::size_t size() const { return desc().size; }
-  /** Return the platform-native GPU buffer handle. */
+  /** @brief Return the platform-native GPU buffer handle. */
   [[nodiscard]] virtual std::uintptr_t native_handle() const noexcept = 0;
 };
 
 /**
- * RAII handle for a CPU-mapped GPU buffer region.
+ * @brief RAII handle for a CPU-mapped GPU buffer region.
  *
  * Constructed by MutableBuffer::map(). The mapped region is automatically
  * unmapped on destruction or on an explicit reset() call. Move-only.
@@ -152,7 +156,7 @@ class MappedBuffer {
 };
 
 /**
- * Write interface for a GPU buffer that supports CPU updates.
+ * @brief Write interface for a GPU buffer that supports CPU updates.
  *
  * Does not inherit Buffer; use underlying_buffer() to obtain the raw allocation.
  * Implementations must reject Immutable buffers at construction time.
@@ -160,17 +164,17 @@ class MappedBuffer {
 struct MutableBuffer {
   virtual ~MutableBuffer() = default;
 
-  /** Replace the entire buffer contents; reallocates if size differs. */
+  /** @brief Replace the entire buffer contents; reallocates if size differs. */
   virtual void set_data(const void* data, std::size_t size) = 0;
-  /** Write size bytes at the given byte offset without reallocation. */
+  /** @brief Write size bytes at the given byte offset without reallocation. */
   virtual void update_data(std::size_t offset, const void* data, std::size_t size) = 0;
-  /** Reallocate to the given size; data may be null to leave contents undefined. */
+  /** @brief Reallocate to the given size; data may be null to leave contents undefined. */
   virtual void resize(std::size_t size, const void* data) = 0;
 
-  /** Reallocate to size, leaving contents undefined. */
+  /** @brief Reallocate to size, leaving contents undefined. */
   void resize(std::size_t size) { resize(size, nullptr); }
 
-  /** Map with WriteDiscard mode (convenience overload). */
+  /** @brief Map with WriteDiscard mode (convenience overload). */
   [[nodiscard]] MappedBuffer map() const { return map(MapMode::WriteDiscard); }
   /**
    * Map the buffer for CPU access with the given mode.
@@ -180,27 +184,27 @@ struct MutableBuffer {
    */
   [[nodiscard]] virtual MappedBuffer map(MapMode mode) const = 0;
 
-  /** Return the underlying GPU buffer allocation. */
+  /** @brief Return the underlying GPU buffer allocation. */
   [[nodiscard]] virtual std::shared_ptr<Buffer> underlying_buffer() const = 0;
 };
 
-/** Binding view over a GPU buffer used as a uniform buffer object. */
+/** @brief Binding view over a GPU buffer used as a uniform buffer object. */
 struct UniformBuffer {
   virtual ~UniformBuffer() = default;
 
-  /** Return the underlying GPU buffer allocation. */
+  /** @brief Return the underlying GPU buffer allocation. */
   [[nodiscard]] virtual std::shared_ptr<Buffer> underlying_buffer() const = 0;
-  /** Return the size of the underlying buffer in bytes. */
+  /** @brief Return the size of the underlying buffer in bytes. */
   [[nodiscard]] std::size_t size() const { return underlying_buffer()->size(); }
 };
 
-/** Binding view over a GPU buffer used as a shader storage buffer. */
+/** @brief Binding view over a GPU buffer used as a shader storage buffer. */
 struct ShaderStorageBuffer {
   virtual ~ShaderStorageBuffer() = default;
 
-  /** Return the underlying GPU buffer allocation. */
+  /** @brief Return the underlying GPU buffer allocation. */
   [[nodiscard]] virtual std::shared_ptr<Buffer> underlying_buffer() const = 0;
-  /** Return the size of the underlying buffer in bytes. */
+  /** @brief Return the size of the underlying buffer in bytes. */
   [[nodiscard]] std::size_t size() const { return underlying_buffer()->size(); }
 };
 

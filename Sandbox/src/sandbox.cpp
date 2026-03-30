@@ -124,10 +124,10 @@ class DemoLayer : public kEn::Layer {
   }
 
   void on_render(double alpha) override {
-    device_.command().set_render_target(*framebuffer_);
-    device_.command().set_clear_color({0.08F, 0.08F, 0.12F, 1.F});
-    device_.command().clear();
-    device_.command().depth_testing(true);
+    device_.context().set_render_target(*framebuffer_);
+    device_.context().set_clear_color({0.08F, 0.08F, 0.12F, 1.F});
+    device_.context().clear();
+    device_.context().depth_testing(true);
 
     kEn::Renderer::begin_scene(*camera_);
     kEn::Renderer::prepare(*phong_shader_);
@@ -137,11 +137,11 @@ class DemoLayer : public kEn::Layer {
 
     kEn::Renderer::end_scene();
 
-    device_.command().bind_default_framebuffer();
+    device_.context().bind_default_framebuffer();
     const kEn::Window& win = kEn::Application::instance().main_window();
-    device_.command().set_viewport(0, 0, win.width(), win.height());
-    device_.command().set_clear_color({0.2F, 0.2F, 0.2F, 1.F});
-    device_.command().clear();
+    device_.context().set_viewport(0, 0, win.width(), win.height());
+    device_.context().set_clear_color({0.2F, 0.2F, 0.2F, 1.F});
+    device_.context().clear();
   }
 
   void on_imgui() override {
@@ -189,7 +189,7 @@ class DemoLayer : public kEn::Layer {
 
       ImGui::SeparatorText("Rendering");
       if (ImGui::Checkbox("Wireframe (F1)", &wireframe_)) {
-        device_.command().set_wireframe(wireframe_);
+        device_.context().set_wireframe(wireframe_);
       }
       if (ImGui::ColorEdit3("Ambient", mEn::value_ptr(ambient_color_))) {
         kEn::Renderer::set_ambient(ambient_color_);
@@ -230,7 +230,7 @@ class DemoLayer : public kEn::Layer {
   bool on_key_pressed(kEn::KeyPressedEvent& event) {
     if (event.key() == kEn::key::f1) {
       wireframe_ = !wireframe_;
-      device_.command().set_wireframe(wireframe_);
+      device_.context().set_wireframe(wireframe_);
     }
     return false;
   }

@@ -7,6 +7,10 @@
 
 #include <kEn/renderer/texture.hpp>
 
+/** @file
+ *  @ingroup ken
+ */
+
 namespace kEn {
 
 /**

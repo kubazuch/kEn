@@ -54,9 +54,7 @@ class WindowResizeEvent : public Event<WindowResizeEvent> {
   static constexpr std::string_view kName = "WindowResizeEvent";
 
  private:
-  /** @brief New window width in pixels. */
   unsigned int width_;
-  /** @brief New window height in pixels. */
   unsigned int height_;
 };
 

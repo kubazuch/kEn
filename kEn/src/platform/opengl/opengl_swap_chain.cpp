@@ -1,4 +1,4 @@
-#include "opengl_context.hpp"
+#include "opengl_swap_chain.hpp"
 
 // clang-format off
 #include <glad/gl.h>
@@ -10,11 +10,11 @@
 
 namespace kEn {
 
-OpenglContext::OpenglContext(GLFWwindow* window) : window_ptr_(window) {
+OpenglSwapChain::OpenglSwapChain(GLFWwindow* window) : window_ptr_(window) {
   KEN_CORE_ASSERT(window, "Window handle is null");
 }
 
-void OpenglContext::init() {
+void OpenglSwapChain::init() {
   glfwMakeContextCurrent(window_ptr_);
   [[maybe_unused]] const int glad_version = gladLoadGL(glfwGetProcAddress);
   KEN_CORE_ASSERT(glad_version, "Unable to init Glad");
@@ -25,6 +25,6 @@ void OpenglContext::init() {
   KEN_CORE_INFO("\tVersion: {0}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 }
 
-void OpenglContext::swap_buffers() { glfwSwapBuffers(window_ptr_); }
+void OpenglSwapChain::swap_buffers() { glfwSwapBuffers(window_ptr_); }
 
 }  // namespace kEn

@@ -12,7 +12,7 @@
 namespace kEn {
 
 /**
- * Ordered, ownership-holding container for Layer objects.
+ * @brief Ordered, ownership-holding container for Layer objects.
  *
  * Layers are stored in a flat vector split into two logical sections:
  *   [0, last_layer_index_)  -- regular layers, iterated front-to-back for update/render.
@@ -38,7 +38,7 @@ class LayerStack {
  public:
   LayerStack() = default;
 
-  /** Calls on_detach() on every remaining layer in order, then destroys them. */
+  /** @brief Calls on_detach() on every remaining layer in order, then destroys them. */
   ~LayerStack();
 
   /**

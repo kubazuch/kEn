@@ -94,9 +94,13 @@ struct FramebufferSpec {
  * spec.attachments.color_attachments = {TextureFormat::RGBA8};
  * spec.attachments.depth_attachment  = TextureFormat::Depth24Stencil8;
  *
- * auto fb = Framebuffer::create(spec);   // platform factory
- * fb->bind_for_rendering();
- * // ... draw calls ...
+ * auto fb = device().create_framebuffer(spec);   // via the active Device
+ *
+ * device().context().set_render_target(*fb);              // bind as render target
+ * fb->clear_color_attachment(0, mEn::Vec4{0, 0, 0, 1});
+ * fb->clear_depth();
+ * // ... draw calls via device().context() ...
+ * device().context().bind_default_framebuffer();          // restore default render target
  * auto id = fb->read_pixel<std::int32_t>(0, mouse_x, mouse_y);
  * @endcode
  */

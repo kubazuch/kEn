@@ -3,8 +3,8 @@
 #include <glad/gl.h>
 
 #include <kEn/renderer/buffer.hpp>
-#include <kEn/renderer/command.hpp>
 #include <kEn/renderer/framebuffer.hpp>
+#include <kEn/renderer/render_context.hpp>
 #include <kEn/renderer/texture.hpp>
 #include <kEn/util/enum_map.hpp>
 
@@ -28,7 +28,7 @@ inline constexpr auto kOpenglRenderModes = util::make_enum_map<GLenum>({
 
 }  // namespace render_mode
 
-class OpenglCommand final : public Command {
+class OpenglRenderContext final : public RenderContext {
  public:
   void init(bool enable_debug) override;
 

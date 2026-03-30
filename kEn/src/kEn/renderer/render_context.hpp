@@ -33,9 +33,9 @@ using enum RenderMode;
 
 }  // namespace render_mode
 
-class Command {
+class RenderContext {
  public:
-  virtual ~Command() = default;
+  virtual ~RenderContext() = default;
 
   virtual void init(bool enable_debug) = 0;
   void init() { init(false); }

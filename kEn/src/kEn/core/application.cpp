@@ -137,7 +137,7 @@ bool Application::on_window_resize(WindowResizeEvent& e) {
   }
 
   minimized_ = false;
-  device_->command().set_viewport(0, 0, e.width(), e.height());
+  device_->context().set_viewport(0, 0, e.width(), e.height());
   return false;
 }
 }  // namespace kEn

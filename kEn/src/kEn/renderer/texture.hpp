@@ -25,18 +25,38 @@ namespace kEn {
  * The sampler state is applied once at construction and is immutable thereafter.
  */
 struct SamplerDesc {
-  /** @brief Minification and magnification filter. */
-  enum class Filter : std::uint8_t { Nearest, Linear };
+  /** @brief Minification and magnification filter mode. */
+  enum class Filter : std::uint8_t {
+    Nearest, /**< @brief Nearest-neighbour (point) filtering. */
+    Linear,  /**< @brief Bilinear filtering. */
+  };
   /** @brief Mip-level transition filter.  @c None disables mipmapping entirely. */
-  enum class MipFilter : std::uint8_t { None, Nearest, Linear };
+  enum class MipFilter : std::uint8_t {
+    None,    /**< @brief Mipmapping disabled; only the base level is sampled. */
+    Nearest, /**< @brief Snap to the nearest mip level. */
+    Linear,  /**< @brief Linearly interpolate between adjacent mip levels. */
+  };
   /** @brief Texture coordinate wrap mode applied outside the [0, 1] range. */
-  enum class Wrap : std::uint8_t { Repeat, Clamp, MirroredRepeat };
+  enum class Wrap : std::uint8_t {
+    Repeat,         /**< @brief Repeat the texture. */
+    Clamp,          /**< @brief Clamp to the edge texel. */
+    MirroredRepeat, /**< @brief Mirror the texture on each repeat. */
+  };
   /**
    * @brief Depth comparison function used when @ref compare_enabled is true.
    *
    * Typically used for shadow-map percentage-closer filtering (PCF).
    */
-  enum class CompareOp : std::uint8_t { Never, Less, Equal, LessEqual, Greater, NotEqual, GreaterEqual, Always };
+  enum class CompareOp : std::uint8_t {
+    Never,        /**< @brief Always fails. */
+    Less,         /**< @brief Passes if reference < texel depth. */
+    Equal,        /**< @brief Passes if reference == texel depth. */
+    LessEqual,    /**< @brief Passes if reference <= texel depth. */
+    Greater,      /**< @brief Passes if reference > texel depth. */
+    NotEqual,     /**< @brief Passes if reference != texel depth. */
+    GreaterEqual, /**< @brief Passes if reference >= texel depth. */
+    Always,       /**< @brief Always passes. */
+  };
 
   Filter min_filter    = Filter::Linear;  /**< @brief Filter applied when the texture is minified. */
   Filter mag_filter    = Filter::Linear;  /**< @brief Filter applied when the texture is magnified. */
@@ -201,12 +221,19 @@ class Texture {
   /** @brief Uploads pixel data to the given mip level of layer 0. */
   void set_data(std::span<const std::byte> data, std::uint32_t mip_level = 0) { set_data(data, mip_level, 0); }
 
+  /** @brief Returns the texture width in texels. */
   [[nodiscard]] std::uint32_t width() const noexcept { return desc().width; }
+  /** @brief Returns the texture height in texels. */
   [[nodiscard]] std::uint32_t height() const noexcept { return desc().height; }
+  /** @brief Returns the texture depth in texels (1 for non-3D textures). */
   [[nodiscard]] std::uint32_t depth() const noexcept { return desc().depth; }
+  /** @brief Returns the number of array layers (1 for non-array textures; cube count for CubeArray). */
   [[nodiscard]] std::uint32_t layers() const noexcept { return desc().layers; }
+  /** @brief Returns the texture dimensionality/topology. */
   [[nodiscard]] TextureKind kind() const noexcept { return desc().kind; }
+  /** @brief Returns the pixel/texel format. */
   [[nodiscard]] TextureFormat format() const noexcept { return desc().format; }
+  /** @brief Returns the resolved mip level count (resolves @ref kFullMipChain to the actual chain depth). */
   [[nodiscard]] std::uint32_t mip_levels() const noexcept { return desc().resolved_mip_levels(); }
 
   /** @brief Return the platform-native GPU texture handle. */

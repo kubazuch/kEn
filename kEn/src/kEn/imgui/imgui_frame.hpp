@@ -9,7 +9,7 @@
 namespace kEn {
 
 /**
- * RAII guard for a single Dear ImGui render frame.
+ * @brief RAII guard for a single Dear ImGui render frame.
  *
  * Construction calls the active ImguiBackend's new_frame(), then ImGui::NewFrame()
  * and ImGuizmo::BeginFrame() to start the frame.
@@ -30,10 +30,12 @@ namespace kEn {
  */
 class ImguiFrame {
  public:
-  /** Starts the Dear ImGui frame. Must be followed by a matching destructor before the next frame. */
+  /** @brief Starts the Dear ImGui frame. Must be followed by a matching destructor before the next frame. */
   ImguiFrame();
 
-  /** Finalizes and renders the accumulated Dear ImGui draw data. */
+  /** @brief Finalizes and renders the accumulated Dear ImGui draw data.
+   *  @note Updates `ImGuiIO::DisplaySize` from the current window dimensions before rendering.
+   */
   ~ImguiFrame();
 
   DELETE_COPY_MOVE(ImguiFrame);

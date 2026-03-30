@@ -125,7 +125,7 @@ class Shader {
    * UniformBuffer must also be bound to the same point for data to be visible.
    *
    * @param block_name  Uniform block name as declared in the shader.
-   * @param stage       Shader stage (informational for OpenGL; used by Vulkan/D3D12).
+   * @param stage       Shader stage hint used by the backend to select the correct binding point.
    * @param binding     Binding point index to use.
    */
   virtual void bind_uniform_block(std::string_view block_name, ShaderStage stage, std::uint32_t binding) const = 0;
@@ -134,7 +134,7 @@ class Shader {
    * @brief Query the binding point currently assigned to a named uniform block.
    *
    * @param block_name  Uniform block name as declared in the shader.
-   * @param stage       Shader stage (informational for OpenGL; used by Vulkan/D3D12).
+   * @param stage       Shader stage hint used by the backend to select the correct binding point.
    * @return The binding point, or @c std::nullopt if the block does not exist or
    *         has not been bound yet.
    */

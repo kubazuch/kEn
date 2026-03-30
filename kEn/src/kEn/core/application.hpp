@@ -30,7 +30,7 @@ struct ApplicationSpec {
   unsigned int window_width  = 1280;                /**< Initial window width in pixels. */
   unsigned int window_height = 720;                 /**< Initial window height in pixels. */
   Device::Api api            = Device::Api::OpenGL; /**< Graphics API to use. */
-  bool enable_debug          = false;               /**< Enable GPU debug output. */
+  bool enable_debug          = false; /**< Enable GPU debug output and push the internal DebugLayer overlay. */
 };
 
 /** @brief Core singleton that owns the main loop, window, and layer stack.
@@ -58,7 +58,7 @@ class Application {
  public:
   /** @brief Constructs the application, creates the window, and initialises the renderer.
    *
-   *  Automatically pushes an ImguiLayer overlay (and a DebugLayer in debug builds).
+   *  Automatically pushes an ImguiLayer overlay (and a DebugLayer when `spec.enable_debug` is set).
    *  Asserts that no other Application instance exists.
    *
    *  @param spec  Window and title configuration.  Defaults to @ref ApplicationSpec{}.

@@ -36,12 +36,12 @@ std::unique_ptr<Device> Device::create(Device::Api api, GLFWwindow* window, bool
   }
 }
 
-OpenglDevice::OpenglDevice(GLFWwindow* window, bool enable_debug) : context_(window) {
-  context_.init();
-  command_.init(enable_debug);
+OpenglDevice::OpenglDevice(GLFWwindow* window, bool enable_debug) : swap_chain_(window) {
+  swap_chain_.init();
+  render_context_.init(enable_debug);
 }
 
-void OpenglDevice::swap_buffers() { context_.swap_buffers(); }
+void OpenglDevice::swap_buffers() { swap_chain_.swap_buffers(); }
 
 std::shared_ptr<Buffer> OpenglDevice::create_buffer(const BufferDesc& desc, const void* data) {
   return std::make_shared<OpenglBuffer>(desc, data);
