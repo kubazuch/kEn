@@ -8,6 +8,7 @@
 #include <mEn/functions/matrix_projection.hpp>
 #include <mEn/functions/matrix_transform.hpp>
 #include <mEn/functions/trigonometric.hpp>
+#include <mEn/fwd.hpp>
 #include <mEn/vec3.hpp>
 
 #include <kEn.hpp>  //NOLINT
@@ -24,6 +25,7 @@
 #include <kEn/renderer/device.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/material.hpp>
+#include <kEn/renderer/render_context.hpp>
 #include <kEn/renderer/renderer.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture_format.hpp>
@@ -164,7 +166,7 @@ class DemoLayer : public kEn::Layer {
     kEn::Renderer::begin_scene(*camera_);
     kEn::Renderer::prepare(*phong_shader_);
 
-    device_.context().bind_attachment(kShadowMapSlot, kEn::ShaderStage::Fragment, shadow_map_fb_->depth_attachment());
+    device_.context().bind_attachment(kShadowMapSlot, kEn::ShaderStage::Fragment, *shadow_map_fb_->depth_attachment());
     phong_shader_->set_uniform("u_ShadowMap", static_cast<int>(kShadowMapSlot));
     phong_shader_->set_uniform("u_LightVP", kLightProj * light_view);
     phong_shader_->set_uniform("u_ShadowBias", shadow_bias_);
@@ -208,7 +210,7 @@ class DemoLayer : public kEn::Layer {
                                 200.F);
       }
       const auto tex_id = static_cast<ImTextureID>(framebuffer_->color_attachment(0));
-      ImGui::Image(tex_id, size, ImVec2(0, 1), ImVec2(1, 0));
+      ImGui::Image(tex_id, size, {0, 1}, {1, 0});
     }
     ImGui::End();
     ImGui::PopStyleVar();
@@ -246,6 +248,11 @@ class DemoLayer : public kEn::Layer {
       }
       if (ImGui::CollapsingHeader("Directional Light")) {
         dir_light_->imgui();
+        const float w = ImGui::GetContentRegionAvail().x;
+        const float h =
+            w * static_cast<float>(shadow_map_fb_->spec().height) / static_cast<float>(shadow_map_fb_->spec().width);
+        const auto tex_id = static_cast<ImTextureID>(*shadow_map_fb_->depth_attachment());
+        ImGui::Image(tex_id, {w, h}, {0, 1}, {1, 0});
       }
       if (ImGui::CollapsingHeader("Spot Light (torch)")) {
         spot_light_->imgui();

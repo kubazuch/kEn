@@ -106,13 +106,14 @@ struct FramebufferSpec {
  */
 class Framebuffer {
  public:
+  Framebuffer()          = default;
   virtual ~Framebuffer() = default;
 
   /** @brief Return the platform-native framebuffer handle. */
   [[nodiscard]] virtual std::uintptr_t native_handle() const noexcept = 0;
 
   /** @brief Return the platform-native handle for the depth attachment texture (0 if absent). */
-  [[nodiscard]] virtual std::uintptr_t depth_attachment() const noexcept = 0;
+  [[nodiscard]] virtual std::optional<std::uintptr_t> depth_attachment() const noexcept = 0;
 
   /**
    * @brief Resize the framebuffer and recreate its attachments.
@@ -262,6 +263,8 @@ class Framebuffer {
    * @param depth  Depth clear value in [0, 1]; defaults to 1.0 (far plane).
    */
   void clear_depth_stencil(float depth = 1.0F) { clear_depth_stencil(depth, 0); }
+
+  DELETE_COPY_MOVE(Framebuffer);
 };
 
 }  // namespace kEn
