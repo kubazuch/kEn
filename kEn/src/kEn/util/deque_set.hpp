@@ -137,7 +137,7 @@ class DequeSet {
    * @exception Any exception thrown by allocation or copying/moving into the deque.
    * @note Strong exception guarantee: if deque insertion fails, the set insertion is rolled back.
    */
-  [[nodiscard]] bool insert(const T& item) {
+  bool insert(const T& item) {
     auto [it, inserted] = set_.insert(item);
     if (!inserted) {
       return false;
@@ -164,7 +164,7 @@ class DequeSet {
    * @note Strong exception guarantee: if deque insertion fails, the set insertion is rolled back.
    */
   template <class... Args>
-  [[nodiscard]] bool emplace(Args&&... args) {
+  bool emplace(Args&&... args) {
     auto [it, inserted] = set_.emplace(std::forward<Args>(args)...);
     if (!inserted) {
       return false;
@@ -189,7 +189,7 @@ class DequeSet {
    * @note Complexity is O(n) due to searching the deque for the value.
    * @note Does not provide a strong exception guarantee for move-throwing element types.
    */
-  [[nodiscard]] bool erase(const T& item) {
+  bool erase(const T& item) {
     auto sit = set_.find(item);
     if (sit == set_.end()) {
       return false;
