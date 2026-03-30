@@ -247,7 +247,7 @@ class OpenglShader final : public Shader {
   static const std::unordered_map<std::string_view, std::string_view> kInternalLibs;
 
   /** @brief OpenGL program object id. */
-  uint32_t renderer_id_;
+  std::uint32_t renderer_id_;
 
   /** @brief Cached uniform locations (mutated on demand). */
   mutable std::unordered_map<std::string, GLint, StringHash, std::equal_to<>> uniform_locations_;

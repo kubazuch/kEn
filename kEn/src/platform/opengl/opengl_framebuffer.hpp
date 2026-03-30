@@ -83,11 +83,11 @@ class OpenglFramebuffer : public Framebuffer {
  private:
   void invalidate();
 
-  uint32_t renderer_id_ = 0; /**< OpenGL framebuffer object name. */
-  FramebufferSpec spec_;     /**< Creation spec; width/height updated on resize. */
+  std::uint32_t renderer_id_ = 0; /**< OpenGL framebuffer object name. */
+  FramebufferSpec spec_;          /**< Creation spec; width/height updated on resize. */
 
-  std::vector<uint32_t> color_attachments_;  /**< OpenGL texture names for each color attachment. */
-  std::optional<uint32_t> depth_attachment_; /**< OpenGL texture name for the depth attachment. */
+  std::vector<std::uint32_t> color_attachments_;  /**< OpenGL texture names for each color attachment. */
+  std::optional<std::uint32_t> depth_attachment_; /**< OpenGL texture name for the depth attachment. */
 };
 
 }  // namespace kEn

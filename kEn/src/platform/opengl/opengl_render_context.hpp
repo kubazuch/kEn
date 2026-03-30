@@ -32,7 +32,7 @@ class OpenglRenderContext final : public RenderContext {
  public:
   void init(bool enable_debug) override;
 
-  void set_viewport(size_t x, size_t y, size_t w, size_t h) override;
+  void set_viewport(std::uint32_t x, std::uint32_t y, std::uint32_t w, std::uint32_t h) override;
   void set_clear_color(const mEn::Vec4& color) override;
   void clear_color() override;
   void clear_depth() override;
@@ -54,12 +54,12 @@ class OpenglRenderContext final : public RenderContext {
 
   void bind_attachment(std::uint32_t slot, ShaderStage stage, std::uintptr_t handle) override;
 
-  void draw(size_t vertex_count, RenderMode mode) override;
-  void draw_indexed(size_t index_count, RenderMode mode) override;
-  void draw_instanced(size_t vertex_count, size_t instance_count, RenderMode mode) override;
-  void draw_indexed_instanced(size_t index_count, size_t instance_count, RenderMode mode) override;
+  void draw(std::size_t vertex_count, RenderMode mode) override;
+  void draw_indexed(std::size_t index_count, RenderMode mode) override;
+  void draw_instanced(std::size_t vertex_count, std::size_t instance_count, RenderMode mode) override;
+  void draw_indexed_instanced(std::size_t index_count, std::size_t instance_count, RenderMode mode) override;
 
-  void set_tessellation_patch_vertices(size_t count) override;
+  void set_tessellation_patch_vertices(std::size_t count) override;
   int max_tesselation_level() const override;
 
   void set_wireframe(bool wireframe) override;

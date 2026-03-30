@@ -67,7 +67,7 @@ class Material {
    * @param id      Index within the type's array (default 0).
    * @throws std::runtime_error if @p id skips beyond the current array size.
    */
-  void set_texture(TextureType type, std::shared_ptr<Texture> texture, size_t id = 0);
+  void set_texture(TextureType type, std::shared_ptr<Texture> texture, std::size_t id = 0);
 
   /**
    * @brief Retrieve a texture by type and index.
@@ -77,7 +77,7 @@ class Material {
    * @return Const reference to the stored shared pointer.
    * @throws std::out_of_range if @p type or @p id is not present.
    */
-  const std::shared_ptr<Texture>& texture(TextureType type, size_t id = 0) const;
+  const std::shared_ptr<Texture>& texture(TextureType type, std::size_t id = 0) const;
 
   /**
    * @brief Upload Phong uniforms and texture-unit indices to @p shader.

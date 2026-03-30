@@ -19,7 +19,7 @@
 
 namespace kEn {
 
-static constexpr uint32_t kMaxFramebufferSize = 8192;
+static constexpr std::uint32_t kMaxFramebufferSize = 8192;
 
 namespace {
 

@@ -26,11 +26,11 @@ namespace kEn {
  *  All fields have sensible defaults; only override what differs.
  */
 struct ApplicationSpec {
-  std::string title          = "kEngine";           /**< Window title bar text. */
-  unsigned int window_width  = 1280;                /**< Initial window width in pixels. */
-  unsigned int window_height = 720;                 /**< Initial window height in pixels. */
-  Device::Api api            = Device::Api::OpenGL; /**< Graphics API to use. */
-  bool enable_debug          = false; /**< Enable GPU debug output and push the internal DebugLayer overlay. */
+  std::string title           = "kEngine";           /**< Window title bar text. */
+  std::uint32_t window_width  = 1280;                /**< Initial window width in pixels. */
+  std::uint32_t window_height = 720;                 /**< Initial window height in pixels. */
+  Device::Api api             = Device::Api::OpenGL; /**< Graphics API to use. */
+  bool enable_debug           = false; /**< Enable GPU debug output and push the internal DebugLayer overlay. */
 };
 
 /** @brief Core singleton that owns the main loop, window, and layer stack.
