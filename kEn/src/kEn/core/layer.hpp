@@ -13,7 +13,7 @@
 namespace kEn {
 
 /**
- * Abstract base class for all engine layers.
+ * @brief Abstract base class for all engine layers.
  *
  * Layers form an ordered pipeline inside LayerStack. The Application drives them in
  * insertion order for update/render and in reverse order for event dispatch.
@@ -30,14 +30,14 @@ namespace kEn {
  */
 class Layer {
  public:
-  /** Constructs the layer with an optional debug name shown in tooling. */
+  /** @brief Constructs the layer with an optional debug name shown in tooling. */
   explicit Layer(std::string_view name = "Layer");
   virtual ~Layer() = default;
 
-  /** Called once after the layer is pushed onto the LayerStack. Allocate GPU resources here. */
+  /** @brief Called once after the layer is pushed onto the LayerStack. Allocate GPU resources here. */
   virtual void on_attach() {}
 
-  /** Called once before the layer is removed from the LayerStack. Release GPU resources here. */
+  /** @brief Called once before the layer is removed from the LayerStack. Release GPU resources here. */
   virtual void on_detach() {}
 
   /**
@@ -53,7 +53,7 @@ class Layer {
    */
   virtual void on_render(double /*alpha*/) {}
 
-  /** Called every frame inside an active ImguiFrame scope. Submit Dear ImGui calls here. */
+  /** @brief Called every frame inside an active ImguiFrame scope. Submit Dear ImGui calls here. */
   virtual void on_imgui() {}
 
   /**

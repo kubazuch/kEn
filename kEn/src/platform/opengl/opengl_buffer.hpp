@@ -9,9 +9,13 @@
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/util/enum_map.hpp>
 
+/** @file
+ *  @ingroup ken
+ */
+
 namespace kEn {
 
-/** Maps BufferTarget to the corresponding OpenGL buffer binding target. */
+/** @brief Maps BufferTarget to the corresponding OpenGL buffer binding target. */
 namespace buffer_target {
 
 inline constexpr auto kOpenglTypes = util::make_enum_map<GLenum>({
@@ -21,12 +25,12 @@ inline constexpr auto kOpenglTypes = util::make_enum_map<GLenum>({
     std::pair{Storage, GL_SHADER_STORAGE_BUFFER},
 });
 
-/** Return the GL binding target (e.g. GL_ARRAY_BUFFER) for a BufferTarget. */
+/** @brief Return the GL binding target (e.g. GL_ARRAY_BUFFER) for a BufferTarget. */
 [[nodiscard]] constexpr GLenum opengl_target(BufferTarget type) { return kOpenglTypes[type]; }
 
 }  // namespace buffer_target
 
-/** Maps BufferUsage to the corresponding OpenGL usage hint. */
+/** @brief Maps BufferUsage to the corresponding OpenGL usage hint. */
 namespace buffer_usage {
 
 inline constexpr auto kOpenglUsages = util::make_enum_map<GLenum>({
@@ -36,12 +40,12 @@ inline constexpr auto kOpenglUsages = util::make_enum_map<GLenum>({
     std::pair{Staging, GL_DYNAMIC_READ},
 });
 
-/** Return the GL usage hint (e.g. GL_DYNAMIC_DRAW) for a BufferUsage. */
+/** @brief Return the GL usage hint (e.g. GL_DYNAMIC_DRAW) for a BufferUsage. */
 [[nodiscard]] constexpr GLenum opengl_usage(BufferUsage usage) { return kOpenglUsages[usage]; }
 
 }  // namespace buffer_usage
 
-/** Maps MapMode to the corresponding OpenGL mapping access bitfield. */
+/** @brief Maps MapMode to the corresponding OpenGL mapping access bitfield. */
 namespace map_mode {
 
 inline constexpr auto kOpenglModes = util::make_enum_map<GLbitfield>({
@@ -52,13 +56,13 @@ inline constexpr auto kOpenglModes = util::make_enum_map<GLbitfield>({
     std::pair{WriteNoOverwrite, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT},
 });
 
-/** Return the GL access bitfield for a MapMode (for use with glMapNamedBufferRange). */
+/** @brief Return the GL access bitfield for a MapMode (for use with glMapNamedBufferRange). */
 [[nodiscard]] constexpr GLenum opengl_mode(MapMode mode) { return kOpenglModes[mode]; }
 
 }  // namespace map_mode
 
 /**
- * OpenGL implementation of Buffer.
+ * @brief OpenGL implementation of Buffer.
  *
  * Wraps a single named buffer object (glCreateBuffers / glDeleteBuffers).
  * Move-only; copy is deleted. Exposed to OpenglMutableBuffer via friendship
@@ -72,6 +76,9 @@ class OpenglBuffer final : public Buffer {
   ~OpenglBuffer() override;
 
   [[nodiscard]] const BufferDesc& desc() const override { return desc_; }
+  [[nodiscard]] std::uintptr_t native_handle() const noexcept override {
+    return static_cast<std::uintptr_t>(renderer_id_);
+  }
   [[nodiscard]] std::uint32_t renderer_id() const { return renderer_id_; }
 
   void bind(BufferTarget target) const;
@@ -93,7 +100,7 @@ class OpenglBuffer final : public Buffer {
 };
 
 /**
- * OpenGL implementation of MutableBuffer.
+ * @brief OpenGL implementation of MutableBuffer.
  *
  * Owns a shared OpenglBuffer and provides set_data(), update_data(), resize(),
  * and map() operations. Immutable buffers are rejected at construction.
@@ -120,57 +127,30 @@ class OpenglMutableBuffer final : public MutableBuffer {
   std::shared_ptr<OpenglBuffer> buffer_;
 };
 
-/**
- * OpenGL implementation of UniformBuffer.
- *
- * Binds the underlying buffer to a UBO slot via
- * glBindBufferBase(GL_UNIFORM_BUFFER, slot, ...).
- * The underlying buffer must have BufferBind::Uniform set in its bind_flags.
- */
+/** @brief OpenGL implementation of UniformBuffer. */
 class OpenglUniformBuffer final : public UniformBuffer {
  public:
-  OpenglUniformBuffer(std::shared_ptr<OpenglBuffer> buffer, std::size_t slot, ShaderStage stage = ShaderStage::Vertex);
-
-  void bind() const override;
-  void unbind() const override;
+  explicit OpenglUniformBuffer(std::shared_ptr<OpenglBuffer> buffer);
 
   [[nodiscard]] std::shared_ptr<Buffer> underlying_buffer() const override {
     return std::static_pointer_cast<Buffer>(buffer_);
   }
-  [[nodiscard]] std::size_t slot() const override { return slot_; }
-  [[nodiscard]] ShaderStage shader_stage() const override { return stage_; }
 
  private:
   std::shared_ptr<OpenglBuffer> buffer_;
-  std::size_t slot_;
-  ShaderStage stage_;
 };
 
-/**
- * OpenGL implementation of ShaderStorageBuffer.
- *
- * Binds the underlying buffer to a shader storage buffer slot via
- * glBindBufferBase(GL_SHADER_STORAGE_BUFFER, slot, ...).
- * The underlying buffer must have BufferBind::Storage set in its bind_flags.
- */
+/** @brief OpenGL implementation of ShaderStorageBuffer. */
 class OpenglShaderStorageBuffer final : public ShaderStorageBuffer {
  public:
-  OpenglShaderStorageBuffer(std::shared_ptr<OpenglBuffer> buffer, std::size_t slot,
-                            ShaderStage stage = ShaderStage::Compute);
-
-  void bind() const override;
-  void unbind() const override;
+  explicit OpenglShaderStorageBuffer(std::shared_ptr<OpenglBuffer> buffer);
 
   [[nodiscard]] std::shared_ptr<Buffer> underlying_buffer() const override {
     return std::static_pointer_cast<Buffer>(buffer_);
   }
-  [[nodiscard]] std::size_t slot() const override { return slot_; }
-  [[nodiscard]] ShaderStage shader_stage() const override { return stage_; }
 
  private:
   std::shared_ptr<OpenglBuffer> buffer_;
-  std::size_t slot_;
-  ShaderStage stage_;
 };
 
 }  // namespace kEn

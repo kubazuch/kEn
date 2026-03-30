@@ -15,8 +15,9 @@ class OpenglVertexInput final : public VertexInput {
   OpenglVertexInput();
   ~OpenglVertexInput() override;
 
-  void bind() const override;
-  void unbind() const override;
+  [[nodiscard]] std::uintptr_t native_handle() const noexcept override {
+    return static_cast<std::uintptr_t>(renderer_id_);
+  }
 
   void add_vertex_stream(const VertexStreamBinding& stream) override;
   [[nodiscard]] size_t element_count() const override;
@@ -27,7 +28,7 @@ class OpenglVertexInput final : public VertexInput {
   [[nodiscard]] size_t index_buffer_offset() const override;
 
  protected:
-  void set_index_buffer_impl(const std::shared_ptr<Buffer>& index_buf, IndexType index_type,
+  void set_index_buffer_impl(std::shared_ptr<Buffer> index_buf, IndexType index_type,
                              std::size_t index_offset) override;
 
  private:

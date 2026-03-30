@@ -3,7 +3,7 @@
 #include <mEn/vec3.hpp>
 
 #include <kEn/core/transform.hpp>
-#include <kEn/renderer/command.hpp>
+#include <kEn/renderer/render_context.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/vertex_input.hpp>
 #include <kEn/scene/camera/camera.hpp>
@@ -13,15 +13,15 @@ namespace kEn {
 
 class Renderer {
  public:
-  static void begin_scene(const std::shared_ptr<Camera>& camera);
+  static void begin_scene(const Camera& camera);
   static void begin_scene(const mEn::Vec3& camera_pos, const mEn::Mat4& view, const mEn::Mat4& projection);
   static void end_scene();
 
-  static void add_light(const std::shared_ptr<PointLight>& light) { scene_data_->point_lights.push_back(light); }
-  static void add_light(const std::shared_ptr<DirectionalLight>& light) {
-    scene_data_->directional_lights.push_back(light);
+  static void add_light(std::shared_ptr<PointLight> light) { scene_data_->point_lights.push_back(std::move(light)); }
+  static void add_light(std::shared_ptr<DirectionalLight> light) {
+    scene_data_->directional_lights.push_back(std::move(light));
   }
-  static void add_light(const std::shared_ptr<SpotLight>& light) { scene_data_->spot_lights.push_back(light); }
+  static void add_light(std::shared_ptr<SpotLight> light) { scene_data_->spot_lights.push_back(std::move(light)); }
   static void set_ambient(const mEn::Vec3& ambient) { scene_data_->ambient = ambient; }
   static void set_fog(float fog) { scene_data_->fog = fog; }
   static void prepare(Shader& shader);

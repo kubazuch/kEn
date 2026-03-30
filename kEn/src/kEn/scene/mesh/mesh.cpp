@@ -41,7 +41,7 @@ void Mesh::setup_mesh() {
 
 void Mesh::render(Shader& shader, const Transform& transform) const {
   material.load(shader, "u_Material");
-  material.bind();
+  material.bind(device().context());
   Renderer::submit(shader, *vao_, transform);
 }
 

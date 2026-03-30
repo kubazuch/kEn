@@ -50,8 +50,15 @@ class OpenglFramebuffer : public Framebuffer {
    */
   void invalidate();
 
-  void bind_for_rendering() override;
   void resize(std::uint32_t width, std::uint32_t height) override;
+
+  [[nodiscard]] std::uintptr_t native_handle() const noexcept override {
+    return static_cast<std::uintptr_t>(renderer_id_);
+  }
+
+  [[nodiscard]] std::uintptr_t depth_attachment() const noexcept override {
+    return static_cast<std::uintptr_t>(depth_attachment_);
+  }
 
   [[nodiscard]] const FramebufferSpec& spec() const override { return spec_; }
 
@@ -74,11 +81,7 @@ class OpenglFramebuffer : public Framebuffer {
   void read_pixels(std::uint32_t attachment_id, int x, int y, int width, int height, std::span<std::byte> out_buffer,
                    std::size_t out_row_pitch) const override;
 
-  [[nodiscard]] std::uintptr_t native_color_attachment_handle(std::uint32_t attachment_id) const override;
-
-  void bind_color_attachment_as_texture(std::uint32_t attachment_id, ShaderStage stage,
-                                        std::uint32_t slot) const override;
-  void bind_depth_as_texture(ShaderStage stage, std::uint32_t slot) const override;
+  [[nodiscard]] std::uintptr_t color_attachment(std::uint32_t attachment_id) const override;
 
   void clear_color_attachment(std::uint32_t attachment_id, std::int32_t value) override;
   void clear_color_attachment(std::uint32_t attachment_id, std::uint32_t value) override;

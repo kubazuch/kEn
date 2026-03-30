@@ -14,7 +14,7 @@ namespace kEn {
 using duration_t = std::chrono::nanoseconds;
 
 /**
- * Thin wrapper around a time duration passed to Layer::on_update and GameComponent::update.
+ * @brief Thin wrapper around a time duration passed to Layer::on_update and GameComponent::update.
  *
  * Decouples the engine update API from the internal chrono precision: callers express time
  * as seconds or milliseconds without depending on std::chrono::nanoseconds directly.
@@ -23,7 +23,7 @@ using duration_t = std::chrono::nanoseconds;
  */
 class Timestep {
  public:
-  /** Constructs a Timestep from an internal duration. */
+  /** @brief Constructs a Timestep from an internal duration. */
   explicit Timestep(duration_t d) : duration_(d) {}
 
   /** @return Elapsed time in seconds. */

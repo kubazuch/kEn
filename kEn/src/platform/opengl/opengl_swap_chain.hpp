@@ -6,9 +6,9 @@ struct GLFWwindow;
 
 namespace kEn {
 
-class OpenglContext final {
+class OpenglSwapChain final {
  public:
-  explicit OpenglContext(GLFWwindow* window);
+  explicit OpenglSwapChain(GLFWwindow* window);
 
   void init();
   void swap_buffers();

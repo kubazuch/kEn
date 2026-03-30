@@ -78,10 +78,7 @@
 #define KEN_ASSERT(...)
 #define KEN_CORE_ASSERT(...)
 
-/**
- * @brief Marks a code path as unreachable. In debug builds, fires a core assertion and triggers a debugbreak before
- * calling std::unreachable(). In release builds, calls std::unreachable() directly.
- */
+/** @copydoc KEN_UNREACHABLE */
 #define KEN_UNREACHABLE() std::unreachable()
 #endif
 // NOLINTEND(cppcoreguidelines-macro-usage)

@@ -94,9 +94,13 @@ struct FramebufferSpec {
  * spec.attachments.color_attachments = {TextureFormat::RGBA8};
  * spec.attachments.depth_attachment  = TextureFormat::Depth24Stencil8;
  *
- * auto fb = Framebuffer::create(spec);   // platform factory
- * fb->bind_for_rendering();
- * // ... draw calls ...
+ * auto fb = device().create_framebuffer(spec);   // via the active Device
+ *
+ * device().context().set_render_target(*fb);              // bind as render target
+ * fb->clear_color_attachment(0, mEn::Vec4{0, 0, 0, 1});
+ * fb->clear_depth();
+ * // ... draw calls via device().context() ...
+ * device().context().bind_default_framebuffer();          // restore default render target
  * auto id = fb->read_pixel<std::int32_t>(0, mouse_x, mouse_y);
  * @endcode
  */
@@ -104,13 +108,11 @@ class Framebuffer {
  public:
   virtual ~Framebuffer() = default;
 
-  /**
-   * @brief Bind the framebuffer as the active render target and update the viewport.
-   *
-   * After this call all draw calls write into this framebuffer's attachments.
-   * The viewport is set to cover the full @ref spec() dimensions.
-   */
-  virtual void bind_for_rendering() = 0;
+  /** @brief Return the platform-native framebuffer handle. */
+  [[nodiscard]] virtual std::uintptr_t native_handle() const noexcept = 0;
+
+  /** @brief Return the platform-native handle for the depth attachment texture (0 if absent). */
+  [[nodiscard]] virtual std::uintptr_t depth_attachment() const noexcept = 0;
 
   /**
    * @brief Resize the framebuffer and recreate its attachments.
@@ -200,27 +202,7 @@ class Framebuffer {
    * @param attachment_id  Zero-based color attachment index.
    * @return The native texture handle (e.g. an OpenGL texture name).
    */
-  [[nodiscard]] virtual std::uintptr_t native_color_attachment_handle(std::uint32_t attachment_id) const = 0;
-
-  /**
-   * @brief Bind a color attachment as a read-only texture for shader sampling.
-   *
-   * The attachment spec must have @ref FramebufferTextureSpec::shader_readable set to @c true.
-   * @param attachment_id  Zero-based color attachment index.
-   * @param stage          Shader stage that will sample the texture.
-   * @param slot           Texture unit / binding slot.
-   */
-  virtual void bind_color_attachment_as_texture(std::uint32_t attachment_id, ShaderStage stage,
-                                                std::uint32_t slot) const = 0;
-
-  /**
-   * @brief Bind the depth attachment as a read-only texture for shader sampling.
-   *
-   * The depth attachment spec must have @ref FramebufferTextureSpec::shader_readable set to @c true.
-   * @param stage  Shader stage that will sample the texture.
-   * @param slot   Texture unit / binding slot.
-   */
-  virtual void bind_depth_as_texture(ShaderStage stage, std::uint32_t slot) const = 0;
+  [[nodiscard]] virtual std::uintptr_t color_attachment(std::uint32_t attachment_id) const = 0;
 
   /**
    * @brief Clear a color attachment to a uniform signed integer value.

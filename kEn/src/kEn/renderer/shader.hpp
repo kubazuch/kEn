@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <span>
 #include <string_view>
 #include <variant>
@@ -67,20 +68,8 @@ class Shader {
    */
   virtual ~Shader() = default;
 
-  /**
-   * @brief Bind this shader program for subsequent rendering/dispatch.
-   *
-   * After binding, draw/dispatch calls will use this program until another
-   * shader is bound or unbind() is called.
-   */
-  virtual void bind() const = 0;
-
-  /**
-   * @brief Unbind the current shader program.
-   *
-   * Typically restores the API's "no program" state (backend-dependent).
-   */
-  virtual void unbind() const = 0;
+  /** @brief Return the platform-native GPU program handle. */
+  [[nodiscard]] virtual std::uintptr_t native_handle() const noexcept = 0;
 
   // <Uniforms>
 
@@ -132,23 +121,25 @@ class Shader {
   /**
    * @brief Bind a named uniform block to a binding point.
    *
-   * This associates a shader's uniform block with a binding index. You must also
-   * bind an actual UniformBuffer to the same binding point for data to be visible.
+   * Associates the shader's uniform block with a binding index.  An actual
+   * UniformBuffer must also be bound to the same point for data to be visible.
    *
-   * @param name    Uniform block name as declared in the shader.
-   * @param binding Binding point index to use.
+   * @param block_name  Uniform block name as declared in the shader.
+   * @param stage       Shader stage hint used by the backend to select the correct binding point.
+   * @param binding     Binding point index to use.
    */
-  virtual void bind_uniform_buffer(std::string_view name, size_t binding) const = 0;
+  virtual void bind_uniform_block(std::string_view block_name, ShaderStage stage, std::uint32_t binding) const = 0;
 
   /**
-   * @brief Bind a named uniform block to the binding point of an existing UBO.
+   * @brief Query the binding point currently assigned to a named uniform block.
    *
-   * @param name Uniform block name as declared in the shader.
-   * @param ubo  Uniform buffer whose binding point will be used.
-   *
-   * @note Backends may validate block size/layout against the provided UBO.
+   * @param block_name  Uniform block name as declared in the shader.
+   * @param stage       Shader stage hint used by the backend to select the correct binding point.
+   * @return The binding point, or @c std::nullopt if the block does not exist or
+   *         has not been bound yet.
    */
-  virtual void bind_uniform_buffer(std::string_view name, const UniformBuffer& ubo) const = 0;
+  [[nodiscard]] virtual std::optional<std::uint32_t> uniform_block_binding(std::string_view block_name,
+                                                                           ShaderStage stage) const = 0;
 
   // </Uniforms>
 

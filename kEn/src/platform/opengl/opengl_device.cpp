@@ -1,10 +1,10 @@
 #include "opengl_device.hpp"
 
-#include <cstddef>
 #include <cstdint>
 #include <filesystem>
 #include <memory>
 #include <string_view>
+#include <utility>
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
@@ -36,12 +36,12 @@ std::unique_ptr<Device> Device::create(Device::Api api, GLFWwindow* window, bool
   }
 }
 
-OpenglDevice::OpenglDevice(GLFWwindow* window, bool enable_debug) : context_(window) {
-  context_.init();
-  command_.init(enable_debug);
+OpenglDevice::OpenglDevice(GLFWwindow* window, bool enable_debug) : swap_chain_(window) {
+  swap_chain_.init();
+  render_context_.init(enable_debug);
 }
 
-void OpenglDevice::swap_buffers() { context_.swap_buffers(); }
+void OpenglDevice::swap_buffers() { swap_chain_.swap_buffers(); }
 
 std::shared_ptr<Buffer> OpenglDevice::create_buffer(const BufferDesc& desc, const void* data) {
   return std::make_shared<OpenglBuffer>(desc, data);
@@ -51,14 +51,12 @@ std::shared_ptr<MutableBuffer> OpenglDevice::create_mutable_buffer(const BufferD
   return std::make_shared<OpenglMutableBuffer>(desc, data);
 }
 
-std::shared_ptr<UniformBuffer> OpenglDevice::create_uniform_buffer(const std::shared_ptr<Buffer>& buffer,
-                                                                   std::size_t slot, ShaderStage stage) {
-  return std::make_shared<OpenglUniformBuffer>(std::dynamic_pointer_cast<OpenglBuffer>(buffer), slot, stage);
+std::shared_ptr<UniformBuffer> OpenglDevice::create_uniform_buffer(std::shared_ptr<Buffer> buffer) {
+  return std::make_shared<OpenglUniformBuffer>(std::dynamic_pointer_cast<OpenglBuffer>(std::move(buffer)));
 }
 
-std::shared_ptr<ShaderStorageBuffer> OpenglDevice::create_shader_storage_buffer(const std::shared_ptr<Buffer>& buffer,
-                                                                                std::size_t slot, ShaderStage stage) {
-  return std::make_shared<OpenglShaderStorageBuffer>(std::dynamic_pointer_cast<OpenglBuffer>(buffer), slot, stage);
+std::shared_ptr<ShaderStorageBuffer> OpenglDevice::create_shader_storage_buffer(std::shared_ptr<Buffer> buffer) {
+  return std::make_shared<OpenglShaderStorageBuffer>(std::dynamic_pointer_cast<OpenglBuffer>(std::move(buffer)));
 }
 
 std::shared_ptr<Shader> OpenglDevice::create_shader(std::string_view name, std::string_view vertex_src,

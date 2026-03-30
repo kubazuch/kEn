@@ -50,7 +50,7 @@ struct WindowProperties {
  *  - @c MouseDragEvent -- synthesised while a button is held and the cursor moves;
  *    carries the original press position alongside the current position.
  *
- *  VSync is enabled by default.  4x MSAA is requested unconditionally.
+ *  4x MSAA is requested unconditionally.
  *  In debug builds a graphics API debug context is requested.
  *
  *  @note Only one Window is expected per application in the current design

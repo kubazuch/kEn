@@ -158,8 +158,6 @@ void OpenglTexture2D::set_data(std::span<const std::byte> data, std::uint32_t mi
   }
 }
 
-void OpenglTexture2D::bind(std::uint32_t slot) const noexcept { glBindTextureUnit(slot, renderer_id_); }
-
 void OpenglTexture2D::allocate_storage() {
   KEN_ASSERT(renderer_id_ == 0);
 

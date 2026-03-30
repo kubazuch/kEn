@@ -1,7 +1,3 @@
-/** @file
- *  @ingroup ken
- */
-
 #pragma once
 
 #include <memory>
@@ -12,8 +8,13 @@
 
 #include <kEn/renderer/texture.hpp>
 
+/** @file
+ *  @ingroup ken
+ */
+
 namespace kEn {
 
+class RenderContext;
 class Shader;
 
 /**
@@ -91,11 +92,13 @@ class Material {
   void load(Shader& shader, std::string_view name = "u_Material") const;
 
   /**
-   * @brief Bind all stored textures to consecutive texture units.
+   * @brief Bind all stored textures to consecutive texture units via @p context.
    *
-   * Unit assignment matches the order used by @ref load.
+   * Textures are bound to ShaderStage::Fragment slots in the same order used by @ref load.
+   *
+   * @param context The active RenderContext to route texture binding through.
    */
-  void bind() const;
+  void bind(RenderContext& context) const;
 
   /** @brief Render an ImGui inspector panel for this material. */
   void imgui();

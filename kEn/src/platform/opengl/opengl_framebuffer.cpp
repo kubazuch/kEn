@@ -13,7 +13,6 @@
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
 #include <kEn/renderer/framebuffer.hpp>
-#include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture_format.hpp>
 
 #include "opengl_texture_format.hpp"
@@ -135,11 +134,6 @@ void OpenglFramebuffer::invalidate() {
                   "Framebuffer is incomplete!");
 }
 
-void OpenglFramebuffer::bind_for_rendering() {
-  glBindFramebuffer(GL_FRAMEBUFFER, renderer_id_);
-  glViewport(0, 0, static_cast<GLsizei>(spec_.width), static_cast<GLsizei>(spec_.height));
-}
-
 void OpenglFramebuffer::resize(std::uint32_t width, std::uint32_t height) {
   if (width == 0 || height == 0 || width > kMaxFramebufferSize || height > kMaxFramebufferSize) {
     KEN_CORE_WARN("Attempted to rezize framebuffer to {0}x{1}", width, height);
@@ -172,30 +166,9 @@ void OpenglFramebuffer::read_pixels(std::uint32_t attachment_id, int x, int y, i
   }
 }
 
-std::uintptr_t OpenglFramebuffer::native_color_attachment_handle(std::uint32_t attachment_id) const {
+std::uintptr_t OpenglFramebuffer::color_attachment(std::uint32_t attachment_id) const {
   KEN_CORE_ASSERT(attachment_id < color_attachments_.size());
   return static_cast<std::uintptr_t>(color_attachments_[attachment_id]);
-}
-
-void OpenglFramebuffer::bind_color_attachment_as_texture(std::uint32_t attachment_id, ShaderStage stage,
-                                                         std::uint32_t slot) const {
-  static_cast<void>(stage);
-
-  KEN_CORE_ASSERT(attachment_id < color_attachments_.size());
-  KEN_CORE_ASSERT(color_attachment_specs_[attachment_id].shader_readable,
-                  "Color attachment was not created as shader-readable");
-
-  glBindTextureUnit(slot, color_attachments_[attachment_id]);
-}
-
-void OpenglFramebuffer::bind_depth_as_texture(ShaderStage stage, std::uint32_t slot) const {
-  static_cast<void>(stage);
-
-  KEN_CORE_ASSERT(depth_attachment_ != 0);
-  KEN_CORE_ASSERT(depth_attachment_spec_.has_value());
-  KEN_CORE_ASSERT(depth_attachment_spec_->shader_readable, "Depth attachment was not created as shader-readable");
-
-  glBindTextureUnit(slot, depth_attachment_);
 }
 
 void OpenglFramebuffer::clear_color_attachment(std::uint32_t attachment_id, std::int32_t value) {
