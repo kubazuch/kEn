@@ -29,9 +29,9 @@ class Renderer {
   static void submit(Shader& shader, const VertexInput& vertex_input, RenderMode mode = RenderMode::Triangles);
   static void submit(Shader& shader, const VertexInput& vertex_input, const Transform& transform,
                      RenderMode mode = RenderMode::Triangles);
-  static void submit_instanced(Shader& shader, const VertexInput& vertex_input, size_t instance_count,
+  static void submit_instanced(Shader& shader, const VertexInput& vertex_input, std::size_t instance_count,
                                RenderMode mode = RenderMode::Triangles);
-  static void submit_tessellated(Shader& shader, const VertexInput& vertex_input, const uint32_t& count,
+  static void submit_tessellated(Shader& shader, const VertexInput& vertex_input, std::size_t count,
                                  const Transform& transform);
 
  private:

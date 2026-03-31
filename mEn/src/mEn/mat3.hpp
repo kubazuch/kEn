@@ -43,10 +43,10 @@ struct mat<3, T> {
 
   /// @brief Returns a reference to column @p i.
   /// @pre @p i < 3
-  [[nodiscard]] constexpr col_t& operator[](length_t i) noexcept;
+  constexpr col_t& operator[](length_t i) noexcept;
   /// @brief Returns a const reference to column @p i.
   /// @pre @p i < 3
-  [[nodiscard]] constexpr const col_t& operator[](length_t i) const noexcept;
+  constexpr const col_t& operator[](length_t i) const noexcept;
 
   // Basic construction and assignment
   constexpr mat() noexcept                      = default;

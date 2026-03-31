@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #include <array>
+#include <cstdint>
 #include <functional>
 #include <string>
 
@@ -24,11 +25,11 @@ namespace kEn {
  */
 struct WindowProperties {
   std::string title;                 /**< Window title bar text. */
-  unsigned int width;                /**< Window width in pixels. */
-  unsigned int height;               /**< Window height in pixels. */
+  std::uint32_t width;               /**< Window width in pixels. */
+  std::uint32_t height;              /**< Window height in pixels. */
   bool opengl_debug_context = false; /**< Request an OpenGL debug context (GLFW_OPENGL_DEBUG_CONTEXT). */
 
-  explicit WindowProperties(std::string title = "kEngine", unsigned int width = 1280, unsigned int height = 720)
+  explicit WindowProperties(std::string title = "kEngine", std::uint32_t width = 1280, std::uint32_t height = 720)
       : title(std::move(title)), width(width), height(height) {}
 };
 
@@ -79,10 +80,10 @@ class Window {
   void poll_events();
 
   /** @brief Current window width in pixels. */
-  [[nodiscard]] unsigned int width() const { return data_.width; }
+  [[nodiscard]] std::uint32_t width() const { return data_.width; }
 
   /** @brief Current window height in pixels. */
-  [[nodiscard]] unsigned int height() const { return data_.height; }
+  [[nodiscard]] std::uint32_t height() const { return data_.height; }
 
   /** @brief Current window dimensions as a Vec2 (width, height). */
   [[nodiscard]] mEn::Vec2 size() const { return {data_.width, data_.height}; }
@@ -125,7 +126,7 @@ class Window {
   /** @brief POD bundle stored as the GLFW window user pointer for use inside callbacks. */
   struct Data {
     std::string title;
-    unsigned int width{}, height{};
+    std::uint32_t width{}, height{};
 
     bool vsync{};
 

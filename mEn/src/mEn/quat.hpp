@@ -36,10 +36,10 @@ struct qua {
 
   /// @brief Returns a reference to the component at index @p i (x=0, y=1, z=2, w=3).
   /// @pre @p i < 4
-  [[nodiscard]] constexpr T& operator[](length_t i) noexcept;
+  constexpr T& operator[](length_t i) noexcept;
   /// @brief Returns a const reference to the component at index @p i (x=0, y=1, z=2, w=3).
   /// @pre @p i < 4
-  [[nodiscard]] constexpr const T& operator[](length_t i) const noexcept;
+  constexpr const T& operator[](length_t i) const noexcept;
 
   // Basic construction and assignment
   constexpr qua() noexcept                      = default;

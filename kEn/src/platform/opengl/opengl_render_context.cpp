@@ -20,8 +20,8 @@ namespace kEn {
 
 namespace {
 
-void gl_message_callback(unsigned /*src*/, unsigned /*type*/, unsigned /*id*/, unsigned lvl, int /*len*/,
-                         const char* msg, const void* /*params*/) {
+void gl_message_callback(GLenum /*src*/, GLenum /*type*/, GLuint /*id*/, GLenum lvl, GLsizei /*len*/, const GLchar* msg,
+                         const void* /*params*/) {
   switch (lvl) {
     case GL_DEBUG_SEVERITY_HIGH:
       KEN_CORE_CRITICAL(msg);
@@ -66,7 +66,7 @@ void OpenglRenderContext::init(bool enable_debug) {
   glFrontFace(GL_CCW);
 }
 
-void OpenglRenderContext::set_viewport(size_t x, size_t y, size_t width, size_t height) {
+void OpenglRenderContext::set_viewport(std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) {
   glViewport(static_cast<GLint>(x), static_cast<GLint>(y), static_cast<GLsizei>(width), static_cast<GLsizei>(height));
 }
 
@@ -127,25 +127,25 @@ void OpenglRenderContext::bind_attachment(std::uint32_t slot, ShaderStage /*stag
   glBindTextureUnit(slot, static_cast<GLuint>(handle));
 }
 
-void OpenglRenderContext::draw(size_t vertex_count, RenderMode mode) {
+void OpenglRenderContext::draw(std::size_t vertex_count, RenderMode mode) {
   glDrawArrays(render_mode::opengl_mode(mode), 0, static_cast<GLsizei>(vertex_count));
 }
 
-void OpenglRenderContext::draw_indexed(size_t index_count, RenderMode mode) {
+void OpenglRenderContext::draw_indexed(std::size_t index_count, RenderMode mode) {
   glDrawElements(render_mode::opengl_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT, nullptr);
 }
 
-void OpenglRenderContext::draw_instanced(size_t vertex_count, size_t instance_count, RenderMode mode) {
+void OpenglRenderContext::draw_instanced(std::size_t vertex_count, std::size_t instance_count, RenderMode mode) {
   glDrawArraysInstanced(render_mode::opengl_mode(mode), 0, static_cast<GLsizei>(vertex_count),
                         static_cast<GLsizei>(instance_count));
 }
 
-void OpenglRenderContext::draw_indexed_instanced(size_t index_count, size_t instance_count, RenderMode mode) {
+void OpenglRenderContext::draw_indexed_instanced(std::size_t index_count, std::size_t instance_count, RenderMode mode) {
   glDrawElementsInstanced(render_mode::opengl_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT, nullptr,
                           static_cast<GLsizei>(instance_count));
 }
 
-void OpenglRenderContext::set_tessellation_patch_vertices(size_t count) {
+void OpenglRenderContext::set_tessellation_patch_vertices(std::size_t count) {
   glPatchParameteri(GL_PATCH_VERTICES, static_cast<GLsizei>(count));
 }
 

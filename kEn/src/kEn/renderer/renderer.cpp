@@ -1,7 +1,6 @@
 #include "renderer.hpp"
 
 #include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -80,7 +79,7 @@ void Renderer::submit(Shader& shader, const VertexInput& vertex_input, const Tra
   }
 }
 
-void Renderer::submit_instanced(Shader& shader, const VertexInput& vertex_input, size_t instance_count,
+void Renderer::submit_instanced(Shader& shader, const VertexInput& vertex_input, std::size_t instance_count,
                                 RenderMode mode) {
   shader.set_uniform("u_V", scene_data_->V_matrix);
   shader.set_uniform("u_P", scene_data_->P_matrix);
@@ -96,7 +95,7 @@ void Renderer::submit_instanced(Shader& shader, const VertexInput& vertex_input,
   }
 }
 
-void Renderer::submit_tessellated(Shader& shader, const VertexInput& vertex_input, const uint32_t& count,
+void Renderer::submit_tessellated(Shader& shader, const VertexInput& vertex_input, std::size_t count,
                                   const Transform& transform) {
   shader.set_uniform("u_VP", scene_data_->VP_matrix);
   shader.set_uniform("u_CameraPos", scene_data_->camera_pos);

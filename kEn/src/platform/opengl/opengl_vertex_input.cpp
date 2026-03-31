@@ -98,9 +98,9 @@ void OpenglVertexInput::set_index_buffer_impl(std::shared_ptr<Buffer> index_buf,
   index_buffer_offset_ = index_offset;
 }
 
-size_t OpenglVertexInput::element_count() const {
+std::size_t OpenglVertexInput::element_count() const {
   if (index_buffer_) {
-    const size_t index_size = index_type_ == IndexType::UInt16 ? sizeof(uint16_t) : sizeof(uint32_t);
+    const std::size_t index_size = index_type_ == IndexType::UInt16 ? sizeof(uint16_t) : sizeof(uint32_t);
     return (index_buffer_->size() - index_buffer_offset_) / index_size;
   }
 
@@ -118,6 +118,6 @@ const std::shared_ptr<Buffer>& OpenglVertexInput::index_buffer() const { return 
 
 IndexType OpenglVertexInput::index_type() const { return index_type_; }
 
-size_t OpenglVertexInput::index_buffer_offset() const { return index_buffer_offset_; }
+std::size_t OpenglVertexInput::index_buffer_offset() const { return index_buffer_offset_; }
 
 }  // namespace kEn

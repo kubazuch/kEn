@@ -79,10 +79,10 @@ void Window::set_glfw_callbacks() {
 
   glfwSetWindowSizeCallback(window_ptr_, [](GLFWwindow* window, int width, int height) {
     Data& win_data  = *static_cast<Data*>(glfwGetWindowUserPointer(window));
-    win_data.width  = static_cast<unsigned int>(width);
-    win_data.height = static_cast<unsigned int>(height);
+    win_data.width  = static_cast<std::uint32_t>(width);
+    win_data.height = static_cast<std::uint32_t>(height);
 
-    WindowResizeEvent event(static_cast<unsigned int>(width), static_cast<unsigned int>(height));
+    WindowResizeEvent event(static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height));
     win_data.handler(event);
   });
 

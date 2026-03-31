@@ -142,7 +142,7 @@ class VertexInput {
   /** @brief Append a vertex stream binding to this input layout. */
   virtual void add_vertex_stream(const VertexStreamBinding& stream) = 0;
   /** @brief Return the total number of vertex elements across all streams. */
-  [[nodiscard]] virtual size_t element_count() const = 0;
+  [[nodiscard]] virtual std::size_t element_count() const = 0;
 
   /**
    * @brief Attach an index buffer.
@@ -162,7 +162,7 @@ class VertexInput {
   /** @brief Return the index element type. */
   [[nodiscard]] virtual IndexType index_type() const = 0;
   /** @brief Return the byte offset into the index buffer where indices start. */
-  [[nodiscard]] virtual size_t index_buffer_offset() const = 0;
+  [[nodiscard]] virtual std::size_t index_buffer_offset() const = 0;
 
  protected:
   /** @brief Platform-specific implementation of set_index_buffer(). */

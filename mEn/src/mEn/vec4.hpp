@@ -46,10 +46,10 @@ struct vec<4, T> {
 
   /// @brief Returns a reference to the component at index @p i.
   /// @pre @p i < 4
-  [[nodiscard]] constexpr T& operator[](length_t i) noexcept;
+  constexpr T& operator[](length_t i) noexcept;
   /// @brief Returns a const reference to the component at index @p i.
   /// @pre @p i < 4
-  [[nodiscard]] constexpr const T& operator[](length_t i) const noexcept;
+  constexpr const T& operator[](length_t i) const noexcept;
 
   // Basic construction and assignment
   constexpr vec() noexcept                      = default;
