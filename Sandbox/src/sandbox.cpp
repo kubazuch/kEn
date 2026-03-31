@@ -209,7 +209,7 @@ class DemoLayer : public kEn::Layer {
         camera_->set_projection(mEn::radians(fov_), static_cast<float>(vp_w_) / static_cast<float>(vp_h_), 0.01F,
                                 200.F);
       }
-      const auto tex_id = static_cast<ImTextureID>(framebuffer_->color_attachment(0));
+      const auto tex_id = framebuffer_->color_attachment(0).imgui_id();
       ImGui::Image(tex_id, size, {0, 1}, {1, 0});
     }
     ImGui::End();
@@ -251,7 +251,7 @@ class DemoLayer : public kEn::Layer {
         const float w = ImGui::GetContentRegionAvail().x;
         const float h =
             w * static_cast<float>(shadow_map_fb_->spec().height) / static_cast<float>(shadow_map_fb_->spec().width);
-        const auto tex_id = static_cast<ImTextureID>(*shadow_map_fb_->depth_attachment());
+        const auto tex_id = shadow_map_fb_->depth_attachment()->imgui_id();
         ImGui::Image(tex_id, {w, h}, {0, 1}, {1, 0});
       }
       if (ImGui::CollapsingHeader("Spot Light (torch)")) {

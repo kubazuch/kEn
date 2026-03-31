@@ -21,8 +21,8 @@ class UniformBuffer;
  * @brief Identifies a single programmable stage of the GPU pipeline.
  *
  * Passed to binding calls (e.g. @ref Shader::bind_uniform_block,
- * @ref RenderContext::bind_texture) so that backends can map the request to the
- * correct OpenGL binding point or Vulkan descriptor set.
+ * @ref RenderContext::bind_texture) as a hint for stage-aware backends (e.g. D3D11).
+ * OpenGL implementations ignore this hint -- all resource bindings are global.
  */
 enum class ShaderStage : std::uint8_t {
   Vertex,         /**< Vertex processing stage. */

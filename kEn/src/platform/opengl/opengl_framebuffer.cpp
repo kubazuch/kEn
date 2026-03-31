@@ -170,9 +170,9 @@ void OpenglFramebuffer::read_pixels(std::uint32_t attachment_id, int x, int y, i
   }
 }
 
-std::uintptr_t OpenglFramebuffer::color_attachment(std::uint32_t attachment_id) const {
+AttachmentHandle OpenglFramebuffer::color_attachment(std::uint32_t attachment_id) const {
   KEN_CORE_ASSERT(attachment_id < color_attachments_.size());
-  return static_cast<std::uintptr_t>(color_attachments_[attachment_id]);
+  return AttachmentHandle{static_cast<std::uintptr_t>(color_attachments_[attachment_id])};
 }
 
 void OpenglFramebuffer::clear_color_attachment(std::uint32_t attachment_id, std::int32_t value) {

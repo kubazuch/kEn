@@ -2,6 +2,7 @@
 
 #include <glad/gl.h>
 
+#include <kEn/renderer/attachment_handle.hpp>
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/render_context.hpp>
@@ -56,7 +57,7 @@ class OpenglRenderContext final : public RenderContext {
   void set_render_target(Framebuffer& framebuffer) override;
   void bind_default_framebuffer() override;
 
-  void bind_attachment(std::uint32_t slot, ShaderStage stage, std::uintptr_t handle) override;
+  void bind_attachment(std::uint32_t slot, ShaderStage stage, AttachmentHandle handle) override;
 
   void draw(std::size_t vertex_count, RenderMode mode) override;
   void draw_indexed(std::size_t index_count, RenderMode mode) override;
@@ -64,12 +65,12 @@ class OpenglRenderContext final : public RenderContext {
   void draw_indexed_instanced(std::size_t index_count, std::size_t instance_count, RenderMode mode) override;
 
   void set_tessellation_patch_vertices(std::size_t count) override;
-  int max_tesselation_level() const override;
+  [[nodiscard]] int max_tessellation_level() const override;
 
   void set_wireframe(bool wireframe) override;
 
  private:
-  mutable int max_tesselation_level_ = -1;
+  mutable int max_tessellation_level_ = -1;
 };
 
 }  // namespace kEn

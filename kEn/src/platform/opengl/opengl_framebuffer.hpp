@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <kEn/core/assert.hpp>
+#include <kEn/renderer/attachment_handle.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 
 /** @file
@@ -46,7 +47,12 @@ class OpenglFramebuffer : public Framebuffer {
     return static_cast<std::uintptr_t>(renderer_id_);
   }
 
-  [[nodiscard]] std::optional<std::uintptr_t> depth_attachment() const noexcept override { return depth_attachment_; }
+  [[nodiscard]] std::optional<AttachmentHandle> depth_attachment() const noexcept override {
+    if (!depth_attachment_) {
+      return std::nullopt;
+    }
+    return AttachmentHandle{static_cast<std::uintptr_t>(*depth_attachment_)};
+  }
 
   [[nodiscard]] const FramebufferSpec& spec() const override { return spec_; }
 
@@ -69,7 +75,7 @@ class OpenglFramebuffer : public Framebuffer {
   void read_pixels(std::uint32_t attachment_id, int x, int y, int width, int height, std::span<std::byte> out_buffer,
                    std::size_t out_row_pitch) const override;
 
-  [[nodiscard]] std::uintptr_t color_attachment(std::uint32_t attachment_id) const override;
+  [[nodiscard]] AttachmentHandle color_attachment(std::uint32_t attachment_id) const override;
 
   void clear_color_attachment(std::uint32_t attachment_id, std::int32_t value) override;
   void clear_color_attachment(std::uint32_t attachment_id, std::uint32_t value) override;

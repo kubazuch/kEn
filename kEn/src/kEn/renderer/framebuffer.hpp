@@ -7,6 +7,7 @@
 #include <mEn/vec4.hpp>
 
 #include <kEn/core/core.hpp>
+#include <kEn/renderer/attachment_handle.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture_format.hpp>
 
@@ -112,8 +113,8 @@ class Framebuffer {
   /** @brief Return the platform-native framebuffer handle. */
   [[nodiscard]] virtual std::uintptr_t native_handle() const noexcept = 0;
 
-  /** @brief Return the platform-native handle for the depth attachment texture (0 if absent). */
-  [[nodiscard]] virtual std::optional<std::uintptr_t> depth_attachment() const noexcept = 0;
+  /** @brief Return the handle for the depth attachment texture, or @c std::nullopt if absent. */
+  [[nodiscard]] virtual std::optional<AttachmentHandle> depth_attachment() const noexcept = 0;
 
   /**
    * @brief Resize the framebuffer and recreate its attachments.
@@ -196,14 +197,13 @@ class Framebuffer {
   }
 
   /**
-   * @brief Return a platform-native handle for a color attachment texture.
+   * @brief Return a handle for a color attachment texture.
    *
-   * The value is the underlying GPU texture identifier cast to @c std::uintptr_t.
-   * Primarily used to hand the texture to external systems such as ImGui's image widgets.
+   * Use @ref AttachmentHandle::imgui_id() to pass the result to ImGui::Image(), or
+   * pass it directly to @ref RenderContext::bind_attachment to sample it in a shader.
    * @param attachment_id  Zero-based color attachment index.
-   * @return The native texture handle (e.g. an OpenGL texture name).
    */
-  [[nodiscard]] virtual std::uintptr_t color_attachment(std::uint32_t attachment_id) const = 0;
+  [[nodiscard]] virtual AttachmentHandle color_attachment(std::uint32_t attachment_id) const = 0;
 
   /**
    * @brief Clear a color attachment to a uniform signed integer value.

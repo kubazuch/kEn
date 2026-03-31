@@ -9,6 +9,7 @@
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
+#include <kEn/renderer/attachment_handle.hpp>
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/render_context.hpp>
@@ -33,12 +34,12 @@ void gl_message_callback(GLenum /*src*/, GLenum /*type*/, GLuint /*id*/, GLenum 
       KEN_CORE_WARN(msg);
       return;
     case GL_DEBUG_SEVERITY_NOTIFICATION:
-    default:
       KEN_CORE_TRACE(msg);
       return;
+    default:
+      KEN_CORE_ASSERT(false, "Unknown message severity!");
+      return;
   }
-
-  KEN_CORE_ASSERT(false, "Unknown message severity!");
 }
 
 }  // namespace
@@ -118,13 +119,12 @@ void OpenglRenderContext::bind_storage_buffer(std::uint32_t binding, ShaderStage
 
 void OpenglRenderContext::set_render_target(Framebuffer& framebuffer) {
   glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(framebuffer.native_handle()));
-  glViewport(0, 0, static_cast<GLsizei>(framebuffer.spec().width), static_cast<GLsizei>(framebuffer.spec().height));
 }
 
 void OpenglRenderContext::bind_default_framebuffer() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
-void OpenglRenderContext::bind_attachment(std::uint32_t slot, ShaderStage /*stage*/, std::uintptr_t handle) {
-  glBindTextureUnit(slot, static_cast<GLuint>(handle));
+void OpenglRenderContext::bind_attachment(std::uint32_t slot, ShaderStage /*stage*/, AttachmentHandle handle) {
+  glBindTextureUnit(slot, static_cast<GLuint>(handle.value));
 }
 
 void OpenglRenderContext::draw(std::size_t vertex_count, RenderMode mode) {
@@ -149,13 +149,13 @@ void OpenglRenderContext::set_tessellation_patch_vertices(std::size_t count) {
   glPatchParameteri(GL_PATCH_VERTICES, static_cast<GLsizei>(count));
 }
 
-int OpenglRenderContext::max_tesselation_level() const {
-  if (max_tesselation_level_ > 0) {
-    return max_tesselation_level_;
+int OpenglRenderContext::max_tessellation_level() const {
+  if (max_tessellation_level_ >= 0) {
+    return max_tessellation_level_;
   }
 
-  glGetIntegerv(GL_MAX_TESS_GEN_LEVEL, &max_tesselation_level_);
-  return max_tesselation_level_;
+  glGetIntegerv(GL_MAX_TESS_GEN_LEVEL, &max_tessellation_level_);
+  return max_tessellation_level_;
 }
 
 void OpenglRenderContext::set_wireframe(bool wireframe) {

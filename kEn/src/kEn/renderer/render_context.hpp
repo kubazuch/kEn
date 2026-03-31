@@ -5,6 +5,7 @@
 
 #include <mEn/vec4.hpp>
 
+#include <kEn/renderer/attachment_handle.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/vertex_input.hpp>
 
@@ -56,6 +57,9 @@ class RenderContext {
   virtual void set_shader(const Shader& shader)                  = 0;
   virtual void set_vertex_input(const VertexInput& vertex_input) = 0;
 
+  // NOTE: The `stage` parameter in the four bind_* methods below is a hint for stage-aware backends (e.g. D3D11,
+  // where textures and buffers are bound per-stage). OpenGL implementations ignore it -- all resource bindings
+  // are global and not stage-scoped.
   virtual void bind_texture(std::uint32_t slot, ShaderStage stage, const Texture& texture) = 0;
 
   virtual void bind_uniform_buffer(std::uint32_t binding, ShaderStage stage, const UniformBuffer& ubo)        = 0;
@@ -64,7 +68,7 @@ class RenderContext {
   virtual void set_render_target(Framebuffer& framebuffer) = 0;
   virtual void bind_default_framebuffer()                  = 0;
 
-  virtual void bind_attachment(std::uint32_t slot, ShaderStage stage, std::uintptr_t handle) = 0;
+  virtual void bind_attachment(std::uint32_t slot, ShaderStage stage, AttachmentHandle handle) = 0;
 
   virtual void draw(std::size_t vertex_count, RenderMode mode)                                              = 0;
   virtual void draw_indexed(std::size_t index_count, RenderMode mode)                                       = 0;
@@ -72,7 +76,7 @@ class RenderContext {
   virtual void draw_indexed_instanced(std::size_t index_count, std::size_t instance_count, RenderMode mode) = 0;
 
   virtual void set_tessellation_patch_vertices(std::size_t count) = 0;
-  virtual int max_tesselation_level() const                       = 0;
+  [[nodiscard]] virtual int max_tessellation_level() const        = 0;
 
   virtual void set_wireframe(bool wireframe) = 0;
 };
