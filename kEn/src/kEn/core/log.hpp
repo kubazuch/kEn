@@ -78,12 +78,12 @@ class Log {
 
 /**
  * @def KEN_CORE_DEBUG
- * @brief Engine debug log — compiled out in non-debug builds.
+ * @brief Engine debug log -- compiled out in non-debug builds.
  * @ingroup core_log
  */
 /**
  * @def KEN_DEBUG
- * @brief Client debug log — compiled out in non-debug builds.
+ * @brief Client debug log -- compiled out in non-debug builds.
  * @ingroup client_log
  */
 #ifdef KEN_DEBUG_BUILD

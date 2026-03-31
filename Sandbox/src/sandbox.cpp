@@ -5,6 +5,8 @@
 #include <memory>
 
 #include <mEn/features/type_ptr.hpp>
+#include <mEn/functions/matrix_projection.hpp>
+#include <mEn/functions/matrix_transform.hpp>
 #include <mEn/functions/trigonometric.hpp>
 #include <mEn/vec3.hpp>
 
@@ -93,7 +95,7 @@ class DemoLayer : public kEn::Layer {
     auto floor_model = kEn::Model::load("cube/cube.obj");
     floor_obj_.add_component(std::make_shared<kEn::ModelComponent>(floor_model));
 
-    // --- Register lights (once — SceneData never clears them) ---
+    // --- Register lights (once -- SceneData never clears them) ---
     kEn::Renderer::add_light(point_light_);
     kEn::Renderer::add_light(dir_light_);
     kEn::Renderer::add_light(spot_light_);
@@ -102,13 +104,23 @@ class DemoLayer : public kEn::Layer {
     // --- Shader ---
     phong_shader_ = device_.create_shader("phong");
 
+    // --- Shadow map (depth-only, 2048x2048) ---
+    kEn::FramebufferSpec shadow_spec;
+    shadow_spec.width                        = kShadowMapSize;
+    shadow_spec.height                       = kShadowMapSize;
+    shadow_spec.attachments.depth_attachment = kEn::TextureFormat::Depth32F;
+
+    shadow_map_fb_ = device_.create_framebuffer(shadow_spec);
+    shadow_shader_ = device_.create_shader("shadow");
+
     // --- Framebuffer ---
     kEn::FramebufferSpec fb_spec;
     fb_spec.width       = vp_w_;
     fb_spec.height      = vp_h_;
     fb_spec.attachments = {.color_attachments = {kEn::TextureFormat::RGBA8},
                            .depth_attachment  = kEn::TextureFormat::Depth24Stencil8};
-    framebuffer_        = device_.create_framebuffer(fb_spec);
+
+    framebuffer_ = device_.create_framebuffer(fb_spec);
 
     KEN_INFO("DemoLayer attached");
   }
@@ -124,13 +136,39 @@ class DemoLayer : public kEn::Layer {
   }
 
   void on_render(double alpha) override {
+    // --- Compute light-space matrix from directional light transform ---
+    constexpr mEn::Mat4 kLightProj = mEn::ortho(-12.F, 12.F, -12.F, 12.F, 0.1F, 30.F);
+
+    const mEn::Vec3 light_pos  = dir_light_obj_.transform().world_pos();
+    const mEn::Mat4 light_view = mEn::lookAt(light_pos, mEn::Vec3{0.F}, mEn::Vec3{0.F, 1.F, 0.F});
+
+    // --- Shadow pass ---
+    device_.context().set_render_target(*shadow_map_fb_);
+    device_.context().set_viewport(0, 0, kShadowMapSize, kShadowMapSize);
+    shadow_map_fb_->clear_depth();
+    device_.context().depth_testing(true);
+    device_.context().set_cull_mode(kEn::CullMode::Front);
+    kEn::Renderer::begin_scene(light_pos, light_view, kLightProj);
+    floor_obj_.render_all(*shadow_shader_, alpha);
+    model_obj_.render_all(*shadow_shader_, alpha);
+    kEn::Renderer::end_scene();
+    device_.context().set_cull_mode(kEn::CullMode::Back);
+
+    // --- Main pass ---
     device_.context().set_render_target(*framebuffer_);
+    device_.context().set_viewport(0, 0, vp_w_, vp_h_);
     device_.context().set_clear_color({0.08F, 0.08F, 0.12F, 1.F});
     device_.context().clear();
     device_.context().depth_testing(true);
 
     kEn::Renderer::begin_scene(*camera_);
     kEn::Renderer::prepare(*phong_shader_);
+
+    device_.context().bind_attachment(kShadowMapSlot, kEn::ShaderStage::Fragment, shadow_map_fb_->depth_attachment());
+    phong_shader_->set_uniform("u_ShadowMap", static_cast<int>(kShadowMapSlot));
+    phong_shader_->set_uniform("u_LightVP", kLightProj * light_view);
+    phong_shader_->set_uniform("u_ShadowBias", shadow_bias_);
+    phong_shader_->set_uniform("u_ShadowsEnabled", shadows_enabled_);
 
     floor_obj_.render_all(*phong_shader_, alpha);
     model_obj_.render_all(*phong_shader_, alpha);
@@ -193,6 +231,10 @@ class DemoLayer : public kEn::Layer {
       }
       if (ImGui::ColorEdit3("Ambient", mEn::value_ptr(ambient_color_))) {
         kEn::Renderer::set_ambient(ambient_color_);
+      }
+      ImGui::Checkbox("Shadows", &shadows_enabled_);
+      if (shadows_enabled_) {
+        ImGui::SliderFloat("Shadow Bias", &shadow_bias_, 0.0001F, 0.05F, "%.4f");
       }
     }
     ImGui::End();
@@ -265,7 +307,14 @@ class DemoLayer : public kEn::Layer {
   std::shared_ptr<kEn::SpotLight> spot_light_;
 
   std::shared_ptr<kEn::Shader> phong_shader_;
+  std::shared_ptr<kEn::Shader> shadow_shader_;
   std::shared_ptr<kEn::Framebuffer> framebuffer_;
+  std::shared_ptr<kEn::Framebuffer> shadow_map_fb_;
+  float shadow_bias_    = 0.005F;
+  bool shadows_enabled_ = true;
+
+  static constexpr uint32_t kShadowMapSize = 2048;
+  static constexpr uint32_t kShadowMapSlot = 15;
 
   bool viewport_focused_   = false;
   bool viewport_hovered_   = false;
