@@ -8,6 +8,7 @@
 #include <span>
 
 #include <kEn/core/core.hpp>
+#include <kEn/renderer/render_context.hpp>
 #include <kEn/renderer/texture_format.hpp>
 #include <kEn/util/enum_map.hpp>
 
@@ -41,21 +42,6 @@ struct SamplerDesc {
     Repeat,         /**< @brief Repeat the texture. */
     Clamp,          /**< @brief Clamp to the edge texel. */
     MirroredRepeat, /**< @brief Mirror the texture on each repeat. */
-  };
-  /**
-   * @brief Depth comparison function used when @ref compare_enabled is true.
-   *
-   * Typically used for shadow-map percentage-closer filtering (PCF).
-   */
-  enum class CompareOp : std::uint8_t {
-    Never,        /**< @brief Always fails. */
-    Less,         /**< @brief Passes if reference < texel depth. */
-    Equal,        /**< @brief Passes if reference == texel depth. */
-    LessEqual,    /**< @brief Passes if reference <= texel depth. */
-    Greater,      /**< @brief Passes if reference > texel depth. */
-    NotEqual,     /**< @brief Passes if reference != texel depth. */
-    GreaterEqual, /**< @brief Passes if reference >= texel depth. */
-    Always,       /**< @brief Always passes. */
   };
 
   Filter min_filter    = Filter::Linear;  /**< @brief Filter applied when the texture is minified. */

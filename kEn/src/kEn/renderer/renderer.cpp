@@ -58,7 +58,7 @@ void Renderer::submit(Shader& shader, const VertexInput& vertex_input, RenderMod
   auto& ctx = device().context();
   ctx.set_shader(shader);
   ctx.set_vertex_input(vertex_input);
-  ctx.draw_indexed(vertex_input.element_count(), mode);
+  ctx.draw_indexed(vertex_input.element_count(), 0, 0, mode);
 }
 
 void Renderer::submit(Shader& shader, const VertexInput& vertex_input, const Transform& transform, RenderMode mode) {
@@ -73,9 +73,9 @@ void Renderer::submit(Shader& shader, const VertexInput& vertex_input, const Tra
   ctx.set_shader(shader);
   ctx.set_vertex_input(vertex_input);
   if (vertex_input.index_buffer()) {
-    ctx.draw_indexed(vertex_input.element_count(), mode);
+    ctx.draw_indexed(vertex_input.element_count(), 0, 0, mode);
   } else {
-    ctx.draw(vertex_input.element_count(), mode);
+    ctx.draw(vertex_input.element_count(), 0, mode);
   }
 }
 
@@ -89,9 +89,9 @@ void Renderer::submit_instanced(Shader& shader, const VertexInput& vertex_input,
   ctx.set_shader(shader);
   ctx.set_vertex_input(vertex_input);
   if (vertex_input.index_buffer()) {
-    ctx.draw_indexed_instanced(vertex_input.element_count(), instance_count, mode);
+    ctx.draw_indexed_instanced(vertex_input.element_count(), instance_count, 0, 0, 0, mode);
   } else {
-    ctx.draw_instanced(vertex_input.element_count(), instance_count, mode);
+    ctx.draw_instanced(vertex_input.element_count(), instance_count, 0, 0, mode);
   }
 }
 
@@ -105,7 +105,7 @@ void Renderer::submit_tessellated(Shader& shader, const VertexInput& vertex_inpu
   auto& ctx = device().context();
   ctx.set_shader(shader);
   ctx.set_vertex_input(vertex_input);
-  ctx.draw(count, render_mode::Patches);
+  ctx.draw(count, 0, render_mode::Patches);
 }
 
 }  // namespace kEn

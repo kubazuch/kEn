@@ -124,6 +124,12 @@ class DemoLayer : public kEn::Layer {
 
     framebuffer_ = device_.create_framebuffer(fb_spec);
 
+    // --- Pipeline state objects ---
+    depth_state_       = device_.create_depth_state();
+    raster_front_cull_ = device_.create_raster_state({.cull_mode = kEn::CullMode::Front});
+    raster_back_cull_  = device_.create_raster_state();
+    raster_wireframe_  = device_.create_raster_state({.fill_mode = kEn::FillMode::Wireframe});
+
     KEN_INFO("DemoLayer attached");
   }
 
@@ -148,20 +154,20 @@ class DemoLayer : public kEn::Layer {
     device_.context().set_render_target(*shadow_map_fb_);
     device_.context().set_viewport(0, 0, kShadowMapSize, kShadowMapSize);
     shadow_map_fb_->clear_depth();
-    device_.context().depth_testing(true);
-    device_.context().set_cull_mode(kEn::CullMode::Front);
+    device_.context().set_depth_state(*depth_state_);
+    device_.context().set_raster_state(*raster_front_cull_);
     kEn::Renderer::begin_scene(light_pos, light_view, kLightProj);
     floor_obj_.render_all(*shadow_shader_, alpha);
     model_obj_.render_all(*shadow_shader_, alpha);
     kEn::Renderer::end_scene();
-    device_.context().set_cull_mode(kEn::CullMode::Back);
 
     // --- Main pass ---
     device_.context().set_render_target(*framebuffer_);
     device_.context().set_viewport(0, 0, vp_w_, vp_h_);
     device_.context().set_clear_color({0.08F, 0.08F, 0.12F, 1.F});
     device_.context().clear();
-    device_.context().depth_testing(true);
+    device_.context().set_depth_state(*depth_state_);
+    device_.context().set_raster_state(*raster_back_cull_);
 
     kEn::Renderer::begin_scene(*camera_);
     kEn::Renderer::prepare(*phong_shader_);
@@ -229,7 +235,7 @@ class DemoLayer : public kEn::Layer {
 
       ImGui::SeparatorText("Rendering");
       if (ImGui::Checkbox("Wireframe (F1)", &wireframe_)) {
-        device_.context().set_wireframe(wireframe_);
+        device_.context().set_raster_state(wireframe_ ? *raster_wireframe_ : *raster_back_cull_);
       }
       if (ImGui::ColorEdit3("Ambient", mEn::value_ptr(ambient_color_))) {
         kEn::Renderer::set_ambient(ambient_color_);
@@ -279,7 +285,7 @@ class DemoLayer : public kEn::Layer {
   bool on_key_pressed(kEn::KeyPressedEvent& event) {
     if (event.key() == kEn::key::f1) {
       wireframe_ = !wireframe_;
-      device_.context().set_wireframe(wireframe_);
+      device_.context().set_raster_state(wireframe_ ? *raster_wireframe_ : *raster_back_cull_);
     }
     return false;
   }
@@ -317,6 +323,11 @@ class DemoLayer : public kEn::Layer {
   std::shared_ptr<kEn::Shader> shadow_shader_;
   std::shared_ptr<kEn::Framebuffer> framebuffer_;
   std::shared_ptr<kEn::Framebuffer> shadow_map_fb_;
+
+  std::shared_ptr<kEn::DepthState> depth_state_;
+  std::shared_ptr<kEn::RasterState> raster_front_cull_;
+  std::shared_ptr<kEn::RasterState> raster_back_cull_;
+  std::shared_ptr<kEn::RasterState> raster_wireframe_;
   float shadow_bias_    = 0.005F;
   bool shadows_enabled_ = true;
 

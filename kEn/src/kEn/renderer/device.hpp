@@ -9,6 +9,7 @@
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/render_context.hpp>
+#include <kEn/renderer/render_state.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
 #include <kEn/renderer/vertex_input.hpp>
@@ -151,6 +152,33 @@ class Device {
    * @param spec  Dimensions, sample count, and attachment descriptions.
    */
   [[nodiscard]] virtual std::shared_ptr<Framebuffer> create_framebuffer(const FramebufferSpec& spec) = 0;
+
+  /**
+   * @brief Compile a depth/stencil state object from a descriptor.
+   * @param desc  Pipeline state parameters.
+   */
+  [[nodiscard]] virtual std::shared_ptr<DepthState> create_depth_state(const DepthStateDesc& desc) = 0;
+
+  /** @brief Convenience overload using default @ref DepthStateDesc. */
+  [[nodiscard]] std::shared_ptr<DepthState> create_depth_state() { return create_depth_state({}); }
+
+  /**
+   * @brief Compile a blend state object from a descriptor.
+   * @param desc  Pipeline state parameters.
+   */
+  [[nodiscard]] virtual std::shared_ptr<BlendState> create_blend_state(const BlendStateDesc& desc) = 0;
+
+  /** @brief Convenience overload using default @ref BlendStateDesc. */
+  [[nodiscard]] std::shared_ptr<BlendState> create_blend_state() { return create_blend_state({}); }
+
+  /**
+   * @brief Compile a rasterizer state object from a descriptor.
+   * @param desc  Pipeline state parameters.
+   */
+  [[nodiscard]] virtual std::shared_ptr<RasterState> create_raster_state(const RasterStateDesc& desc) = 0;
+
+  /** @brief Convenience overload using default @ref RasterStateDesc. */
+  [[nodiscard]] std::shared_ptr<RasterState> create_raster_state() { return create_raster_state({}); }
 
   /** @brief Create the renderer-specific Dear ImGui backend for this device. */
   [[nodiscard]] virtual std::unique_ptr<ImguiBackend> create_imgui_backend() = 0;
