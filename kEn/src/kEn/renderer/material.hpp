@@ -27,6 +27,8 @@ namespace texture_type {
 /** @brief C++20 convenience: brings enumerators into `kEn::texture_type` namespace. */
 using enum TextureType;
 
+namespace detail {
+
 inline constexpr util::EnumMap kNames{{
     std::pair{AmbientOcclusion, "ambient_occlusion"},
     std::pair{Diffuse, "diffuse"},
@@ -35,12 +37,14 @@ inline constexpr util::EnumMap kNames{{
     std::pair{Specular, "specular"},
 }};
 
+}  // namespace detail
+
 /**
  * @brief Get a stable, human-readable name for a texture type.
  * @param type Texture type enum value.
  * @return A string view describing the type (e.g. @c "diffuse").
  */
-[[nodiscard]] constexpr std::string_view name_of(TextureType type) noexcept { return kNames[type]; }
+[[nodiscard]] constexpr std::string_view name_of(TextureType type) noexcept { return detail::kNames[type]; }
 
 }  // namespace texture_type
 

@@ -7,10 +7,6 @@
 #include <kEn/renderer/texture_format.hpp>
 #include <kEn/util/enum_map.hpp>
 
-/** @file
- *  @ingroup ken
- */
-
 namespace kEn {
 
 /**
@@ -31,6 +27,8 @@ struct GlTextureFormatInfo {
  * @ref opengl_describe(), which performs an O(1) @ref util::EnumMap lookup.
  */
 namespace texture_format {
+
+namespace detail {
 
 using GF = std::pair<TextureFormat, GlTextureFormatInfo>;
 
@@ -77,13 +75,15 @@ inline constexpr util::EnumMap kGlTextureFormatInfo{{
         .pixel_type      = GL_FLOAT_32_UNSIGNED_INT_24_8_REV}},
 }};
 
+}  // namespace detail
+
 /**
  * @brief Return the full @ref GlTextureFormatInfo for @p fmt.
  * @param fmt Format to query.
  * @return A copy of the corresponding @ref GlTextureFormatInfo entry.
  */
 [[nodiscard]] constexpr GlTextureFormatInfo opengl_describe(TextureFormat fmt) noexcept {
-  return kGlTextureFormatInfo[fmt];
+  return detail::kGlTextureFormatInfo[fmt];
 }
 
 /**

@@ -12,6 +12,7 @@
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
+#include <kEn/renderer/attachment_handle.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/texture_format.hpp>
 
@@ -170,9 +171,9 @@ void OpenglFramebuffer::read_pixels(std::uint32_t attachment_id, int x, int y, i
   }
 }
 
-std::uintptr_t OpenglFramebuffer::color_attachment(std::uint32_t attachment_id) const {
+AttachmentHandle OpenglFramebuffer::color_attachment(std::uint32_t attachment_id) const {
   KEN_CORE_ASSERT(attachment_id < color_attachments_.size());
-  return static_cast<std::uintptr_t>(color_attachments_[attachment_id]);
+  return AttachmentHandle{static_cast<std::uintptr_t>(color_attachments_[attachment_id])};
 }
 
 void OpenglFramebuffer::clear_color_attachment(std::uint32_t attachment_id, std::int32_t value) {

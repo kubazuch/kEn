@@ -33,6 +33,10 @@ class OpenglDevice final : public Device {
   std::unique_ptr<VertexInput> create_vertex_input() override;
   std::shared_ptr<Framebuffer> create_framebuffer(const FramebufferSpec&) override;
 
+  std::shared_ptr<DepthState> create_depth_state(const DepthStateDesc& desc) override;
+  std::shared_ptr<BlendState> create_blend_state(const BlendStateDesc& desc) override;
+  std::shared_ptr<RasterState> create_raster_state(const RasterStateDesc& desc) override;
+
   std::unique_ptr<ImguiBackend> create_imgui_backend() override;
 
  private:

@@ -12,6 +12,7 @@
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/device.hpp>
 #include <kEn/renderer/framebuffer.hpp>
+#include <kEn/renderer/render_state.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
 #include <kEn/renderer/texture_format.hpp>
@@ -21,6 +22,7 @@
 #include "opengl_framebuffer.hpp"
 #include "opengl_imgui_backend.hpp"
 #include "opengl_shader.hpp"
+#include "opengl_state.hpp"
 #include "opengl_texture.hpp"
 #include "opengl_vertex_input.hpp"
 
@@ -85,6 +87,18 @@ std::unique_ptr<VertexInput> OpenglDevice::create_vertex_input() { return std::m
 
 std::shared_ptr<Framebuffer> OpenglDevice::create_framebuffer(const FramebufferSpec& spec) {
   return std::make_shared<OpenglFramebuffer>(spec);
+}
+
+std::shared_ptr<DepthState> OpenglDevice::create_depth_state(const DepthStateDesc& desc) {
+  return std::make_shared<OpenglDepthState>(desc);
+}
+
+std::shared_ptr<BlendState> OpenglDevice::create_blend_state(const BlendStateDesc& desc) {
+  return std::make_shared<OpenglBlendState>(desc);
+}
+
+std::shared_ptr<RasterState> OpenglDevice::create_raster_state(const RasterStateDesc& desc) {
+  return std::make_shared<OpenglRasterState>(desc);
 }
 
 std::unique_ptr<ImguiBackend> OpenglDevice::create_imgui_backend() { return std::make_unique<OpenglImguiBackend>(); }

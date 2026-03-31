@@ -110,6 +110,8 @@ namespace texture_format {
 
 using enum TextureFormat;
 
+namespace detail {
+
 using TF = std::pair<TextureFormat, TextureFormatInfo>;
 
 /** @brief Compile-time table mapping every @ref TextureFormat to its @ref TextureFormatInfo. */
@@ -226,12 +228,16 @@ inline constexpr util::EnumMap kTextureFormatInfo{{
         .bytes_per_block = 8}},
 }};
 
+}  // namespace detail
+
 /**
  * @brief Return the full @ref TextureFormatInfo for @p fmt.
  * @param fmt Format to query.
  * @return A copy of the corresponding @ref TextureFormatInfo entry.
  */
-[[nodiscard]] constexpr TextureFormatInfo describe(TextureFormat fmt) noexcept { return kTextureFormatInfo[fmt]; }
+[[nodiscard]] constexpr TextureFormatInfo describe(TextureFormat fmt) noexcept {
+  return detail::kTextureFormatInfo[fmt];
+}
 
 /**
  * @brief Return the @ref FormatClass of @p fmt.

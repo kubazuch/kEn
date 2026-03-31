@@ -14,6 +14,7 @@
 #include <kEn/renderer/texture.hpp>
 #include <kEn/renderer/texture_format.hpp>
 
+#include "opengl_state.hpp"
 #include "opengl_texture_format.hpp"
 
 namespace kEn {
@@ -47,28 +48,6 @@ namespace {
     case SamplerDesc::Wrap::Repeat:
     default:
       return GL_REPEAT;
-  }
-}
-
-[[nodiscard]] GLint opengl_compare_op(SamplerDesc::CompareOp op) noexcept {
-  switch (op) {
-    case SamplerDesc::CompareOp::Never:
-      return GL_NEVER;
-    case SamplerDesc::CompareOp::Less:
-      return GL_LESS;
-    case SamplerDesc::CompareOp::Equal:
-      return GL_EQUAL;
-    case SamplerDesc::CompareOp::LessEqual:
-      return GL_LEQUAL;
-    case SamplerDesc::CompareOp::Greater:
-      return GL_GREATER;
-    case SamplerDesc::CompareOp::NotEqual:
-      return GL_NOTEQUAL;
-    case SamplerDesc::CompareOp::GreaterEqual:
-      return GL_GEQUAL;
-    case SamplerDesc::CompareOp::Always:
-    default:
-      return GL_ALWAYS;
   }
 }
 
@@ -183,7 +162,8 @@ void OpenglTexture2D::apply_sampler_state() {
 
   glTextureParameteri(renderer_id_, GL_TEXTURE_COMPARE_MODE,
                       sampler_desc_.compare_enabled ? GL_COMPARE_REF_TO_TEXTURE : GL_NONE);
-  glTextureParameteri(renderer_id_, GL_TEXTURE_COMPARE_FUNC, opengl_compare_op(sampler_desc_.compare_op));
+  glTextureParameteri(renderer_id_, GL_TEXTURE_COMPARE_FUNC,
+                      static_cast<GLint>(render_state::opengl_compare_op(sampler_desc_.compare_op)));
 }
 
 }  // namespace kEn
