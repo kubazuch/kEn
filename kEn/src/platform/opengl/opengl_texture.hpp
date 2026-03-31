@@ -7,10 +7,6 @@
 
 #include <kEn/renderer/texture.hpp>
 
-/** @file
- *  @ingroup ken
- */
-
 namespace kEn {
 
 /**
@@ -55,9 +51,7 @@ class OpenglTexture2D : public Texture {
   [[nodiscard]] const TextureDesc& desc() const override { return desc_; }
   void set_data(std::span<const std::byte> data, std::uint32_t mip_level, std::uint32_t layer) override;
 
-  /** @brief Returns the sampler descriptor this texture was created with. */
   [[nodiscard]] const SamplerDesc& sampler_desc() const noexcept { return sampler_desc_; }
-  /** @brief Returns the raw OpenGL texture name. */
   [[nodiscard]] GLuint renderer_id() const noexcept { return renderer_id_; }
   /** @brief Returns the OpenGL texture target (always @c GL_TEXTURE_2D). */
   [[nodiscard]] GLenum target() const noexcept { return target_; }
@@ -69,9 +63,7 @@ class OpenglTexture2D : public Texture {
   [[nodiscard]] ImTextureID imgui_id() const noexcept override { return static_cast<ImTextureID>(renderer_id_); }
 
  private:
-  /** @brief Creates the GL texture object and allocates immutable storage via @c glTextureStorage2D. */
   void allocate_storage();
-  /** @brief Applies filtering, wrap, and comparison state from @ref sampler_desc_ to the GL texture object. */
   void apply_sampler_state();
 
   TextureDesc desc_;

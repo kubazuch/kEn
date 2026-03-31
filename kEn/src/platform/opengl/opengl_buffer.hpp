@@ -9,13 +9,8 @@
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/util/enum_map.hpp>
 
-/** @file
- *  @ingroup ken
- */
-
 namespace kEn {
 
-/** @brief Maps BufferTarget to the corresponding OpenGL buffer binding target. */
 namespace buffer_target {
 
 namespace detail {
@@ -34,7 +29,6 @@ inline constexpr auto kOpenglTypes = util::make_enum_map<GLenum>({
 
 }  // namespace buffer_target
 
-/** @brief Maps BufferUsage to the corresponding OpenGL usage hint. */
 namespace buffer_usage {
 
 namespace detail {
@@ -53,7 +47,6 @@ inline constexpr auto kOpenglUsages = util::make_enum_map<GLenum>({
 
 }  // namespace buffer_usage
 
-/** @brief Maps MapMode to the corresponding OpenGL mapping access bitfield. */
 namespace map_mode {
 
 namespace detail {
@@ -139,7 +132,6 @@ class OpenglMutableBuffer final : public MutableBuffer {
   std::shared_ptr<OpenglBuffer> buffer_;
 };
 
-/** @brief OpenGL implementation of UniformBuffer. */
 class OpenglUniformBuffer final : public UniformBuffer {
  public:
   explicit OpenglUniformBuffer(std::shared_ptr<OpenglBuffer> buffer);
@@ -152,7 +144,6 @@ class OpenglUniformBuffer final : public UniformBuffer {
   std::shared_ptr<OpenglBuffer> buffer_;
 };
 
-/** @brief OpenGL implementation of ShaderStorageBuffer. */
 class OpenglShaderStorageBuffer final : public ShaderStorageBuffer {
  public:
   explicit OpenglShaderStorageBuffer(std::shared_ptr<OpenglBuffer> buffer);

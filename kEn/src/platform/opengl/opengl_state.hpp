@@ -76,7 +76,7 @@ inline constexpr auto kOpenglBlendOps = util::make_enum_map<GLenum>({
 // Concrete state objects
 // ---------------------------------------------------------------------------
 
-/** @brief OpenGL concrete depth/stencil state object.  Stores the descriptor and applies it on bind. */
+/** @brief OpenGL concrete depth/stencil state object. */
 class OpenglDepthState final : public DepthState {
  public:
   explicit OpenglDepthState(const DepthStateDesc& desc) : desc_(desc) {}
@@ -86,7 +86,7 @@ class OpenglDepthState final : public DepthState {
   DepthStateDesc desc_;
 };
 
-/** @brief OpenGL concrete blend state object.  Stores the descriptor and applies it on bind. */
+/** @brief OpenGL concrete blend state object. */
 class OpenglBlendState final : public BlendState {
  public:
   explicit OpenglBlendState(const BlendStateDesc& desc) : desc_(desc) {}
@@ -96,7 +96,7 @@ class OpenglBlendState final : public BlendState {
   BlendStateDesc desc_;
 };
 
-/** @brief OpenGL concrete rasterizer state object.  Stores the descriptor and applies it on bind. */
+/** @brief OpenGL concrete rasterizer state object. */
 class OpenglRasterState final : public RasterState {
  public:
   explicit OpenglRasterState(const RasterStateDesc& desc) : desc_(desc) {}

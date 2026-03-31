@@ -6,10 +6,6 @@
 
 #include <kEn/renderer/shader_data_type.hpp>
 
-/** @file
- *  @ingroup ken
- */
-
 namespace kEn {
 
 /**

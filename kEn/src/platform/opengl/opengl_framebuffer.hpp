@@ -10,10 +10,6 @@
 #include <kEn/renderer/attachment_handle.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 
-/** @file
- *  @ingroup ken
- */
-
 namespace kEn {
 
 /**
@@ -29,16 +25,7 @@ namespace kEn {
  */
 class OpenglFramebuffer : public Framebuffer {
  public:
-  /**
-   * @brief Construct and allocate GPU resources for the given @p spec.
-   *
-   * Calls @ref invalidate() internally to create the FBO and all attachment
-   * textures.
-   * @param spec  Complete framebuffer specification.
-   */
   explicit OpenglFramebuffer(FramebufferSpec spec);
-
-  /** @brief Destroy the FBO and all attachment textures. */
   ~OpenglFramebuffer() override;
 
   void resize(std::uint32_t width, std::uint32_t height) override;

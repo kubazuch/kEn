@@ -7,10 +7,6 @@
 #include <kEn/renderer/texture_format.hpp>
 #include <kEn/util/enum_map.hpp>
 
-/** @file
- *  @ingroup ken
- */
-
 namespace kEn {
 
 /**

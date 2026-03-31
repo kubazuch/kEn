@@ -13,10 +13,6 @@
 #include <kEn/renderer/shader.hpp>
 #include <kEn/util/string_hash.hpp>
 
-/** @file
- *  @ingroup ken
- */
-
 namespace kEn {
 
 /**
@@ -128,9 +124,6 @@ class OpenglShader final : public Shader {
    */
   OpenglShader(const std::filesystem::path& path, ShaderConfig config);
 
-  /**
-   * @brief Destroy the OpenGL program object.
-   */
   ~OpenglShader() override;
 
   [[nodiscard]] std::uintptr_t native_handle() const noexcept override {
@@ -139,7 +132,6 @@ class OpenglShader final : public Shader {
 
   // <Uniforms>
 
-  /** @copydoc Shader::set_uniform_any */
   void set_uniform_any(std::string_view name, const UniformValue& value) const override {
     std::visit(
         [&](auto const& x) {
@@ -149,7 +141,6 @@ class OpenglShader final : public Shader {
         value);
   }
 
-  /** @copydoc Shader::set_uniform_array_any */
   void set_uniform_array_any(std::string_view name, const UniformArray& values) const override {
     std::visit(
         [&](auto span) {
@@ -159,15 +150,12 @@ class OpenglShader final : public Shader {
         values);
   }
 
-  /** @copydoc Shader::bind_uniform_block */
   void bind_uniform_block(std::string_view block_name, ShaderStage stage, std::uint32_t binding) const override;
-  /** @copydoc Shader::uniform_block_binding */
   [[nodiscard]] std::optional<std::uint32_t> uniform_block_binding(std::string_view block_name,
                                                                    ShaderStage stage) const override;
 
   // </Uniforms>
 
-  /** @copydoc Shader::name */
   std::string_view name() const override { return name_; }
 
   DELETE_COPY_MOVE(OpenglShader);
@@ -248,16 +236,9 @@ class OpenglShader final : public Shader {
   static const std::regex kPragmaOnceRegex;
   static const std::unordered_map<std::string_view, std::string_view> kInternalLibs;
 
-  /** @brief OpenGL program object id. */
   std::uint32_t renderer_id_;
-
-  /** @brief Cached uniform locations (mutated on demand). */
   mutable std::unordered_map<std::string, GLint, StringHash, std::equal_to<>> uniform_locations_;
-
-  /** @brief Cached uniform block index -> binding mapping (mutated on demand). */
   mutable std::unordered_map<GLuint, GLuint> uniform_block_bindings_;
-
-  /** @brief Debug/display name for this shader program. */
   std::string name_;
 };
 

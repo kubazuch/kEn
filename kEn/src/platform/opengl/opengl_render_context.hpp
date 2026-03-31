@@ -13,10 +13,12 @@
 
 namespace kEn {
 
+/** @brief OpenGL-specific utilities for @ref RenderMode. */
 namespace render_mode {
 
 namespace detail {
 
+/** @brief Lookup table mapping each @ref RenderMode to its OpenGL primitive constant. */
 inline constexpr auto kOpenglRenderModes = util::make_enum_map<GLenum>({
     std::pair{Points, GL_POINTS},
     std::pair{LineStrip, GL_LINE_STRIP},
@@ -31,10 +33,25 @@ inline constexpr auto kOpenglRenderModes = util::make_enum_map<GLenum>({
 
 }  // namespace detail
 
+/**
+ * @brief Converts a @ref RenderMode to the corresponding OpenGL primitive constant.
+ * @param mode Render mode to convert.
+ * @return OpenGL @c GLenum primitive type.
+ */
 [[nodiscard]] constexpr GLenum opengl_mode(RenderMode mode) { return detail::kOpenglRenderModes[mode]; }
 
 }  // namespace render_mode
 
+/**
+ * @brief OpenGL implementation of @ref RenderContext.
+ *
+ * On init(), line smoothing is enabled and default depth, blend, and raster states are
+ * applied.  When @c enable_debug is @c true, @c GL_DEBUG_OUTPUT is enabled and driver
+ * messages are forwarded to the engine logging system at matching severity levels.
+ *
+ * The @c stage parameter accepted by the four @c bind_* methods is ignored: all OpenGL
+ * resource bindings are global and not scoped to a pipeline stage.
+ */
 class OpenglRenderContext final : public RenderContext {
  public:
   void init(bool enable_debug) override;
@@ -79,6 +96,7 @@ class OpenglRenderContext final : public RenderContext {
   [[nodiscard]] std::size_t max_tessellation_level() const override;
 
  private:
+  /** @brief Lazily cached result of querying @c GL_MAX_TESS_GEN_LEVEL. */
   mutable std::optional<std::size_t> max_tessellation_level_;
 };
 
