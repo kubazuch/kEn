@@ -18,6 +18,8 @@ namespace kEn {
 /** @brief Maps BufferTarget to the corresponding OpenGL buffer binding target. */
 namespace buffer_target {
 
+namespace detail {
+
 inline constexpr auto kOpenglTypes = util::make_enum_map<GLenum>({
     std::pair{Vertex, GL_ARRAY_BUFFER},
     std::pair{Index, GL_ELEMENT_ARRAY_BUFFER},
@@ -25,13 +27,17 @@ inline constexpr auto kOpenglTypes = util::make_enum_map<GLenum>({
     std::pair{Storage, GL_SHADER_STORAGE_BUFFER},
 });
 
+}  // namespace detail
+
 /** @brief Return the GL binding target (e.g. GL_ARRAY_BUFFER) for a BufferTarget. */
-[[nodiscard]] constexpr GLenum opengl_target(BufferTarget type) { return kOpenglTypes[type]; }
+[[nodiscard]] constexpr GLenum opengl_target(BufferTarget type) { return detail::kOpenglTypes[type]; }
 
 }  // namespace buffer_target
 
 /** @brief Maps BufferUsage to the corresponding OpenGL usage hint. */
 namespace buffer_usage {
+
+namespace detail {
 
 inline constexpr auto kOpenglUsages = util::make_enum_map<GLenum>({
     std::pair{Immutable, GL_STATIC_DRAW},
@@ -40,13 +46,17 @@ inline constexpr auto kOpenglUsages = util::make_enum_map<GLenum>({
     std::pair{Staging, GL_DYNAMIC_READ},
 });
 
+}  // namespace detail
+
 /** @brief Return the GL usage hint (e.g. GL_DYNAMIC_DRAW) for a BufferUsage. */
-[[nodiscard]] constexpr GLenum opengl_usage(BufferUsage usage) { return kOpenglUsages[usage]; }
+[[nodiscard]] constexpr GLenum opengl_usage(BufferUsage usage) { return detail::kOpenglUsages[usage]; }
 
 }  // namespace buffer_usage
 
 /** @brief Maps MapMode to the corresponding OpenGL mapping access bitfield. */
 namespace map_mode {
+
+namespace detail {
 
 inline constexpr auto kOpenglModes = util::make_enum_map<GLbitfield>({
     std::pair{Read, GL_MAP_READ_BIT},
@@ -56,8 +66,10 @@ inline constexpr auto kOpenglModes = util::make_enum_map<GLbitfield>({
     std::pair{WriteNoOverwrite, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT},
 });
 
+}  // namespace detail
+
 /** @brief Return the GL access bitfield for a MapMode (for use with glMapNamedBufferRange). */
-[[nodiscard]] constexpr GLenum opengl_mode(MapMode mode) { return kOpenglModes[mode]; }
+[[nodiscard]] constexpr GLenum opengl_mode(MapMode mode) { return detail::kOpenglModes[mode]; }
 
 }  // namespace map_mode
 

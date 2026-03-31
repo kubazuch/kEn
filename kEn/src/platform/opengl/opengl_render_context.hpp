@@ -12,6 +12,8 @@ namespace kEn {
 
 namespace render_mode {
 
+namespace detail {
+
 inline constexpr auto kOpenglRenderModes = util::make_enum_map<GLenum>({
     std::pair{Points, GL_POINTS},
     std::pair{LineStrip, GL_LINE_STRIP},
@@ -24,7 +26,9 @@ inline constexpr auto kOpenglRenderModes = util::make_enum_map<GLenum>({
     std::pair{LinesAdjacency, GL_LINES_ADJACENCY},
 });
 
-[[nodiscard]] constexpr GLenum opengl_mode(RenderMode mode) { return kOpenglRenderModes[mode]; }
+}  // namespace detail
+
+[[nodiscard]] constexpr GLenum opengl_mode(RenderMode mode) { return detail::kOpenglRenderModes[mode]; }
 
 }  // namespace render_mode
 

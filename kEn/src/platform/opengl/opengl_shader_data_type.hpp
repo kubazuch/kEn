@@ -9,6 +9,9 @@
 namespace kEn {
 
 namespace shader_data_type {
+
+namespace detail {
+
 inline constexpr auto kOpenglTypes = util::make_enum_map<GLenum>({
     std::pair{Float, GL_FLOAT},
     std::pair{Float2, GL_FLOAT},
@@ -23,7 +26,9 @@ inline constexpr auto kOpenglTypes = util::make_enum_map<GLenum>({
     std::pair{Bool, GL_BOOL},
 });
 
-[[nodiscard]] constexpr GLenum opengl_type(ShaderDataType type) { return kOpenglTypes[type]; }
+}  // namespace detail
+
+[[nodiscard]] constexpr GLenum opengl_type(ShaderDataType type) { return detail::kOpenglTypes[type]; }
 
 }  // namespace shader_data_type
 

@@ -28,21 +28,23 @@ using enum ShaderDataType;
 
 inline constexpr std::uint32_t kFloatSize = 4;
 inline constexpr std::uint32_t kIntSize   = 4;
-inline constexpr std::uint32_t kBoolSize  = 1;
+inline constexpr std::uint32_t kBoolSize  = 4;
 
-inline constexpr util::EnumMap kSizes{{
-    std::pair{Float, 1 * kFloatSize},
+namespace detail {
+
+inline constexpr auto kSizes = util::make_enum_map<std::uint32_t>({
+    std::pair{Float, kFloatSize},
     std::pair{Float2, 2 * kFloatSize},
     std::pair{Float3, 3 * kFloatSize},
     std::pair{Float4, 4 * kFloatSize},
     std::pair{Mat3, 9 * kFloatSize},
     std::pair{Mat4, 16 * kFloatSize},
-    std::pair{Int, 1 * kIntSize},
+    std::pair{Int, kIntSize},
     std::pair{Int2, 2 * kIntSize},
     std::pair{Int3, 3 * kIntSize},
     std::pair{Int4, 4 * kIntSize},
     std::pair{Bool, kBoolSize},
-}};
+});
 
 inline constexpr auto kComponents = util::make_enum_map<std::uint8_t>({
     std::pair{Float, 1},
@@ -58,9 +60,11 @@ inline constexpr auto kComponents = util::make_enum_map<std::uint8_t>({
     std::pair{Bool, 1},
 });
 
-[[nodiscard]] constexpr std::uint32_t size(ShaderDataType type) { return kSizes[type]; }
+}  // namespace detail
 
-[[nodiscard]] constexpr std::uint8_t component_count(ShaderDataType type) { return kComponents[type]; }
+[[nodiscard]] constexpr std::uint32_t size(ShaderDataType type) { return detail::kSizes[type]; }
+
+[[nodiscard]] constexpr std::uint8_t component_count(ShaderDataType type) { return detail::kComponents[type]; }
 
 }  // namespace shader_data_type
 
