@@ -10,6 +10,7 @@
 
 #include <kEn/core/application.hpp>
 #include <kEn/core/transform.hpp>
+#include <kEn/imgui/material.hpp>
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/material.hpp>
 #include <kEn/renderer/renderer.hpp>
@@ -40,14 +41,13 @@ void Mesh::setup_mesh() {
 }
 
 void Mesh::render(Shader& shader, const Transform& transform) const {
-  material.load(shader, "u_Material");
-  material.bind(device().context());
+  material.apply(shader, device().context());
   Renderer::submit(shader, *vao_, transform);
 }
 
 void Mesh::imgui() {
   if (ImGui::CollapsingHeader(name.c_str())) {
-    material.imgui();
+    ui::Material(material);
   }
 }
 
