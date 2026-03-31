@@ -17,8 +17,30 @@ namespace kEn {
 
 class UniformBuffer;
 
-enum class ShaderStage : std::uint8_t { Vertex, Fragment, Geometry, TessControl, TessEvaluation, Compute };
+/**
+ * @brief Identifies a single programmable stage of the GPU pipeline.
+ *
+ * Passed to binding calls (e.g. @ref Shader::bind_uniform_block,
+ * @ref RenderContext::bind_texture) so that backends can map the request to the
+ * correct OpenGL binding point or Vulkan descriptor set.
+ */
+enum class ShaderStage : std::uint8_t {
+  Vertex,         /**< Vertex processing stage. */
+  Fragment,       /**< Fragment (pixel) shading stage. */
+  Geometry,       /**< Optional geometry stage; requires @ref ShaderConfig::geometry. */
+  TessControl,    /**< Tessellation control stage; requires @ref ShaderConfig::tessellation. */
+  TessEvaluation, /**< Tessellation evaluation stage; requires @ref ShaderConfig::tessellation. */
+  Compute,        /**< Compute stage; requires @ref ShaderConfig::compute. */
+};
 
+/**
+ * @brief C++20 convenience namespace: imports @ref ShaderStage enumerators without qualification.
+ *
+ * Include-and-use pattern: @code{.cpp}
+ * using namespace kEn::shader_stage;
+ * ctx.bind_texture(0, Fragment, *tex);
+ * @endcode
+ */
 namespace shader_stage {
 
 using enum ShaderStage;

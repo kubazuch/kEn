@@ -159,7 +159,9 @@ class OpenglShader final : public Shader {
         values);
   }
 
+  /** @copydoc Shader::bind_uniform_block */
   void bind_uniform_block(std::string_view block_name, ShaderStage stage, std::uint32_t binding) const override;
+  /** @copydoc Shader::uniform_block_binding */
   [[nodiscard]] std::optional<std::uint32_t> uniform_block_binding(std::string_view block_name,
                                                                    ShaderStage stage) const override;
 

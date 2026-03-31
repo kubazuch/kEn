@@ -6,8 +6,18 @@
 
 #include <kEn/renderer/shader_data_type.hpp>
 
+/** @file
+ *  @ingroup ken
+ */
+
 namespace kEn {
 
+/**
+ * @brief OpenGL-specific query functions for @ref ShaderDataType.
+ *
+ * Extends @ref kEn::shader_data_type with GL token lookups needed by the
+ * vertex-input backend when calling @c glVertexAttribPointer.
+ */
 namespace shader_data_type {
 
 namespace detail {
@@ -28,6 +38,15 @@ inline constexpr auto kOpenglTypes = util::make_enum_map<GLenum>({
 
 }  // namespace detail
 
+/**
+ * @brief Return the OpenGL base type token for @p type.
+ *
+ * Returns the @c GLenum passed as the @c type argument to @c glVertexAttribPointer
+ * (e.g. @c GL_FLOAT for all float/matrix variants, @c GL_INT for integer variants).
+ *
+ * @param type A valid @ref ShaderDataType enumerator (not @c Count).
+ * @return The corresponding @c GLenum token.
+ */
 [[nodiscard]] constexpr GLenum opengl_type(ShaderDataType type) { return detail::kOpenglTypes[type]; }
 
 }  // namespace shader_data_type
