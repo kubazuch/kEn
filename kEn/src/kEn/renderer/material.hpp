@@ -1,8 +1,10 @@
 #pragma once
 
+#include <array>
+#include <cstddef>
 #include <memory>
 #include <string_view>
-#include <unordered_map>
+#include <vector>
 
 #include <mEn.hpp>
 
@@ -52,8 +54,8 @@ inline constexpr util::EnumMap kNames{{
  * @brief Phong-shaded surface description passed to a @ref Shader.
  *
  * Stores per-type texture arrays alongside scalar Phong coefficients and
- * surface flags. Call @ref load to upload uniforms, then @ref bind to activate
- * texture units before drawing.
+ * surface flags. Call @ref apply to upload uniforms and activate texture
+ * units in a single step before drawing.
  */
 class Material {
  public:
@@ -78,34 +80,32 @@ class Material {
    *
    * @param type Semantic category.
    * @param id   Index within the type's array (default 0).
-   * @return Const reference to the stored shared pointer.
-   * @throws std::out_of_range if @p type or @p id is not present.
+   * @return Shared pointer to the stored texture.
+   * @throws std::out_of_range if @p id is out of range for the given @p type.
    */
-  const std::shared_ptr<Texture>& texture(TextureType type, std::size_t id = 0) const;
+  [[nodiscard]] std::shared_ptr<Texture> texture(TextureType type, std::size_t id = 0) const;
 
   /**
-   * @brief Upload Phong uniforms and texture-unit indices to @p shader.
+   * @brief Return the number of textures stored for a given @p type.
    *
-   * Sets `<name>.ka/kd/ks/m/emissive/surface_color` and one sampler uniform
-   * per stored texture. Texture units are assigned in iteration order of the
-   * internal map; call @ref bind afterwards to activate the same units.
-   *
-   * @param shader Target shader program.
-   * @param name   GLSL struct name prefix (default @c "u_Material").
+   * @param type Semantic category.
+   * @return Number of textures in the type's array (0 if none have been set).
    */
-  void load(Shader& shader, std::string_view name = "u_Material") const;
+  [[nodiscard]] std::size_t texture_count(TextureType type) const noexcept;
 
   /**
-   * @brief Bind all stored textures to consecutive texture units via @p context.
+   * @brief Upload Phong uniforms and bind all textures to consecutive units.
    *
-   * Textures are bound to ShaderStage::Fragment slots in the same order used by @ref load.
+   * Uploads `<name>.ka/kd/ks/m/emissive/surface_color` and one sampler
+   * uniform per stored texture, then activates each texture unit via
+   * @p context. Texture units are assigned in @ref TextureType declaration
+   * order (AmbientOcclusion first, Specular last).
    *
+   * @param shader  Target shader program.
    * @param context The active RenderContext to route texture binding through.
+   * @param name    GLSL struct name prefix (default @c "u_Material").
    */
-  void bind(RenderContext& context) const;
-
-  /** @brief Render an ImGui inspector panel for this material. */
-  void imgui();
+  void apply(Shader& shader, RenderContext& context, std::string_view name = "u_Material") const;
 
   float ambient_factor   = 0.5F;
   float diffuse_factor   = 0.5F;
@@ -118,9 +118,11 @@ class Material {
   bool emissive    = false;
 
  private:
-  friend class Shader;
+  [[nodiscard]] static constexpr std::size_t to_index(TextureType type) noexcept {
+    return static_cast<std::size_t>(type);
+  }
 
-  std::unordered_map<TextureType, std::vector<std::shared_ptr<kEn::Texture>>> textures_;
+  std::array<std::vector<std::shared_ptr<Texture>>, static_cast<std::size_t>(TextureType::Count)> textures_;
 };
 
 }  // namespace kEn
