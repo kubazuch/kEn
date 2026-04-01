@@ -157,7 +157,7 @@ class DemoLayer : public kEn::Layer {
     shadow_map_fb_->clear_depth();
     device_.context().set_depth_state(*depth_state_);
     device_.context().set_raster_state(*raster_front_cull_);
-    kEn::Renderer::begin_scene(light_pos, light_view, kLightProj);
+    kEn::Renderer::begin_scene(light_pos, light_view, kLightProj, device_.context());
     floor_obj_.render_all(*shadow_shader_, alpha);
     model_obj_.render_all(*shadow_shader_, alpha);
     kEn::Renderer::end_scene();
@@ -170,7 +170,7 @@ class DemoLayer : public kEn::Layer {
     device_.context().set_depth_state(*depth_state_);
     device_.context().set_raster_state(*raster_back_cull_);
 
-    kEn::Renderer::begin_scene(*camera_);
+    kEn::Renderer::begin_scene(*camera_, device_.context());
     kEn::Renderer::prepare(*phong_shader_);
 
     device_.context().bind_attachment(kShadowMapSlot, kEn::ShaderStage::Fragment, *shadow_map_fb_->depth_attachment());
