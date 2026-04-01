@@ -152,15 +152,17 @@ class DemoLayer : public kEn::Layer {
     const mEn::Mat4 light_view = mEn::lookAt(light_pos, mEn::Vec3{0.F}, mEn::Vec3{0.F, 1.F, 0.F});
 
     // --- Shadow pass ---
-    device_.context().set_render_target(*shadow_map_fb_);
-    device_.context().set_viewport(0, 0, kShadowMapSize, kShadowMapSize);
-    shadow_map_fb_->clear_depth();
-    device_.context().set_depth_state(*depth_state_);
-    device_.context().set_raster_state(*raster_front_cull_);
-    kEn::Renderer::begin_scene(light_pos, light_view, kLightProj, device_.context());
-    floor_obj_.render_all(*shadow_shader_, alpha);
-    model_obj_.render_all(*shadow_shader_, alpha);
-    kEn::Renderer::end_scene();
+    if (shadows_enabled_) {
+      device_.context().set_render_target(*shadow_map_fb_);
+      device_.context().set_viewport(0, 0, kShadowMapSize, kShadowMapSize);
+      shadow_map_fb_->clear_depth();
+      device_.context().set_depth_state(*depth_state_);
+      device_.context().set_raster_state(*raster_front_cull_);
+      kEn::Renderer::begin_scene(light_pos, light_view, kLightProj, device_.context());
+      floor_obj_.render_all(*shadow_shader_, alpha);
+      model_obj_.render_all(*shadow_shader_, alpha);
+      kEn::Renderer::end_scene();
+    }
 
     // --- Main pass ---
     device_.context().set_render_target(*framebuffer_);
