@@ -70,7 +70,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.BINARY_NAME }}-binary-archives
+          name: windows-release-zip
           path: ./artifact/${{ env.BINARY_NAME }}-windows-x64
     outputs:
       artifact_name: windows-release-zip
