@@ -23,8 +23,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Install dependencies
         shell: pwsh
@@ -99,6 +97,9 @@ jobs:
     needs: package-windows
     runs-on: windows-2022
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Download packaged artifact
         uses: actions/download-artifact@v4
         with:
