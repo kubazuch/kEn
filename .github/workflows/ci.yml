@@ -51,9 +51,9 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install jinja2
           sudo apt-get update
-          sudo apt-get install -y clang clang-tidy cmake ninja-build curl
+          sudo apt-get install -y clang clang-tidy cmake ninja-build curl libwayland-dev libwayland-bin libxkbcommon-dev wayland-protocols xorg-dev
 
-      - name: Download pinned run-clang-tidy.py
+      - name: Download run-clang-tidy.py
         run: |
           curl -fL --retry 3 --retry-delay 2 \
             -o run-clang-tidy.py \
@@ -61,7 +61,7 @@ jobs:
 
       - name: Configure
         run: |
-          cmake --preset=linux-clang-release -DPython_EXECUTABLE="$(command -v python3)" -DGLFW_BUILD_WAYLAND=OFF
+          cmake --preset=linux-clang-release -DPython_EXECUTABLE="$(command -v python3)"
           cmake --build --preset=linux-clang-release --parallel
 
       - name: Run clang-tidy
