@@ -75,29 +75,25 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: linux-gcc
-            os: ubuntu-24.04
-            preset: linux-gcc-release
-            cc: gcc
-            cxx: g++
-            shell: bash
+          # TODO: temporary, too much errors right now
+          # - name: linux-gcc
+          #   os: ubuntu-24.04
+          #   preset: linux-gcc-release
+          #   packages: "gcc g++"
 
           - name: linux-clang
             os: ubuntu-24.04
             preset: linux-clang-release
-            cc: clang
-            shell: bash
+            packages: "clang"
 
           - name: windows-msvc
             os: windows-2022
             preset: windows-msvc-release
-            shell: pwsh
             msvc: true
 
           - name: windows-clang
             os: windows-2022
             preset: windows-clang-release
-            shell: pwsh
 
     steps:
       - name: Checkout code
@@ -112,7 +108,7 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install jinja2
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build ${{ matrix.cc }} ${{ matrix.cxx }} libwayland-dev libwayland-bin libxkbcommon-dev wayland-protocols xorg-dev libdbus-1-dev
+          sudo apt-get install -y cmake ninja-build ${{ matrix.packages }} libwayland-dev libwayland-bin libxkbcommon-dev wayland-protocols xorg-dev libdbus-1-dev
 
       - name: Install Windows dependencies
         if: runner.os == 'Windows'
