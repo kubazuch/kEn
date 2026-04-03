@@ -62,7 +62,7 @@ jobs:
       - name: Configure
         run: |
           cmake --preset=linux-clang-release -DPython_EXECUTABLE="$(command -v python3)"
-          cmake --build --preset=linux-clang-release --parallel
+          cmake --build --preset=linux-clang-release --target generate_all --parallel
 
       - name: Run clang-tidy
         run: |

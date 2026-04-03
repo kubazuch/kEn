@@ -15,34 +15,30 @@
 namespace kEn::util {
 
 /**
- * @brief Opt-in trait enabling the enum flag operators in this header.
- *
- * Specialize this trait for your enum type and inherit from @c std::true_type to enable
- * the free operator overloads (|, &, ^, ~) that return @ref Flags.
- *
- * @tparam E Enum type.
- * @see KEN_ENABLE_FLAGS
- */
-template <typename E>
-struct enable_flags : std::false_type {};  // NOLINT(readability-identifier-naming)
-
-/**
- * @brief Convenience variable template for @ref kEn::util::enable_flags.
- * @tparam E Enum type.
- */
-template <typename E>
-inline constexpr bool enable_flags_v = enable_flags<E>::value;  // NOLINT(readability-identifier-naming)
-
-/**
  * @brief Concept satisfied by any enum type.
  *
- * Used to constrain @ref kEn::util::Flags and the free flag operators. It does not imply that flag
- * operators are enabled; that opt-in is controlled separately by @ref kEn::util::enable_flags_v.
+ * Used to constrain @ref kEn::util::Flags. It does not imply that flag operators are enabled;
+ * that opt-in is controlled separately by @ref kEn::util::FlagEnum.
  *
  * @tparam E Type to test.
  */
 template <typename E>
 concept AnyEnum = std::is_enum_v<std::remove_cvref_t<E>>;
+
+/**
+ * @brief Concept satisfied by enum types opted in via @ref KEN_ENABLE_FLAGS.
+ *
+ * Detection is ADL-based: @ref KEN_ENABLE_FLAGS defines @c ken_enable_flags in the enum's own
+ * namespace, which ADL finds through @c std::type_identity<E>. The conjunction short-circuits, so
+ * the third constraint is only evaluated when the function actually exists.
+ *
+ * @tparam E Type to test.
+ * @see KEN_ENABLE_FLAGS
+ */
+template <class E>
+concept FlagEnum = AnyEnum<E> && requires {
+  { ken_enable_flags(std::type_identity<E>{}) } -> std::convertible_to<bool>;
+} && ken_enable_flags(std::type_identity<E>{});
 
 /**
  * @brief Type-safe wrapper around a bitmask of enum flags.
@@ -303,10 +299,9 @@ class Flags final {
  * @param lhs Left-hand flag.
  * @param rhs Right-hand flag.
  * @return A flag mask containing the combined bits.
- * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
+ * @note Enabled only when @p E satisfies @ref kEn::util::FlagEnum.
  */
-template <AnyEnum E>
-  requires enable_flags_v<E>
+template <FlagEnum E>
 [[nodiscard]] constexpr Flags<E> operator|(E lhs, E rhs) noexcept {
   Flags<E> out{lhs};
   out |= rhs;
@@ -319,10 +314,9 @@ template <AnyEnum E>
  * @param lhs Left-hand flag.
  * @param rhs Right-hand flag.
  * @return A flag mask containing the intersected bits.
- * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
+ * @note Enabled only when @p E satisfies @ref kEn::util::FlagEnum.
  */
-template <AnyEnum E>
-  requires enable_flags_v<E>
+template <FlagEnum E>
 [[nodiscard]] constexpr Flags<E> operator&(E lhs, E rhs) noexcept {
   Flags<E> out{lhs};
   out &= rhs;
@@ -335,10 +329,9 @@ template <AnyEnum E>
  * @param lhs Left-hand flag.
  * @param rhs Right-hand flag.
  * @return A flag mask containing the XORed bits.
- * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
+ * @note Enabled only when @p E satisfies @ref kEn::util::FlagEnum.
  */
-template <AnyEnum E>
-  requires enable_flags_v<E>
+template <FlagEnum E>
 [[nodiscard]] constexpr Flags<E> operator^(E lhs, E rhs) noexcept {
   Flags<E> out{lhs};
   out ^= rhs;
@@ -350,10 +343,9 @@ template <AnyEnum E>
  * @tparam E Enum type.
  * @param v Flag to invert.
  * @return A flag mask with all bits flipped in the underlying storage type.
- * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
+ * @note Enabled only when @p E satisfies @ref kEn::util::FlagEnum.
  */
-template <AnyEnum E>
-  requires enable_flags_v<E>
+template <FlagEnum E>
 [[nodiscard]] constexpr Flags<E> operator~(E v) noexcept {
   return ~Flags<E>{v};
 }
@@ -364,10 +356,9 @@ template <AnyEnum E>
  * @param lhs Left-hand mask.
  * @param rhs Right-hand flag.
  * @return Combined mask.
- * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
+ * @note Enabled only when @p E satisfies @ref kEn::util::FlagEnum.
  */
-template <AnyEnum E>
-  requires enable_flags_v<E>
+template <FlagEnum E>
 [[nodiscard]] constexpr Flags<E> operator|(Flags<E> lhs, E rhs) noexcept {
   lhs |= rhs;
   return lhs;
@@ -379,10 +370,9 @@ template <AnyEnum E>
  * @param lhs Left-hand mask.
  * @param rhs Right-hand flag.
  * @return Intersected mask.
- * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
+ * @note Enabled only when @p E satisfies @ref kEn::util::FlagEnum.
  */
-template <AnyEnum E>
-  requires enable_flags_v<E>
+template <FlagEnum E>
 [[nodiscard]] constexpr Flags<E> operator&(Flags<E> lhs, E rhs) noexcept {
   lhs &= rhs;
   return lhs;
@@ -394,10 +384,9 @@ template <AnyEnum E>
  * @param lhs Left-hand mask.
  * @param rhs Right-hand flag.
  * @return XORed mask.
- * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
+ * @note Enabled only when @p E satisfies @ref kEn::util::FlagEnum.
  */
-template <AnyEnum E>
-  requires enable_flags_v<E>
+template <FlagEnum E>
 [[nodiscard]] constexpr Flags<E> operator^(Flags<E> lhs, E rhs) noexcept {
   lhs ^= rhs;
   return lhs;
@@ -409,10 +398,9 @@ template <AnyEnum E>
  * @param lhs Left-hand flag.
  * @param rhs Right-hand mask.
  * @return Combined mask.
- * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
+ * @note Enabled only when @p E satisfies @ref kEn::util::FlagEnum.
  */
-template <AnyEnum E>
-  requires enable_flags_v<E>
+template <FlagEnum E>
 [[nodiscard]] constexpr Flags<E> operator|(E lhs, Flags<E> rhs) noexcept {
   rhs |= lhs;
   return rhs;
@@ -424,10 +412,9 @@ template <AnyEnum E>
  * @param lhs Left-hand flag.
  * @param rhs Right-hand mask.
  * @return Intersected mask.
- * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
+ * @note Enabled only when @p E satisfies @ref kEn::util::FlagEnum.
  */
-template <AnyEnum E>
-  requires enable_flags_v<E>
+template <FlagEnum E>
 [[nodiscard]] constexpr Flags<E> operator&(E lhs, Flags<E> rhs) noexcept {
   rhs &= lhs;
   return rhs;
@@ -439,10 +426,9 @@ template <AnyEnum E>
  * @param lhs Left-hand flag.
  * @param rhs Right-hand mask.
  * @return XORed mask.
- * @note Enabled only when @ref kEn::util::enable_flags_v<E> is true.
+ * @note Enabled only when @p E satisfies @ref kEn::util::FlagEnum.
  */
-template <AnyEnum E>
-  requires enable_flags_v<E>
+template <FlagEnum E>
 [[nodiscard]] constexpr Flags<E> operator^(E lhs, Flags<E> rhs) noexcept {
   rhs ^= lhs;
   return rhs;
@@ -454,8 +440,8 @@ template <AnyEnum E>
  * @def KEN_ENABLE_FLAGS(EnumType)
  * @brief Enable enum-flag operators for @p EnumType.
  *
- * Expands to a specialization of @ref kEn::util::enable_flags for @p EnumType and brings the operators
- * from the @c kEn::util namespace into the current scope via @c using declarations.
+ * Defines @c ken_enable_flags in the enum's namespace (found via ADL by @ref kEn::util::enable_flags_v)
+ * and brings the flag operators from @c kEn::util into the current scope via @c using declarations.
  *
  * Typical usage:
  * @code
@@ -466,10 +452,9 @@ template <AnyEnum E>
  * @note Invoke this macro at namespace scope (not inside a class or function).
  */
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define KEN_ENABLE_FLAGS(EnumType)                                \
-  template <>                                                     \
-  struct ::kEn::util::enable_flags<EnumType> : std::true_type {}; \
-  using ::kEn::util::operator|;                                   \
-  using ::kEn::util::operator&;                                   \
-  using ::kEn::util::operator^;                                   \
+#define KEN_ENABLE_FLAGS(EnumType)                                                        \
+  constexpr bool ken_enable_flags(std::type_identity<EnumType>) noexcept { return true; } \
+  using ::kEn::util::operator|;                                                           \
+  using ::kEn::util::operator&;                                                           \
+  using ::kEn::util::operator^;                                                           \
   using ::kEn::util::operator~
