@@ -4,7 +4,6 @@
 #include <initializer_list>
 #include <memory>
 #include <string_view>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -18,12 +17,11 @@
 
 namespace kEn {
 
-IdRegistry<GameObject> GameObject::game_object_registry_(GameObject::kMaxGameObjects);
-std::unordered_map<IdView<GameObjectId>, GameObject*, IdViewHash<GameObjectId>> GameObject::registry_;
+Registry<GameObject> GameObject::game_object_registry_(GameObject::kMaxGameObjects);
 
 GameObject::GameObject(mEn::Vec3 pos, mEn::Quat rot, mEn::Vec3 scale, std::string_view name)
     : transform_(pos, rot, scale), id_(game_object_registry_), name_(name) {
-  registry_.emplace(id_, this);
+  game_object_registry_.bind(id_.handle(), this);
   transform_.set_owner(*this);
 }
 
@@ -40,7 +38,6 @@ GameObject::~GameObject() {
     std::erase_if(parent_.value().get().children_, [this](auto ref) { return std::addressof(ref.get()) == this; });
   }
 
-  registry_.erase(id_);
   KEN_CORE_DEBUG("GameObject {} with id {} destroyed", name_, id_.raw_id());
 }
 

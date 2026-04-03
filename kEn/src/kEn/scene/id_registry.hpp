@@ -1,149 +1,240 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <limits>
-#include <stack>
-#include <type_traits>
+#include <optional>
+#include <stdexcept>
+#include <utility>
+#include <vector>
 
 #include <kEn/core/log.hpp>
 
-// Adapted from https://github.com/gizmokis/resin/pull/22
+// Adapted from https://github.com/gizmokis/resin/pull/22 for slot map structure
 // migoox, 04.12.2024
 
 namespace kEn {
 
 template <typename T>
-class IdRegistry {
+class Registry;
+
+template <typename T>
+struct Id;
+
+template <typename T>
+struct IdView;
+
+template <typename T>
+struct Handle {
+  using object_type = T;
+
+  static constexpr uint32_t kInvalidIndex = std::numeric_limits<uint32_t>::max();
+
+  uint32_t index      = kInvalidIndex;
+  uint32_t generation = 0;
+
+  [[nodiscard]] constexpr bool is_valid() const noexcept { return index != kInvalidIndex; }
+  constexpr auto operator<=>(const Handle&) const noexcept = default;
+};
+
+template <typename T>
+class Registry {
  public:
-  IdRegistry() = delete;
-  DELETE_COPY_MOVE(IdRegistry);
+  using object_type = T;
+  using handle_type = Handle<T>;
 
-  explicit IdRegistry(size_t size) : max_objs_(size) {
-    for (size_t i = size; i > 0; --i) {
-      free_.push(i - 1);
+  Registry() = delete;
+  DELETE_COPY_MOVE(Registry);
+
+  explicit Registry(uint32_t capacity) : capacity_(capacity) {
+    slots_.resize(capacity_);
+    free_.reserve(capacity_);
+    for (uint32_t i = capacity_; i > 0; --i) {
+      free_.push_back(i - 1);
     }
-
-    ids_.resize(size, false);
   }
 
-  size_t register_id() {
-    if (free_.empty()) {
-      KEN_CORE_CRITICAL("No free ids available in IdRegistry.");
-      throw std::runtime_error("No free ids available in IdRegistry.");
-    }
-
-    size_t new_id = free_.top();
-    free_.pop();
-    ids_[new_id] = true;
-
-    return new_id;
+  [[nodiscard]] bool valid(handle_type h) const noexcept {
+    return h.is_valid() && h.index < capacity_ && slots_[h.index].generation == h.generation;
   }
 
-  bool is_registered(size_t id) const {
-    if (id >= max_objs_) {
-      return false;
+  [[nodiscard]] T* get(handle_type h) const noexcept {
+    if (!valid(h)) {
+      return nullptr;
     }
-
-    return ids_[id];
+    return slots_[h.index].ptr;
   }
 
-  size_t max_objs() const { return max_objs_; }
-
-  void unregister_id(size_t id) {
-    if (id >= max_objs_) {
-      KEN_CORE_WARN("Tried to unregister id {} out of range of IdRegistry<{}> [{}].", id, typeid(T).name(), max_objs_);
-      return;
+  [[nodiscard]] std::optional<IdView<T>> from_raw_id(uint32_t raw_id) const noexcept {
+    if (raw_id >= capacity_) {
+      return std::nullopt;
     }
 
-    ids_[id] = false;
-    free_.push(id);
+    const Slot& slot = slots_[raw_id];
+    if (slot.ptr == nullptr) {
+      return std::nullopt;
+    }
+
+    return IdView<T>({raw_id, slot.generation}, *this);
   }
 
-  ~IdRegistry() {
-    if (free_.size() != max_objs_) {
-      KEN_CORE_ERROR("IdRegistry<{}> destroyed with {} unregistered objects.", typeid(T).name(),
-                     max_objs_ - free_.size());
+  [[nodiscard]] uint32_t capacity() const noexcept { return capacity_; }
+
+  ~Registry() {
+    if (free_.size() != capacity_) {
+      KEN_CORE_ERROR("Registry<{}> destroyed with {} live handles.", typeid(T).name(), capacity_ - free_.size());
     }
   }
 
  private:
-  std::stack<size_t> free_;
-  std::vector<bool> ids_;
-  size_t max_objs_;
+  friend T;
+  friend struct Id<T>;
+
+  struct Slot {
+    uint32_t generation = 0;
+    T* ptr              = nullptr;
+  };
+
+  [[nodiscard]] handle_type acquire() {
+    if (free_.empty()) {
+      KEN_CORE_CRITICAL("No free handles available in Registry<{}>.", typeid(T).name());
+      throw std::runtime_error("No free handles available in Registry.");
+    }
+
+    uint32_t idx = free_.back();
+    free_.pop_back();
+    return {idx, slots_[idx].generation};
+  }
+
+  void bind(handle_type h, T* obj) noexcept {
+    if (!valid(h)) {
+      KEN_CORE_WARN("Tried to bind invalid handle ({}, {}) in Registry<{}>.", h.index, h.generation, typeid(T).name());
+      return;
+    }
+    if (obj == nullptr) {
+      KEN_CORE_WARN("Tried to bind nullptr to handle ({}, {}) in Registry<{}>.", h.index, h.generation,
+                    typeid(T).name());
+      return;
+    }
+
+    slots_[h.index].ptr = obj;
+  }
+
+  void release(handle_type h) noexcept {
+    if (!valid(h)) {
+      KEN_CORE_WARN("Tried to release invalid handle ({}, {}) from Registry<{}>.", h.index, h.generation,
+                    typeid(T).name());
+      return;
+    }
+
+    slots_[h.index].ptr = nullptr;
+    ++slots_[h.index].generation;
+    free_.push_back(h.index);
+  }
+
+  std::vector<Slot> slots_;
+  std::vector<uint32_t> free_;
+  uint32_t capacity_;
 };
 
 template <typename T>
 struct Id {
   using object_type = T;
+  using handle_type = Handle<T>;
 
-  Id() : raw_id_(std::numeric_limits<size_t>::max()) {}
-  explicit Id(IdRegistry<T>& registry) : registry_(registry) { raw_id_ = registry_.get().register_id(); }
+  Id() = delete;
 
-  ~Id() {
-    if (raw_id_ != std::numeric_limits<size_t>::max()) {
-      registry_.get().unregister_id(raw_id_);
-    }
-  }
+  explicit Id(Registry<T>& registry) : registry_(&registry), handle_(registry.acquire()) {}
 
-  Id(const Id<T>& other)               = delete;
-  Id<T>& operator=(const Id<T>& other) = delete;
+  ~Id() { reset(); }
 
-  Id(Id<T>&& other) noexcept : raw_id_(other.raw_id_), registry_(other.registry_) {
-    other.raw_id_ = std::numeric_limits<size_t>::max();
-  }
+  Id(const Id<T>&)               = delete;
+  Id<T>& operator=(const Id<T>&) = delete;
+
+  Id(Id<T>&& other) noexcept
+      : registry_(std::exchange(other.registry_, nullptr)), handle_(std::exchange(other.handle_, handle_type{})) {}
 
   Id<T>& operator=(Id<T>&& other) noexcept {
     if (this != &other) {
-      if (raw_id_ != std::numeric_limits<size_t>::max()) {
-        registry_.get().unregister_id(raw_id_);
-      }
-      raw_id_       = other.raw_id_;
-      registry_     = other.registry_;
-      other.raw_id_ = std::numeric_limits<size_t>::max();
+      reset();
+      registry_ = std::exchange(other.registry_, nullptr);
+      handle_   = std::exchange(other.handle_, handle_type{});
     }
     return *this;
   }
 
-  bool operator==(const Id<T>& other) const { return raw_id_ == other.raw_id_; }
-  bool operator!=(const Id<T>& other) const { return raw_id_ != other.raw_id_; }
+  [[nodiscard]] constexpr bool operator==(const Id<T>& other) const noexcept { return handle_ == other.handle_; }
 
-  size_t raw_id() const { return raw_id_; }
-  bool is_valid() const { return raw_id_ != std::numeric_limits<size_t>::max(); }
-  bool expired() const { return !registry_.get().is_registered(raw_id_); }
+  [[nodiscard]] constexpr handle_type handle() const noexcept { return handle_; }
 
-  const IdRegistry<T>& registry() const { return registry_.get(); }
+  [[nodiscard]] constexpr uint32_t raw_id() const noexcept { return handle_.index; }
 
- private:
-  size_t raw_id_;
-  std::reference_wrapper<IdRegistry<T>> registry_;
-};
+  [[nodiscard]] constexpr bool is_valid() const noexcept { return handle_.is_valid(); }
 
-template <typename IdType>
-  requires std::is_base_of_v<Id<typename IdType::object_type>, IdType>
-struct IdView {
-  IdView() = delete;
-  IdView(const IdType& id) : raw_id_(id.raw_id()), registry_(id.registry()) {}  // NOLINT(google-explicit-constructor)
-  IdView(size_t raw_id, const IdRegistry<typename IdType::object_type>& registry)
-      : raw_id_(raw_id), registry_(registry) {}
+  Registry<T>& registry() noexcept { return *registry_; }
 
-  bool operator==(const IdView<IdType>& other) const { return raw_id_ == other.raw_id_; }
-  bool operator!=(const IdView<IdType>& other) const { return raw_id_ != other.raw_id_; }
-  bool operator==(const IdType& other) const { return raw_id_ == other.raw(); }
-  bool operator!=(const IdType& other) const { return raw_id_ != other.raw(); }
-
-  size_t raw_id() const { return raw_id_; }
-  bool is_valid() const { return raw_id_ != std::numeric_limits<size_t>::max(); }
-  bool expired() const { return !registry_.get().is_registered(raw_id_); }
+  const Registry<T>& registry() const noexcept { return *registry_; }
 
  private:
-  size_t raw_id_;
-  std::reference_wrapper<const IdRegistry<typename IdType::object_type>> registry_;
+  void reset() noexcept {
+    if (registry_ != nullptr && handle_.is_valid()) {
+      registry_->release(handle_);
+    }
+    registry_ = nullptr;
+    handle_   = {};
+  }
+
+  Registry<T>* registry_{};
+  handle_type handle_{};
 };
 
 template <typename T>
-struct IdViewHash {
-  [[nodiscard]] size_t operator()(const IdView<T>& id) const { return std::hash<size_t>()(id.raw_id()); }
+struct IdView {
+  using object_type = T;
+  using handle_type = Handle<T>;
+
+  IdView() = delete;
+  IdView(handle_type h, const Registry<T>& registry) noexcept  // NOLINT(google-explicit-constructor)
+      : handle_(h), registry_(&registry) {}
+  IdView(const Id<T>& id) noexcept  // NOLINT(google-explicit-constructor)
+      : handle_(id.handle()), registry_(&id.registry()) {}
+
+  [[nodiscard]] constexpr bool operator==(const IdView<T>&) const noexcept = default;
+
+  [[nodiscard]] constexpr handle_type handle() const noexcept { return handle_; }
+
+  [[nodiscard]] constexpr uint32_t raw_id() const noexcept { return handle_.index; }
+
+  [[nodiscard]] T* get() const noexcept { return registry_->get(handle_); }
+
+  [[nodiscard]] constexpr bool is_valid() const noexcept { return handle_.is_valid(); }
+
+  [[nodiscard]] bool expired() const noexcept { return !is_valid() || !registry_->valid(handle_); }
+
+  [[nodiscard]] const Registry<T>& registry() const noexcept { return *registry_; }
+
+ private:
+  handle_type handle_{};
+  const Registry<T>* registry_{};
 };
 
 }  // namespace kEn
+
+namespace std {
+
+template <typename T>
+struct hash<kEn::Handle<T>> {
+  [[nodiscard]] size_t operator()(kEn::Handle<T> h) const noexcept {
+    return hash<uint64_t>{}((static_cast<uint64_t>(h.generation) << 32) | h.index);
+  }
+};
+
+template <typename T>
+struct hash<kEn::IdView<T>> {
+  [[nodiscard]] size_t operator()(const kEn::IdView<T>& id) const noexcept {
+    return hash<kEn::Handle<T>>{}(id.handle());
+  }
+};
+
+}  // namespace std
