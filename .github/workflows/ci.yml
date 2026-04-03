@@ -69,7 +69,7 @@ jobs:
           python3 run-clang-tidy.py -p build/linux-clang-release -warnings-as-errors * -use-color -quiet -header-filter "(k|m)En[\\/ ]src[\\/ ].*"
 
   build-test:
-    name: CI ${{ matrix.name }}
+    name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -86,7 +86,6 @@ jobs:
             os: ubuntu-24.04
             preset: linux-clang-release
             cc: clang
-            cxx: clang++
             shell: bash
 
           - name: windows-msvc
@@ -131,9 +130,6 @@ jobs:
       - name: Configure (Linux)
         if: runner.os == 'Linux'
         shell: bash
-        env:
-          CC: ${{ matrix.cc }}
-          CXX: ${{ matrix.cxx }}
         run: |
           cmake --preset=${{ matrix.preset }} -DPython_EXECUTABLE="$(command -v python3)"
 

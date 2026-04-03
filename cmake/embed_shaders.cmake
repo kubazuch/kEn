@@ -46,15 +46,21 @@ function(embed_shaders)
       DEPENDS ${GENERATED_HEADERS}
   )
 
+  # Escape semicolons so the shell does not interpret them as command separators
+  # when CMake expands these list variables inside the COMMAND arguments.
+  string(REPLACE ";" "\\;" SHADER_BASE_NAMES_SAFE "${SHADER_BASE_NAMES}")
+  string(REPLACE ";" "\\;" SHADER_VAR_NAMES_SAFE "${SHADER_VAR_NAMES}")
+  string(REPLACE ";" "\\;" GENERATED_HEADERS_SAFE "${GENERATED_HEADERS}")
+
   # Target to generate the overall mapping header (shaders.hpp)
   set(SHADERS_MAP_OUTPUT "${ARGS_GENERATED_DIR}/shaders.hpp")
   add_custom_command(
       OUTPUT "${SHADERS_MAP_OUTPUT}"
       COMMAND ${CMAKE_COMMAND} -E echo "Generating shaders map header"
       COMMAND ${CMAKE_COMMAND}
-         "-DSHADER_BASE_NAMES=${SHADER_BASE_NAMES}"
-         "-DSHADER_VAR_NAMES=${SHADER_VAR_NAMES}"
-         "-DHEADER_FILES=${GENERATED_HEADERS}"
+         "-DSHADER_BASE_NAMES=${SHADER_BASE_NAMES_SAFE}"
+         "-DSHADER_VAR_NAMES=${SHADER_VAR_NAMES_SAFE}"
+         "-DHEADER_FILES=${GENERATED_HEADERS_SAFE}"
          "-DOUTPUT_FILE=${SHADERS_MAP_OUTPUT}"
          -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/generate_shaders_map.cmake"
       DEPENDS ${GENERATED_HEADERS}
