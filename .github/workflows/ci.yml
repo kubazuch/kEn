@@ -70,7 +70,6 @@ jobs:
 
   build-test:
     name: ${{ matrix.name }}
-    if: matrix.enabled
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -80,24 +79,20 @@ jobs:
             os: ubuntu-24.04
             preset: linux-gcc-release
             packages: "gcc g++"
-            enabled: false # generates too much errors at the moment, noncritical
 
           - name: linux-clang
             os: ubuntu-24.04
             preset: linux-clang-release
             packages: "clang"
-            enabled: false # generates too much errors at the moment, noncritical
 
           - name: windows-msvc
             os: windows-2022
             preset: windows-msvc-release
             msvc: true
-            enabled: true
 
           - name: windows-clang
             os: windows-2022
             preset: windows-clang-release
-            enabled: true
 
     steps:
       - name: Checkout code
