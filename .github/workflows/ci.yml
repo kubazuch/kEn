@@ -1,16 +1,60 @@
-name: Run formatter 📝, linter 🧹 and tests 🧪
+name: CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
+    branches: [main]
+  push:
     branches: [main]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
+  format:
+    name: CI / format
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        id: install-deps
+        shell: pwsh
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install jinja2
+          sudo apt-get update
+          sudo apt-get install -y clang-format
+
+      - name: Run clang-format
+        id: run-clang-format
+        run: |
+          clang-format --verbose --dry-run -Werror $(find . -path ./build -prune -o \( -name '*.cpp' -o -name '*.hpp' \) -print)
+  lint:
+    name: CI / clang-tidy
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install deps
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install jinja2
+          sudo apt-get update
+          sudo apt-get install -y clang-tidy clang cmake ninja-build
+
+      - name: Configure
+        run: |
+          cmake --preset=linux-clang-release -DPython_EXECUTABLE=$(command -v python3)
+
   run-formatter-linter-tests:
     runs-on: windows-2022
     steps:
@@ -26,7 +70,7 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install jinja2
-          curl -o run-clang-tidy.py https://raw.githubusercontent.com/llvm/llvm-project/refs/heads/main/clang-tools-extra/clang-tidy/tool/run-clang-tidy.py
+          curl -o run-clang-tidy.py https://raw.githubusercontent.com/llvm/llvm-project/c13b7485b87909fcf739f62cfa382b55407433c0/clang-tools-extra/clang-tidy/tool/run-clang-tidy.py
 
       - name: CMake Configure
         id: cmake-configure
