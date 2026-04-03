@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+#include <cmath>
+
 #include <mEn/config.hpp>
 #include <mEn/constants.hpp>
 
