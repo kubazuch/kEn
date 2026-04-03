@@ -45,3 +45,7 @@ embed_shaders(
     GENERATED_DIR "${GENERATED_SHADERS_DIR}"
 )
 add_dependencies(kEn ${EMBED_SHADERS_TARGET})
+
+# Convenience target for CI: generates all headers needed for clang-tidy
+# without compiling any kEn/mEn/Sandbox C++ sources.
+add_custom_target(generate_all DEPENDS ${EMBED_SHADERS_TARGET} glad)

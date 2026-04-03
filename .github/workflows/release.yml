@@ -1,15 +1,13 @@
-name: Build Source Code on Windows 🪟
+name: Release Windows
 
 on:
   push:
     branches: [main]
     tags:
       - "*"
-  pull_request:
-    branches: [main]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: release-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -19,21 +17,16 @@ env:
   BINARY_NAME: Sandbox
 
 jobs:
-  windows-build:
+  package-windows:
+    name: package-windows
     runs-on: windows-2022
-
-    permissions:
-      contents: write
-
     steps:
       - name: Checkout code
-        id: checkout-code
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
       - name: Install dependencies
-        id: install-deps
         shell: pwsh
         run: |
           python3 -m pip install --upgrade pip
@@ -44,19 +37,11 @@ jobs:
         with:
           arch: x64
 
-      - name: MSVC Build x64
-        id: msvc-build
+      - name: Build
         shell: pwsh
         run: |
-          cmake --preset=windows-msvc-release -DPython_EXECUTABLE="$((get-command python3).Path)"
+          cmake --preset=windows-msvc-release -DPython_EXECUTABLE="$((Get-Command python3).Path)"
           cmake --build --preset=windows-msvc-release --parallel
-
-      - name: Clang Build x64
-        id: clang-build
-        shell: pwsh
-        run: |
-          cmake --preset=windows-clang-release -DPython_EXECUTABLE="$((get-command python3).Path)"
-          cmake --build --preset=windows-clang-release --parallel
 
       - name: Create artifact payload
         id: create-artifact
@@ -77,7 +62,6 @@ jobs:
           }
 
       - name: Create release zip
-        id: create-release-zip
         shell: pwsh
         run: |
           & 7z a "./artifact/${{ env.BINARY_NAME }}-windows-x64.zip" `
@@ -88,23 +72,46 @@ jobs:
         with:
           name: ${{ env.BINARY_NAME }}-binary-archives
           path: ./artifact/${{ env.BINARY_NAME }}-windows-x64
+    outputs:
+      artifact_name: windows-release-zip
 
-      - name: Release
+  tagged-release:
+    name: tagged
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: package-windows
+    runs-on: windows-2022
+    steps:
+      - name: Download packaged artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-release-zip
+          path: ./artifact
+
+      - name: Publish tagged release
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: ./artifact/${{ env.BINARY_NAME }}-windows-x64.zip
           generate_release_notes: true
 
-      - name: Run latest-tag
+  unstable-release:
+    name: Release / unstable-latest
+    if: github.ref == 'refs/heads/main'
+    needs: package-windows
+    runs-on: windows-2022
+    steps:
+      - name: Download packaged artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-release-zip
+          path: ./artifact
+
+      - name: Update unstable tag
         uses: EndBug/latest-tag@latest
-        if: github.event_name != 'pull_request'
         with:
           ref: unstable-latest
 
-      - name: Pre-Release
+      - name: Publish unstable prerelease
         uses: softprops/action-gh-release@v2
-        if: github.event_name != 'pull_request'
         with:
           files: ./artifact/${{ env.BINARY_NAME }}-windows-x64.zip
           prerelease: true

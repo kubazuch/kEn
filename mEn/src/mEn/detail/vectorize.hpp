@@ -58,11 +58,6 @@ struct first_vec_clean<::mEn::vec<L, T>, Rest...> {
 template <class First, class... Rest>
 struct first_vec_clean<First, Rest...> : first_vec_clean<Rest...> {};
 
-template <class Last>
-struct first_vec_clean<Last> {
-  using type = Last;
-};
-
 template <class... Args>
 using first_vec_t = first_vec_clean<std::remove_cvref_t<Args>...>::type;
 

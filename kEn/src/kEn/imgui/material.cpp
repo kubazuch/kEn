@@ -7,7 +7,6 @@
 #include <utility>
 
 #include <kEn/renderer/material.hpp>
-#include <kEn/renderer/texture.hpp>
 
 namespace kEn::ui {
 

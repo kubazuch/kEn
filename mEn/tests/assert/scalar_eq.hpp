@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+#include <cmath>
+
 #include <mEn/config.hpp>
 #include <mEn/constants.hpp>
 
@@ -10,7 +12,7 @@ template <class T>
   if constexpr (std::is_floating_point_v<T>) {
     const auto da   = static_cast<long double>(a);
     const auto db   = static_cast<long double>(b);
-    const auto diff = std::fabsl(da - db);
+    const auto diff = std::fabs(da - db);
     const auto eps  = static_cast<long double>(mEn::kEpsilon<T>);
 
     if (diff <= eps) {

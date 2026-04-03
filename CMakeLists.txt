@@ -11,6 +11,7 @@ project(
   VERSION ${VERSION})
 
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)  # project does not use C++20 named modules
 
 option(GENERATE_CLANGD_FILE "Generate the .clangd file for the host operating system" ${PROJECT_IS_TOP_LEVEL})
 option(BUILD_SANDBOX "Build kEn sandbox executable" OFF)
