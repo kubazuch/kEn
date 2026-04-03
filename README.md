@@ -1,5 +1,8 @@
 # kEn
 
+[![CI](https://github.com/kubazuch/kEn/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/kubazuch/kEn/actions/workflows/ci.yml)
+[![Build](https://github.com/kubazuch/kEn/actions/workflows/release.yml/badge.svg?branch=main&event=push)](https://github.com/kubazuch/kEn/actions/workflows/release.yml)
+
 A 3D game engine written in C++23 for self-education, featuring a custom math library, OpenGL 4.6 renderer, ECS-like scene graph, and an event system.
 
 Greatly influenced by [TheCherno](https://github.com/TheCherno)'s [Game Engine](https://www.youtube.com/playlist?list=PLlrATfBNZ98dC-V-N3m0Go4deliWHPFwT) series and [Hazel](https://github.com/TheCherno/Hazel), as well as my previous [Java project](https://github.com/kubazuch/KuZuEngine-old).

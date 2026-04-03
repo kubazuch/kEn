@@ -13,6 +13,7 @@
 #include <kEn/core/timestep.hpp>
 #include <kEn/event/event.hpp>
 #include <kEn/renderer/shader.hpp>
+#include <kEn/scene/component.hpp>
 #include <kEn/scene/id_registry.hpp>
 
 namespace kEn {
