@@ -51,7 +51,7 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install jinja2
           sudo apt-get update
-          sudo apt-get install -y clang clang-tidy cmake ninja-build curl libwayland-dev libwayland-bin libxkbcommon-dev wayland-protocols xorg-dev
+          sudo apt-get install -y clang clang-tidy cmake ninja-build curl libwayland-dev libwayland-bin libxkbcommon-dev wayland-protocols xorg-dev libdbus-1-dev
 
       - name: Download run-clang-tidy.py
         run: |
@@ -67,3 +67,104 @@ jobs:
       - name: Run clang-tidy
         run: |
           python3 run-clang-tidy.py -p build/linux-clang-release -warnings-as-errors * -use-color -quiet -header-filter "(k|m)En[\\/ ]src[\\/ ].*"
+
+  build-test:
+    name: CI ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-gcc
+            os: ubuntu-24.04
+            preset: linux-gcc-release
+            cc: gcc
+            cxx: g++
+            shell: bash
+
+          - name: linux-clang
+            os: ubuntu-24.04
+            preset: linux-clang-release
+            cc: clang
+            cxx: clang++
+            shell: bash
+
+          - name: windows-msvc
+            os: windows-2022
+            preset: windows-msvc-release
+            shell: pwsh
+            msvc: true
+
+          - name: windows-clang
+            os: windows-2022
+            preset: windows-clang-release
+            shell: pwsh
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install jinja2
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build ${{ matrix.cc }} ${{ matrix.cxx }} libwayland-dev libwayland-bin libxkbcommon-dev wayland-protocols xorg-dev libdbus-1-dev
+
+      - name: Install Windows dependencies
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install jinja2
+
+      - name: Setup MSVC environment
+        if: matrix.msvc
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Configure (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+        run: |
+          cmake --preset=${{ matrix.preset }} -DPython_EXECUTABLE="$(command -v python3)"
+
+      - name: Configure (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cmake --preset=${{ matrix.preset }} -DPython_EXECUTABLE="$((Get-Command python3).Path)"
+
+      - name: Build (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          cmake --build --preset=${{ matrix.preset }} --parallel
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cmake --build --preset=${{ matrix.preset }} --parallel
+
+      - name: Run tests (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        working-directory: ./build/${{ matrix.preset }}
+        run: |
+          ctest --output-on-failure -j "$(nproc)"
+
+      - name: Run tests (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ./build/${{ matrix.preset }}
+        run: |
+          ctest --output-on-failure -j $env:NUMBER_OF_PROCESSORS
