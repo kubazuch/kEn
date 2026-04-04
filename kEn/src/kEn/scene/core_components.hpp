@@ -18,7 +18,7 @@ class ModelComponent : public GameComponent {
   void render(Shader& shader, double alpha) override;
   void imgui() override { model_->imgui(); }
   void on_transform_changed() override {}
-  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
+  [[nodiscard]] std::unique_ptr<GameComponent> clone() const override;
 
  private:
   std::shared_ptr<Model> model_;
@@ -32,7 +32,7 @@ class FreeLookComponent : public GameComponent {
   void render(Shader&, double) override {}
   void imgui() override {}
   void on_transform_changed() override {}
-  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
+  [[nodiscard]] std::unique_ptr<GameComponent> clone() const override;
 
   float sensitivity() const { return sensitivity_; }
   void set_sensitivity(float sensitivity) { sensitivity_ = sensitivity; }
@@ -54,7 +54,7 @@ class FreeMoveComponent : public GameComponent {
   void render(Shader&, double) override {}
   void imgui() override {}
   void on_transform_changed() override {}
-  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
+  [[nodiscard]] std::unique_ptr<GameComponent> clone() const override;
 
   float speed() const { return speed_; }
   void set_speed(float speed) { speed_ = speed; }
@@ -75,7 +75,7 @@ class LookAtComponent : public GameComponent {
   void render(Shader&, double) override {}
   void imgui() override {}
   void on_transform_changed() override {}
-  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
+  [[nodiscard]] std::unique_ptr<GameComponent> clone() const override;
 
  private:
   std::reference_wrapper<const GameObject> target_;

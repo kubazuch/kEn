@@ -27,7 +27,7 @@ class BaseLight : public GameComponent {
   BaseLight()           = default;
   ~BaseLight() override = default;
 
-  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override = 0;
+  [[nodiscard]] std::unique_ptr<GameComponent> clone() const override = 0;
   void update(Timestep, Timestep) override {}
   void render(Shader&, double) override {}
   void on_transform_changed() override {}
@@ -44,7 +44,7 @@ class DirectionalLight : public BaseLight {
  public:
   void imgui() override;
 
-  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
+  [[nodiscard]] std::unique_ptr<GameComponent> clone() const override;
 
   void load(std::string_view name, Shader& shader) const override;
 };
@@ -53,7 +53,7 @@ class PointLight : public BaseLight {
  public:
   void imgui() override;
 
-  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
+  [[nodiscard]] std::unique_ptr<GameComponent> clone() const override;
 
   void load(std::string_view name, Shader& shader) const override;
 
@@ -65,7 +65,7 @@ class SpotLight : public BaseLight {
  public:
   void imgui() override;
 
-  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
+  [[nodiscard]] std::unique_ptr<GameComponent> clone() const override;
 
   void load(std::string_view name, Shader& shader) const override;
 

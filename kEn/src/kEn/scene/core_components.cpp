@@ -32,7 +32,7 @@ void ModelComponent::render(Shader& shader, double /*alpha*/) {
   model_->render(shader, transform());
 }
 
-std::shared_ptr<GameComponent> ModelComponent::clone() const { return std::make_shared<ModelComponent>(model_); }
+std::unique_ptr<GameComponent> ModelComponent::clone() const { return std::make_unique<ModelComponent>(model_); }
 
 FreeLookComponent::FreeLookComponent(float sensitivity) : sensitivity_(sensitivity), window_center_() {
   dispatcher_.subscribe(this, &FreeLookComponent::on_window_resize);
@@ -78,8 +78,8 @@ void FreeLookComponent::update(Timestep /*delta*/, Timestep /*time*/) {
   }
 }
 
-std::shared_ptr<GameComponent> FreeLookComponent::clone() const {
-  return std::make_shared<FreeLookComponent>(sensitivity_);
+std::unique_ptr<GameComponent> FreeLookComponent::clone() const {
+  return std::make_unique<FreeLookComponent>(sensitivity_);
 }
 
 bool FreeLookComponent::on_window_resize(const kEn::WindowResizeEvent& event) {
@@ -116,8 +116,8 @@ void FreeMoveComponent::update(Timestep delta, Timestep /*time*/) {
   }
 }
 
-std::shared_ptr<GameComponent> FreeMoveComponent::clone() const {
-  return std::make_shared<FreeMoveComponent>(speed_, world_y_);
+std::unique_ptr<GameComponent> FreeMoveComponent::clone() const {
+  return std::make_unique<FreeMoveComponent>(speed_, world_y_);
 }
 
 void LookAtComponent::set_target(const GameObject& target) { target_ = target; }
@@ -126,6 +126,6 @@ void LookAtComponent::update(Timestep /*delta*/, Timestep /*time*/) {
   transform().look_at(target_.get().transform().world_pos());
 }
 
-std::shared_ptr<GameComponent> LookAtComponent::clone() const { return std::make_shared<LookAtComponent>(target_); }
+std::unique_ptr<GameComponent> LookAtComponent::clone() const { return std::make_unique<LookAtComponent>(target_); }
 
 }  // namespace kEn

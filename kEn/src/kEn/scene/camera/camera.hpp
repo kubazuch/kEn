@@ -16,7 +16,7 @@ class Camera : public GameComponent {
   mEn::Mat4 view_matrix() const { return transform().world_to_local_matrix(); }
   mEn::Mat4 view_projection_matrix() const { return projection_matrix_ * view_matrix(); }
 
-  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override = 0;
+  [[nodiscard]] std::unique_ptr<GameComponent> clone() const override = 0;
   void update(Timestep, Timestep) override {}
   void render(Shader&, double) override {}
   void imgui() override {}
@@ -33,7 +33,7 @@ class OrthographicCamera : public Camera {
   OrthographicCamera(float left, float right, float bottom, float top);
   void set_projection(float left, float right, float bottom, float top);
 
-  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
+  [[nodiscard]] std::unique_ptr<GameComponent> clone() const override;
 
   bool on_window_resize(WindowResizeEvent& event) override;
 
@@ -46,7 +46,7 @@ class PerspectiveCamera : public Camera {
   PerspectiveCamera(float fov, float aspect, float zNear, float zFar);
   void set_projection(float fov, float aspect, float zNear, float zFar);
 
-  [[nodiscard]] std::shared_ptr<GameComponent> clone() const override;
+  [[nodiscard]] std::unique_ptr<GameComponent> clone() const override;
 
   bool on_window_resize(WindowResizeEvent& event) override;
 
