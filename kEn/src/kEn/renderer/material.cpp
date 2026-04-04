@@ -52,7 +52,7 @@ void Material::apply(Shader& shader, RenderContext& context, std::string_view na
   for (auto i = std::uint8_t{0}; i < std::to_underlying(TextureType::Count); ++i) {
     const auto& texs = textures_[i];
     for (std::size_t j = 0; j < texs.size(); ++j) {
-      shader.set_uniform(std::format("{}.{}[{}]", name, texture_type::name_of(static_cast<TextureType>(i)), j),
+      shader.set_uniform(std::format("{}_{}[{}]", name, texture_type::name_of(static_cast<TextureType>(i)), j),
                          static_cast<int>(texture_id));
       context.bind_texture(texture_id, ShaderStage::Fragment, *texs[j]);
       ++texture_id;

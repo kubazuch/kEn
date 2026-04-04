@@ -22,7 +22,7 @@ class Shader;
 /**
  * @brief Strongly-typed texture semantic category.
  */
-enum class TextureType : std::uint8_t { AmbientOcclusion, Diffuse, Height, Normal, Specular, Count };
+enum class TextureType : std::uint8_t { Diffuse, Height, Normal, Specular, Count };
 
 namespace texture_type {
 
@@ -32,7 +32,6 @@ using enum TextureType;
 namespace detail {
 
 inline constexpr util::EnumMap kNames{{
-    std::pair{AmbientOcclusion, "ambient_occlusion"},
     std::pair{Diffuse, "diffuse"},
     std::pair{Height, "height"},
     std::pair{Normal, "normal"},

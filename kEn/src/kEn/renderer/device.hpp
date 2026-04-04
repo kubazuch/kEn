@@ -123,7 +123,6 @@ class Device {
   /** @brief Convenience overload with default sampler parameters. */
   [[nodiscard]] std::shared_ptr<Texture> create_texture(const TextureDesc& desc) { return create_texture(desc, {}); }
 
-  // TODO(remove): transitional path-based loader -- remove when asset pipeline is separate from GPU resources
 
   /**
    * @brief Load a texture from an image file, returning a cached shared instance.
@@ -133,6 +132,7 @@ class Device {
    * @param mip_levels Number of mip levels to generate; pass @c kFullMipChain for a full chain.
    * @note Repeated calls with the same @p path return the same cached object.
    */
+  // TODO(kuzu): move towards central asset manager
   [[nodiscard]] virtual std::shared_ptr<Texture> create_texture(const std::filesystem::path& path,
                                                                 const SamplerDesc& sampler, TextureFormat format,
                                                                 std::uint32_t mip_levels) = 0;

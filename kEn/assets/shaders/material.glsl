@@ -13,7 +13,7 @@ struct material {
   bool emissive;
 
   int diffuse_count;
-  sampler2D diffuse[MAX_TEXTURES];
+  int height_count;
   int normal_count;
-  sampler2D normal[MAX_TEXTURES];
+  int specular_count;
 };
