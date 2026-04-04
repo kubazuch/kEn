@@ -176,6 +176,8 @@ class DemoLayer : public kEn::Layer {
     phong_shader_->set_uniform("u_LightVP", kLightProj * light_view);
     phong_shader_->set_uniform("u_ShadowBias", shadow_bias_);
     phong_shader_->set_uniform("u_ShadowsEnabled", shadows_enabled_);
+    phong_shader_->set_uniform("u_UseNormalMap", use_normal_map_);
+    phong_shader_->set_uniform("u_UseSpecularMap", use_specular_map_);
 
     floor_obj_.render(*phong_shader_, alpha);
     model_obj_.render(*phong_shader_, alpha);
@@ -234,6 +236,8 @@ class DemoLayer : public kEn::Layer {
 
       ImGui::SeparatorText("Rendering");
       ImGui::Checkbox("Wireframe (F1)", &wireframe_);
+      ImGui::Checkbox("Normal Map", &use_normal_map_);
+      ImGui::Checkbox("Specular Map", &use_specular_map_);
       if (ImGui::ColorEdit3("Ambient", mEn::value_ptr(ambient_color_))) {
         kEn::Renderer::set_ambient(ambient_color_);
       }
@@ -333,6 +337,8 @@ class DemoLayer : public kEn::Layer {
   bool viewport_focused_   = false;
   bool viewport_hovered_   = false;
   bool wireframe_          = false;
+  bool use_normal_map_     = true;
+  bool use_specular_map_   = true;
   mEn::Vec3 ambient_color_ = {0.05F, 0.05F, 0.08F};
   float fov_               = 70.F;
   uint32_t vp_w_           = 1280;

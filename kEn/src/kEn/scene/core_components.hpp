@@ -4,6 +4,7 @@
 
 #include <kEn/core/timestep.hpp>
 #include <kEn/event/application_events.hpp>
+#include <kEn/imgui/model.hpp>
 #include <kEn/scene/camera/camera.hpp>
 #include <kEn/scene/component.hpp>
 #include <kEn/scene/mesh/model.hpp>
@@ -15,7 +16,7 @@ class ModelComponent : public GameComponent {
   explicit ModelComponent(std::shared_ptr<Model> model) : model_(std::move(model)) {}
 
   void render(Shader& shader, double alpha) override;
-  void imgui() override { model_->imgui(); }
+  void imgui() override { ui::Model(*model_); }
   [[nodiscard]] std::unique_ptr<GameComponent> clone() const override;
 
  private:

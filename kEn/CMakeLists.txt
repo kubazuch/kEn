@@ -16,13 +16,23 @@ fetch_assimp()
 fetch_stb()
 fetch_nfd()
 
+# ##############################################################################
+# Vendor: mikktspace (C library)
+# ##############################################################################
+add_library(mikktspace STATIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/vendor/mikktspace.c"
+)
+target_include_directories(mikktspace PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/vendor"
+)
+
 if(WIN32)
     list(APPEND KEN_COMPILE_DEFS KEN_PLATFORM_WIN)
 endif()
 
 configure_library(
     NAME kEn
-    DEPS_PUBLIC mEn glfw spdlog imgui imguizmo glad assimp stb nfd
+    DEPS_PUBLIC mEn glfw spdlog imgui imguizmo glad assimp stb nfd mikktspace
     COMPILE_DEFINITIONS
         GLFW_INCLUDE_NONE
         STB_IMAGE_IMPLEMENTATION
