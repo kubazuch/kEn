@@ -29,18 +29,53 @@ jobs:
           MINOR_LABEL: "version/minor 🔨"
           PATCH_LABEL: "version/patch 🪶"
         run: |
-          pr_json=$(gh api repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/pulls -H "Accept: application/vnd.github+json")
+          pr_json='[]'
+          pr_number=''
 
-          pr_number=$(jq -r '.[0].number // empty' <<<"$pr_json")
+          for i in 1 2 3 4 5; do
+            pr_json="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/pulls" \
+              -H "Accept: application/vnd.github+json" || echo '[]')"
+
+            pr_number="$(jq -r '.[0].number // empty' <<<"$pr_json")"
+
+            if [ -n "$pr_number" ]; then
+              echo "Resolved PR #$pr_number on attempt $i"
+              break
+            fi
+
+            echo "PR association not visible yet, retry $i..."
+            sleep 3
+          done
+
+          # Fallback: search merged PRs by commit SHA
+          if [ -z "$pr_number" ]; then
+            pr_number="$(
+              gh pr list \
+                --search "$GITHUB_SHA" \
+                --state merged \
+                --base main \
+                --limit 1 \
+                --json number \
+                --jq '.[0].number // empty'
+            )"
+          fi
+
           if [ -z "$pr_number" ]; then
             echo "No PR associated with this commit; unstable only."
             exit 0
           fi
 
-          labels=$(jq -r '.[0].labels[].name' <<<"$pr_json")
+          labels="$(
+            gh pr view "$pr_number" --json labels --jq '.labels[].name'
+          )"
 
           # Fetch the highest tag
-          current_tag=$(gh api repos/$GITHUB_REPOSITORY/tags --jq '[.[].name | select(startswith("v"))] | sort_by(ltrimstr("v") | split(".") | map(tonumber)) | last // "v0.0.0"')
+          current_tag="$(
+            gh api repos/$GITHUB_REPOSITORY/tags \
+              --jq '[.[].name | select(startswith("v"))]
+                    | sort_by(ltrimstr("v") | split(".") | map(tonumber))
+                    | last // "v0.0.0"'
+          )"
           echo "The current tag is: $current_tag"
 
           # Parse the current version into major, minor, patch parts
@@ -64,7 +99,7 @@ jobs:
           # Format the new tag
           new_tag="v$major.$minor.$patch"
           echo "The new tag is: $new_tag"
-          echo "tag=$new_tag" >> $GITHUB_OUTPUT
+          echo "tag=$new_tag" >> "$GITHUB_OUTPUT"
 
       - name: Create tag
         if: steps.determine.outputs.tag != ''
