@@ -1,9 +1,13 @@
 #include "game_object.hpp"
 
-#include <algorithm>
 #include <memory>
 #include <string_view>
+#include <utility>
 #include <vector>
+
+#ifdef KEN_DEBUG_BUILD
+#include <algorithm>
+#endif
 
 #include <mEn/fwd.hpp>
 
