@@ -53,55 +53,47 @@ class DemoLayer : public kEn::Layer {
     vp_h_ = win.height();
 
     // --- Camera ---
-    camera_ = std::make_shared<kEn::PerspectiveCamera>(
+    camera_ = &camera_obj_.emplace_component<kEn::PerspectiveCamera>(
         mEn::radians(fov_), static_cast<float>(vp_w_) / static_cast<float>(vp_h_), 0.01F, 200.F);
     camera_obj_.transform().set_local_pos({0.F, 1.5F, 5.F});
-    camera_obj_.add_components({
-        camera_,
-        std::make_shared<kEn::FreeLookComponent>(0.1F),
-        std::make_shared<kEn::FreeMoveComponent>(5.F, true),
-    });
+    camera_obj_.emplace_component<kEn::FreeLookComponent>(0.1F);
+    camera_obj_.emplace_component<kEn::FreeMoveComponent>(5.F, true);
 
     // --- Spot light (torch) - child of camera, follows it ---
-    spot_light_                     = std::make_shared<kEn::SpotLight>();
+    spot_light_                     = &spot_light_obj_.emplace_component<kEn::SpotLight>();
     spot_light_->color              = {1.F, 1.F, 0.9F};
     spot_light_->atten              = {.constant = 1.F, .linear = 0.09F, .quadratic = 0.032F};
     spot_light_->inner_cutoff_angle = 0.20F;
     spot_light_->outer_cutoff_angle = 0.35F;
-    spot_light_obj_.add_component(spot_light_);
     camera_obj_.add_child(spot_light_obj_);
 
     // --- Model ---
     model_obj_.transform().set_local_pos({0.F, 0.F, 0.F});
     auto backpack = kEn::Model::load("backpack/backpack.obj", {}, true);
-    model_obj_.add_component(std::make_shared<kEn::ModelComponent>(backpack));
+    model_obj_.emplace_component<kEn::ModelComponent>(backpack);
 
     // --- Directional light that always aims at the model (LookAt) ---
-    dir_light_        = std::make_shared<kEn::DirectionalLight>();
+    dir_light_        = &dir_light_obj_.emplace_component<kEn::DirectionalLight>();
     dir_light_->color = {0.8F, 0.85F, 1.F};
     dir_light_obj_.transform().set_local_pos({5.F, 8.F, 3.F});
-    dir_light_obj_.add_components({
-        dir_light_,
-        std::make_shared<kEn::LookAtComponent>(model_obj_),
-    });
+    dir_light_obj_.emplace_component<kEn::LookAtComponent>(model_obj_);
 
     // --- Point light ---
-    point_light_        = std::make_shared<kEn::PointLight>();
+    point_light_        = &point_light_obj_.emplace_component<kEn::PointLight>();
     point_light_->color = {1.F, 0.85F, 0.5F};
     point_light_->atten = {.constant = 1.F, .linear = 0.09F, .quadratic = 0.032F};
     point_light_obj_.transform().set_local_pos({-2.F, 2.F, 1.F});
-    point_light_obj_.add_component(point_light_);
 
     // --- Floor (scaled cube with programmatic white texture) ---
     floor_obj_.transform().set_local_pos({0.F, -1.8F, 0.F});
     floor_obj_.transform().set_local_scale({10.F, 0.2F, 10.F});
     auto floor_model = kEn::Model::load("cube/cube.obj");
-    floor_obj_.add_component(std::make_shared<kEn::ModelComponent>(floor_model));
+    floor_obj_.emplace_component<kEn::ModelComponent>(floor_model);
 
     // --- Register lights (once -- SceneData never clears them) ---
-    kEn::Renderer::add_light(point_light_);
-    kEn::Renderer::add_light(dir_light_);
-    kEn::Renderer::add_light(spot_light_);
+    kEn::Renderer::add_light(*point_light_);
+    kEn::Renderer::add_light(*dir_light_);
+    kEn::Renderer::add_light(*spot_light_);
     kEn::Renderer::set_ambient(ambient_color_);
 
     // --- Shader ---
@@ -137,11 +129,11 @@ class DemoLayer : public kEn::Layer {
   void on_detach() override { KEN_INFO("DemoLayer detached"); }
 
   void on_update(kEn::Timestep delta, kEn::Timestep time) override {
-    camera_obj_.update_all(delta, time);
-    model_obj_.update_all(delta, time);
-    floor_obj_.update_all(delta, time);
-    point_light_obj_.update_all(delta, time);
-    dir_light_obj_.update_all(delta, time);
+    camera_obj_.update(delta, time);
+    model_obj_.update(delta, time);
+    floor_obj_.update(delta, time);
+    point_light_obj_.update(delta, time);
+    dir_light_obj_.update(delta, time);
   }
 
   void on_render(double alpha) override {
@@ -159,8 +151,8 @@ class DemoLayer : public kEn::Layer {
       device_.context().set_depth_state(*depth_state_);
       device_.context().set_raster_state(*raster_front_cull_);
       kEn::Renderer::begin_scene(light_pos, light_view, kLightProj, device_.context());
-      floor_obj_.render_all(*shadow_shader_, alpha);
-      model_obj_.render_all(*shadow_shader_, alpha);
+      floor_obj_.render(*shadow_shader_, alpha);
+      model_obj_.render(*shadow_shader_, alpha);
       kEn::Renderer::end_scene();
     }
 
@@ -181,8 +173,8 @@ class DemoLayer : public kEn::Layer {
     phong_shader_->set_uniform("u_ShadowBias", shadow_bias_);
     phong_shader_->set_uniform("u_ShadowsEnabled", shadows_enabled_);
 
-    floor_obj_.render_all(*phong_shader_, alpha);
-    model_obj_.render_all(*phong_shader_, alpha);
+    floor_obj_.render(*phong_shader_, alpha);
+    model_obj_.render(*phong_shader_, alpha);
 
     kEn::Renderer::end_scene();
 
@@ -271,7 +263,7 @@ class DemoLayer : public kEn::Layer {
 
     // --- Model inspector ---
     if (ImGui::Begin("Model Inspector")) {
-      model_obj_.imgui_all();
+      model_obj_.imgui();
     }
     ImGui::End();
   }
@@ -317,10 +309,10 @@ class DemoLayer : public kEn::Layer {
   kEn::GameObject point_light_obj_;
   kEn::GameObject dir_light_obj_;
 
-  std::shared_ptr<kEn::PerspectiveCamera> camera_;
-  std::shared_ptr<kEn::PointLight> point_light_;
-  std::shared_ptr<kEn::DirectionalLight> dir_light_;
-  std::shared_ptr<kEn::SpotLight> spot_light_;
+  kEn::PerspectiveCamera* camera_   = nullptr;
+  kEn::PointLight* point_light_     = nullptr;
+  kEn::DirectionalLight* dir_light_ = nullptr;
+  kEn::SpotLight* spot_light_       = nullptr;
 
   std::shared_ptr<kEn::Shader> phong_shader_;
   std::shared_ptr<kEn::Shader> shadow_shader_;
