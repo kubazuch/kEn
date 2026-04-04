@@ -37,8 +37,8 @@ void DirectionalLight::load(std::string_view name, Shader& shader) const {
   shader.set_uniform(std::format("{}.dir", name), transform().world_front());
 }
 
-std::shared_ptr<GameComponent> DirectionalLight::clone() const {
-  auto ptr   = std::make_shared<DirectionalLight>();
+std::unique_ptr<GameComponent> DirectionalLight::clone() const {
+  auto ptr   = std::make_unique<DirectionalLight>();
   ptr->color = color;
   return ptr;
 }
@@ -63,8 +63,8 @@ void PointLight::load(std::string_view name, Shader& shader) const {
   shader.set_uniform(std::format("{}.pos", name), transform().world_pos());
 }
 
-std::shared_ptr<GameComponent> PointLight::clone() const {
-  auto ptr   = std::make_shared<PointLight>();
+std::unique_ptr<GameComponent> PointLight::clone() const {
+  auto ptr   = std::make_unique<PointLight>();
   ptr->color = color;
   ptr->atten = atten;
   return ptr;
@@ -99,8 +99,8 @@ void SpotLight::load(std::string_view name, Shader& shader) const {
   shader.set_uniform(std::format("{}.outerCutoff", name), mEn::cos(outer_cutoff_angle));
 }
 
-std::shared_ptr<GameComponent> SpotLight::clone() const {
-  auto ptr                = std::make_shared<SpotLight>();
+std::unique_ptr<GameComponent> SpotLight::clone() const {
+  auto ptr                = std::make_unique<SpotLight>();
   ptr->color              = color;
   ptr->atten              = atten;
   ptr->inner_cutoff_angle = inner_cutoff_angle;

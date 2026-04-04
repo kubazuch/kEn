@@ -51,13 +51,11 @@ class Renderer {
    * Lights are retained across frames; they are not cleared by end_scene(). Register each light once
    * (e.g. at scene setup), not every frame.
    */
-  static void add_light(std::shared_ptr<PointLight> light) { scene_data_->point_lights.push_back(std::move(light)); }
-  /** @copydoc add_light(std::shared_ptr<PointLight>) */
-  static void add_light(std::shared_ptr<DirectionalLight> light) {
-    scene_data_->directional_lights.push_back(std::move(light));
-  }
-  /** @copydoc add_light(std::shared_ptr<PointLight>) */
-  static void add_light(std::shared_ptr<SpotLight> light) { scene_data_->spot_lights.push_back(std::move(light)); }
+  static void add_light(PointLight& light) { scene_data_->point_lights.push_back(&light); }
+  /** @copydoc add_light(PointLight&) */
+  static void add_light(DirectionalLight& light) { scene_data_->directional_lights.push_back(&light); }
+  /** @copydoc add_light(PointLight&) */
+  static void add_light(SpotLight& light) { scene_data_->spot_lights.push_back(&light); }
   /** @brief Set the scene ambient light colour applied to all lit submissions. */
   static void set_ambient(const mEn::Vec3& ambient) { scene_data_->ambient = ambient; }
 
@@ -114,9 +112,9 @@ class Renderer {
     mEn::Mat4 p_matrix;
     mEn::Mat4 vp_matrix;
     mEn::Vec3 camera_pos{};
-    std::vector<std::shared_ptr<PointLight>> point_lights;
-    std::vector<std::shared_ptr<DirectionalLight>> directional_lights;
-    std::vector<std::shared_ptr<SpotLight>> spot_lights;
+    std::vector<PointLight*> point_lights;
+    std::vector<DirectionalLight*> directional_lights;
+    std::vector<SpotLight*> spot_lights;
     mEn::Vec3 ambient{};
   };
 

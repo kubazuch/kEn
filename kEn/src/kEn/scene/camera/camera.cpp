@@ -33,8 +33,8 @@ bool OrthographicCamera::on_window_resize(WindowResizeEvent& event) {
   return false;
 }
 
-std::shared_ptr<GameComponent> OrthographicCamera::clone() const {
-  return std::make_shared<OrthographicCamera>(left_, right_, bottom_, top_);
+std::unique_ptr<GameComponent> OrthographicCamera::clone() const {
+  return std::make_unique<OrthographicCamera>(left_, right_, bottom_, top_);
 }
 
 PerspectiveCamera::PerspectiveCamera(float fov, float aspect, float zNear, float zFar)
@@ -58,8 +58,8 @@ bool PerspectiveCamera::on_window_resize(WindowResizeEvent& event) {
   return false;
 }
 
-std::shared_ptr<GameComponent> PerspectiveCamera::clone() const {
-  return std::make_shared<PerspectiveCamera>(fov_, aspect_, zNear_, zFar_);
+std::unique_ptr<GameComponent> PerspectiveCamera::clone() const {
+  return std::make_unique<PerspectiveCamera>(fov_, aspect_, zNear_, zFar_);
 }
 
 }  // namespace kEn

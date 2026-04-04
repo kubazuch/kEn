@@ -15,7 +15,7 @@ class GameComponent {
  public:
   GameComponent() = default;
   virtual ~GameComponent() { on_detach(); }
-  [[nodiscard]] virtual std::shared_ptr<GameComponent> clone() const = 0;
+  [[nodiscard]] virtual std::unique_ptr<GameComponent> clone() const = 0;
 
   virtual void on_attach() {}
   virtual void on_detach() {}

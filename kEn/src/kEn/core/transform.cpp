@@ -15,7 +15,6 @@
 #include <mEn/fwd.hpp>
 
 #include <kEn/core/assert.hpp>
-#include <kEn/scene/game_object.hpp>
 
 namespace kEn {
 
@@ -23,8 +22,6 @@ Transform::Transform(mEn::Vec3 pos, mEn::Quat rot, mEn::Vec3 scale)
     : pos_(pos), rot_(mEn::normalize(rot)), scale_(scale) {}
 
 Transform::~Transform() {
-  owner_ = nullptr;
-
   for (auto* child : children_) {
     KEN_CORE_ASSERT(child != nullptr, "children_ invariant violated: null child in Transform destructor");
     child->parent_ = nullptr;
@@ -148,8 +145,8 @@ void Transform::set_dirty() {
     }
   }
 
-  if (owner_ != nullptr) {
-    owner_->on_transform_changed();
+  if (on_changed_) {
+    on_changed_();
   }
 }
 

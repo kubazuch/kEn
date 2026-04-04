@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <optional>
 #include <span>
 #include <vector>
@@ -15,8 +16,6 @@
  */
 
 namespace kEn {
-
-class GameObject;
 
 /**
  * @brief Hierarchical 3D transform with dirty-flag world-matrix caching.
@@ -109,33 +108,13 @@ class Transform {
 
   /** @} */
 
-  /** @name Ownership */
+  /** @name Change notification */
   /** @{ */
 
-  /** @brief Associates this transform with @p owner.  Does not call set_dirty(). */
-  void set_owner(GameObject& owner) noexcept { owner_ = &owner; }
-  /** @brief Clears the owner pointer. */
-  void unset_owner() noexcept { owner_ = nullptr; }
-  /** @brief Returns true if an owner is set. */
-  [[nodiscard]] bool has_owner() const noexcept { return owner_ != nullptr; }
-  /** @brief Returns a pointer to the owning GameObject, or nullptr. */
-  [[nodiscard]] GameObject* owner() noexcept { return owner_; }
-  /** @copydoc owner() */
-  [[nodiscard]] const GameObject* owner() const noexcept { return owner_; }
-
-  /**
-   * @brief Returns a reference to the owning GameObject.
-   * @pre has_owner() == true
-   */
-  [[nodiscard]] GameObject& get_owner() {
-    KEN_CORE_ASSERT(has_owner(), "Transform has no owner");
-    return *owner_;
-  }
-  /** @copydoc get_owner() */
-  [[nodiscard]] const GameObject& get_owner() const {
-    KEN_CORE_ASSERT(has_owner(), "Transform has no owner");
-    return *owner_;
-  }
+  /** @brief Registers a callback invoked whenever set_dirty() propagates to this transform. */
+  void set_on_changed(std::function<void()> callback) noexcept { on_changed_ = std::move(callback); }
+  /** @brief Clears the change callback. */
+  void unset_on_changed() noexcept { on_changed_ = nullptr; }
 
   /** @} */
 
@@ -431,7 +410,7 @@ class Transform {
 
   Transform* parent_ = nullptr;
   std::vector<Transform*> children_;
-  GameObject* owner_ = nullptr;
+  std::function<void()> on_changed_;
 
   mEn::Vec3 pos_{};
   mEn::Quat rot_{1, 0, 0, 0};
