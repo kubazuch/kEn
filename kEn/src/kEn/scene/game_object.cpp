@@ -26,12 +26,11 @@ Registry<GameObject> GameObject::game_object_registry_(GameObject::kMaxGameObjec
 GameObject::GameObject(mEn::Vec3 pos, mEn::Quat rot, mEn::Vec3 scale, std::string_view name)
     : transform_(pos, rot, scale), id_(game_object_registry_), name_(name) {
   game_object_registry_.bind(id_.handle(), this);
-  transform_.set_on_changed([this] { on_transform_changed(); });
 }
 
 GameObject::~GameObject() {
   for (const auto& component : components_) {
-    component->on_detach();
+    component->detach_from_parent();
   }
 
   for (auto* child : children_) {
@@ -93,12 +92,10 @@ GameComponent& GameObject::add_component(std::unique_ptr<GameComponent> to_add) 
   const auto* raw = to_add.get();
   KEN_CORE_ASSERT(!std::ranges::contains(components_, raw, [](const auto& c) { return c.get(); }));
 
-  to_add->parent_ = *this;
   components_.push_back(std::move(to_add));
   try {
-    components_.back()->on_attach();
+    components_.back()->attach_to(*this);
   } catch (...) {
-    components_.back()->parent_.reset();
     components_.pop_back();
     throw;
   }
@@ -157,12 +154,6 @@ void GameObject::on_event(BaseEvent& event, bool recursive) {
         return;
       }
     }
-  }
-}
-
-void GameObject::on_transform_changed() {
-  for (const auto& component : components_) {
-    component->on_transform_changed();
   }
 }
 

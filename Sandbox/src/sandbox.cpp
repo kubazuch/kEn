@@ -119,9 +119,13 @@ class DemoLayer : public kEn::Layer {
 
     // --- Pipeline state objects ---
     depth_state_       = device_.create_depth_state();
-    raster_front_cull_ = device_.create_raster_state({.cull_mode = kEn::CullMode::Front});
     raster_back_cull_  = device_.create_raster_state();
-    raster_wireframe_  = device_.create_raster_state({.fill_mode = kEn::FillMode::Wireframe});
+    raster_front_cull_ = device_.create_raster_state({
+        .cull_mode = kEn::CullMode::Front,
+    });
+    raster_wireframe_  = device_.create_raster_state({
+         .fill_mode = kEn::FillMode::Wireframe,
+    });
 
     KEN_INFO("DemoLayer attached");
   }
@@ -162,7 +166,7 @@ class DemoLayer : public kEn::Layer {
     device_.context().set_clear_color({0.08F, 0.08F, 0.12F, 1.F});
     device_.context().clear();
     device_.context().set_depth_state(*depth_state_);
-    device_.context().set_raster_state(*raster_back_cull_);
+    device_.context().set_raster_state(wireframe_ ? *raster_wireframe_ : *raster_back_cull_);
 
     kEn::Renderer::begin_scene(*camera_, device_.context());
     kEn::Renderer::prepare(*phong_shader_);
@@ -229,9 +233,7 @@ class DemoLayer : public kEn::Layer {
       }
 
       ImGui::SeparatorText("Rendering");
-      if (ImGui::Checkbox("Wireframe (F1)", &wireframe_)) {
-        device_.context().set_raster_state(wireframe_ ? *raster_wireframe_ : *raster_back_cull_);
-      }
+      ImGui::Checkbox("Wireframe (F1)", &wireframe_);
       if (ImGui::ColorEdit3("Ambient", mEn::value_ptr(ambient_color_))) {
         kEn::Renderer::set_ambient(ambient_color_);
       }
@@ -280,7 +282,6 @@ class DemoLayer : public kEn::Layer {
   bool on_key_pressed(kEn::KeyPressedEvent& event) {
     if (event.key() == kEn::key::f1) {
       wireframe_ = !wireframe_;
-      device_.context().set_raster_state(wireframe_ ? *raster_wireframe_ : *raster_back_cull_);
     }
     return false;
   }

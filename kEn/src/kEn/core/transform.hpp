@@ -3,6 +3,7 @@
 #include <functional>
 #include <optional>
 #include <span>
+#include <unordered_map>
 #include <vector>
 
 #include <mEn/features/mat_decompose.hpp>
@@ -111,10 +112,19 @@ class Transform {
   /** @name Change notification */
   /** @{ */
 
-  /** @brief Registers a callback invoked whenever set_dirty() propagates to this transform. */
-  void set_on_changed(std::function<void()> callback) noexcept { on_changed_ = std::move(callback); }
-  /** @brief Clears the change callback. */
-  void unset_on_changed() noexcept { on_changed_ = nullptr; }
+  /**
+   * @brief Registers a callback invoked whenever set_dirty() propagates to
+   *        this transform.  Replaces any existing callback registered under
+   *        the same @p key.
+   * @param key      Unique subscriber identity (typically @c this of the caller).
+   * @param callback Callable invoked on each dirty propagation.
+   */
+  void subscribe_on_changed(const void* key, std::function<void()> callback);
+  /**
+   * @brief Removes the callback registered under @p key.  No-op if @p key
+   *        was never subscribed.
+   */
+  void unsubscribe_on_changed(const void* key) noexcept;
 
   /** @} */
 
@@ -410,7 +420,7 @@ class Transform {
 
   Transform* parent_ = nullptr;
   std::vector<Transform*> children_;
-  std::function<void()> on_changed_;
+  std::unordered_map<const void*, std::function<void()>> on_changed_reactors_;
 
   mEn::Vec3 pos_{};
   mEn::Quat rot_{1, 0, 0, 0};

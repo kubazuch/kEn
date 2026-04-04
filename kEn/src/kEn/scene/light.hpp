@@ -28,9 +28,6 @@ class BaseLight : public GameComponent {
   ~BaseLight() override = default;
 
   [[nodiscard]] std::unique_ptr<GameComponent> clone() const override = 0;
-  void update(Timestep, Timestep) override {}
-  void render(Shader&, double) override {}
-  void on_transform_changed() override {}
 
   DELETE_COPY_MOVE(BaseLight);
 
