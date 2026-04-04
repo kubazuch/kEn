@@ -123,7 +123,6 @@ class Device {
   /** @brief Convenience overload with default sampler parameters. */
   [[nodiscard]] std::shared_ptr<Texture> create_texture(const TextureDesc& desc) { return create_texture(desc, {}); }
 
-
   /**
    * @brief Load a texture from an image file, returning a cached shared instance.
    * @param path       File path to load.
