@@ -25,6 +25,7 @@ jobs:
         id: determine
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           MAJOR_LABEL: "version/major 🏗️"
           MINOR_LABEL: "version/minor 🔨"
           PATCH_LABEL: "version/patch 🪶"
