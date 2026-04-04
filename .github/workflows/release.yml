@@ -241,5 +241,7 @@ jobs:
       - name: Publish tagged release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ needs.version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
           files: ./artifact/${{ env.BINARY_NAME }}-windows-x64.zip
           generate_release_notes: true
