@@ -12,6 +12,7 @@
 #include <filesystem>
 #include <memory>
 #include <numeric>
+#include <span>
 #include <stdexcept>
 #include <unordered_map>
 #include <utility>
@@ -29,7 +30,7 @@
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
 #include <kEn/renderer/texture_format.hpp>
-#include <kEn/util/enum_map.hpp>
+#include <kEn/scene/mesh/mesh.hpp>
 
 #include <assimp/Importer.hpp>
 
@@ -64,11 +65,11 @@ struct MikkUserData {
 };
 
 kEn::Vertex& face_vertex(MikkUserData& data, int face, int vert) {
-  return (*data.vertices)[static_cast<std::size_t>(face) * 3U + static_cast<std::size_t>(vert)];
+  return (*data.vertices)[(static_cast<std::size_t>(face) * 3U) + static_cast<std::size_t>(vert)];
 }
 
 const kEn::Vertex& face_vertex(const MikkUserData& data, int face, int vert) {
-  return (*data.vertices)[static_cast<std::size_t>(face) * 3U + static_cast<std::size_t>(vert)];
+  return (*data.vertices)[(static_cast<std::size_t>(face) * 3U) + static_cast<std::size_t>(vert)];
 }
 
 int mikk_get_num_faces(const SMikkTSpaceContext* ctx) {
@@ -123,7 +124,7 @@ void expand_indexed_mesh(std::vector<kEn::Vertex>& vertices, std::vector<std::ui
 
   vertices = std::move(expanded);
   indices.resize(vertices.size());
-  std::iota(indices.begin(), indices.end(), 0U);
+  std::ranges::iota(indices, 0U);
 }
 
 void generate_mikktspace(std::vector<kEn::Vertex>& vertices, std::vector<std::uint32_t>& indices) {
@@ -222,7 +223,7 @@ kEn::Mesh process_mesh(aiMesh* mesh, const aiScene* scene, const kEn::SamplerDes
   // Material
   aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
 
-  const auto luminance = [](const aiColor3D& c) { return 0.2126F * c.r + 0.7152F * c.g + 0.0722F * c.b; };
+  const auto luminance = [](const aiColor3D& c) { return (0.2126F * c.r) + (0.7152F * c.g) + (0.0722F * c.b); };
 
   kEn::Material material;
   aiColor3D color;

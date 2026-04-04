@@ -62,7 +62,7 @@ jobs:
 
       - name: Run clang-tidy
         run: |
-          python3 run-clang-tidy.py -p build/linux-clang-release -warnings-as-errors "*" -use-color -quiet -header-filter "(k|m)En[\\/ ]src[\\/ ].*"
+          python3 run-clang-tidy.py -p build/linux-clang-release -warnings-as-errors "*" -use-color -quiet -header-filter "(k|m)En[\\/ ]src[\\/ ].*" "[km]En[/\\\\]src[/\\\\]|[km]En[/\\\\]tests[/\\\\]|Sandbox[/\\\\]src[/\\\\]"
 
   build-test:
     name: ${{ matrix.name }}
