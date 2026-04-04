@@ -1,10 +1,8 @@
-name: Release Windows
+name: Release
 
 on:
   push:
     branches: [main]
-    tags:
-      - "*"
 
 concurrency:
   group: release-${{ github.ref }}
@@ -12,13 +10,104 @@ concurrency:
 
 permissions:
   contents: write
+  pull-requests: read
 
 env:
   BINARY_NAME: Sandbox
 
 jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.determine.outputs.tag }}
+    steps:
+      - name: Determine PR + version tag
+        id: determine
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MAJOR_LABEL: "version/major 🏗️"
+          MINOR_LABEL: "version/minor 🔨"
+          PATCH_LABEL: "version/patch 🪶"
+        run: |
+          pr_json=$(gh api repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/pulls -H "Accept: application/vnd.github+json")
+
+          pr_number=$(jq -r '.[0].number // empty' <<<"$pr_json")
+          if [ -z "$pr_number" ]; then
+            echo "No PR associated with this commit; unstable only."
+            exit 0
+          fi
+
+          labels=$(jq -r '.[0].labels[].name' <<<"$pr_json")
+
+          # Fetch the highest tag
+          current_tag=$(gh api repos/$GITHUB_REPOSITORY/tags --jq '[.[].name | select(startswith("v"))] | sort_by(ltrimstr("v") | split(".") | map(tonumber)) | last // "v0.0.0"')
+          echo "The current tag is: $current_tag"
+
+          # Parse the current version into major, minor, patch parts
+          IFS='.' read -r major minor patch <<< "${current_tag//v/}"
+
+          # Calculate the next version
+          if grep -Fxq "$MAJOR_LABEL" <<<"$labels"; then
+            echo "Found major release label '$MAJOR_LABEL'."
+            major=$((major + 1)); minor=0; patch=0
+          elif grep -Fxq "$MINOR_LABEL" <<<"$labels"; then
+            echo "Found minor release label '$MINOR_LABEL'."
+            minor=$((minor + 1)); patch=0
+          elif grep -Fxq "$PATCH_LABEL" <<<"$labels"; then
+            echo "Found patch release label '$PATCH_LABEL'."
+            patch=$((patch + 1))
+          else
+            echo "Nothing to do! Neither of labels '$MAJOR_LABEL', '$MINOR_LABEL' nor '$PATCH_LABEL' found."
+            exit 0
+          fi
+
+          # Format the new tag
+          new_tag="v$major.$minor.$patch"
+          echo "The new tag is: $new_tag"
+          echo "tag=$new_tag" >> $GITHUB_OUTPUT
+
+      - name: Create tag
+        if: steps.determine.outputs.tag != ''
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const tagName = '${{ steps.determine.outputs.tag }}';
+            const tagSha  = context.sha;
+
+            const { data: tagData } = await github.rest.git.createTag({
+              owner:   context.repo.owner,
+              repo:    context.repo.repo,
+              tag:     tagName,
+              message: `Annotated tag for release ${tagName}`,
+              object:  tagSha,
+              type:    'commit',
+              tagger: {
+                name:  'GitHub Actions',
+                email: 'actions@github.com',
+                date:  new Date().toISOString()
+              }
+            });
+
+            try {
+              await github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo:  context.repo.repo,
+                ref:   `refs/tags/${tagName}`,
+                sha:   tagData.sha
+              });
+            } catch (err) {
+              if (err.status !== 422) throw err;
+              await github.rest.git.updateRef({
+                owner: context.repo.owner,
+                repo:  context.repo.repo,
+                ref:   `tags/${tagName}`,
+                sha:   tagData.sha
+              });
+            }
+
   package-windows:
-    name: package-windows
+    needs: version
     runs-on: windows-2022
 
     steps:
@@ -74,30 +163,9 @@ jobs:
     outputs:
       artifact_name: windows-release-zip
 
-  tagged-release:
-    name: tagged
-    if: startsWith(github.ref, 'refs/tags/')
-    needs: package-windows
-    runs-on: windows-2022
-
-    steps:
-      - name: Download packaged artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-release-zip
-          path: ./artifact
-
-      - name: Publish tagged release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: ./artifact/${{ env.BINARY_NAME }}-windows-x64.zip
-          generate_release_notes: true
-
   unstable-release:
-    name: unstable-latest
-    if: github.ref == 'refs/heads/main'
     needs: package-windows
-    runs-on: windows-2022
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -121,3 +189,21 @@ jobs:
           prerelease: true
           name: Auto Unstable Build
           tag_name: unstable-latest
+
+  tagged-release:
+    needs: [version, package-windows]
+    if: needs.version.outputs.tag != ''
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download packaged artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-release-zip
+          path: ./artifact
+
+      - name: Publish tagged release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ./artifact/${{ env.BINARY_NAME }}-windows-x64.zip
+          generate_release_notes: true
