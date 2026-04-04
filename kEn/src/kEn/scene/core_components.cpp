@@ -26,7 +26,7 @@
 namespace kEn {
 
 void ModelComponent::render(Shader& shader, double /*alpha*/) {
-  if (!parent_.has_value()) {
+  if (!has_parent()) {
     return;
   }
   model_->render(shader, transform());

@@ -256,7 +256,6 @@ class GameObject {
   DELETE_COPY_MOVE(GameObject);
 
  private:
-  void on_transform_changed();
   GameComponent& add_component(std::unique_ptr<GameComponent> to_add);
 
   static Registry<GameObject> game_object_registry_;

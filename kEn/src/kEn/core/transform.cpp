@@ -1,7 +1,9 @@
 #include "transform.hpp"
 
 #include <cstdlib>
+#include <functional>
 #include <span>
+#include <utility>
 #include <vector>
 
 #include <mEn/constants.hpp>
@@ -145,10 +147,16 @@ void Transform::set_dirty() {
     }
   }
 
-  if (on_changed_) {
-    on_changed_();
+  for (auto& [key, callback] : on_changed_reactors_) {
+    callback();
   }
 }
+
+void Transform::subscribe_on_changed(const void* key, std::function<void()> callback) {
+  on_changed_reactors_.insert_or_assign(key, std::move(callback));
+}
+
+void Transform::unsubscribe_on_changed(const void* key) noexcept { on_changed_reactors_.erase(key); }
 
 void Transform::translate_local(const mEn::Vec3& delta) {
   pos_ += delta;

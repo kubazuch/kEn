@@ -14,10 +14,8 @@ class ModelComponent : public GameComponent {
  public:
   explicit ModelComponent(std::shared_ptr<Model> model) : model_(std::move(model)) {}
 
-  void update(Timestep, Timestep) override {}
   void render(Shader& shader, double alpha) override;
   void imgui() override { model_->imgui(); }
-  void on_transform_changed() override {}
   [[nodiscard]] std::unique_ptr<GameComponent> clone() const override;
 
  private:
@@ -29,9 +27,6 @@ class FreeLookComponent : public GameComponent {
   explicit FreeLookComponent(float sensitivity);
 
   void update(Timestep delta, Timestep time) override;
-  void render(Shader&, double) override {}
-  void imgui() override {}
-  void on_transform_changed() override {}
   [[nodiscard]] std::unique_ptr<GameComponent> clone() const override;
 
   float sensitivity() const { return sensitivity_; }
@@ -51,9 +46,6 @@ class FreeMoveComponent : public GameComponent {
   explicit FreeMoveComponent(float speed, bool world_y = true) : speed_(speed), world_y_(world_y) {}
 
   void update(Timestep delta, Timestep time) override;
-  void render(Shader&, double) override {}
-  void imgui() override {}
-  void on_transform_changed() override {}
   [[nodiscard]] std::unique_ptr<GameComponent> clone() const override;
 
   float speed() const { return speed_; }
@@ -72,9 +64,6 @@ class LookAtComponent : public GameComponent {
   const GameObject& target() const { return target_; }
 
   void update(Timestep delta, Timestep time) override;
-  void render(Shader&, double) override {}
-  void imgui() override {}
-  void on_transform_changed() override {}
   [[nodiscard]] std::unique_ptr<GameComponent> clone() const override;
 
  private:

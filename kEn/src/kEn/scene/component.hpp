@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include <kEn/core/assert.hpp>
 #include <kEn/core/timestep.hpp>
 #include <kEn/core/transform.hpp>
 #include <kEn/event/event.hpp>
@@ -13,30 +14,44 @@ class Shader;
 
 class GameComponent {
  public:
-  GameComponent() = default;
-  virtual ~GameComponent() { on_detach(); }
+  GameComponent()          = default;
+  virtual ~GameComponent() = default;
+
   [[nodiscard]] virtual std::unique_ptr<GameComponent> clone() const = 0;
 
   virtual void on_attach() {}
   virtual void on_detach() {}
 
-  virtual void update(Timestep delta, Timestep time) = 0;
-  virtual void render(Shader& shader, double alpha)  = 0;
-  virtual void imgui()                               = 0;
-  virtual bool on_event(BaseEvent& event) { return dispatcher_.dispatch(event); }
-  virtual void on_transform_changed() = 0;
+  virtual void update(Timestep, Timestep) {}
+  virtual void render(Shader&, double) {}
+  virtual void imgui() {}
+  bool on_event(BaseEvent& event) { return dispatcher_.dispatch(event); }
 
-  const GameObject& parent() const { return parent_.value(); }
-  GameObject& parent() { return parent_.value(); }
+  [[nodiscard]] bool has_parent() const noexcept { return parent_ != nullptr; }
 
-  const kEn::Transform& transform() const;
-  kEn::Transform& transform();
+  [[nodiscard]] const GameObject& parent() const {
+    KEN_CORE_ASSERT(parent_ != nullptr);
+    return *parent_;
+  }
+  [[nodiscard]] GameObject& parent() {
+    KEN_CORE_ASSERT(parent_ != nullptr);
+    return *parent_;
+  }
+
+  [[nodiscard]] const kEn::Transform& transform() const;
+  [[nodiscard]] kEn::Transform& transform();
 
   DELETE_COPY_MOVE(GameComponent);
 
  protected:
-  std::optional<std::reference_wrapper<GameObject>> parent_;
   kEn::EventDispatcher dispatcher_;
+
+ private:
+  void attach_to(GameObject& go);
+  void detach_from_parent() noexcept;
+
+  GameObject* parent_ = nullptr;
+
   friend GameObject;
 };
 
