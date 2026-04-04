@@ -1,7 +1,6 @@
 #include "game_object.hpp"
 
 #include <algorithm>
-#include <functional>
 #include <memory>
 #include <string_view>
 #include <vector>
@@ -67,14 +66,6 @@ GameObject& GameObject::add_child(GameObject& child) {
   return *this;
 }
 
-GameObject& GameObject::add_children(std::initializer_list<std::reference_wrapper<GameObject>> children) {
-  for (auto child : children) {
-    add_child(child.get());
-  }
-
-  return *this;
-}
-
 void GameObject::remove_child(GameObject& child) {
   KEN_CORE_ASSERT(child.parent_ == this, "remove_child: object is not a direct child");
   std::erase(children_, &child);
@@ -96,8 +87,7 @@ void GameObject::unset_parent() {
 GameComponent& GameObject::add_component(std::unique_ptr<GameComponent> to_add) {
   KEN_CORE_ASSERT(to_add != nullptr);
   const auto* raw = to_add.get();
-  KEN_CORE_ASSERT(std::find_if(components_.begin(), components_.end(),
-                               [raw](const auto& c) { return c.get() == raw; }) == components_.end());
+  KEN_CORE_ASSERT(!std::ranges::contains(components_, raw, [](const auto& c) { return c.get(); }));
 
   to_add->parent_ = *this;
   components_.push_back(std::move(to_add));

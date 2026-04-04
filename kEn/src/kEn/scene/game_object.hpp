@@ -2,7 +2,6 @@
 
 #include <concepts>
 #include <cstddef>
-#include <functional>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -97,7 +96,11 @@ class GameObject {
    * @brief Adds multiple children, equivalent to calling add_child for each.
    * @return *this, for call chaining.
    */
-  GameObject& add_children(std::initializer_list<std::reference_wrapper<GameObject>> children);
+  template <std::same_as<GameObject>... Ts>
+  GameObject& add_children(Ts&... children) {
+    (add_child(children), ...);
+    return *this;
+  }
 
   /**
    * @brief Removes @p child from this object's child list.
