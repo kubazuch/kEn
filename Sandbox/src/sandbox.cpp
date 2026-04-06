@@ -60,11 +60,9 @@ class DemoLayer : public kEn::Layer {
     camera_obj_.emplace_component<kEn::FreeMoveComponent>(5.F, true);
 
     // --- Spot light (torch) - child of camera, follows it ---
-    spot_light_                     = &spot_light_obj_.emplace_component<kEn::SpotLight>();
-    spot_light_->color              = {1.F, 1.F, 0.9F};
-    spot_light_->atten              = {.constant = 1.F, .linear = 0.09F, .quadratic = 0.032F};
-    spot_light_->inner_cutoff_angle = 0.20F;
-    spot_light_->outer_cutoff_angle = 0.35F;
+    spot_light_        = &spot_light_obj_.emplace_component<kEn::SpotLight>();
+    spot_light_->color = {1.F, 1.F, 0.9F};
+    spot_light_->set_cutoff_angles(10.F, 20.F);
     camera_obj_.add_child(spot_light_obj_);
 
     // --- Model ---
@@ -81,7 +79,6 @@ class DemoLayer : public kEn::Layer {
     // --- Point light ---
     point_light_        = &point_light_obj_.emplace_component<kEn::PointLight>();
     point_light_->color = {1.F, 0.85F, 0.5F};
-    point_light_->atten = {.constant = 1.F, .linear = 0.09F, .quadratic = 0.032F};
     point_light_obj_.transform().set_local_pos({-2.F, 2.F, 1.F});
 
     // --- Floor (scaled cube with programmatic white texture) ---

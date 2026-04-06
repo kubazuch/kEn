@@ -27,9 +27,9 @@ template <typename T>
 template <typename T>
 [[nodiscard]] qua<T> angleAxis(T angle, const vec<3, T>& axis) noexcept;
 
-/// @brief Returns the Euler angles (roll, pitch, yaw) of unit quaternion @p q in radians.
+/// @brief Returns the Euler angles (pitch, yaw, roll) of unit quaternion @p q in radians.
 ///
-/// The returned @c vec<3> contains @f$ (roll, pitch, yaw) @f$ in that order.
+/// The returned @c vec<3> contains @f$ (pitch, yaw, roll) @f$ in that order.
 template <typename T>
 [[nodiscard]] vec<3, T> eulerAngles(const qua<T>& q) noexcept;
 
