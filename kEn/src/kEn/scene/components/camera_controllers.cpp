@@ -20,7 +20,6 @@
 #include <kEn/core/window.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/event.hpp>
-#include <kEn/renderer/shader.hpp>
 #include <kEn/scene/component.hpp>
 #include <kEn/scene/game_object.hpp>
 
