@@ -75,9 +75,8 @@
 #define KEN_UNREACHABLE() KEN_STMT(KEN_CORE_ASSERT(false, "Unreachable code reached"); std::unreachable();)
 
 #else
-// In release: the condition is never evaluated; [[assume]] donates it to the optimizer as an axiom.
-#define KEN_ASSERT(check, ...) [[assume(check)]]
-#define KEN_CORE_ASSERT(check, ...) [[assume(check)]]
+#define KEN_ASSERT(...)
+#define KEN_CORE_ASSERT(...)
 
 /** @copydoc KEN_UNREACHABLE */
 #define KEN_UNREACHABLE() std::unreachable()
