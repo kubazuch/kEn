@@ -1,5 +1,7 @@
 #pragma once
 
+#include <imgui/imgui.h>
+
 #include <cstdint>
 #include <span>
 #include <vector>
@@ -7,7 +9,6 @@
 #include <mEn/vec4.hpp>
 
 #include <kEn/core/core.hpp>
-#include <kEn/renderer/attachment_handle.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture_format.hpp>
 
@@ -16,6 +17,22 @@
  */
 
 namespace kEn {
+
+/**
+ * @brief Opaque handle to a framebuffer attachment texture.
+ *
+ * Wraps a platform-native GPU texture identifier (OpenGL texture name,
+ * D3D11 ShaderResourceView pointer cast to integer, etc.) returned by
+ * @ref Framebuffer::color_attachment and @ref Framebuffer::depth_attachment.
+ * Pass directly to @ref RenderContext::bind_attachment or use @ref imgui_id()
+ * to hand the texture to ImGui::Image().
+ */
+struct AttachmentHandle {
+  std::uintptr_t value; /**< Platform-native texture identifier. */
+
+  /** @brief Returns a handle suitable for passing to ImGui::Image(). */
+  [[nodiscard]] ImTextureID imgui_id() const noexcept { return static_cast<ImTextureID>(value); }
+};
 
 /**
  * @brief Describes a single texture attachment within a framebuffer.

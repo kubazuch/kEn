@@ -8,7 +8,7 @@
 #include <kEn/renderer/render_context.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/vertex_input.hpp>
-#include <kEn/scene/camera/camera.hpp>
+#include <kEn/scene/components/camera.hpp>
 
 namespace kEn {
 

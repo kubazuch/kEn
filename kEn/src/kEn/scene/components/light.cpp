@@ -7,7 +7,7 @@
 #include <mEn/functions/trigonometric.hpp>
 
 #include <kEn/core/assert.hpp>
-#include <kEn/imgui/light.hpp>
+#include <kEn/imgui/editors/light.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/scene/component.hpp>
 

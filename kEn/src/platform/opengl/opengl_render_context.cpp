@@ -10,7 +10,6 @@
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
-#include <kEn/renderer/attachment_handle.hpp>
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/render_context.hpp>

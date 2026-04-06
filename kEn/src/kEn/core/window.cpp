@@ -6,9 +6,9 @@
 #include <cstdint>
 
 #include <kEn/core/assert.hpp>
-#include <kEn/core/key_codes.hpp>
+#include <kEn/core/input/key_codes.hpp>
+#include <kEn/core/input/mouse_codes.hpp>
 #include <kEn/core/log.hpp>
-#include <kEn/core/mouse_codes.hpp>
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/key_events.hpp>
 #include <kEn/event/mouse_events.hpp>

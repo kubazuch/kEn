@@ -3,11 +3,11 @@
 #include <kEn/core/application.hpp>
 #include <kEn/core/assert.hpp>
 #include <kEn/core/core.hpp>
-#include <kEn/core/input.hpp>
-#include <kEn/core/key_codes.hpp>
+#include <kEn/core/input/input.hpp>
+#include <kEn/core/input/key_codes.hpp>
+#include <kEn/core/input/mouse_codes.hpp>
 #include <kEn/core/layer.hpp>
 #include <kEn/core/log.hpp>
-#include <kEn/core/mouse_codes.hpp>
 #include <kEn/imgui/imgui_layer.hpp>
 
 // Renderer
@@ -19,8 +19,10 @@
 #include <kEn/renderer/vertex_input.hpp>
 
 // Scene
-#include <kEn/scene/camera/camera.hpp>
-#include <kEn/scene/core_components.hpp>
+#include <kEn/scene/components/camera.hpp>
+#include <kEn/scene/components/camera_controllers.hpp>
+#include <kEn/scene/components/light.hpp>
+#include <kEn/scene/components/model_component.hpp>
 #include <kEn/scene/game_object.hpp>
 
 // Entry Point

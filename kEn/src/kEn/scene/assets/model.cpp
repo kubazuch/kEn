@@ -30,7 +30,7 @@
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
 #include <kEn/renderer/texture_format.hpp>
-#include <kEn/scene/mesh/mesh.hpp>
+#include <kEn/scene/assets/mesh.hpp>
 
 #include <assimp/Importer.hpp>
 

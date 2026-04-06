@@ -4,7 +4,6 @@
 
 #include <optional>
 
-#include <kEn/renderer/attachment_handle.hpp>
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/render_context.hpp>
