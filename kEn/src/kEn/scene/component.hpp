@@ -28,8 +28,7 @@ class Shader;
  * manage their own lifetime.
  *
  * Subclasses override only the lifecycle hooks they need.  The event
- * dispatcher is available in @ref dispatcher_ to subscribe to engine events
- * from within @ref on_attach.
+ * dispatcher is available in @ref dispatcher_ to subscribe to engine events.
  *
  * @note Copy and move are deleted.  Components are always held through
  *       @c std::unique_ptr and transferred by moving the pointer.

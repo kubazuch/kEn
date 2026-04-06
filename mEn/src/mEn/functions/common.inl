@@ -105,6 +105,16 @@ MEN_FORCE_INLINE vec<L, T> mod(const vec<L, T>& x, T y) noexcept {
 }
 
 template <VecOrScalar GenType>
+MEN_FORCE_INLINE GenType wrap(const GenType& x, const GenType& lo, const GenType& hi) noexcept {
+  return lo + mod(x - lo, hi - lo);
+}
+
+template <length_t L, typename T>
+MEN_FORCE_INLINE vec<L, T> wrap(const vec<L, T>& x, T lo, T hi) noexcept {
+  return lo + mod(x - lo, hi - lo);
+}
+
+template <VecOrScalar GenType>
 MEN_FORCE_INLINE constexpr GenType min(const GenType& x, const GenType& y) noexcept {
   if constexpr (VecType<GenType>) {
     using S = scalar_of_t<GenType>;

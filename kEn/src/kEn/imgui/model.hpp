@@ -1,5 +1,7 @@
 #pragma once
 
+#include <kEn/core/core.hpp>
+
 /**
  * @file mesh.hpp
  * @brief Dear ImGui inspector widgets for @ref Mesh and @ref Model.

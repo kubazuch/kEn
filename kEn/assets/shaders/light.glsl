@@ -3,7 +3,6 @@
 #include "material"
 
 struct attenuation {
-  float constant;
   float linear;
   float quadratic;
 };
@@ -47,7 +46,7 @@ uniform int u_SpotCount;
 uniform spot_light u_SpotLights[MAX_LIGHTS];
 
 float calc_attenuation(attenuation atten, float dist) {
-  return 1.0 / (atten.constant + dist * (atten.linear + dist * atten.quadratic));
+  return 1.0 / (1.0 + dist * (atten.linear + dist * atten.quadratic));
 }
 
 vec2 calc_light(vec3 light_dir, vec3 normal, vec3 view_dir) {

@@ -58,6 +58,20 @@ template <VecOrScalar GenType>
 template <length_t L, typename T>
 [[nodiscard]] vec<L, T> mod(const vec<L, T>& x, T y) noexcept;
 
+/// @brief Wraps @p x into the half-open range [@p lo, @p hi), component-wise.
+///
+/// Equivalent to @f$ lo + \mathrm{mod}(x - lo,\; hi - lo) @f$.
+/// @pre @p lo < @p hi
+/// @tparam GenType Scalar or vector type satisfying @c VecOrScalar.
+template <VecOrScalar GenType>
+[[nodiscard]] GenType wrap(const GenType& x, const GenType& lo, const GenType& hi) noexcept;
+
+/// @brief Wraps each component of @p x into the half-open range [@p lo, @p hi).
+///
+/// @pre @p lo < @p hi
+template <length_t L, typename T>
+[[nodiscard]] vec<L, T> wrap(const vec<L, T>& x, T lo, T hi) noexcept;
+
 /// @brief Returns the component-wise minimum of @p x and @p y.
 /// @tparam GenType Scalar or vector type satisfying @c VecOrScalar.
 template <VecOrScalar GenType>

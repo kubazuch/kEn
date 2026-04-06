@@ -13,6 +13,7 @@
 #include <mEn/vec3.hpp>
 
 #include <kEn/core/application.hpp>
+#include <kEn/core/assert.hpp>
 #include <kEn/core/input.hpp>
 #include <kEn/core/key_codes.hpp>
 #include <kEn/core/timestep.hpp>
@@ -26,9 +27,7 @@
 namespace kEn {
 
 void ModelComponent::render(Shader& shader, double /*alpha*/) {
-  if (!has_parent()) {
-    return;
-  }
+  KEN_CORE_ASSERT(has_parent(), "Can't render parentless model!");
   model_->render(shader, transform());
 }
 
@@ -36,6 +35,9 @@ std::unique_ptr<GameComponent> ModelComponent::clone() const { return std::make_
 
 FreeLookComponent::FreeLookComponent(float sensitivity) : sensitivity_(sensitivity), window_center_() {
   dispatcher_.subscribe(this, &FreeLookComponent::on_window_resize);
+}
+
+void FreeLookComponent::on_attach() {
   const Window& main = kEn::Application::instance().main_window();
   window_center_     = {main.width() / 2, main.height() / 2};
 }
@@ -56,19 +58,20 @@ void FreeLookComponent::update(Timestep /*delta*/, Timestep /*time*/) {
     return;
   }
 
-  auto delta_pos              = kEn::input::mouse_pos() - window_center_;
-  const mEn::vec<2, bool> rot = mEn::notNear(delta_pos, 0.0F);
+  auto delta_pos                     = kEn::input::mouse_pos() - window_center_;
+  const mEn::vec<2, bool> did_change = mEn::notNear(delta_pos, 0.0F);
 
-  if (rot.x) {
-    yaw_ -= mEn::radians(delta_pos.x) * sensitivity_;
+  if (did_change.x) {
+    yaw_ -= mEn::radians(delta_pos.x * sensitivity_);
+    yaw_ = mEn::wrap(yaw_, -mEn::kPi<>, mEn::kPi<>);
   }
 
-  if (rot.y) {
-    pitch_ -= mEn::radians(delta_pos.y) * sensitivity_;
-    pitch_ = mEn::clamp(pitch_, (-mEn::kHalfPi<float>)+0.01F, mEn::kHalfPi<float> - 0.01F);
+  if (did_change.y) {
+    pitch_ -= mEn::radians(delta_pos.y * sensitivity_);
+    pitch_ = mEn::clamp(pitch_, -mEn::kHalfPi<> + mEn::kEpsilon<>, mEn::kHalfPi<> - mEn::kEpsilon<>);
   }
 
-  if (mEn::any(rot)) {
+  if (mEn::any(did_change)) {
     kEn::input::set_mouse_pos(window_center_);
 
     mEn::Quat rot(1, 0, 0, 0);
@@ -83,32 +86,37 @@ std::unique_ptr<GameComponent> FreeLookComponent::clone() const {
 }
 
 bool FreeLookComponent::on_window_resize(const kEn::WindowResizeEvent& event) {
-  window_center_ = mEn::Vec2(event.width() / 2, event.height() / 2);
+  window_center_ = {event.width() / 2, event.height() / 2};
   return false;
 }
 
 void FreeMoveComponent::update(Timestep delta, Timestep /*time*/) {
+  constexpr float kSprintMultiplier = 3.0F;
+  constexpr mEn::Vec3 kWorldUp{0.0F, 1.0F, 0.0F};
+
+  using enum kEn::Key;
+  const bool sprint       = kEn::input::is_key_pressed(left_control);
   const auto dt           = static_cast<float>(delta.seconds());
-  const float move_amount = kEn::input::is_key_pressed(kEn::key::left_control) ? 3.F * dt * speed_ : dt * speed_;
+  const float move_amount = sprint ? kSprintMultiplier * dt * speed_ : dt * speed_;
 
   mEn::Vec3 direction{0.F};
-  if (kEn::input::is_key_pressed(kEn::key::up) || kEn::input::is_key_pressed(kEn::key::w)) {
+  if (kEn::input::is_key_pressed(up) || kEn::input::is_key_pressed(w)) {
     direction += transform().local_front();
   }
-  if (kEn::input::is_key_pressed(kEn::key::down) || kEn::input::is_key_pressed(kEn::key::s)) {
+  if (kEn::input::is_key_pressed(down) || kEn::input::is_key_pressed(s)) {
     direction -= transform().local_front();
   }
-  if (kEn::input::is_key_pressed(kEn::key::right) || kEn::input::is_key_pressed(kEn::key::d)) {
+  if (kEn::input::is_key_pressed(right) || kEn::input::is_key_pressed(d)) {
     direction += transform().local_right();
   }
-  if (kEn::input::is_key_pressed(kEn::key::left) || kEn::input::is_key_pressed(kEn::key::a)) {
+  if (kEn::input::is_key_pressed(left) || kEn::input::is_key_pressed(a)) {
     direction -= transform().local_right();
   }
-  if (kEn::input::is_key_pressed(kEn::key::space) || kEn::input::is_key_pressed(kEn::key::e)) {
-    direction += world_y_ ? mEn::Vec3(0, 1, 0) : transform().local_up();
+  if (kEn::input::is_key_pressed(space) || kEn::input::is_key_pressed(e)) {
+    direction += world_y_ ? kWorldUp : transform().local_up();
   }
-  if (kEn::input::is_key_pressed(kEn::key::left_shift) || kEn::input::is_key_pressed(kEn::key::q)) {
-    direction -= world_y_ ? mEn::Vec3(0, 1, 0) : transform().local_up();
+  if (kEn::input::is_key_pressed(left_shift) || kEn::input::is_key_pressed(q)) {
+    direction -= world_y_ ? kWorldUp : transform().local_up();
   }
 
   if (direction.x != 0.0F || direction.y != 0.0F || direction.z != 0.0F) {
@@ -120,12 +128,11 @@ std::unique_ptr<GameComponent> FreeMoveComponent::clone() const {
   return std::make_unique<FreeMoveComponent>(speed_, world_y_);
 }
 
-void LookAtComponent::set_target(const GameObject& target) { target_ = target; }
-
 void LookAtComponent::update(Timestep /*delta*/, Timestep /*time*/) {
-  transform().look_at(target_.get().transform().world_pos());
+  KEN_CORE_ASSERT(target_ != nullptr, "LookAtComponent target has been destroyed");
+  transform().look_at(target_->transform().world_pos());
 }
 
-std::unique_ptr<GameComponent> LookAtComponent::clone() const { return std::make_unique<LookAtComponent>(target_); }
+std::unique_ptr<GameComponent> LookAtComponent::clone() const { return std::make_unique<LookAtComponent>(*target_); }
 
 }  // namespace kEn
