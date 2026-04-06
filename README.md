@@ -48,6 +48,10 @@ cmake --build --preset=windows-msvc-release
 # Debug
 cmake --preset=windows-clang-debug
 cmake --build --preset=windows-clang-debug
+
+# Release
+cmake --preset=windows-clang-release
+cmake --build --preset=windows-clang-release
 ```
 
 ### Linux (GCC 14)
@@ -65,24 +69,28 @@ cmake --build --preset=linux-gcc-release
 ### Linux (Clang)
 
 ```bash
+# Debug
 cmake --preset=linux-clang-debug
 cmake --build --preset=linux-clang-debug
+
+# Release
+cmake --preset=linux-clang-release
+cmake --build --preset=linux-clang-release
 ```
 
-Output: `build/bin/` (executables), `build/lib/` (libraries).
+Output: `build/{preset-name}/bin/` (executables), `build/{preset-name}/lib/` (libraries).
 
 ### CMake options
 
 | Option | Default | Description |
 | ------ | ------- | ----------- |
-| `BUILD_TESTING` | `ON` | Build mEn unit tests (GoogleTest) |
+| `BUILD_TESTS` | `OFF` | Fetch GoogleTest and build mEn unit tests (dev presets set this to `ON`) |
+| `BUILD_SANDBOX` | `OFF` | Build the Sandbox demo executable (dev presets set this to `ON`) |
 | `MEN_USE_GLM` | `OFF` | Use GLM types instead of native mEn |
-| `BUILD_GLFW` | `ON` | Fetch GLFW via FetchContent (OFF = system GLFW) |
-| `BUILD_ASSIMP` | `ON` | Fetch assimp via FetchContent (OFF = system assimp) |
 
 ## Tests
 
-Only **mEn** has a test suite. Tests use GoogleTest and are enabled by default (`BUILD_TESTING=ON`).
+Only **mEn** has a test suite. Tests use GoogleTest (`BUILD_TESTS=ON`; enabled by default in all dev presets).
 
 ```bash
 cmake --preset=windows-msvc-debug
@@ -90,7 +98,7 @@ cmake --build --preset=windows-msvc-debug
 ctest --test-dir build/windows-msvc-debug
 
 # Or run directly with a GTest filter
-./build/bin/mEn_tests --gtest_filter="Vec3.*"
+./build/windows-msvc-debug/bin/mEn_tests --gtest_filter="Vec3.*"
 ```
 
 ## Architecture
@@ -112,11 +120,12 @@ Public API: `kEn/src/kEn.hpp`. Entry point: include `kEn/src/kEn/core/entry_poin
 - **Layer stack** -- ordered pipeline: `on_attach` -> `on_update` -> `on_render` -> `on_imgui` -> `on_detach`
 - **Event system** -- type-erased `EventDispatcher`; events bubble through layers in reverse order; `KEN_BIND_EVENT_HANDLER()` macro for member callbacks
 - **Transform** -- hierarchical with dirty-flag caching; world matrix lazily recomputed and propagated to children
-- **Renderer** -- static facade over OpenGL; manages scene data (view/proj matrices, lights); supports point, directional, and spot lights
+- **Device** -- abstract GPU resource factory (`Device::create(Api::OpenGL, ...)`); creates buffers, shaders, textures, framebuffers, vertex inputs, and the ImGui backend
+- **Renderer** -- static scene facade; `begin_scene` / `submit` / `end_scene`; manages persistent lights and camera matrices; supports point, directional, and spot lights
 - **Scene graph** -- `GameObject` static registry (max 6400); parent-child hierarchy; `GameComponent` base for attach/update/render/imgui/event hooks
-- **Built-in components** -- `ModelComponent`, `FreeLookComponent`, `FreeMoveComponent`, `LookAtComponent`
-- **Cameras** -- `OrthographicCamera`, `PerspectiveCamera`
-- **Asset loading** -- OBJ/FBX via assimp; textures via stb_image
+- **Built-in components** -- `Camera` (base), `OrthographicCamera`, `PerspectiveCamera`; `FreeLookComponent`, `FreeMoveComponent`, `LookAtComponent`; `ModelComponent`; `PointLight`, `DirectionalLight`, `SpotLight`
+- **Asset loading** -- OBJ/FBX via assimp; textures via stb_image; mesh/model types in `scene/assets/`
+- **ImGui editors** -- per-type property editors for lights, materials, and models in `imgui/editors/`
 
 ## License
 
