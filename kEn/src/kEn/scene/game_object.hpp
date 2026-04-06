@@ -243,6 +243,14 @@ class GameObject {
   }
 
   /**
+   * @brief Looks up a live ID by raw numeric index.
+   * @return The view for the current ID, or @c std::nullopt.
+   */
+  [[nodiscard]] static std::optional<IdView<GameObject>> from_raw_id(uint32_t index) {
+    return game_object_registry_.from_raw_id(index);
+  }
+
+  /**
    * @brief Looks up a live GameObject by raw numeric index.
    * @return Pointer to the object, or nullptr if the index is unoccupied.
    */
