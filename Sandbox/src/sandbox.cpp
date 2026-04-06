@@ -40,13 +40,13 @@ namespace {
 
 class DemoLayer : public kEn::Layer {
  public:
-  DemoLayer() : Layer("Demo"), device_(kEn::device()) {}
-
-  void on_attach() override {
+  DemoLayer() : Layer("Demo"), device_(kEn::device()) {
     dispatcher_.subscribe(this, &DemoLayer::on_key_pressed);
     dispatcher_.subscribe(this, &DemoLayer::on_mouse_scroll);
     dispatcher_.subscribe(this, &DemoLayer::on_window_resize);
+  }
 
+  void on_attach() override {
     const kEn::Window& win = kEn::Application::instance().main_window();
 
     vp_w_ = win.width();

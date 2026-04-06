@@ -7,6 +7,7 @@
 
 #include <glm/detail/qualifier.hpp>
 
+#include "../assert/scalar_eq.hpp"
 #include "../util/vec_test_utils.hpp"
 
 namespace {
@@ -106,6 +107,26 @@ void RunIsNanIsInfTests() {
   ExpectBoolVecEq(mEn::isinf(MV(x)), glm::isinf(x));
 }
 
+template <mEn::length_t L, typename T>
+void RunWrapTests() {
+  const auto x        = GV<L, T>(T{-0.5}, T{0.5}, T{1.0}, T{1.5});
+  const auto lo       = GV<L, T>(T{0}, T{0}, T{0}, T{0});
+  const auto hi       = GV<L, T>(T{1}, T{1}, T{1}, T{1});
+  const auto expected = GV<L, T>(T{0.5}, T{0.5}, T{0}, T{0.5});
+  ExpectVecEq(mEn::wrap(MV(x), MV(lo), MV(hi)), expected);
+
+  ExpectVecEq(mEn::wrap(MV(x), T{0}, T{1}), expected);
+
+  EXPECT_SCALAR_EQ(mEn::wrap(T{0.5}, T{0}, T{1}), T{0.5});
+  EXPECT_SCALAR_EQ(mEn::wrap(T{0.0}, T{0}, T{1}), T{0.0});
+  EXPECT_SCALAR_EQ(mEn::wrap(T{1.0}, T{0}, T{1}), T{0.0});
+  EXPECT_SCALAR_EQ(mEn::wrap(T{1.5}, T{0}, T{1}), T{0.5});
+  EXPECT_SCALAR_EQ(mEn::wrap(T{-0.5}, T{0}, T{1}), T{0.5});
+  EXPECT_SCALAR_EQ(mEn::wrap(T{-0.5}, T{-1}, T{1}), T{-0.5});
+  EXPECT_SCALAR_EQ(mEn::wrap(T{3.5}, T{-1}, T{1}), T{-0.5});
+  EXPECT_SCALAR_EQ(mEn::wrap(T{-3.5}, T{-1}, T{1}), T{0.5});
+}
+
 template <typename T>
 struct Vec2Common : ::testing::Test {};
 template <typename T>
@@ -128,6 +149,7 @@ TYPED_TEST(Vec2Common, MinMaxClamp) { RunMinMaxClampTests<2, TypeParam>(); }
 TYPED_TEST(Vec2Common, Mix) { RunMixTests<2, TypeParam>(); }
 TYPED_TEST(Vec2Common, StepSmoothstep) { RunStepSmoothstepTests<2, TypeParam>(); }
 TYPED_TEST(Vec2Common, IsNanIsInf) { RunIsNanIsInfTests<2, TypeParam>(); }
+TYPED_TEST(Vec2Common, Wrap) { RunWrapTests<2, TypeParam>(); }
 
 // ---- vec3 ----
 TYPED_TEST(Vec3Common, AbsSign) { RunAbsSignTests<3, TypeParam>(); }
@@ -137,6 +159,7 @@ TYPED_TEST(Vec3Common, MinMaxClamp) { RunMinMaxClampTests<3, TypeParam>(); }
 TYPED_TEST(Vec3Common, Mix) { RunMixTests<3, TypeParam>(); }
 TYPED_TEST(Vec3Common, StepSmoothstep) { RunStepSmoothstepTests<3, TypeParam>(); }
 TYPED_TEST(Vec3Common, IsNanIsInf) { RunIsNanIsInfTests<3, TypeParam>(); }
+TYPED_TEST(Vec3Common, Wrap) { RunWrapTests<3, TypeParam>(); }
 
 // ---- vec4 ----
 TYPED_TEST(Vec4Common, AbsSign) { RunAbsSignTests<4, TypeParam>(); }
@@ -146,3 +169,4 @@ TYPED_TEST(Vec4Common, MinMaxClamp) { RunMinMaxClampTests<4, TypeParam>(); }
 TYPED_TEST(Vec4Common, Mix) { RunMixTests<4, TypeParam>(); }
 TYPED_TEST(Vec4Common, StepSmoothstep) { RunStepSmoothstepTests<4, TypeParam>(); }
 TYPED_TEST(Vec4Common, IsNanIsInf) { RunIsNanIsInfTests<4, TypeParam>(); }
+TYPED_TEST(Vec4Common, Wrap) { RunWrapTests<4, TypeParam>(); }
