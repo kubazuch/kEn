@@ -1,4 +1,4 @@
-#include "core_components.hpp"
+#include "camera_controllers.hpp"
 
 #include <memory>
 
@@ -14,8 +14,8 @@
 
 #include <kEn/core/application.hpp>
 #include <kEn/core/assert.hpp>
-#include <kEn/core/input.hpp>
-#include <kEn/core/key_codes.hpp>
+#include <kEn/core/input/input.hpp>
+#include <kEn/core/input/key_codes.hpp>
 #include <kEn/core/timestep.hpp>
 #include <kEn/core/window.hpp>
 #include <kEn/event/application_events.hpp>
@@ -25,13 +25,6 @@
 #include <kEn/scene/game_object.hpp>
 
 namespace kEn {
-
-void ModelComponent::render(Shader& shader, double /*alpha*/) {
-  KEN_CORE_ASSERT(has_parent(), "Can't render parentless model!");
-  model_->render(shader, transform());
-}
-
-std::unique_ptr<GameComponent> ModelComponent::clone() const { return std::make_unique<ModelComponent>(model_); }
 
 FreeLookComponent::FreeLookComponent(float sensitivity) : sensitivity_(sensitivity), window_center_() {
   dispatcher_.subscribe(this, &FreeLookComponent::on_window_resize);

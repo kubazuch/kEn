@@ -15,7 +15,7 @@
 #include <kEn/core/core.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture.hpp>
-#include <kEn/scene/mesh/mesh.hpp>
+#include <kEn/scene/assets/mesh.hpp>
 
 // NOLINTBEGIN(readability-identifier-naming)
 struct aiNode;

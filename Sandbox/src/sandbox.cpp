@@ -13,7 +13,7 @@
 
 #include <kEn.hpp>  //NOLINT
 #include <kEn/core/application.hpp>
-#include <kEn/core/key_codes.hpp>
+#include <kEn/core/input/key_codes.hpp>
 #include <kEn/core/layer.hpp>
 #include <kEn/core/log.hpp>
 #include <kEn/core/timestep.hpp>
@@ -30,11 +30,12 @@
 #include <kEn/renderer/renderer.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/texture_format.hpp>
-#include <kEn/scene/camera/camera.hpp>
-#include <kEn/scene/core_components.hpp>
+#include <kEn/scene/assets/model.hpp>
+#include <kEn/scene/components/camera.hpp>
+#include <kEn/scene/components/camera_controllers.hpp>
+#include <kEn/scene/components/light.hpp>
+#include <kEn/scene/components/model_component.hpp>
 #include <kEn/scene/game_object.hpp>
-#include <kEn/scene/light.hpp>
-#include <kEn/scene/mesh/model.hpp>
 
 namespace {
 

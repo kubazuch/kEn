@@ -5,7 +5,7 @@
 
 #include <mEn/vec4.hpp>
 
-#include <kEn/renderer/attachment_handle.hpp>
+#include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/render_state.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/vertex_input.hpp>

@@ -5,9 +5,9 @@
 #include <cstddef>
 #include <span>
 
-#include <kEn/imgui/material.hpp>
-#include <kEn/scene/mesh/mesh.hpp>
-#include <kEn/scene/mesh/model.hpp>
+#include <kEn/imgui/editors/material.hpp>
+#include <kEn/scene/assets/mesh.hpp>
+#include <kEn/scene/assets/model.hpp>
 
 namespace kEn::ui {
 

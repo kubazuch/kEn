@@ -3,8 +3,8 @@
 #include <format>
 #include <utility>
 
-#include <kEn/core/key_codes.hpp>
-#include <kEn/core/mod_keys.hpp>
+#include <kEn/core/input/key_codes.hpp>
+#include <kEn/core/input/mod_keys.hpp>
 #include <kEn/event/event.hpp>
 
 /** @file

@@ -3,7 +3,7 @@
 #include <kEn/core/core.hpp>
 
 /**
- * @file mesh.hpp
+ * @file model.hpp
  * @brief Dear ImGui inspector widgets for @ref Mesh and @ref Model.
  * @ingroup ken
  */

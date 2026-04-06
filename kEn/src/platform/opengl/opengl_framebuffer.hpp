@@ -7,7 +7,6 @@
 #include <vector>
 
 #include <kEn/core/assert.hpp>
-#include <kEn/renderer/attachment_handle.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 
 namespace kEn {

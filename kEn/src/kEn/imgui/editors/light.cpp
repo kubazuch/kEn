@@ -6,7 +6,7 @@
 #include <mEn/functions/quaternion_trigonometric.hpp>
 #include <mEn/fwd.hpp>
 
-#include <kEn/scene/light.hpp>
+#include <kEn/scene/components/light.hpp>
 
 namespace kEn::ui {
 

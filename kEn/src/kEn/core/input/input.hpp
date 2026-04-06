@@ -2,8 +2,8 @@
 
 #include <mEn/vec2.hpp>
 
-#include <kEn/core/key_codes.hpp>
-#include <kEn/core/mouse_codes.hpp>
+#include <kEn/core/input/key_codes.hpp>
+#include <kEn/core/input/mouse_codes.hpp>
 
 /** @file
  *  @ingroup ken

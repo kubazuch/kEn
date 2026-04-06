@@ -3,8 +3,8 @@
 #include <mEn/features/format.hpp>
 #include <mEn/vec2.hpp>
 
-#include <kEn/core/mod_keys.hpp>
-#include <kEn/core/mouse_codes.hpp>
+#include <kEn/core/input/mod_keys.hpp>
+#include <kEn/core/input/mouse_codes.hpp>
 #include <kEn/event/event.hpp>
 
 /** @file
