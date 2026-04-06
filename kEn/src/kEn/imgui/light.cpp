@@ -3,7 +3,6 @@
 #include <imgui/imgui.h>
 
 #include <mEn/features/type_ptr.hpp>
-#include <mEn/functions/quaternion_transform.hpp>
 #include <mEn/functions/quaternion_trigonometric.hpp>
 #include <mEn/fwd.hpp>
 
