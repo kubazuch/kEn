@@ -5,6 +5,7 @@
 #pragma once
 
 #include <mEn/fwd.hpp>
+#include <mEn/vec3.hpp>
 
 #include <kEn/event/application_events.hpp>
 #include <kEn/scene/component.hpp>
@@ -117,6 +118,82 @@ class PerspectiveCamera : public Camera {
   bool on_window_resize(const WindowResizeEvent& event) override;
 
   float fov_, aspect_, z_near_, z_far_;
+};
+
+/**
+ * @brief Camera component that can switch between perspective and orthographic projection.
+ *
+ * In perspective mode the projection is a standard @ref mEn::perspective matrix.
+ * In orthographic mode the half-extents are derived from the camera's distance to
+ * @ref focal_target() and the field of view, so that switching modes preserves the
+ * apparent size of geometry at the focal distance.
+ *
+ * Call @ref recalculate_projection() after moving the camera while in
+ * orthographic mode to keep the bounds in sync with the new position.
+ */
+class DynamicCamera : public Camera {
+ public:
+  /**
+   * @brief Constructs a dynamic camera.
+   * @param orthographic  Initial projection mode.
+   * @param fov           Vertical field of view in radians (used in both modes).
+   * @param aspect        Aspect ratio (width / height).
+   * @param z_near        Near clipping plane distance.
+   * @param z_far         Far clipping plane distance.
+   */
+  DynamicCamera(bool orthographic, float fov, float aspect, float z_near, float z_far);
+
+  /** @brief Returns @c true when the camera is in orthographic mode. */
+  [[nodiscard]] bool is_orthographic() const { return is_orthographic_; }
+  /** @brief Returns the vertical field of view in radians. */
+  [[nodiscard]] float fov() const { return fov_; }
+  /** @brief Returns the aspect ratio. */
+  [[nodiscard]] float aspect() const { return aspect_; }
+  /** @brief Returns the near clipping plane distance. */
+  [[nodiscard]] float z_near() const { return z_near_; }
+  /** @brief Returns the far clipping plane distance. */
+  [[nodiscard]] float z_far() const { return z_far_; }
+  /**
+   * @brief Returns the focal target used to compute the orthographic half-extents.
+   *
+   * The focal length is the distance from the camera's world position to this
+   * point.  Defaults to the world origin.
+   */
+  [[nodiscard]] const mEn::Vec3& focal_target() const { return focal_target_; }
+  /**
+   * @brief Sets the focal target and rebuilds the projection when in orthographic mode.
+   * @param target  World-space point the camera orbits / looks at.
+   */
+  void set_focal_target(const mEn::Vec3& target);
+
+  /** @brief Switches between orthographic and perspective projection and rebuilds the matrix. */
+  void set_orthographic(bool orthographic);
+  /** @brief Sets the vertical field of view (radians) and rebuilds the matrix. */
+  void set_fov(float fov);
+  /** @brief Sets the aspect ratio and rebuilds the matrix. */
+  void set_aspect(float aspect);
+  /** @brief Sets the near clipping plane distance and rebuilds the matrix. */
+  void set_z_near(float z_near);
+  /** @brief Sets the far clipping plane distance and rebuilds the matrix. */
+  void set_z_far(float z_far);
+
+  /**
+   * @brief Recomputes the projection matrix from the current parameters.
+   *
+   * In orthographic mode the half-extents are derived from the camera's
+   * distance to the world origin, so this should be called after the camera
+   * is moved.
+   */
+  void recalculate_projection();
+
+  [[nodiscard]] std::unique_ptr<GameComponent> clone() const override;
+
+ private:
+  bool on_window_resize(const WindowResizeEvent& event) override;
+
+  bool is_orthographic_;
+  float fov_, aspect_, z_near_, z_far_;
+  mEn::Vec3 focal_target_{0.0F, 0.0F, 0.0F};
 };
 
 }  // namespace kEn
