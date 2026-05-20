@@ -325,6 +325,31 @@ function(fetch_glm)
 endfunction()
 
 # ##############################################################################
+# json-schema-validator
+# ##############################################################################
+function(fetch_json_schema_validator)
+  if(TARGET nlohmann_json_schema_validator)
+    return()
+  endif()
+
+  block()
+    _fetch_begin("json-schema-validator")
+
+    set(JSON_VALIDATOR_INSTALL OFF CACHE BOOL "Do not install json-schema-validator" FORCE)
+
+    _declare_dep(
+      json_schema_validator
+      "https://github.com/pboettch/json-schema-validator.git"
+      "2.3.0"
+    )
+
+    FetchContent_MakeAvailable(json_schema_validator)
+
+    _fetch_end()
+  endblock()
+endfunction()
+
+# ##############################################################################
 # GTest
 # ##############################################################################
 function(fetch_googletest)

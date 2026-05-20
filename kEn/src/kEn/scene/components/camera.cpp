@@ -5,6 +5,7 @@
 
 #include <mEn/functions/geometric.hpp>
 #include <mEn/functions/matrix_projection.hpp>
+#include <mEn/fwd.hpp>
 
 #include <kEn/event/application_events.hpp>
 #include <kEn/event/event.hpp>
