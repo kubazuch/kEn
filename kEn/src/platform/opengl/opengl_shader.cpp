@@ -386,7 +386,7 @@ OpenglShader::OpenglShader(const std::filesystem::path& path, ShaderConfig confi
   }
 
   // Geometry
-  if (config.geometry) {
+  if (config.stages.test(ShaderStage::Geometry)) {
     shader_src_path.replace_extension(kGeometryExt);
     src             = read_shader_src(shader_src_path, &map);
     geometry_shader = create_shader(src, GL_GEOMETRY_SHADER, shader_src_path.string(), &map);
@@ -398,7 +398,7 @@ OpenglShader::OpenglShader(const std::filesystem::path& path, ShaderConfig confi
   }
 
   // Tessellation
-  if (config.tessellation) {
+  if (config.stages.test(ShaderStage::TessControl)) {
     shader_src_path.replace_extension(kTessControlExt);
     src                 = read_shader_src(shader_src_path, &map);
     tess_control_shader = create_shader(src, GL_TESS_CONTROL_SHADER, shader_src_path.string(), &map);
@@ -408,7 +408,9 @@ OpenglShader::OpenglShader(const std::filesystem::path& path, ShaderConfig confi
       glDeleteShader(geometry_shader);
       throw std::runtime_error("Unable to create tessellation control shader");
     }
+  }
 
+  if (config.stages.test(ShaderStage::TessEvaluation)) {
     shader_src_path.replace_extension(kTessEvalExt);
     src                    = read_shader_src(shader_src_path, &map);
     tess_evaluation_shader = create_shader(src, GL_TESS_EVALUATION_SHADER, shader_src_path.string(), &map);
@@ -425,12 +427,13 @@ OpenglShader::OpenglShader(const std::filesystem::path& path, ShaderConfig confi
 
   glAttachShader(renderer_id_, vertex_shader);
   glAttachShader(renderer_id_, fragment_shader);
-  if (config.geometry) {
+  if (config.stages.test(ShaderStage::Geometry)) {
     glAttachShader(renderer_id_, geometry_shader);
   }
-
-  if (config.tessellation) {
+  if (config.stages.test(ShaderStage::TessControl)) {
     glAttachShader(renderer_id_, tess_control_shader);
+  }
+  if (config.stages.test(ShaderStage::TessEvaluation)) {
     glAttachShader(renderer_id_, tess_evaluation_shader);
   }
 
@@ -438,21 +441,25 @@ OpenglShader::OpenglShader(const std::filesystem::path& path, ShaderConfig confi
 
   glDetachShader(renderer_id_, vertex_shader);
   glDetachShader(renderer_id_, fragment_shader);
-  if (config.geometry) {
+  if (config.stages.test(ShaderStage::Geometry)) {
     glDetachShader(renderer_id_, geometry_shader);
   }
-  if (config.tessellation) {
+  if (config.stages.test(ShaderStage::TessControl)) {
     glDetachShader(renderer_id_, tess_control_shader);
+  }
+  if (config.stages.test(ShaderStage::TessEvaluation)) {
     glDetachShader(renderer_id_, tess_evaluation_shader);
   }
 
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);
-  if (config.geometry) {
+  if (config.stages.test(ShaderStage::Geometry)) {
     glDeleteShader(geometry_shader);
   }
-  if (config.tessellation) {
+  if (config.stages.test(ShaderStage::TessControl)) {
     glDeleteShader(tess_control_shader);
+  }
+  if (config.stages.test(ShaderStage::TessEvaluation)) {
     glDeleteShader(tess_evaluation_shader);
   }
 }

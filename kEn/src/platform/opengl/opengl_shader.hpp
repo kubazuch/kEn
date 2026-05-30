@@ -107,8 +107,8 @@ class OpenglShader final : public Shader {
    * - \<stem\>.vert
    * - \<stem\>.frag
    * and optionally:
-   * - \<stem\>.geom            if config.geometry
-   * - \<stem\>.tesc/.tese      if config.tessellation
+   * - \<stem\>.geom            if config.stages.test(ShaderStage::Geometry)
+   * - \<stem\>.tesc/.tese      if config.stages.test(ShaderStage::TessControl)
    *
    * Additionally supports basic preprocessing:
    * - `#include "file"` resolved relative to the current file, then Shader::kShaderPath

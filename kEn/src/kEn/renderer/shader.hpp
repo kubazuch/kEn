@@ -8,6 +8,7 @@
 #include <mEn.hpp>
 
 #include <kEn/core/core.hpp>
+#include <kEn/util/enum_set.hpp>
 
 /** @file
  *  @ingroup ken
@@ -27,10 +28,11 @@ class UniformBuffer;
 enum class ShaderStage : std::uint8_t {
   Vertex,         /**< Vertex processing stage. */
   Fragment,       /**< Fragment (pixel) shading stage. */
-  Geometry,       /**< Optional geometry stage; requires @ref ShaderConfig::geometry. */
-  TessControl,    /**< Tessellation control stage; requires @ref ShaderConfig::tessellation. */
-  TessEvaluation, /**< Tessellation evaluation stage; requires @ref ShaderConfig::tessellation. */
-  Compute,        /**< Compute stage; requires @ref ShaderConfig::compute. */
+  Geometry,       /**< Optional geometry stage; set in @ref ShaderConfig::stages. */
+  TessControl,    /**< Tessellation control stage; set in @ref ShaderConfig::stages. */
+  TessEvaluation, /**< Tessellation evaluation stage; set in @ref ShaderConfig::stages. */
+  Compute,        /**< Compute stage; set in @ref ShaderConfig::stages. */
+  Count,
 };
 
 /**
@@ -62,17 +64,14 @@ using UniformValue = std::variant<bool, int, uint32_t, float, mEn::Vec2, mEn::Ve
 using UniformArray = std::variant<std::span<const int>, std::span<const uint32_t>, std::span<const float>>;
 
 /**
- * @brief Optional shader stages and features to enable when loading from files.
+ * @brief Optional shader stages to enable when loading from files.
+ *
+ * Vertex and Fragment stages are always loaded; only set optional stages here.
+ * TessControl and TessEvaluation are loaded and linked independently, but both must
+ * be set to enable tessellation.
  */
 struct ShaderConfig {
-  /** @brief Enable a geometry stage (.geom) in addition to vertex/fragment. */
-  bool geometry = false;
-
-  /** @brief Enable tessellation stages (.tesc/.tese) in addition to vertex/fragment. */
-  bool tessellation = false;
-
-  /** @brief Enable compute shader loading (backend-dependent). Currently not implemented. */
-  bool compute = false;
+  util::EnumSet<ShaderStage> stages;
 };
 
 /**
