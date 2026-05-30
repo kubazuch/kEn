@@ -74,7 +74,7 @@ jobs:
           - name: linux-gcc
             os: ubuntu-24.04
             preset: linux-gcc-release
-            packages: "gcc g++"
+            packages: "gcc-14 g++-14"
 
           - name: linux-clang
             os: ubuntu-24.04
@@ -102,6 +102,10 @@ jobs:
           python3 -m pip install jinja2
           sudo apt-get update
           sudo apt-get install -y cmake ninja-build ${{ matrix.packages }} libwayland-dev libwayland-bin libxkbcommon-dev wayland-protocols xorg-dev libdbus-1-dev
+          if dpkg -l gcc-14 &>/dev/null; then
+            sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 14
+            sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 14
+          fi
 
       - name: Install Windows dependencies
         if: runner.os == 'Windows'
