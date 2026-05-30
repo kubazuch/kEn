@@ -13,6 +13,7 @@
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/core.hpp>
+#include <kEn/util/move_only_function.hpp>
 
 /** @file
  *  @ingroup ken
@@ -267,7 +268,7 @@ class EventDispatcher {
    *
    * The callable receives a @ref kEn::BaseEvent reference and returns @c true if the event is handled.
    */
-  using base_callback_t = std::move_only_function<bool(BaseEvent&)>;
+  using base_callback_t = kEn::move_only_function<bool(BaseEvent&)>;
 
   /**
    * @brief Subscribe a callable to a specific event type.

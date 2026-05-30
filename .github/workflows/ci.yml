@@ -14,6 +14,7 @@ permissions:
   contents: read
 
 env:
+  LLVM_VERSION: 20
   LLVM_RUN_CLANG_TIDY_SHA: c13b7485b87909fcf739f62cfa382b55407433c0
 
 jobs:
@@ -42,12 +43,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install LLVM ${{ env.LLVM_VERSION }}
+        run: |
+          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          echo "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-${{ env.LLVM_VERSION }} main" | sudo tee /etc/apt/sources.list.d/llvm.list
+          sudo apt-get update
+          sudo apt-get install -y clang-${{ env.LLVM_VERSION }} clang-tidy-${{ env.LLVM_VERSION }} libc++-${{ env.LLVM_VERSION }}-dev libc++abi-${{ env.LLVM_VERSION }}-dev
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${{ env.LLVM_VERSION }} ${{ env.LLVM_VERSION }}
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${{ env.LLVM_VERSION }} ${{ env.LLVM_VERSION }}
+          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-${{ env.LLVM_VERSION }} ${{ env.LLVM_VERSION }}
+
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install jinja2
-          sudo apt-get update
-          sudo apt-get install -y clang clang-tidy cmake ninja-build curl libwayland-dev libwayland-bin libxkbcommon-dev wayland-protocols xorg-dev libdbus-1-dev
+          sudo apt-get install -y cmake ninja-build curl libwayland-dev libwayland-bin libxkbcommon-dev wayland-protocols xorg-dev libdbus-1-dev
 
       - name: Download run-clang-tidy.py
         run: |
@@ -62,7 +72,7 @@ jobs:
 
       - name: Run clang-tidy
         run: |
-          python3 run-clang-tidy.py -p build/linux-clang-release -warnings-as-errors "*" -use-color -quiet -header-filter "(k|m)En[\\/ ]src[\\/ ].*" "[km]En[/\\\\]src[/\\\\]|[km]En[/\\\\]tests[/\\\\]|Sandbox[/\\\\]src[/\\\\]"
+          python3 run-clang-tidy.py -clang-tidy-binary clang-tidy-${{ env.LLVM_VERSION }} -p build/linux-clang-release -warnings-as-errors "*" -use-color -quiet -header-filter "(k|m)En[\\/ ]src[\\/ ].*" "[km]En[/\\\\]src[/\\\\]|[km]En[/\\\\]tests[/\\\\]|Sandbox[/\\\\]src[/\\\\]"
 
   build-test:
     name: ${{ matrix.name }}
@@ -74,12 +84,13 @@ jobs:
           - name: linux-gcc
             os: ubuntu-24.04
             preset: linux-gcc-release
-            packages: "gcc-14 g++-14"
+            packages: "gcc-14 g++-14 libstdc++-14-dev"
 
           - name: linux-clang
             os: ubuntu-24.04
             preset: linux-clang-release
-            packages: "clang"
+            packages: "clang-20 libc++-20-dev libc++abi-20-dev"
+            llvm_apt: true
 
           - name: windows-msvc
             os: windows-2022
@@ -94,6 +105,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up LLVM ${{ env.LLVM_VERSION }} apt repository
+        if: runner.os == 'Linux' && matrix.llvm_apt
+        shell: bash
+        run: |
+          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          echo "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-${{ env.LLVM_VERSION }} main" | sudo tee /etc/apt/sources.list.d/llvm.list
+
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
         shell: bash
@@ -105,6 +123,10 @@ jobs:
           if dpkg -l gcc-14 &>/dev/null; then
             sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 14
             sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 14
+          fi
+          if dpkg -l clang-${{ env.LLVM_VERSION }} &>/dev/null; then
+            sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${{ env.LLVM_VERSION }} ${{ env.LLVM_VERSION }}
+            sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${{ env.LLVM_VERSION }} ${{ env.LLVM_VERSION }}
           fi
 
       - name: Install Windows dependencies

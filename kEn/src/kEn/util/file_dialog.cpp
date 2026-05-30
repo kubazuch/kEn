@@ -2,7 +2,7 @@
 
 #include <nfd/nfd.h>
 
-#include <expected>
+#include <expected>  // NOLINT(misc-include-cleaner)
 #include <filesystem>
 #include <memory>
 #include <optional>

@@ -6,6 +6,7 @@
 #include <span>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include <kEn/core/core.hpp>
 
@@ -25,12 +26,12 @@ struct FileFilter {
 
 struct OpenOptions {
   std::span<const FileFilter> filters;
-  std::filesystem::path default_path = {};
+  std::filesystem::path default_path;
 };
 
 struct SaveOptions {
   std::span<const FileFilter> filters;
-  std::filesystem::path default_path = {};
+  std::filesystem::path default_path;
   std::string default_name;
 };
 

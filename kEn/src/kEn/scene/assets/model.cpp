@@ -124,7 +124,7 @@ void expand_indexed_mesh(std::vector<kEn::Vertex>& vertices, std::vector<std::ui
 
   vertices = std::move(expanded);
   indices.resize(vertices.size());
-  std::ranges::iota(indices, 0U);
+  std::iota(indices.begin(), indices.end(), 0U);  // NOLINT(modernize-use-ranges)
 }
 
 void generate_mikktspace(std::vector<kEn::Vertex>& vertices, std::vector<std::uint32_t>& indices) {
