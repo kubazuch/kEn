@@ -78,7 +78,7 @@ bool ImguiLayer::on_mouse_event(BaseEvent&) {  // NOLINT(readability-convert-mem
 
 bool ImguiLayer::on_keyboard_event(BaseEvent&) {  // NOLINT(readability-convert-member-functions-to-static)
   const ImGuiIO& io = ImGui::GetIO();
-  return io.WantCaptureKeyboard;
+  return io.WantTextInput;
 }
 
 }  // namespace kEn

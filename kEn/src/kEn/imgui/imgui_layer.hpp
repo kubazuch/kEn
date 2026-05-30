@@ -59,8 +59,8 @@ class ImguiLayer final : public Layer {
   bool on_mouse_event(BaseEvent&);
 
   /**
-   * @brief Consumes keyboard events when ImGui has focus.
-   * @return io.WantCaptureKeyboard.
+   * @brief Consumes keyboard events when ImGui is actively accepting text input.
+   * @return io.WantTextInput.
    */
   bool on_keyboard_event(BaseEvent&);
 
