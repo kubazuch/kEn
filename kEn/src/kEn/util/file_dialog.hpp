@@ -26,12 +26,12 @@ struct FileFilter {
 
 struct OpenOptions {
   std::span<const FileFilter> filters;
-  std::filesystem::path default_path;
+  std::filesystem::path default_path = {};  // NOLINT(readability-redundant-member-init)
 };
 
 struct SaveOptions {
   std::span<const FileFilter> filters;
-  std::filesystem::path default_path;
+  std::filesystem::path default_path = {};  // NOLINT(readability-redundant-member-init)
   std::string default_name;
 };
 
