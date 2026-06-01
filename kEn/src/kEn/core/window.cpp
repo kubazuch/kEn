@@ -168,6 +168,8 @@ void Window::set_glfw_callbacks() {
   });
 }
 
+void Window::close() { glfwSetWindowShouldClose(window_ptr_, GLFW_TRUE); }
+
 void Window::poll_events() { glfwPollEvents(); }  // NOLINT(readability-convert-member-functions-to-static)
 
 void Window::set_vsync(const bool enabled) {

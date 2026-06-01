@@ -105,6 +105,9 @@ class Window {
   /** @brief Returns @c true if VSync is currently enabled. */
   [[nodiscard]] bool vsync() const;
 
+  /** @brief Signals the OS to close this window on the next event-poll cycle. */
+  void close();
+
   /** @brief Returns the underlying GLFWwindow pointer for platform-specific use (e.g., ImGui). */
   [[nodiscard]] GLFWwindow* native_window() const { return window_ptr_; }
 
