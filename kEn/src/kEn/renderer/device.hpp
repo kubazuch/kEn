@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <filesystem>
 #include <memory>
@@ -141,6 +142,24 @@ class Device {
                                                         const SamplerDesc& sampler = {},
                                                         TextureFormat format       = TextureFormat::RGBA8) {
     return create_texture(path, sampler, format, kFullMipChain);
+  }
+
+  /**
+   * @brief Load a cube-map texture from six face images.
+   * @param faces      Face image paths in the order +X, -X, +Y, -Y, +Z, -Z. All faces must share one square size.
+   * @param sampler    Sampling parameters.
+   * @param format     Desired pixel format (default @c TextureFormat::RGBA8).
+   * @param mip_levels Number of mip levels to generate; pass @c kFullMipChain for a full chain.
+   */
+  [[nodiscard]] virtual std::shared_ptr<Texture> create_cubemap(const std::array<std::filesystem::path, 6>& faces,
+                                                                const SamplerDesc& sampler, TextureFormat format,
+                                                                std::uint32_t mip_levels) = 0;
+
+  /** @brief Convenience overload with default sampler, RGBA8 format, and a full mip chain. */
+  [[nodiscard]] std::shared_ptr<Texture> create_cubemap(const std::array<std::filesystem::path, 6>& faces,
+                                                        const SamplerDesc& sampler = {},
+                                                        TextureFormat format       = TextureFormat::RGBA8) {
+    return create_cubemap(faces, sampler, format, kFullMipChain);
   }
 
   /** @brief Create a new @ref VertexInput (VAO abstraction) for this device. */

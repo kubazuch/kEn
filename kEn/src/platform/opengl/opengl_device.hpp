@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <filesystem>
 #include <memory>
 #include <unordered_map>
@@ -29,6 +30,8 @@ class OpenglDevice final : public Device {
   std::shared_ptr<Texture> create_texture(const TextureDesc&, const SamplerDesc&) override;
   std::shared_ptr<Texture> create_texture(const std::filesystem::path&, const SamplerDesc&, TextureFormat,
                                           std::uint32_t mip_levels) override;
+  std::shared_ptr<Texture> create_cubemap(const std::array<std::filesystem::path, 6>&, const SamplerDesc&,
+                                          TextureFormat, std::uint32_t mip_levels) override;
 
   std::unique_ptr<VertexInput> create_vertex_input() override;
   std::shared_ptr<Framebuffer> create_framebuffer(const FramebufferSpec&) override;

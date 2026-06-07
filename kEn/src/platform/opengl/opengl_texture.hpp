@@ -2,6 +2,7 @@
 
 #include <glad/gl.h>
 
+#include <array>
 #include <cstdint>
 #include <filesystem>
 
@@ -70,6 +71,64 @@ class OpenglTexture2D : public Texture {
   SamplerDesc sampler_desc_;
   GLuint renderer_id_ = 0;
   GLenum target_      = GL_TEXTURE_2D;
+
+  GLenum internal_format_ = GL_NONE;
+  GLenum upload_format_   = GL_NONE;
+  GLenum upload_type_     = GL_NONE;
+};
+
+/**
+ * @brief OpenGL cube-map texture backed by immutable @c GL_TEXTURE_CUBE_MAP storage.
+ *
+ * Six square faces uploaded in the order +X, -X, +Y, -Y, +Z, -Z; the @p layer
+ * argument of @ref set_data() is the face index (matching the GL face enum order).
+ * Can be constructed empty from a @ref TextureDesc or by loading six image files
+ * via stb_image. Seamless cube-map filtering is enabled when faces are created.
+ *
+ * @note Cube maps use a top-left image origin and are loaded without the vertical
+ *       flip applied to 2D textures.
+ */
+class OpenglTextureCube : public Texture {
+ public:
+  /**
+   * @brief Allocates immutable cube storage for the given descriptor and applies sampler state.
+   * @param desc    Texture shape and format; kind must be Cube with square faces and depth == 1.
+   * @param sampler Sampler parameters applied once at construction.
+   */
+  explicit OpenglTextureCube(TextureDesc desc, SamplerDesc sampler = {});
+  /**
+   * @brief Loads six face images via stb_image, allocates storage, and uploads each face.
+   * @param faces      Face image paths in the order +X, -X, +Y, -Y, +Z, -Z. All faces must share one square size.
+   * @param sampler    Sampler parameters applied once at construction.
+   * @param format     Desired pixel format; must be a non-integer byte-per-channel color format.
+   * @param mip_levels Mip level count; use @ref kFullMipChain to generate a full chain.
+   */
+  explicit OpenglTextureCube(const std::array<std::filesystem::path, 6>& faces, SamplerDesc sampler = {},
+                             TextureFormat format = TextureFormat::RGBA8, std::uint32_t mip_levels = kFullMipChain);
+  ~OpenglTextureCube() override;
+
+  [[nodiscard]] const TextureDesc& desc() const override { return desc_; }
+  void set_data(std::span<const std::byte> data, std::uint32_t mip_level, std::uint32_t layer) override;
+
+  [[nodiscard]] const SamplerDesc& sampler_desc() const noexcept { return sampler_desc_; }
+  [[nodiscard]] GLuint renderer_id() const noexcept { return renderer_id_; }
+  /** @brief Returns the OpenGL texture target (always @c GL_TEXTURE_CUBE_MAP). */
+  [[nodiscard]] GLenum target() const noexcept { return target_; }
+
+  [[nodiscard]] std::uintptr_t native_handle() const noexcept override {
+    return static_cast<std::uintptr_t>(renderer_id_);
+  }
+
+  [[nodiscard]] ImTextureID imgui_id() const noexcept override { return static_cast<ImTextureID>(renderer_id_); }
+
+ private:
+  void allocate_storage();
+  void apply_sampler_state();
+
+  TextureDesc desc_;
+  SamplerDesc sampler_desc_;
+  GLuint renderer_id_ = 0;
+  GLenum target_      = GL_TEXTURE_CUBE_MAP;
 
   GLenum internal_format_ = GL_NONE;
   GLenum upload_format_   = GL_NONE;

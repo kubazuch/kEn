@@ -71,7 +71,19 @@ std::shared_ptr<Shader> OpenglDevice::create_shader(const std::filesystem::path&
 }
 
 std::shared_ptr<Texture> OpenglDevice::create_texture(const TextureDesc& desc, const SamplerDesc& sampler) {
-  return std::make_shared<OpenglTexture2D>(desc, sampler);
+  switch (desc.kind) {
+    case TextureKind::Tex2D:
+      return std::make_shared<OpenglTexture2D>(desc, sampler);
+    case TextureKind::Cube:
+      return std::make_shared<OpenglTextureCube>(desc, sampler);
+    case TextureKind::Tex2DArray:
+    case TextureKind::Tex3D:
+    case TextureKind::CubeArray:
+      break;
+  }
+
+  KEN_CORE_ASSERT(false, "Unsupported texture kind");
+  return nullptr;
 }
 
 std::shared_ptr<Texture> OpenglDevice::create_texture(const std::filesystem::path& path, const SamplerDesc& sampler,
@@ -81,6 +93,12 @@ std::shared_ptr<Texture> OpenglDevice::create_texture(const std::filesystem::pat
   }
 
   return loaded_textures_[path] = std::make_shared<OpenglTexture2D>(path, sampler, format, mip_levels);
+}
+
+std::shared_ptr<Texture> OpenglDevice::create_cubemap(const std::array<std::filesystem::path, 6>& faces,
+                                                      const SamplerDesc& sampler, TextureFormat format,
+                                                      std::uint32_t mip_levels) {
+  return std::make_shared<OpenglTextureCube>(faces, sampler, format, mip_levels);
 }
 
 std::unique_ptr<VertexInput> OpenglDevice::create_vertex_input() { return std::make_unique<OpenglVertexInput>(); }
