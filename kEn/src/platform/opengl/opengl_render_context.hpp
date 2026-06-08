@@ -79,6 +79,10 @@ class OpenglRenderContext final : public RenderContext {
   void bind_uniform_buffer(std::uint32_t binding, ShaderStage stage, const UniformBuffer& ubo) override;
   void bind_storage_buffer(std::uint32_t binding, ShaderStage stage, const ShaderStorageBuffer& ssbo) override;
 
+  void bind_image(std::uint32_t unit, const Texture& texture, ImageAccess access, std::uint32_t level) override;
+  void dispatch_compute(std::uint32_t groups_x, std::uint32_t groups_y, std::uint32_t groups_z) override;
+  void memory_barrier(MemoryBarrierBits bits) override;
+
   void set_render_target(Framebuffer& framebuffer) override;
   void bind_default_framebuffer() override;
 

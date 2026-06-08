@@ -19,10 +19,37 @@
 #include <kEn/renderer/vertex_input.hpp>
 
 #include "opengl_state.hpp"
+#include "opengl_texture_format.hpp"
 
 namespace kEn {
 
 namespace {
+
+[[nodiscard]] GLenum opengl_image_access(ImageAccess access) noexcept {
+  switch (access) {
+    case ImageAccess::ReadOnly:
+      return GL_READ_ONLY;
+    case ImageAccess::WriteOnly:
+      return GL_WRITE_ONLY;
+    case ImageAccess::ReadWrite:
+      return GL_READ_WRITE;
+  }
+  KEN_UNREACHABLE();
+}
+
+[[nodiscard]] GLbitfield opengl_memory_barrier(MemoryBarrierBits bits) noexcept {
+  GLbitfield flags = 0;
+  if (bits.test(MemoryBarrierBit::ShaderImageAccess)) {
+    flags |= GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
+  }
+  if (bits.test(MemoryBarrierBit::TextureFetch)) {
+    flags |= GL_TEXTURE_FETCH_BARRIER_BIT;
+  }
+  if (bits.test(MemoryBarrierBit::ShaderStorage)) {
+    flags |= GL_SHADER_STORAGE_BARRIER_BIT;
+  }
+  return flags;
+}
 
 void gl_message_callback(GLenum /*src*/, GLenum /*type*/, GLuint /*id*/, GLenum lvl, GLsizei /*len*/, const GLchar* msg,
                          const void* /*params*/) {
@@ -179,6 +206,18 @@ void OpenglRenderContext::bind_storage_buffer(std::uint32_t binding, ShaderStage
                                               const ShaderStorageBuffer& ssbo) {
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, static_cast<GLuint>(ssbo.underlying_buffer()->native_handle()));
 }
+
+void OpenglRenderContext::bind_image(std::uint32_t unit, const Texture& texture, ImageAccess access,
+                                     std::uint32_t level) {
+  glBindImageTexture(unit, static_cast<GLuint>(texture.native_handle()), static_cast<GLint>(level), GL_FALSE, 0,
+                     opengl_image_access(access), texture_format::internal_format(texture.format()));
+}
+
+void OpenglRenderContext::dispatch_compute(std::uint32_t groups_x, std::uint32_t groups_y, std::uint32_t groups_z) {
+  glDispatchCompute(groups_x, groups_y, groups_z);
+}
+
+void OpenglRenderContext::memory_barrier(MemoryBarrierBits bits) { glMemoryBarrier(opengl_memory_barrier(bits)); }
 
 void OpenglRenderContext::set_render_target(Framebuffer& framebuffer) {
   glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(framebuffer.native_handle()));

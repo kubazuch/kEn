@@ -464,6 +464,26 @@ OpenglShader::OpenglShader(const std::filesystem::path& path, ShaderConfig confi
   }
 }
 
+OpenglShader::OpenglShader(const std::filesystem::path& path, ComputeTag) {
+  auto shader_src_path = std::filesystem::path{kShaderPath} / path;
+  name_                = shader_src_path.stem().string();
+
+  std::vector<std::string> map;
+
+  shader_src_path.replace_extension(kComputeExt);
+  auto src                    = read_shader_src(shader_src_path, &map);
+  const GLuint compute_shader = create_shader(src, GL_COMPUTE_SHADER, shader_src_path.string(), &map);
+  if (compute_shader == 0) {
+    throw std::runtime_error("Unable to create compute shader");
+  }
+
+  renderer_id_ = glCreateProgram();
+  glAttachShader(renderer_id_, compute_shader);
+  link_shader();
+  glDetachShader(renderer_id_, compute_shader);
+  glDeleteShader(compute_shader);
+}
+
 OpenglShader::OpenglShader(std::string_view name, std::string_view vertex_src, std::string_view fragment_src)
     : renderer_id_(0), name_(std::move(name)) {
   create_program(vertex_src, fragment_src);

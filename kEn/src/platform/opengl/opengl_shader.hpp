@@ -124,6 +124,19 @@ class OpenglShader final : public Shader {
    */
   OpenglShader(const std::filesystem::path& path, ShaderConfig config);
 
+  /** @brief Tag type selecting the compute-program constructor overload. */
+  struct ComputeTag {};
+
+  /**
+   * @brief Construct and link a compute-only program by loading @c \<stem\>.comp from disk.
+   *
+   * Supports the same `#include`/`#pragma once` preprocessing as the graphics-stage loader.
+   *
+   * @param path Path appended to Shader::kShaderPath to locate the @c .comp source.
+   * @throws std::runtime_error On unrecoverable IO or stage creation failures.
+   */
+  OpenglShader(const std::filesystem::path& path, ComputeTag);
+
   ~OpenglShader() override;
 
   [[nodiscard]] std::uintptr_t native_handle() const noexcept override {
@@ -232,6 +245,7 @@ class OpenglShader final : public Shader {
   static constexpr std::string_view kGeometryExt    = ".geom";
   static constexpr std::string_view kTessControlExt = ".tesc";
   static constexpr std::string_view kTessEvalExt    = ".tese";
+  static constexpr std::string_view kComputeExt     = ".comp";
   static const std::regex kIncludeRegex;
   static const std::regex kPragmaOnceRegex;
   static const std::unordered_map<std::string_view, std::string_view> kInternalLibs;

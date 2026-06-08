@@ -26,6 +26,7 @@ class OpenglDevice final : public Device {
 
   std::shared_ptr<Shader> create_shader(std::string_view, std::string_view, std::string_view) override;
   std::shared_ptr<Shader> create_shader(const std::filesystem::path&, ShaderConfig) override;
+  std::shared_ptr<Shader> create_compute_shader(const std::filesystem::path&) override;
 
   std::shared_ptr<Texture> create_texture(const TextureDesc&, const SamplerDesc&) override;
   std::shared_ptr<Texture> create_texture(const std::filesystem::path&, const SamplerDesc&, TextureFormat,

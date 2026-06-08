@@ -9,6 +9,7 @@
 #include <kEn/renderer/render_state.hpp>
 #include <kEn/renderer/shader.hpp>
 #include <kEn/renderer/vertex_input.hpp>
+#include <kEn/util/flags.hpp>
 
 /** @file
  *  @ingroup ken
@@ -40,6 +41,31 @@ namespace render_mode {
 using enum RenderMode;
 
 }  // namespace render_mode
+
+/** @brief Access mode declared when binding a texture as a compute image (load/store). */
+enum class ImageAccess : std::uint8_t {
+  ReadOnly,  /**< @brief Shader may only @c imageLoad from the image. */
+  WriteOnly, /**< @brief Shader may only @c imageStore to the image. */
+  ReadWrite, /**< @brief Shader may both load and store. */
+};
+
+/**
+ * @brief Memory-barrier category bit ensuring compute writes are visible to later operations.
+ *
+ * Combine one or more with @c operator| (yielding @ref MemoryBarrierBits) and pass to
+ * @ref RenderContext::memory_barrier after a @ref RenderContext::dispatch_compute that
+ * wrote to images/buffers.
+ */
+enum class MemoryBarrierBit : std::uint8_t {
+  ShaderImageAccess = 1U << 0U, /**< @brief Image load/store writes (e.g. before reusing as an image). */
+  TextureFetch      = 1U << 1U, /**< @brief Writes visible to subsequent @c texture() sampling. */
+  ShaderStorage     = 1U << 2U, /**< @brief Shader storage buffer writes. */
+};
+
+KEN_ENABLE_FLAGS(::kEn::MemoryBarrierBit);
+
+/** @brief Bitmask combining one or more @ref MemoryBarrierBit categories. */
+using MemoryBarrierBits = util::Flags<MemoryBarrierBit>;
 
 /**
  * @brief Abstract rendering context providing GPU pipeline control.
@@ -166,6 +192,34 @@ class RenderContext {
    * @param ssbo    Shader storage buffer to bind.
    */
   virtual void bind_storage_buffer(std::uint32_t binding, ShaderStage stage, const ShaderStorageBuffer& ssbo) = 0;
+
+  /**
+   * @brief Binds a texture level to an image unit for compute load/store.
+   * @param unit    Image unit index (matches @c binding in a GLSL @c image2D declaration).
+   * @param texture Texture whose storage is exposed; its format determines the image format.
+   * @param access  Whether the shader will read, write, or both.
+   * @param level   Mip level to bind.
+   */
+  virtual void bind_image(std::uint32_t unit, const Texture& texture, ImageAccess access, std::uint32_t level) = 0;
+
+  /** @brief Convenience overload binding mip level 0. */
+  void bind_image(std::uint32_t unit, const Texture& texture, ImageAccess access) {
+    bind_image(unit, texture, access, 0);
+  }
+
+  /**
+   * @brief Launches the currently bound compute shader over a grid of work groups.
+   * @param groups_x Number of work groups along X.
+   * @param groups_y Number of work groups along Y.
+   * @param groups_z Number of work groups along Z.
+   */
+  virtual void dispatch_compute(std::uint32_t groups_x, std::uint32_t groups_y, std::uint32_t groups_z) = 0;
+
+  /**
+   * @brief Inserts a memory barrier so prior shader writes are visible to later operations.
+   * @param bits Categories of access to synchronize.
+   */
+  virtual void memory_barrier(MemoryBarrierBits bits) = 0;
 
   /**
    * @brief Redirects subsequent draw calls to the given framebuffer.

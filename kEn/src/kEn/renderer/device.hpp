@@ -114,6 +114,15 @@ class Device {
   }
 
   /**
+   * @brief Load and link a compute-only shader program from disk.
+   * @param path  Stem path appended to @c Shader::kShaderPath; the @c .comp file is loaded.
+   *
+   * The resulting @ref Shader is a compute program: bind it with
+   * @ref RenderContext::set_shader and launch it with @ref RenderContext::dispatch_compute.
+   */
+  [[nodiscard]] virtual std::shared_ptr<Shader> create_compute_shader(const std::filesystem::path& path) = 0;
+
+  /**
    * @brief Allocate a GPU texture from a descriptor.
    * @param desc     Texture dimensions, format, mip levels, and kind.
    * @param sampler  Sampling parameters applied to the texture.

@@ -70,6 +70,10 @@ std::shared_ptr<Shader> OpenglDevice::create_shader(const std::filesystem::path&
   return std::make_shared<OpenglShader>(path, config);
 }
 
+std::shared_ptr<Shader> OpenglDevice::create_compute_shader(const std::filesystem::path& path) {
+  return std::make_shared<OpenglShader>(path, OpenglShader::ComputeTag{});
+}
+
 std::shared_ptr<Texture> OpenglDevice::create_texture(const TextureDesc& desc, const SamplerDesc& sampler) {
   switch (desc.kind) {
     case TextureKind::Tex2D:
