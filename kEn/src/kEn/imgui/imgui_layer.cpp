@@ -71,14 +71,14 @@ void ImguiLayer::on_imgui() {
 
 bool ImguiLayer::on_event(BaseEvent& event) { return dispatcher_.dispatch(event); }
 
-bool ImguiLayer::on_mouse_event(BaseEvent&) {  // NOLINT(readability-convert-member-functions-to-static)
+bool ImguiLayer::on_mouse_event(BaseEvent&) {  // NOLINT(readability-make-member-function-const)
   const ImGuiIO& io = ImGui::GetIO();
-  return io.WantCaptureMouse;
+  return block_events_ && io.WantCaptureMouse;
 }
 
-bool ImguiLayer::on_keyboard_event(BaseEvent&) {  // NOLINT(readability-convert-member-functions-to-static)
+bool ImguiLayer::on_keyboard_event(BaseEvent&) {  // NOLINT(readability-make-member-function-const)
   const ImGuiIO& io = ImGui::GetIO();
-  return io.WantTextInput;
+  return block_events_ && io.WantTextInput;
 }
 
 }  // namespace kEn

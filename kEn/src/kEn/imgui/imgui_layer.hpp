@@ -51,6 +51,20 @@ class ImguiLayer final : public Layer {
    */
   bool on_event(BaseEvent& event) override;
 
+  /**
+   * @brief Enable or disable event blocking.
+   *
+   * When enabled (the default) mouse/keyboard events are consumed whenever ImGui
+   * wants to capture them, preventing them from reaching layers below. When
+   * disabled, events always propagate down. This lets an application hand input
+   * to an embedded viewport (e.g. while it is hovered) without ImGui swallowing
+   * it, while keeping the rest of the ImGui UI interactive.
+   */
+  void set_block_events(bool block) { block_events_ = block; }
+
+  /** @brief Returns whether event blocking is currently enabled. */
+  [[nodiscard]] bool block_events() const { return block_events_; }
+
  private:
   /**
    * @brief Consumes mouse events when ImGui has focus.
@@ -66,6 +80,7 @@ class ImguiLayer final : public Layer {
 
   std::unique_ptr<ImguiBackend> backend_;
   EventDispatcher dispatcher_;
+  bool block_events_ = true;
 };
 
 }  // namespace kEn

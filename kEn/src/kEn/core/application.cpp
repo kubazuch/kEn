@@ -37,7 +37,9 @@ Application::Application(ApplicationSpec spec) : spec_(std::move(spec)) {
   device_ = Device::create(spec_.api, window_->native_window(), spec_.enable_debug);
   window_->set_vsync(true);
 
-  push_overlay(std::make_unique<ImguiLayer>());
+  auto imgui_layer = std::make_unique<ImguiLayer>();
+  imgui_layer_     = imgui_layer.get();
+  push_overlay(std::move(imgui_layer));
   if (spec_.enable_debug) {
     push_overlay(std::make_unique<DebugLayer>());
   }

@@ -20,6 +20,8 @@
 
 namespace kEn {
 
+class ImguiLayer;
+
 /** @brief Configuration parameters for the Application.
  *
  *  Passed to the Application constructor to configure the main window.
@@ -91,6 +93,9 @@ class Application {
   /** @brief Returns a reference to the GPU device (command dispatch + resource creation). */
   Device& device() const { return *device_; }
 
+  /** @brief Returns the internal ImGui overlay layer (input capture + backend lifecycle). */
+  ImguiLayer& imgui_layer() const { return *imgui_layer_; }
+
   /** @brief Returns the global Application singleton.
    *  @pre An Application instance must have been constructed.
    */
@@ -126,6 +131,7 @@ class Application {
 
   std::unique_ptr<Window> window_;
   std::unique_ptr<Device> device_;
+  ImguiLayer* imgui_layer_ = nullptr;
   EventDispatcher dispatcher_;
   bool running_   = true;
   bool minimized_ = false;
