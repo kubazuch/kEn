@@ -41,6 +41,19 @@ void RunLengthDistanceTests() {
 }
 
 template <mEn::length_t L, typename T>
+void RunLengthSqTests() {
+  const auto x    = GV<L, T>(T{3}, T{4}, T{0}, T{0});
+  const auto zero = glm::vec<L, T>(T{0});
+  const auto z    = GV<L, T>(T{1}, T{-2}, T{2}, T{-1});
+
+  EXPECT_SCALAR_EQ(mEn::length_sq(MV(x)), glm::dot(x, x));
+  EXPECT_SCALAR_EQ(mEn::length_sq(MV(zero)), glm::dot(zero, zero));
+  EXPECT_SCALAR_EQ(mEn::length_sq(MV(z)), glm::dot(z, z));
+
+  EXPECT_SCALAR_EQ(mEn::length_sq(MV(x)), glm::length(x) * glm::length(x));
+}
+
+template <mEn::length_t L, typename T>
 void RunNormalizeTests() {
   const auto x = GV<L, T>(T{3}, T{4}, T{12}, T{0});
   ExpectVecEq(mEn::normalize(MV(x)), glm::normalize(x));
@@ -101,6 +114,7 @@ TYPED_TEST_SUITE(Vec4Geom, TestedTypes);
 // ---- vec2 ----
 TYPED_TEST(Vec2Geom, Dot) { RunDotTests<2, TypeParam>(); }
 TYPED_TEST(Vec2Geom, LengthDistance) { RunLengthDistanceTests<2, TypeParam>(); }
+TYPED_TEST(Vec2Geom, LengthSq) { RunLengthSqTests<2, TypeParam>(); }
 TYPED_TEST(Vec2Geom, Normalize) { RunNormalizeTests<2, TypeParam>(); }
 TYPED_TEST(Vec2Geom, Faceforward) { RunFaceforwardTests<2, TypeParam>(); }
 TYPED_TEST(Vec2Geom, Reflect) { RunReflectTests<2, TypeParam>(); }
@@ -120,6 +134,7 @@ TYPED_TEST(Vec3Geom, Cross) {
   ExpectVecEq(mEn::cross(MV(a), MV(b)), glm::cross(a, b));
 }
 TYPED_TEST(Vec3Geom, LengthDistance) { RunLengthDistanceTests<3, TypeParam>(); }
+TYPED_TEST(Vec3Geom, LengthSq) { RunLengthSqTests<3, TypeParam>(); }
 TYPED_TEST(Vec3Geom, Normalize) { RunNormalizeTests<3, TypeParam>(); }
 TYPED_TEST(Vec3Geom, Faceforward) { RunFaceforwardTests<3, TypeParam>(); }
 TYPED_TEST(Vec3Geom, Reflect) { RunReflectTests<3, TypeParam>(); }
@@ -128,6 +143,7 @@ TYPED_TEST(Vec3Geom, Refract) { RunRefractTests<3, TypeParam>(); }
 // ---- vec4 ----
 TYPED_TEST(Vec4Geom, Dot) { RunDotTests<4, TypeParam>(); }
 TYPED_TEST(Vec4Geom, LengthDistance) { RunLengthDistanceTests<4, TypeParam>(); }
+TYPED_TEST(Vec4Geom, LengthSq) { RunLengthSqTests<4, TypeParam>(); }
 TYPED_TEST(Vec4Geom, Normalize) { RunNormalizeTests<4, TypeParam>(); }
 TYPED_TEST(Vec4Geom, Faceforward) { RunFaceforwardTests<4, TypeParam>(); }
 TYPED_TEST(Vec4Geom, Reflect) { RunReflectTests<4, TypeParam>(); }

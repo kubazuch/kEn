@@ -1,5 +1,6 @@
 #include "opengl_device.hpp"
 
+#include <array>
 #include <cstdint>
 #include <filesystem>
 #include <memory>

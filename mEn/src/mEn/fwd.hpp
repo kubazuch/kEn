@@ -117,6 +117,22 @@ using Mat4 = mat<4, default_scalar_t>;  ///< 4x4 float matrix (column-major).
 /// @brief Default-precision quaternion alias.
 using Quat = qua<default_scalar_t>;
 
+/// @name Double-precision vector aliases
+/// @{
+using DVec2 = vec<2, double>;  ///< 2-component double vector.
+using DVec3 = vec<3, double>;  ///< 3-component double vector.
+using DVec4 = vec<4, double>;  ///< 4-component double vector.
+/// @}
+
+/// @name Double-precision matrix aliases
+/// @{
+using DMat3 = mat<3, double>;  ///< 3x3 double matrix (column-major).
+using DMat4 = mat<4, double>;  ///< 4x4 double matrix (column-major).
+/// @}
+
+/// @brief Double-precision quaternion alias.
+using DQuat = qua<double>;
+
 /// @name Signed 32-bit integer vector aliases
 /// @{
 using IVec2 = vec<2, std::int32_t>;  ///< 2-component int32 vector.
