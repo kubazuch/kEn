@@ -11,6 +11,10 @@ namespace mEn {
 template <length_t L, typename T>
 [[nodiscard]] T length(const vec<L, T>& x) noexcept;
 
+/// @brief Returns the squared Euclidean length of vector @p x: @f$ \|x\|^2 = x \cdot x @f$.
+template <length_t L, typename T>
+[[nodiscard]] constexpr T length_sq(const vec<L, T>& x) noexcept;
+
 /// @brief Returns the Euclidean distance between vectors @p x and @p y: @f$ \|y - x\| @f$.
 template <length_t L, typename T>
 [[nodiscard]] T distance(const vec<L, T>& x, const vec<L, T>& y) noexcept;

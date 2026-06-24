@@ -10,6 +10,11 @@ MEN_FORCE_INLINE T length(const vec<L, T>& x) noexcept {
 }
 
 template <length_t L, typename T>
+MEN_FORCE_INLINE constexpr T length_sq(const vec<L, T>& x) noexcept {
+  return dot(x, x);
+}
+
+template <length_t L, typename T>
 MEN_FORCE_INLINE T distance(const vec<L, T>& x, const vec<L, T>& y) noexcept {
   return length(x - y);
 }
