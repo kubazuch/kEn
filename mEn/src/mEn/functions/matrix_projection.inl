@@ -31,4 +31,18 @@ MEN_FORCE_INLINE constexpr mat<4, T> perspective(T fov, T aspect, T zNear, T zFa
   return ret;
 }
 
+template <typename T>
+MEN_FORCE_INLINE constexpr mat<4, T> frustum(T left, T right, T bottom, T top, T zNear, T zFar) noexcept {
+  mat<4, T> ret(0);
+  ret[0][0] = (T{2} * zNear) / (right - left);
+  ret[1][1] = (T{2} * zNear) / (top - bottom);
+  ret[2][0] = (right + left) / (right - left);
+  ret[2][1] = (top + bottom) / (top - bottom);
+  ret[2][2] = -(zFar + zNear) / (zFar - zNear);
+  ret[2][3] = -T{1};
+  ret[3][2] = -(T{2} * zFar * zNear) / (zFar - zNear);
+
+  return ret;
+}
+
 }  // namespace mEn
