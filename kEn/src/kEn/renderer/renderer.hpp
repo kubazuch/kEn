@@ -1,4 +1,7 @@
 #pragma once
+#include <memory>
+#include <vector>
+
 #include <mEn.hpp>
 #include <mEn/vec3.hpp>
 
@@ -40,7 +43,7 @@ class Renderer {
    * @brief End the current render frame.
    *
    * This is intentionally a no-op. Lights are persistent scene state: they are registered once via
-   * add_light() and remain until explicitly removed. Calling end_scene() does NOT clear lights -- it
+   * add_light() and remain until removed with remove_light(). Calling end_scene() does NOT clear lights -- it
    * only closes the per-frame submission window opened by begin_scene().
    */
   static void end_scene();
@@ -56,6 +59,13 @@ class Renderer {
   static void add_light(DirectionalLight& light) { scene_data_->directional_lights.push_back(&light); }
   /** @copydoc add_light(PointLight&) */
   static void add_light(SpotLight& light) { scene_data_->spot_lights.push_back(&light); }
+
+  /** @brief Unregister a light registered with add_light(); a light that is not registered is ignored. */
+  static void remove_light(const PointLight& light) { std::erase(scene_data_->point_lights, &light); }
+  /** @copydoc remove_light(const PointLight&) */
+  static void remove_light(const DirectionalLight& light) { std::erase(scene_data_->directional_lights, &light); }
+  /** @copydoc remove_light(const PointLight&) */
+  static void remove_light(const SpotLight& light) { std::erase(scene_data_->spot_lights, &light); }
   /** @brief Set the scene ambient light colour applied to all lit submissions. */
   static void set_ambient(const mEn::Vec3& ambient) { scene_data_->ambient = ambient; }
 
