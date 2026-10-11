@@ -23,17 +23,20 @@
  * @def KEN_BIND_EVENT_HANDLER(member_fn)
  * @brief Convenience wrapper to bind a member function as an invocable object.
  *
- * Produces a callable equivalent to:
+ * Produces a lambda capturing @c this that forwards its arguments to @c member_fn:
  * @code
- * std::bind_front(&Class::member_fn, this)
+ * [this](auto&&... args) -> decltype(auto) { return this->member_fn(std::forward<decltype(args)>(args)...); }
  * @endcode
  *
  * @param member_fn The unqualified member function name (no @c & or class qualification).
  *
- * @note This macro uses @c std::bind_front and assumes it is invoked in a context where @c this is valid.
+ * @note Must be used where @c this is valid. The lambda is generic, so the event type cannot be deduced from it:
+ *       pass it to @ref kEn::EventDispatcher::subscribe with an explicit event type.
  */
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define KEN_BIND_EVENT_HANDLER(member_fn) std::bind_front(&std::remove_reference_t<decltype(*this)>::member_fn, this)
+// NOLINTBEGIN(cppcoreguidelines-macro-usage)
+#define KEN_BIND_EVENT_HANDLER(member_fn) \
+  [this](auto&&... args) -> decltype(auto) { return this->member_fn(std::forward<decltype(args)>(args)...); }
+// NOLINTEND(cppcoreguidelines-macro-usage)
 
 namespace kEn {
 
