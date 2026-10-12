@@ -81,8 +81,9 @@ std::shared_ptr<Texture> OpenglDevice::create_texture(const TextureDesc& desc, c
       return std::make_shared<OpenglTexture2D>(desc, sampler);
     case TextureKind::Cube:
       return std::make_shared<OpenglTextureCube>(desc, sampler);
-    case TextureKind::Tex2DArray:
     case TextureKind::Tex3D:
+      return std::make_shared<OpenglTexture3D>(desc, sampler);
+    case TextureKind::Tex2DArray:
     case TextureKind::CubeArray:
       break;
   }

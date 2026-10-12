@@ -135,4 +135,50 @@ class OpenglTextureCube : public Texture {
   GLenum upload_type_     = GL_NONE;
 };
 
+/**
+ * @brief OpenGL volumetric texture backed by immutable @c GL_TEXTURE_3D storage.
+ *
+ * @ref set_data() uploads a whole mip level (width x height x depth texels); the
+ * remaining levels are regenerated after a level-0 upload, as for 2D textures.
+ * Bound as an image (@ref RenderContext::bind_image) the whole volume is exposed
+ * to an @c image3D.
+ */
+class OpenglTexture3D : public Texture {
+ public:
+  /**
+   * @brief Allocates immutable 3D storage for the given descriptor and applies sampler state.
+   * @param desc    Texture shape and format; kind must be Tex3D with a single layer.
+   * @param sampler Sampler parameters applied once at construction.
+   */
+  explicit OpenglTexture3D(TextureDesc desc, SamplerDesc sampler = {});
+  ~OpenglTexture3D() override;
+
+  [[nodiscard]] const TextureDesc& desc() const override { return desc_; }
+  void set_data(std::span<const std::byte> data, std::uint32_t mip_level, std::uint32_t layer) override;
+
+  [[nodiscard]] const SamplerDesc& sampler_desc() const noexcept { return sampler_desc_; }
+  [[nodiscard]] GLuint renderer_id() const noexcept { return renderer_id_; }
+  /** @brief Returns the OpenGL texture target (always @c GL_TEXTURE_3D). */
+  [[nodiscard]] GLenum target() const noexcept { return target_; }
+
+  [[nodiscard]] std::uintptr_t native_handle() const noexcept override {
+    return static_cast<std::uintptr_t>(renderer_id_);
+  }
+
+  [[nodiscard]] ImTextureID imgui_id() const noexcept override { return static_cast<ImTextureID>(renderer_id_); }
+
+ private:
+  void allocate_storage();
+  void apply_sampler_state();
+
+  TextureDesc desc_;
+  SamplerDesc sampler_desc_;
+  GLuint renderer_id_ = 0;
+  GLenum target_      = GL_TEXTURE_3D;
+
+  GLenum internal_format_ = GL_NONE;
+  GLenum upload_format_   = GL_NONE;
+  GLenum upload_type_     = GL_NONE;
+};
+
 }  // namespace kEn

@@ -195,6 +195,9 @@ class RenderContext {
 
   /**
    * @brief Binds a texture level to an image unit for compute load/store.
+   *
+   * 3D, array and cube textures are bound whole (every slice, layer, or face).
+   *
    * @param unit    Image unit index (matches @c binding in a GLSL @c image2D declaration).
    * @param texture Texture whose storage is exposed; its format determines the image format.
    * @param access  Whether the shader will read, write, or both.

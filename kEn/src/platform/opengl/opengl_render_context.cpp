@@ -209,7 +209,8 @@ void OpenglRenderContext::bind_storage_buffer(std::uint32_t binding, ShaderStage
 
 void OpenglRenderContext::bind_image(std::uint32_t unit, const Texture& texture, ImageAccess access,
                                      std::uint32_t level) {
-  glBindImageTexture(unit, static_cast<GLuint>(texture.native_handle()), static_cast<GLint>(level), GL_FALSE, 0,
+  const GLboolean layered = texture.kind() == TextureKind::Tex2D ? GL_FALSE : GL_TRUE;
+  glBindImageTexture(unit, static_cast<GLuint>(texture.native_handle()), static_cast<GLint>(level), layered, 0,
                      opengl_image_access(access), texture_format::internal_format(texture.format()));
 }
 

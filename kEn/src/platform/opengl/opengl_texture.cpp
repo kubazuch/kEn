@@ -275,4 +275,71 @@ void OpenglTextureCube::apply_sampler_state() {
   glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_R, opengl_wrap(sampler_desc_.wrap_w));
 }
 
+OpenglTexture3D::OpenglTexture3D(TextureDesc desc, SamplerDesc sampler) : desc_(desc), sampler_desc_(sampler) {
+  KEN_CORE_ASSERT(desc_.kind == TextureKind::Tex3D);
+  KEN_CORE_ASSERT(desc_.width > 0);
+  KEN_CORE_ASSERT(desc_.height > 0);
+  KEN_CORE_ASSERT(desc_.depth > 0);
+  KEN_CORE_ASSERT(desc_.layers == 1);
+  KEN_CORE_ASSERT(desc_.has_valid_mip_request());
+
+  allocate_storage();
+  apply_sampler_state();
+}
+
+OpenglTexture3D::~OpenglTexture3D() { glDeleteTextures(1, &renderer_id_); }
+
+void OpenglTexture3D::set_data(std::span<const std::byte> data, std::uint32_t mip_level,
+                               [[maybe_unused]] std::uint32_t layer) {
+  KEN_CORE_ASSERT(renderer_id_ != 0);
+  KEN_CORE_ASSERT(layer == 0);
+  KEN_CORE_ASSERT(mip_level < desc_.resolved_mip_levels());
+
+  const std::uint32_t mip_width  = std::max(1U, desc_.width >> mip_level);
+  const std::uint32_t mip_height = std::max(1U, desc_.height >> mip_level);
+  const std::uint32_t mip_depth  = std::max(1U, desc_.depth >> mip_level);
+
+  const std::size_t expected_size = static_cast<std::size_t>(mip_width) * static_cast<std::size_t>(mip_height) *
+                                    static_cast<std::size_t>(mip_depth) *
+                                    static_cast<std::size_t>(texture_format::bytes_per_block(desc_.format));
+
+  KEN_CORE_ASSERT(data.size_bytes() == expected_size, "Data must match the target mip size");
+
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+  glTextureSubImage3D(renderer_id_, static_cast<GLint>(mip_level), 0, 0, 0, static_cast<GLsizei>(mip_width),
+                      static_cast<GLsizei>(mip_height), static_cast<GLsizei>(mip_depth), upload_format_, upload_type_,
+                      data.data());
+
+  if (mip_level == 0 && desc_.resolved_mip_levels() > 1) {
+    glGenerateTextureMipmap(renderer_id_);
+  }
+}
+
+void OpenglTexture3D::allocate_storage() {
+  KEN_CORE_ASSERT(renderer_id_ == 0);
+
+  internal_format_ = texture_format::internal_format(desc_.format);
+  upload_format_   = texture_format::pixel_format(desc_.format);
+  upload_type_     = texture_format::pixel_type(desc_.format);
+
+  glCreateTextures(GL_TEXTURE_3D, 1, &renderer_id_);
+  glTextureStorage3D(renderer_id_, static_cast<GLsizei>(desc_.resolved_mip_levels()), internal_format_,
+                     static_cast<GLsizei>(desc_.width), static_cast<GLsizei>(desc_.height),
+                     static_cast<GLsizei>(desc_.depth));
+}
+
+void OpenglTexture3D::apply_sampler_state() {
+  KEN_CORE_ASSERT(renderer_id_ != 0);
+
+  const auto mip_filter = desc_.resolved_mip_levels() > 1 ? sampler_desc_.mip_filter : SamplerDesc::MipFilter::None;
+
+  glTextureParameteri(renderer_id_, GL_TEXTURE_MIN_FILTER, opengl_min_filter(sampler_desc_.min_filter, mip_filter));
+  glTextureParameteri(renderer_id_, GL_TEXTURE_MAG_FILTER, opengl_mag_filter(sampler_desc_.mag_filter));
+
+  glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_S, opengl_wrap(sampler_desc_.wrap_u));
+  glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_T, opengl_wrap(sampler_desc_.wrap_v));
+  glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_R, opengl_wrap(sampler_desc_.wrap_w));
+}
+
 }  // namespace kEn
