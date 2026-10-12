@@ -15,9 +15,9 @@
 
 namespace kEn {
 
-Mesh::Mesh(std::string_view name, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices,
-           kEn::Material material)
-    : name(name), material(std::move(material)) {
+Mesh::Mesh(std::string_view mesh_name, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices,
+           kEn::Material mesh_material)
+    : name(mesh_name), material(std::move(mesh_material)) {
   auto& dev = device();
   vao_      = dev.create_vertex_input();
 

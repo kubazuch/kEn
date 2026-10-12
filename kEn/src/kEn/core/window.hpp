@@ -29,8 +29,9 @@ struct WindowProperties {
   std::uint32_t height;              /**< Window height in pixels. */
   bool opengl_debug_context = false; /**< Request an OpenGL debug context (GLFW_OPENGL_DEBUG_CONTEXT). */
 
-  explicit WindowProperties(std::string title = "kEngine", std::uint32_t width = 1280, std::uint32_t height = 720)
-      : title(std::move(title)), width(width), height(height) {}
+  explicit WindowProperties(std::string window_title = "kEngine", std::uint32_t window_width = 1280,
+                            std::uint32_t window_height = 720)
+      : title(std::move(window_title)), width(window_width), height(window_height) {}
 };
 
 /** @brief GLFW-backed OS window with an attached graphics context.

@@ -52,7 +52,7 @@ namespace {
   }
 }
 
-[[nodiscard]] constexpr bool is_byte_color_format(TextureFormat format) noexcept {
+[[nodiscard, maybe_unused]] constexpr bool is_byte_color_format(TextureFormat format) noexcept {
   return texture_format::is_color_format(format) && !texture_format::is_integer_format(format) &&
          texture_format::bytes_per_block(format) == texture_format::color_channel_count(format);
 }
@@ -123,7 +123,7 @@ void OpenglTexture2D::set_data(std::span<const std::byte> data, std::uint32_t mi
   const std::uint32_t mip_width  = std::max(1U, desc_.width >> mip_level);
   const std::uint32_t mip_height = std::max(1U, desc_.height >> mip_level);
 
-  const std::size_t expected_size = static_cast<std::size_t>(mip_width) * static_cast<std::size_t>(mip_height) *
+  [[maybe_unused]] const std::size_t expected_size = static_cast<std::size_t>(mip_width) * static_cast<std::size_t>(mip_height) *
                                     static_cast<std::size_t>(texture_format::bytes_per_block(desc_.format));
 
   KEN_CORE_ASSERT(data.size_bytes() == expected_size, "Data must match the target mip size");
@@ -235,7 +235,7 @@ void OpenglTextureCube::set_data(std::span<const std::byte> data, std::uint32_t 
   const std::uint32_t mip_width  = std::max(1U, desc_.width >> mip_level);
   const std::uint32_t mip_height = std::max(1U, desc_.height >> mip_level);
 
-  const std::size_t expected_size = static_cast<std::size_t>(mip_width) * static_cast<std::size_t>(mip_height) *
+  [[maybe_unused]] const std::size_t expected_size = static_cast<std::size_t>(mip_width) * static_cast<std::size_t>(mip_height) *
                                     static_cast<std::size_t>(texture_format::bytes_per_block(desc_.format));
 
   KEN_CORE_ASSERT(data.size_bytes() == expected_size, "Data must match the target mip size");
@@ -299,7 +299,7 @@ void OpenglTexture3D::set_data(std::span<const std::byte> data, std::uint32_t mi
   const std::uint32_t mip_height = std::max(1U, desc_.height >> mip_level);
   const std::uint32_t mip_depth  = std::max(1U, desc_.depth >> mip_level);
 
-  const std::size_t expected_size = static_cast<std::size_t>(mip_width) * static_cast<std::size_t>(mip_height) *
+  [[maybe_unused]] const std::size_t expected_size = static_cast<std::size_t>(mip_width) * static_cast<std::size_t>(mip_height) *
                                     static_cast<std::size_t>(mip_depth) *
                                     static_cast<std::size_t>(texture_format::bytes_per_block(desc_.format));
 

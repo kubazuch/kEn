@@ -2,12 +2,16 @@
 
 #include <kEn/core/core.hpp>
 
+#ifdef _MSC_VER
 #pragma warning(push, 0)
+#endif
 #include <spdlog/common.h>
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/logger.h>
 #include <spdlog/spdlog.h>
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 /** @file
  *  @ingroup ken

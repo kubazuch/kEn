@@ -64,7 +64,7 @@ bool GameObject::try_add_child(GameObject& child) {
 }
 
 GameObject& GameObject::add_child(GameObject& child) {
-  const bool ok = try_add_child(child);
+  [[maybe_unused]] const bool ok = try_add_child(child);
   KEN_CORE_ASSERT(ok, "add_child would create a cycle or self-parenting");
   return *this;
 }
@@ -89,7 +89,7 @@ void GameObject::unset_parent() {
 
 GameComponent& GameObject::add_component(std::unique_ptr<GameComponent> to_add) {
   KEN_CORE_ASSERT(to_add != nullptr);
-  const auto* raw = to_add.get();
+  [[maybe_unused]] const auto* raw = to_add.get();
   KEN_CORE_ASSERT(!std::ranges::contains(components_, raw, [](const auto& c) { return c.get(); }));
 
   components_.push_back(std::move(to_add));

@@ -19,28 +19,112 @@ macro(_fetch_begin name)
 endmacro()
 
 macro(_fetch_end)
+  if(_ken_dep_name)
+    _silence_dep_warnings("${${_ken_dep_name}_SOURCE_DIR}" "${_ken_dep_subdir}")
+  endif()
   list(POP_BACK CMAKE_MESSAGE_INDENT)
   message(CHECK_PASS "fetched")
 endmacro()
 
+# Compiles a dependency's own sources with warnings disabled; they are not ours to fix, and its headers are already
+# SYSTEM for our targets. Walks every directory the dependency added.
+function(_silence_dep_warnings source_dir subdir)
+  if(subdir)
+    string(APPEND source_dir "/${subdir}")
+  endif()
+  if(MSVC)
+    set(_no_warnings /w)
+  else()
+    set(_no_warnings -w)
+  endif()
+
+  set(_dirs "${source_dir}")
+  while(_dirs)
+    list(POP_FRONT _dirs _dir)
+    get_property(_targets DIRECTORY "${_dir}" PROPERTY BUILDSYSTEM_TARGETS)
+    foreach(_target IN LISTS _targets)
+      get_target_property(_type ${_target} TYPE)
+      if(_type MATCHES "^(STATIC_LIBRARY|SHARED_LIBRARY|MODULE_LIBRARY|OBJECT_LIBRARY|EXECUTABLE)$")
+        target_compile_options(${_target} PRIVATE ${_no_warnings})
+      endif()
+    endforeach()
+    get_property(_subdirs DIRECTORY "${_dir}" PROPERTY SUBDIRECTORIES)
+    list(APPEND _dirs ${_subdirs})
+  endwhile()
+endfunction()
+
+set(KEN_DEPS_SOURCE_DIR "" CACHE PATH
+  "If set, dependency sources are fetched (and patched) once into this directory and shared by every build tree using it")
+
+# Fetches and patches a dependency into KEN_DEPS_SOURCE_DIR unless already there, returning its directory in out_var.
+# The directory is keyed by tag and patch so a version bump or patch edit never reuses stale sources.
+function(_populate_shared name tag patch_file out_var)
+  set(_key "${tag}")
+  if(patch_file)
+    file(SHA1 "${patch_file}" _patch_hash)
+    string(SUBSTRING "${_patch_hash}" 0 8 _patch_hash)
+    string(APPEND _key "-${_patch_hash}")
+  endif()
+
+  set(_dir "${KEN_DEPS_SOURCE_DIR}/${name}-${_key}")
+  set(_marker "${_dir}/.ken-populated")
+  set(${out_var} "${_dir}" PARENT_SCOPE)
+
+  if(EXISTS "${_marker}")
+    return()
+  endif()
+
+  # serializes build trees configuring at the same time; released when the function returns
+  file(MAKE_DIRECTORY "${KEN_DEPS_SOURCE_DIR}")
+  file(LOCK "${_dir}.lock" GUARD FUNCTION TIMEOUT 1800)
+  if(EXISTS "${_marker}")
+    return()
+  endif()
+
+  file(REMOVE_RECURSE "${_dir}")  # leftovers of an interrupted population
+  FetchContent_Populate(
+    ken_shared_${name}
+    QUIET
+    SOURCE_DIR   "${_dir}"
+    BINARY_DIR   "${CMAKE_BINARY_DIR}/_deps/ken_shared_${name}-build"
+    SUBBUILD_DIR "${CMAKE_BINARY_DIR}/_deps/ken_shared_${name}-subbuild"
+    ${ARGN}
+  )
+  file(TOUCH "${_marker}")
+endfunction()
+
 function(_declare_dep name repo tag)
-  set(options)
+  set(options NO_SHALLOW)
   set(oneValueArgs PATCH_FILE SOURCE_SUBDIR)
   cmake_parse_arguments(DEP "${options}" "${oneValueArgs}" "" ${ARGN})
 
-  set(_args
+  if(DEP_NO_SHALLOW)
+    set(_shallow FALSE)
+  else()
+    set(_shallow TRUE)
+  endif()
+
+  set(_fetch_args
     GIT_REPOSITORY "${repo}"
     GIT_TAG "${tag}"
-    GIT_SHALLOW TRUE
+    GIT_SHALLOW ${_shallow}
     UPDATE_DISCONNECTED ON
-    SYSTEM
   )
 
   if(DEP_PATCH_FILE)
-    list(APPEND _args
+    list(APPEND _fetch_args
       PATCH_COMMAND "${GIT_EXECUTABLE}" apply --ignore-whitespace "${DEP_PATCH_FILE}"
     )
   endif()
+
+  if(KEN_DEPS_SOURCE_DIR)
+    _populate_shared(${name} "${tag}" "${DEP_PATCH_FILE}" _shared_dir ${_fetch_args})
+    # makes FetchContent use the shared sources as they are, skipping download and patch
+    string(TOUPPER "${name}" _upper_name)
+    set(FETCHCONTENT_SOURCE_DIR_${_upper_name} "${_shared_dir}" PARENT_SCOPE)
+  endif()
+
+  set(_args ${_fetch_args} SYSTEM)
 
   if(DEP_SOURCE_SUBDIR)
     list(APPEND _args
@@ -49,6 +133,10 @@ function(_declare_dep name repo tag)
   endif()
 
   FetchContent_Declare(${name} ${_args})
+
+  # for _fetch_end, once the dependency is made available
+  set(_ken_dep_name "${name}" PARENT_SCOPE)
+  set(_ken_dep_subdir "${DEP_SOURCE_SUBDIR}" PARENT_SCOPE)
 endfunction()
 
 # ##############################################################################
@@ -204,6 +292,7 @@ function(fetch_assimp)
     set(ASSIMP_BUILD_FBX_IMPORTER             ON  CACHE BOOL "Enable FBX importer"                FORCE)
     set(ASSIMP_BUILD_ASSIMP_VIEW              OFF CACHE BOOL "Do not build the assimp view tool." FORCE)
     set(ASSIMP_BUILD_ZLIB                     ON  CACHE BOOL "Build the zlib"                     FORCE)
+    set(ASSIMP_WARNINGS_AS_ERRORS             OFF CACHE BOOL "Third-party warnings must not fail the build" FORCE)
 
     _declare_dep(
       assimp
@@ -283,14 +372,12 @@ function(fetch_stb)
   block()
     _fetch_begin("stb")
 
-    FetchContent_Declare(
+    _declare_dep(
       stb
-      GIT_REPOSITORY "https://github.com/nothings/stb.git"
-      GIT_TAG        "904aa67e1e2d1dec92959df63e700b166d5c1022"
-      GIT_SHALLOW    FALSE
-      UPDATE_DISCONNECTED ON
-      PATCH_COMMAND "${GIT_EXECUTABLE}" apply --ignore-whitespace "${PATCHES_DIR}/stb.patch"
-      SYSTEM
+      "https://github.com/nothings/stb.git"
+      "904aa67e1e2d1dec92959df63e700b166d5c1022"
+      NO_SHALLOW
+      PATCH_FILE "${PATCHES_DIR}/stb.patch"
     )
 
     FetchContent_MakeAvailable(stb)

@@ -55,13 +55,13 @@ class Mesh {
   /**
    * @brief Upload vertex and index data to immutable GPU buffers.
    *
-   * @param name      Debug name (stored as-is).
-   * @param vertices  Vertex data; copied into a GPU buffer and then discarded.
-   * @param indices   Index data; copied into a GPU buffer and then discarded.
-   * @param material  Surface material moved into the mesh.
+   * @param mesh_name      Debug name (stored as-is).
+   * @param vertices       Vertex data; copied into a GPU buffer and then discarded.
+   * @param indices        Index data; copied into a GPU buffer and then discarded.
+   * @param mesh_material  Surface material moved into the mesh.
    */
-  Mesh(std::string_view name, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices,
-       kEn::Material material);
+  Mesh(std::string_view mesh_name, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices,
+       kEn::Material mesh_material);
 
   Mesh(const Mesh&)            = delete;
   Mesh& operator=(const Mesh&) = delete;
