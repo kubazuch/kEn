@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <span>
+#include <utility>  // IWYU pragma: keep
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
@@ -209,9 +210,8 @@ OpenglTextureCube::OpenglTextureCube(const std::array<std::filesystem::path, 6>&
       apply_sampler_state();
     }
 
-    KEN_CORE_ASSERT(
-        static_cast<std::uint32_t>(width) == desc_.width && static_cast<std::uint32_t>(height) == desc_.height,
-        "All cube faces must share one square size");
+    KEN_CORE_ASSERT(std::cmp_equal(width, desc_.width) && std::cmp_equal(height, desc_.height),
+                    "All cube faces must share one square size");
 
     const std::size_t size_bytes = static_cast<std::size_t>(width) * static_cast<std::size_t>(height) *
                                    static_cast<std::size_t>(texture_format::bytes_per_block(format));

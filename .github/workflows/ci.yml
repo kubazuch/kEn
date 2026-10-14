@@ -14,8 +14,9 @@ permissions:
   contents: read
 
 env:
-  LLVM_VERSION: 20
-  LLVM_RUN_CLANG_TIDY_SHA: c13b7485b87909fcf739f62cfa382b55407433c0
+  LLVM_VERSION: 23
+  CLANG_FORMAT_VERSION: 23.1.0
+  LLVM_RUN_CLANG_TIDY_SHA: ea7d852a70e8bdfaf601d6626a760f9771b2c4b4
 
 jobs:
   format:
@@ -25,12 +26,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install clang-format ${{ env.CLANG_FORMAT_VERSION }}
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install jinja2
-          sudo apt-get update
-          sudo apt-get install -y clang-format
+          python3 -m pip install clang-format==${{ env.CLANG_FORMAT_VERSION }}
+          clang-format --version
 
       - name: Run clang-format
         run: |
@@ -52,6 +51,10 @@ jobs:
           sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${{ env.LLVM_VERSION }} ${{ env.LLVM_VERSION }}
           sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${{ env.LLVM_VERSION }} ${{ env.LLVM_VERSION }}
           sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-${{ env.LLVM_VERSION }} ${{ env.LLVM_VERSION }}
+          sudo update-alternatives --set clang /usr/bin/clang-${{ env.LLVM_VERSION }}
+          sudo update-alternatives --set clang++ /usr/bin/clang++-${{ env.LLVM_VERSION }}
+          sudo update-alternatives --set clang-tidy /usr/bin/clang-tidy-${{ env.LLVM_VERSION }}
+          clang++ --version
 
       - name: Install dependencies
         run: |
@@ -89,7 +92,7 @@ jobs:
           - name: linux-clang
             os: ubuntu-24.04
             preset: linux-clang-release
-            packages: "clang-20 libc++-20-dev libc++abi-20-dev"
+            packages: "clang-23 libc++-23-dev libc++abi-23-dev"
             llvm_apt: true
 
           - name: windows-msvc
@@ -127,6 +130,9 @@ jobs:
           if dpkg -l clang-${{ env.LLVM_VERSION }} &>/dev/null; then
             sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${{ env.LLVM_VERSION }} ${{ env.LLVM_VERSION }}
             sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${{ env.LLVM_VERSION }} ${{ env.LLVM_VERSION }}
+            sudo update-alternatives --set clang /usr/bin/clang-${{ env.LLVM_VERSION }}
+            sudo update-alternatives --set clang++ /usr/bin/clang++-${{ env.LLVM_VERSION }}
+            clang++ --version
           fi
 
       - name: Install Windows dependencies

@@ -9,8 +9,8 @@
 namespace kEn {
 
 spdlog::logger& Log::core_logger() {
-  static const auto kInstance = []() {
-    auto sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+  static const auto kInstance = [] {
+    const auto sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 #ifdef KEN_DEBUG_BUILD
     sink->set_pattern("%^[%T][%n/%l][%s:%# %!]: %v%$");
 #else
@@ -30,8 +30,8 @@ spdlog::logger& Log::core_logger() {
 }
 
 spdlog::logger& Log::client_logger() {
-  static const auto kInstance = []() {
-    auto sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+  static const auto kInstance = [] {
+    const auto sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 #ifdef KEN_DEBUG_BUILD
     sink->set_pattern("%^[%T][%n/%l][%s:%# %!]: %v%$");
 #else

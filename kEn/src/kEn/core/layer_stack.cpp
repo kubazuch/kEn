@@ -7,7 +7,7 @@
 
 namespace kEn {
 LayerStack::~LayerStack() {
-  for (auto& layer : layers_) {
+  for (const auto& layer : layers_) {
     layer->on_detach();
   }
 }

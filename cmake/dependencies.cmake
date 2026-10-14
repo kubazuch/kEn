@@ -298,6 +298,7 @@ function(fetch_assimp)
       assimp
       "https://github.com/assimp/assimp.git"
       "v6.0.4"
+      PATCH_FILE "${PATCHES_DIR}/assimp.patch"
     )
 
     FetchContent_MakeAvailable(assimp)

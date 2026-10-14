@@ -40,7 +40,7 @@ extern "C" {
 
 namespace {
 
-void load_material_textures(aiMaterial* mat, kEn::Material& material, const kEn::SamplerDesc& sampler,
+void load_material_textures(const aiMaterial* mat, kEn::Material& material, const kEn::SamplerDesc& sampler,
                             const std::filesystem::path& directory, std::uint32_t mip_levels) {
   static constexpr std::pair<kEn::TextureType, aiTextureType> kTypes[] = {
       {kEn::TextureType::Diffuse, aiTextureType_DIFFUSE},
@@ -64,7 +64,7 @@ struct MikkUserData {
   std::vector<kEn::Vertex>* vertices = nullptr;
 };
 
-kEn::Vertex& face_vertex(MikkUserData& data, int face, int vert) {
+kEn::Vertex& face_vertex(MikkUserData& data, int face, int vert) {  // NOLINT(misc-const-correctness)
   return (*data.vertices)[(static_cast<std::size_t>(face) * 3U) + static_cast<std::size_t>(vert)];
 }
 
@@ -159,7 +159,7 @@ void generate_mikktspace(std::vector<kEn::Vertex>& vertices, std::vector<std::ui
   }
 }
 
-kEn::Mesh process_mesh(aiMesh* mesh, const aiScene* scene, const kEn::SamplerDesc& sampler,
+kEn::Mesh process_mesh(const aiMesh* mesh, const aiScene* scene, const kEn::SamplerDesc& sampler,
                        const std::filesystem::path& directory) {
   // Vertices
   std::vector<kEn::Vertex> vertices;
@@ -221,7 +221,7 @@ kEn::Mesh process_mesh(aiMesh* mesh, const aiScene* scene, const kEn::SamplerDes
   }
 
   // Material
-  aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
+  const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
 
   const auto luminance = [](const aiColor3D& c) { return (0.2126F * c.r) + (0.7152F * c.g) + (0.0722F * c.b); };
 
@@ -296,8 +296,8 @@ void Model::load_model(const std::filesystem::path& path, const SamplerDesc& sam
 void Model::process_node(aiNode* node, const aiScene* scene, const SamplerDesc& sampler,
                          const std::filesystem::path& directory) {
   for (unsigned int i = 0; i < node->mNumMeshes; ++i) {
-    aiMesh* mesh   = scene->mMeshes[node->mMeshes[i]];
-    Mesh processed = process_mesh(mesh, scene, sampler, directory);
+    const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+    Mesh processed     = process_mesh(mesh, scene, sampler, directory);
     if (processed.material.transparent) {
       transparent_meshes_.push_back(std::move(processed));
     } else {

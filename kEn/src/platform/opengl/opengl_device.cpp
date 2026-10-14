@@ -33,10 +33,11 @@ std::unique_ptr<Device> Device::create(Device::Api api, GLFWwindow* window, bool
   switch (api) {
     case Device::Api::OpenGL:
       return std::make_unique<OpenglDevice>(window, enable_debug);
-    default:
+    case Device::Api::D3D11:
       KEN_CORE_CRITICAL("Only OpenGL is currently supported");
       KEN_UNREACHABLE();
   }
+  KEN_UNREACHABLE();
 }
 
 OpenglDevice::OpenglDevice(GLFWwindow* window, bool enable_debug) : swap_chain_(window) {

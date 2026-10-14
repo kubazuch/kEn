@@ -46,6 +46,8 @@ Checks: >
   -portability-avoid-pragma-once,
   -bugprone-throwing-static-initialization,
   -cppcoreguidelines-pro-bounds-avoid-unchecked-container-access,
+  -readability-trailing-comma,
+  -bugprone-signed-bitwise,
 
 HeaderFilterRegex: ""
 

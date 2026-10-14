@@ -128,7 +128,7 @@ void GameObject::imgui(bool recursive) {
 }
 
 void GameObject::update(Timestep delta, Timestep time, bool recursive) {
-  for (auto& component : components_) {
+  for (const auto& component : components_) {
     component->update(delta, time);
   }
 

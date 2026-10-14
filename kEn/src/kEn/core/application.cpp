@@ -61,9 +61,9 @@ void Application::run() {
   while (running_) {
     window_->poll_events();
 
-    auto current_time = clock::now();
-    auto delta        = current_time - previous_time;
-    previous_time     = current_time;
+    const auto current_time = clock::now();
+    const auto delta        = current_time - previous_time;
+    previous_time           = current_time;
 
     lag += std::chrono::duration_cast<duration_t>(delta);
     second += std::chrono::duration_cast<duration_t>(delta);

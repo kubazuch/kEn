@@ -68,7 +68,7 @@ class DemoLayer : public kEn::Layer {
 
     // --- Model ---
     model_obj_.transform().set_local_pos({0.F, 0.F, 0.F});
-    auto backpack = kEn::Model::load("backpack/backpack.obj", {}, true);
+    const auto backpack = kEn::Model::load("backpack/backpack.obj", {}, true);
     model_obj_.emplace_component<kEn::ModelComponent>(backpack);
 
     // --- Directional light that always aims at the model (LookAt) ---
@@ -85,7 +85,7 @@ class DemoLayer : public kEn::Layer {
     // --- Floor (scaled cube with programmatic white texture) ---
     floor_obj_.transform().set_local_pos({0.F, -1.8F, 0.F});
     floor_obj_.transform().set_local_scale({10.F, 0.2F, 10.F});
-    auto floor_model = kEn::Model::load("cube/cube.obj");
+    const auto floor_model = kEn::Model::load("cube/cube.obj");
     floor_obj_.emplace_component<kEn::ModelComponent>(floor_model);
 
     // --- Register lights (once -- SceneData never clears them) ---
@@ -122,7 +122,7 @@ class DemoLayer : public kEn::Layer {
         .cull_mode = kEn::CullMode::Front,
     });
     raster_wireframe_  = device_.create_raster_state({
-         .fill_mode = kEn::FillMode::Wireframe,
+        .fill_mode = kEn::FillMode::Wireframe,
     });
 
     KEN_INFO("DemoLayer attached");

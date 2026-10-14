@@ -92,7 +92,7 @@ MappedBuffer OpenglMutableBuffer::map(MapMode mode) const {
 
   const GLuint id = buffer_->renderer_id_;
   return MappedBuffer(std::span<std::byte>(static_cast<std::byte*>(ptr), buffer_->size()),
-                      [id]() { glUnmapNamedBuffer(id); });
+                      [id] { glUnmapNamedBuffer(id); });
 }
 
 void OpenglMutableBuffer::set_data(const void* data, std::size_t size) {

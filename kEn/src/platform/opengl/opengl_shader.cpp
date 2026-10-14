@@ -68,7 +68,7 @@ std::string display_name_for(const std::filesystem::path& key, bool internal) {
 
   // keep logs readable: prefer path relative to kShaderPath when possible
   std::error_code ec;
-  auto rel = std::filesystem::relative(key, OpenglShader::kShaderPath, ec);
+  const auto rel = std::filesystem::relative(key, OpenglShader::kShaderPath, ec);
   if (!ec) {
     const auto dotdot = std::filesystem::path("..");
     if (rel.begin() != rel.end() && *rel.begin() != dotdot) {
@@ -88,9 +88,9 @@ std::string annotate_glsl_log(std::string_view raw, const std::vector<std::strin
   while (std::getline(in, line)) {
     std::smatch m;
     if (std::regex_match(line, m, nvidia) || std::regex_match(line, m, mesa)) {
-      auto id  = static_cast<size_t>(std::stoul(m[1].str()));
-      auto ln  = m[2].str();
-      auto msg = m[3].str();
+      const auto id  = static_cast<size_t>(std::stoul(m[1].str()));
+      const auto ln  = m[2].str();
+      const auto msg = m[3].str();
       if (id < map.size()) {
         out << map[id] << ":" << ln << ": " << msg << "\n";
       } else {
@@ -146,8 +146,8 @@ std::string OpenglShader::read_shader_src_internal(const std::filesystem::path& 
   // Load shader from internal libs or read file from disk
   std::unique_ptr<std::istream> stream;
   if (internal) {
-    auto key = filePath.string();
-    auto it  = kInternalLibs.find(key);
+    auto key      = filePath.string();
+    const auto it = kInternalLibs.find(key);
     if (it == kInternalLibs.end()) {
       KEN_CORE_ERROR("Internal shader include not found: {}", key);
       ctx.in_progress.erase(key_path);
@@ -194,19 +194,19 @@ std::string OpenglShader::read_shader_src_internal(const std::filesystem::path& 
 
       size_t child_id = 0;
 
-      if (auto it = kInternalLibs.find(include_file_name); it != kInternalLibs.end()) {
-        auto child_key  = normalize_key(include_file_name, true);
-        child_id        = ctx.id(child_key, display_name_for(child_key, true));
-        included_source = read_shader_src_internal(include_file_name, ctx, true);
+      if (const auto it = kInternalLibs.find(include_file_name); it != kInternalLibs.end()) {
+        const auto child_key = normalize_key(include_file_name, true);
+        child_id             = ctx.id(child_key, display_name_for(child_key, true));
+        included_source      = read_shader_src_internal(include_file_name, ctx, true);
       } else {
         // Resolve filename relative to current file first
         std::filesystem::path candidate = key_path.parent_path() / include_file_name;
         if (!std::filesystem::exists(candidate)) {
           candidate = std::filesystem::path{kShaderPath} / include_file_name;
         }
-        auto child_key  = normalize_key(candidate, false);
-        child_id        = ctx.id(child_key, display_name_for(child_key, false));
-        included_source = read_shader_src_internal(candidate, ctx, false);
+        const auto child_key = normalize_key(candidate, false);
+        child_id             = ctx.id(child_key, display_name_for(child_key, false));
+        included_source      = read_shader_src_internal(candidate, ctx, false);
       }
 
       // #line injection for better debug info
@@ -229,7 +229,7 @@ std::string OpenglShader::read_shader_src_internal(const std::filesystem::path& 
 std::string OpenglShader::read_shader_src(const std::filesystem::path& file,
                                           std::vector<std::string>* out_source_id_map) {
   PreprocessContext ctx;
-  auto root_key = normalize_key(file, false);
+  const auto root_key = normalize_key(file, false);
   ctx.id(root_key, display_name_for(root_key, false));
 
   auto src = read_shader_src_internal(file, ctx, false);
@@ -471,7 +471,7 @@ OpenglShader::OpenglShader(const std::filesystem::path& path, ComputeTag) {
   std::vector<std::string> map;
 
   shader_src_path.replace_extension(kComputeExt);
-  auto src                    = read_shader_src(shader_src_path, &map);
+  const auto src              = read_shader_src(shader_src_path, &map);
   const GLuint compute_shader = create_shader(src, GL_COMPUTE_SHADER, shader_src_path.string(), &map);
   if (compute_shader == 0) {
     throw std::runtime_error("Unable to create compute shader");
@@ -493,7 +493,7 @@ OpenglShader::~OpenglShader() { glDeleteProgram(renderer_id_); }
 
 // <Uniforms>
 GLint OpenglShader::uniform_location(std::string_view name) const {
-  auto it = uniform_locations_.find(name);
+  const auto it = uniform_locations_.find(name);
   if (it != uniform_locations_.end()) {
     return it->second;
   }

@@ -50,7 +50,7 @@ void FreeLookComponent::update(Timestep /*delta*/, Timestep /*time*/) {
     return;
   }
 
-  auto delta_pos                     = kEn::input::mouse_pos() - window_center_;
+  const auto delta_pos               = kEn::input::mouse_pos() - window_center_;
   const mEn::vec<2, bool> did_change = mEn::notNear(delta_pos, 0.0F);
 
   if (did_change.x) {
