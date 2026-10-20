@@ -12,45 +12,34 @@
 #include <mEn/vec2.hpp>
 #include <mEn/vec3.hpp>
 
-#include <kEn/core/application.hpp>
 #include <kEn/core/assert.hpp>
 #include <kEn/core/input/input.hpp>
 #include <kEn/core/input/key_codes.hpp>
 #include <kEn/core/timestep.hpp>
-#include <kEn/core/window.hpp>
-#include <kEn/event/application_events.hpp>
-#include <kEn/event/event.hpp>
 #include <kEn/scene/component.hpp>
 #include <kEn/scene/game_object.hpp>
 
 namespace kEn {
 
-FreeLookComponent::FreeLookComponent(float sensitivity) : sensitivity_(sensitivity), window_center_() {
-  dispatcher_.subscribe(this, &FreeLookComponent::on_window_resize);
-}
-
-void FreeLookComponent::on_attach() {
-  const Window& main = kEn::Application::instance().main_window();
-  window_center_     = {main.width() / 2, main.height() / 2};
-}
-
 void FreeLookComponent::update(Timestep /*delta*/, Timestep /*time*/) {
   if (kEn::input::is_key_pressed(kEn::key::escape)) {
-    kEn::input::set_cursor_visible(true);
+    kEn::input::set_cursor_locked(false);
     update_ = false;
   }
 
-  if (kEn::input::is_key_pressed(kEn::key::f)) {
-    kEn::input::set_mouse_pos(window_center_);
-    kEn::input::set_cursor_visible(false);
-    update_ = true;
+  if (kEn::input::is_key_pressed(kEn::key::f) && !update_) {
+    kEn::input::set_cursor_locked(true);
+    last_mouse_pos_ = kEn::input::mouse_pos();
+    update_         = true;
   }
 
   if (!update_) {
     return;
   }
 
-  const auto delta_pos               = kEn::input::mouse_pos() - window_center_;
+  const mEn::Vec2 mouse_pos          = kEn::input::mouse_pos();
+  const auto delta_pos               = mouse_pos - last_mouse_pos_;
+  last_mouse_pos_                    = mouse_pos;
   const mEn::vec<2, bool> did_change = mEn::notNear(delta_pos, 0.0F);
 
   if (did_change.x) {
@@ -64,8 +53,6 @@ void FreeLookComponent::update(Timestep /*delta*/, Timestep /*time*/) {
   }
 
   if (mEn::any(did_change)) {
-    kEn::input::set_mouse_pos(window_center_);
-
     mEn::Quat rot(1, 0, 0, 0);
     rot = mEn::rotate(rot, yaw_, mEn::Vec3(0.0F, 1.0F, 0.0F));
     rot = mEn::rotate(rot, pitch_, mEn::Vec3(1.0F, 0.0F, 0.0F));
@@ -75,11 +62,6 @@ void FreeLookComponent::update(Timestep /*delta*/, Timestep /*time*/) {
 
 std::unique_ptr<GameComponent> FreeLookComponent::clone() const {
   return std::make_unique<FreeLookComponent>(sensitivity_);
-}
-
-bool FreeLookComponent::on_window_resize(const kEn::WindowResizeEvent& event) {
-  window_center_ = {event.width() / 2, event.height() / 2};
-  return false;
 }
 
 void FreeMoveComponent::update(Timestep delta, Timestep /*time*/) {

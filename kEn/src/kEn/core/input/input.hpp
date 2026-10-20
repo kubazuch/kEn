@@ -53,12 +53,15 @@ namespace input {
 void set_cursor_visible(bool visible);
 
 /**
- * @brief Warp the cursor to a specific position (window coordinates).
- * @param pos Target position in window coordinates.
+ * @brief Lock (hide and capture) the cursor for mouse-look controls, or release it.
  *
- * @warning Warping the cursor may generate cursor-move events depending on backend.
+ * While locked, @ref mouse_pos and mouse-move events report an unbounded virtual position, so movement is read as the
+ * difference between successive positions. Uses raw (unaccelerated) motion where supported. Works on platforms that
+ * forbid warping the cursor, such as Wayland.
+ *
+ * @param locked If `true`, lock the cursor; if `false`, restore the normal cursor.
  */
-void set_mouse_pos(mEn::Vec2 pos);
+void set_cursor_locked(bool locked);
 
 }  // namespace input
 

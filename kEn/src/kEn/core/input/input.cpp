@@ -3,7 +3,6 @@
 #include <GLFW/glfw3.h>
 
 #include <mEn/fwd.hpp>
-#include <mEn/vec2.hpp>
 
 #include <kEn/core/application.hpp>
 #include <kEn/core/input/key_codes.hpp>
@@ -47,9 +46,12 @@ void set_cursor_visible(bool visible) {
   glfwSetInputMode(window, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
 }
 
-void set_mouse_pos(mEn::Vec2 pos) {
+void set_cursor_locked(bool locked) {
   auto* window = glfw_window();
-  glfwSetCursorPos(window, static_cast<double>(pos.x), static_cast<double>(pos.y));
+  glfwSetInputMode(window, GLFW_CURSOR, locked ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+  if (glfwRawMouseMotionSupported() == GLFW_TRUE) {
+    glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, locked ? GLFW_TRUE : GLFW_FALSE);
+  }
 }
 
 }  // namespace kEn::input

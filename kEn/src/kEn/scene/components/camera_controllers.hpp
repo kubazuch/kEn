@@ -33,15 +33,7 @@ class FreeLookComponent : public GameComponent {
    * @param sensitivity  Scale applied to raw mouse delta before converting to
    *                     radians.  Larger values produce faster rotation.
    */
-  explicit FreeLookComponent(float sensitivity);
-
-  /**
-   * @brief Cache the window centre and subscribe to resize events.
-   *
-   * Queries @ref Application::main_window for the initial window dimensions.
-   * Called by @ref GameObject after the component is attached.
-   */
-  void on_attach() override;
+  explicit FreeLookComponent(float sensitivity) : sensitivity_(sensitivity) {}
 
   void update(Timestep delta, Timestep time) override;
   [[nodiscard]] std::unique_ptr<GameComponent> clone() const override;
@@ -53,13 +45,10 @@ class FreeLookComponent : public GameComponent {
   void set_sensitivity(float sensitivity) { sensitivity_ = sensitivity; }
 
  private:
-  /** @brief Update the cursor lock-point when the window is resized. */
-  bool on_window_resize(const kEn::WindowResizeEvent& event);
-
   float sensitivity_;
   float pitch_ = 0, yaw_ = 0;
   bool update_ = false;
-  mEn::Vec2 window_center_;
+  mEn::Vec2 last_mouse_pos_{};  // while locked: the cursor position the last update saw
 };
 
 /**
