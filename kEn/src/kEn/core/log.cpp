@@ -9,7 +9,8 @@
 namespace kEn {
 
 spdlog::logger& Log::core_logger() {
-  static const auto kInstance = [] {
+  // intentionally leaked (never destroyed): static destructors (e.g. Registry) may still log during exit
+  static auto* const kInstance = [] {
     const auto sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 #ifdef KEN_DEBUG_BUILD
     sink->set_pattern("%^[%T][%n/%l][%s:%# %!]: %v%$");
@@ -17,7 +18,7 @@ spdlog::logger& Log::core_logger() {
     sink->set_pattern("%^[%T][%n/%l]: %v%$");
 #endif
 
-    auto logger = std::make_shared<spdlog::logger>("kEn", sink);
+    auto* logger = new spdlog::logger("kEn", sink);  // NOLINT(cppcoreguidelines-owning-memory)
 #ifdef KEN_DEBUG_BUILD
     logger->set_level(spdlog::level::trace);
 #else
@@ -30,7 +31,8 @@ spdlog::logger& Log::core_logger() {
 }
 
 spdlog::logger& Log::client_logger() {
-  static const auto kInstance = [] {
+  // intentionally leaked (never destroyed): static destructors (e.g. Registry) may still log during exit
+  static auto* const kInstance = [] {
     const auto sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 #ifdef KEN_DEBUG_BUILD
     sink->set_pattern("%^[%T][%n/%l][%s:%# %!]: %v%$");
@@ -38,7 +40,7 @@ spdlog::logger& Log::client_logger() {
     sink->set_pattern("%^[%T][%n/%l]: %v%$");
 #endif
 
-    auto logger = std::make_shared<spdlog::logger>("Client", sink);
+    auto* logger = new spdlog::logger("Client", sink);  // NOLINT(cppcoreguidelines-owning-memory)
 #ifdef KEN_DEBUG_BUILD
     logger->set_level(spdlog::level::trace);
 #else

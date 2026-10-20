@@ -168,7 +168,12 @@ void Window::set_glfw_callbacks() {
   });
 }
 
-void Window::close() { glfwSetWindowShouldClose(window_ptr_, GLFW_TRUE); }
+void Window::close() {
+  // glfwSetWindowShouldClose does not invoke the close callback, so raise the event ourselves
+  glfwSetWindowShouldClose(window_ptr_, GLFW_TRUE);
+  WindowCloseEvent event;
+  data_.handler(event);
+}
 
 void Window::poll_events() { glfwPollEvents(); }  // NOLINT(readability-convert-member-functions-to-static)
 
