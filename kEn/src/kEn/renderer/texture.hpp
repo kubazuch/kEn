@@ -183,6 +183,16 @@ struct TextureDesc {
   }
 };
 
+/** @brief Box of texels inside one mip level; z and depth only for 3D textures. */
+struct TextureRegion {
+  std::uint32_t x      = 0;
+  std::uint32_t y      = 0;
+  std::uint32_t z      = 0;
+  std::uint32_t width  = 0;
+  std::uint32_t height = 0;
+  std::uint32_t depth  = 1;
+};
+
 /**
  * @brief Abstract GPU texture resource.
  *
@@ -206,6 +216,21 @@ class Texture {
   virtual void set_data(std::span<const std::byte> data, std::uint32_t mip_level, std::uint32_t layer) = 0;
   /** @brief Uploads pixel data to the given mip level of layer 0. */
   void set_data(std::span<const std::byte> data, std::uint32_t mip_level = 0) { set_data(data, mip_level, 0); }
+  /**
+   * @brief Uploads pixel data to a region of a mip level and array layer.
+   *
+   * @param data       Raw pixel bytes starting at the region's first texel.
+   * @param region     Texel box inside the target mip level.
+   * @param row_length Texels between consecutive row starts in @p data; 0 means the region width.
+   * @param mip_level  Zero-based mip level index.
+   * @param layer      Zero-based array layer (or cube face) index.
+   */
+  virtual void set_region(std::span<const std::byte> data, const TextureRegion& region, std::uint32_t row_length,
+                          std::uint32_t mip_level, std::uint32_t layer) = 0;
+  /** @brief Uploads pixel data to a region of mip level 0 of layer 0. */
+  void set_region(std::span<const std::byte> data, const TextureRegion& region, std::uint32_t row_length = 0) {
+    set_region(data, region, row_length, 0, 0);
+  }
 
   /** @brief Returns the texture width in texels. */
   [[nodiscard]] std::uint32_t width() const noexcept { return desc().width; }

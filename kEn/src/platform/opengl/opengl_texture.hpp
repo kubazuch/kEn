@@ -51,6 +51,8 @@ class OpenglTexture2D : public Texture {
 
   [[nodiscard]] const TextureDesc& desc() const override { return desc_; }
   void set_data(std::span<const std::byte> data, std::uint32_t mip_level, std::uint32_t layer) override;
+  void set_region(std::span<const std::byte> data, const TextureRegion& region, std::uint32_t row_length,
+                  std::uint32_t mip_level, std::uint32_t layer) override;
 
   [[nodiscard]] const SamplerDesc& sampler_desc() const noexcept { return sampler_desc_; }
   [[nodiscard]] GLuint renderer_id() const noexcept { return renderer_id_; }
@@ -109,6 +111,8 @@ class OpenglTextureCube : public Texture {
 
   [[nodiscard]] const TextureDesc& desc() const override { return desc_; }
   void set_data(std::span<const std::byte> data, std::uint32_t mip_level, std::uint32_t layer) override;
+  void set_region(std::span<const std::byte> data, const TextureRegion& region, std::uint32_t row_length,
+                  std::uint32_t mip_level, std::uint32_t layer) override;
 
   [[nodiscard]] const SamplerDesc& sampler_desc() const noexcept { return sampler_desc_; }
   [[nodiscard]] GLuint renderer_id() const noexcept { return renderer_id_; }
@@ -155,6 +159,8 @@ class OpenglTexture3D : public Texture {
 
   [[nodiscard]] const TextureDesc& desc() const override { return desc_; }
   void set_data(std::span<const std::byte> data, std::uint32_t mip_level, std::uint32_t layer) override;
+  void set_region(std::span<const std::byte> data, const TextureRegion& region, std::uint32_t row_length,
+                  std::uint32_t mip_level, std::uint32_t layer) override;
 
   [[nodiscard]] const SamplerDesc& sampler_desc() const noexcept { return sampler_desc_; }
   [[nodiscard]] GLuint renderer_id() const noexcept { return renderer_id_; }

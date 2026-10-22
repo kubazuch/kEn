@@ -60,6 +60,28 @@ namespace {
          texture_format::bytes_per_block(format) == texture_format::color_channel_count(format);
 }
 
+[[nodiscard, maybe_unused]] constexpr bool region_inside(const TextureRegion& region, const TextureDesc& desc,
+                                                         std::uint32_t mip_level) noexcept {
+  const std::uint32_t width  = std::max(1U, desc.width >> mip_level);
+  const std::uint32_t height = std::max(1U, desc.height >> mip_level);
+  const std::uint32_t depth  = desc.kind == TextureKind::Tex3D ? std::max(1U, desc.depth >> mip_level) : 1U;
+  return region.width > 0 && region.height > 0 && region.depth > 0 && region.x <= width &&
+         region.width <= width - region.x && region.y <= height && region.height <= height - region.y &&
+         region.z <= depth && region.depth <= depth - region.z;
+}
+
+[[nodiscard]] constexpr std::size_t region_bytes(const TextureRegion& region, TextureFormat format) noexcept {
+  return static_cast<std::size_t>(region.width) * static_cast<std::size_t>(region.height) *
+         static_cast<std::size_t>(region.depth) * static_cast<std::size_t>(texture_format::bytes_per_block(format));
+}
+
+[[nodiscard, maybe_unused]] constexpr std::size_t region_span_bytes(const TextureRegion& region,
+                                                                    std::uint32_t row_length,
+                                                                    TextureFormat format) noexcept {
+  const auto rows = (static_cast<std::size_t>(region.depth) * static_cast<std::size_t>(region.height)) - 1;
+  return ((rows * row_length) + region.width) * static_cast<std::size_t>(texture_format::bytes_per_block(format));
+}
+
 }  // namespace
 
 OpenglTexture2D::OpenglTexture2D(TextureDesc desc, SamplerDesc sampler) : desc_(desc), sampler_desc_(sampler) {
@@ -140,6 +162,35 @@ void OpenglTexture2D::set_data(std::span<const std::byte> data, std::uint32_t mi
   profile::count_upload(data.size_bytes());
   glTextureSubImage2D(renderer_id_, static_cast<GLint>(mip_level), 0, 0, static_cast<GLsizei>(mip_width),
                       static_cast<GLsizei>(mip_height), upload_format_, upload_type_, data.data());
+
+  if (mip_level == 0 && desc_.resolved_mip_levels() > 1) {
+    glGenerateTextureMipmap(renderer_id_);
+  }
+}
+
+void OpenglTexture2D::set_region(std::span<const std::byte> data, const TextureRegion& region, std::uint32_t row_length,
+                                 std::uint32_t mip_level, [[maybe_unused]] std::uint32_t layer) {
+  KEN_PROFILE_FUNCTION();
+  KEN_PROFILE_GPU_SCOPE("OpenglTexture2D::set_region");
+  KEN_CORE_ASSERT(renderer_id_ != 0);
+  KEN_CORE_ASSERT(layer == 0);
+  KEN_CORE_ASSERT(mip_level < desc_.resolved_mip_levels());
+
+  const std::uint32_t row = row_length == 0 ? region.width : row_length;
+
+  KEN_CORE_ASSERT(region_inside(region, desc_, mip_level), "Region must lie inside the target mip");
+  KEN_CORE_ASSERT(row >= region.width);
+  KEN_CORE_ASSERT(data.size_bytes() >= region_span_bytes(region, row, desc_.format), "Data must cover the region");
+
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, static_cast<GLint>(row));
+
+  profile::count_upload(region_bytes(region, desc_.format));
+  glTextureSubImage2D(renderer_id_, static_cast<GLint>(mip_level), static_cast<GLint>(region.x),
+                      static_cast<GLint>(region.y), static_cast<GLsizei>(region.width),
+                      static_cast<GLsizei>(region.height), upload_format_, upload_type_, data.data());
+
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 
   if (mip_level == 0 && desc_.resolved_mip_levels() > 1) {
     glGenerateTextureMipmap(renderer_id_);
@@ -259,6 +310,32 @@ void OpenglTextureCube::set_data(std::span<const std::byte> data, std::uint32_t 
                       upload_type_, data.data());
 }
 
+void OpenglTextureCube::set_region(std::span<const std::byte> data, const TextureRegion& region,
+                                   std::uint32_t row_length, std::uint32_t mip_level, std::uint32_t layer) {
+  KEN_PROFILE_FUNCTION();
+  KEN_PROFILE_GPU_SCOPE("OpenglTextureCube::set_region");
+  KEN_CORE_ASSERT(renderer_id_ != 0);
+  KEN_CORE_ASSERT(layer < 6);
+  KEN_CORE_ASSERT(mip_level < desc_.resolved_mip_levels());
+
+  const std::uint32_t row = row_length == 0 ? region.width : row_length;
+
+  KEN_CORE_ASSERT(region_inside(region, desc_, mip_level), "Region must lie inside the target mip");
+  KEN_CORE_ASSERT(row >= region.width);
+  KEN_CORE_ASSERT(data.size_bytes() >= region_span_bytes(region, row, desc_.format), "Data must cover the region");
+
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, static_cast<GLint>(row));
+
+  profile::count_upload(region_bytes(region, desc_.format));
+  // For a cube map the array layer (z-offset) selects the face.
+  glTextureSubImage3D(renderer_id_, static_cast<GLint>(mip_level), static_cast<GLint>(region.x),
+                      static_cast<GLint>(region.y), static_cast<GLint>(layer), static_cast<GLsizei>(region.width),
+                      static_cast<GLsizei>(region.height), 1, upload_format_, upload_type_, data.data());
+
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+}
+
 void OpenglTextureCube::allocate_storage() {
   KEN_CORE_ASSERT(renderer_id_ == 0);
 
@@ -324,6 +401,36 @@ void OpenglTexture3D::set_data(std::span<const std::byte> data, std::uint32_t mi
   glTextureSubImage3D(renderer_id_, static_cast<GLint>(mip_level), 0, 0, 0, static_cast<GLsizei>(mip_width),
                       static_cast<GLsizei>(mip_height), static_cast<GLsizei>(mip_depth), upload_format_, upload_type_,
                       data.data());
+
+  if (mip_level == 0 && desc_.resolved_mip_levels() > 1) {
+    glGenerateTextureMipmap(renderer_id_);
+  }
+}
+
+void OpenglTexture3D::set_region(std::span<const std::byte> data, const TextureRegion& region, std::uint32_t row_length,
+                                 std::uint32_t mip_level, [[maybe_unused]] std::uint32_t layer) {
+  KEN_PROFILE_FUNCTION();
+  KEN_PROFILE_GPU_SCOPE("OpenglTexture3D::set_region");
+  KEN_CORE_ASSERT(renderer_id_ != 0);
+  KEN_CORE_ASSERT(layer == 0);
+  KEN_CORE_ASSERT(mip_level < desc_.resolved_mip_levels());
+
+  const std::uint32_t row = row_length == 0 ? region.width : row_length;
+
+  KEN_CORE_ASSERT(region_inside(region, desc_, mip_level), "Region must lie inside the target mip");
+  KEN_CORE_ASSERT(row >= region.width);
+  KEN_CORE_ASSERT(data.size_bytes() >= region_span_bytes(region, row, desc_.format), "Data must cover the region");
+
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, static_cast<GLint>(row));
+
+  profile::count_upload(region_bytes(region, desc_.format));
+  glTextureSubImage3D(renderer_id_, static_cast<GLint>(mip_level), static_cast<GLint>(region.x),
+                      static_cast<GLint>(region.y), static_cast<GLint>(region.z), static_cast<GLsizei>(region.width),
+                      static_cast<GLsizei>(region.height), static_cast<GLsizei>(region.depth), upload_format_,
+                      upload_type_, data.data());
+
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 
   if (mip_level == 0 && desc_.resolved_mip_levels() > 1) {
     glGenerateTextureMipmap(renderer_id_);
