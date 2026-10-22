@@ -5,6 +5,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 #include <memory>
+#include <vector>
 
 #ifdef TRACY_ENABLE
 #include <spdlog/details/log_msg.h>
@@ -67,9 +68,19 @@ class TracySink final : public spdlog::sinks::base_sink<std::mutex> {
 // NOLINTEND(misc-include-cleaner)
 #endif
 
-void add_profiler_sink([[maybe_unused]] spdlog::logger& logger) {
+/** @brief A new console sink, followed by a new profiler sink with TRACY_ENABLE. */
+std::vector<spdlog::sink_ptr> make_sinks() {
+  const auto console = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+#ifdef KEN_DEBUG_BUILD
+  console->set_pattern("%^[%T][%n/%l][%s:%# %!]: %v%$");
+#else
+  console->set_pattern("%^[%T][%n/%l]: %v%$");
+#endif
+
 #ifdef TRACY_ENABLE
-  logger.sinks().push_back(std::make_shared<TracySink>());
+  return {console, std::make_shared<TracySink>()};
+#else
+  return {console};
 #endif
 }
 
@@ -78,15 +89,8 @@ void add_profiler_sink([[maybe_unused]] spdlog::logger& logger) {
 spdlog::logger& Log::core_logger() {
   // intentionally leaked (never destroyed): static destructors (e.g. Registry) may still log during exit
   static auto* const kInstance = [] {
-    const auto sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-#ifdef KEN_DEBUG_BUILD
-    sink->set_pattern("%^[%T][%n/%l][%s:%# %!]: %v%$");
-#else
-    sink->set_pattern("%^[%T][%n/%l]: %v%$");
-#endif
-
-    auto* logger = new spdlog::logger("kEn", sink);  // NOLINT(cppcoreguidelines-owning-memory)
-    add_profiler_sink(*logger);
+    const auto sinks = make_sinks();
+    auto* logger = new spdlog::logger("kEn", sinks.begin(), sinks.end());  // NOLINT(cppcoreguidelines-owning-memory)
 #ifdef KEN_DEBUG_BUILD
     logger->set_level(spdlog::level::trace);
 #else
@@ -101,15 +105,8 @@ spdlog::logger& Log::core_logger() {
 spdlog::logger& Log::client_logger() {
   // intentionally leaked (never destroyed): static destructors (e.g. Registry) may still log during exit
   static auto* const kInstance = [] {
-    const auto sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-#ifdef KEN_DEBUG_BUILD
-    sink->set_pattern("%^[%T][%n/%l][%s:%# %!]: %v%$");
-#else
-    sink->set_pattern("%^[%T][%n/%l]: %v%$");
-#endif
-
-    auto* logger = new spdlog::logger("Client", sink);  // NOLINT(cppcoreguidelines-owning-memory)
-    add_profiler_sink(*logger);
+    const auto sinks = make_sinks();
+    auto* logger = new spdlog::logger("Client", sinks.begin(), sinks.end());  // NOLINT(cppcoreguidelines-owning-memory)
 #ifdef KEN_DEBUG_BUILD
     logger->set_level(spdlog::level::trace);
 #else
