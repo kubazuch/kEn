@@ -22,6 +22,7 @@
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
+#include <kEn/core/profile.hpp>
 #include <kEn/renderer/shader.hpp>
 
 namespace kEn {
@@ -356,6 +357,7 @@ void OpenglShader::create_program(std::string_view vertex_src, std::string_view 
 }
 
 OpenglShader::OpenglShader(const std::filesystem::path& path, ShaderConfig config) {
+  KEN_PROFILE_FUNCTION();
   auto shader_src_path = std::filesystem::path{kShaderPath} / path;
 
   name_ = shader_src_path.stem().string();
@@ -465,6 +467,7 @@ OpenglShader::OpenglShader(const std::filesystem::path& path, ShaderConfig confi
 }
 
 OpenglShader::OpenglShader(const std::filesystem::path& path, ComputeTag) {
+  KEN_PROFILE_FUNCTION();
   auto shader_src_path = std::filesystem::path{kShaderPath} / path;
   name_                = shader_src_path.stem().string();
 

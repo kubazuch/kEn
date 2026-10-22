@@ -9,6 +9,7 @@
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/layer.hpp>
+#include <kEn/core/profile.hpp>
 #include <kEn/core/timestep.hpp>
 #include <kEn/core/window.hpp>
 #include <kEn/event/application_events.hpp>
@@ -24,6 +25,7 @@ Application* Application::instance_ = nullptr;
 Application::Application(ApplicationSpec spec) : spec_(std::move(spec)) {
   KEN_CORE_ASSERT(!instance_, "App already exists!");
   instance_ = this;
+  KEN_PROFILE_THREAD("Main");
 
   WindowProperties win_props{spec_.title, spec_.window_width, spec_.window_height};
   win_props.opengl_debug_context = (spec_.api == Device::Api::OpenGL && spec_.enable_debug);
@@ -59,7 +61,10 @@ void Application::run() {
   size_t ticks  = 0;
 
   while (running_) {
-    window_->poll_events();
+    {
+      KEN_PROFILE_SCOPE("Application::poll_events");
+      window_->poll_events();
+    }
 
     const auto current_time = clock::now();
     const auto delta        = current_time - previous_time;
@@ -88,25 +93,36 @@ void Application::run() {
     }
 
     render(std::chrono::duration<double>(lag).count() / std::chrono::duration<double>(kTickTime).count());
+    KEN_PROFILE_FRAME();
   }
 }
 
 void Application::update() {
+  KEN_PROFILE_FUNCTION();
   for (const auto& layer : layer_stack_) {
+    KEN_PROFILE_SCOPE_DYNAMIC(layer->name().c_str());
     layer->on_update(Timestep{kTickTime}, Timestep{time_});
   }
 }
 
 void Application::render(double alpha) {
+  KEN_PROFILE_FUNCTION();
   if (!minimized_) {
-    for (const auto& layer : layer_stack_) {
-      layer->on_render(alpha);
+    {
+      KEN_PROFILE_GPU_SCOPE("Render");
+      for (const auto& layer : layer_stack_) {
+        KEN_PROFILE_SCOPE_DYNAMIC(layer->name().c_str());
+        layer->on_render(alpha);
+      }
     }
 
     {
+      KEN_PROFILE_SCOPE("ImGui");
+      KEN_PROFILE_GPU_SCOPE("ImGui");
       const ImguiFrame frame;
 
       for (const auto& layer : layer_stack_) {
+        KEN_PROFILE_SCOPE_DYNAMIC(layer->name().c_str());
         layer->on_imgui();
       }
     }

@@ -13,9 +13,11 @@
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
+#include <kEn/core/profile.hpp>
 #include <kEn/renderer/texture.hpp>
 #include <kEn/renderer/texture_format.hpp>
 
+#include "opengl_profile.hpp"
 #include "opengl_state.hpp"
 #include "opengl_texture_format.hpp"
 
@@ -75,6 +77,7 @@ OpenglTexture2D::OpenglTexture2D(TextureDesc desc, SamplerDesc sampler) : desc_(
 OpenglTexture2D::OpenglTexture2D(const std::filesystem::path& path, SamplerDesc sampler, TextureFormat format,
                                  std::uint32_t mip_levels)
     : sampler_desc_(sampler) {
+  KEN_PROFILE_FUNCTION();
   KEN_CORE_ASSERT(is_byte_color_format(format));
 
   int width    = 0;
@@ -117,6 +120,8 @@ OpenglTexture2D::~OpenglTexture2D() { glDeleteTextures(1, &renderer_id_); }
 
 void OpenglTexture2D::set_data(std::span<const std::byte> data, std::uint32_t mip_level,
                                [[maybe_unused]] std::uint32_t layer) {
+  KEN_PROFILE_FUNCTION();
+  KEN_PROFILE_GPU_SCOPE("OpenglTexture2D::set_data");
   KEN_CORE_ASSERT(renderer_id_ != 0);
   KEN_CORE_ASSERT(layer == 0);
   KEN_CORE_ASSERT(mip_level < desc_.resolved_mip_levels());
@@ -132,6 +137,7 @@ void OpenglTexture2D::set_data(std::span<const std::byte> data, std::uint32_t mi
 
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+  profile::count_upload(data.size_bytes());
   glTextureSubImage2D(renderer_id_, static_cast<GLint>(mip_level), 0, 0, static_cast<GLsizei>(mip_width),
                       static_cast<GLsizei>(mip_height), upload_format_, upload_type_, data.data());
 
@@ -229,6 +235,8 @@ OpenglTextureCube::OpenglTextureCube(const std::array<std::filesystem::path, 6>&
 OpenglTextureCube::~OpenglTextureCube() { glDeleteTextures(1, &renderer_id_); }
 
 void OpenglTextureCube::set_data(std::span<const std::byte> data, std::uint32_t mip_level, std::uint32_t layer) {
+  KEN_PROFILE_FUNCTION();
+  KEN_PROFILE_GPU_SCOPE("OpenglTextureCube::set_data");
   KEN_CORE_ASSERT(renderer_id_ != 0);
   KEN_CORE_ASSERT(layer < 6);
   KEN_CORE_ASSERT(mip_level < desc_.resolved_mip_levels());
@@ -244,6 +252,7 @@ void OpenglTextureCube::set_data(std::span<const std::byte> data, std::uint32_t 
 
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+  profile::count_upload(data.size_bytes());
   // For a cube map the array layer (z-offset) selects the face.
   glTextureSubImage3D(renderer_id_, static_cast<GLint>(mip_level), 0, 0, static_cast<GLint>(layer),
                       static_cast<GLsizei>(mip_width), static_cast<GLsizei>(mip_height), 1, upload_format_,
@@ -293,6 +302,8 @@ OpenglTexture3D::~OpenglTexture3D() { glDeleteTextures(1, &renderer_id_); }
 
 void OpenglTexture3D::set_data(std::span<const std::byte> data, std::uint32_t mip_level,
                                [[maybe_unused]] std::uint32_t layer) {
+  KEN_PROFILE_FUNCTION();
+  KEN_PROFILE_GPU_SCOPE("OpenglTexture3D::set_data");
   KEN_CORE_ASSERT(renderer_id_ != 0);
   KEN_CORE_ASSERT(layer == 0);
   KEN_CORE_ASSERT(mip_level < desc_.resolved_mip_levels());
@@ -309,6 +320,7 @@ void OpenglTexture3D::set_data(std::span<const std::byte> data, std::uint32_t mi
 
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+  profile::count_upload(data.size_bytes());
   glTextureSubImage3D(renderer_id_, static_cast<GLint>(mip_level), 0, 0, 0, static_cast<GLsizei>(mip_width),
                       static_cast<GLsizei>(mip_height), static_cast<GLsizei>(mip_depth), upload_format_, upload_type_,
                       data.data());

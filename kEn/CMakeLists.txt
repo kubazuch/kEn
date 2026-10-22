@@ -15,6 +15,9 @@ fetch_glad()
 fetch_assimp()
 fetch_stb()
 fetch_nfd()
+if(TRACY_ENABLE)
+  fetch_tracy()
+endif()
 
 # ##############################################################################
 # Vendor: mikktspace (C library)

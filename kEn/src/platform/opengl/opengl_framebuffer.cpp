@@ -12,6 +12,7 @@
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
+#include <kEn/core/profile.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/texture_format.hpp>
 
@@ -82,6 +83,7 @@ OpenglFramebuffer::~OpenglFramebuffer() {
 }
 
 void OpenglFramebuffer::invalidate() {
+  KEN_PROFILE_FUNCTION();
   if (renderer_id_) {
     glDeleteFramebuffers(1, &renderer_id_);
     glDeleteTextures(static_cast<GLsizei>(color_attachments_.size()), color_attachments_.data());
@@ -143,6 +145,7 @@ void OpenglFramebuffer::resize(std::uint32_t width, std::uint32_t height) {
 
 void OpenglFramebuffer::read_pixels(std::uint32_t attachment_id, int x, int y, int width, int height,
                                     std::span<std::byte> out_buffer, std::size_t out_row_pitch) const {
+  KEN_PROFILE_FUNCTION();
   KEN_CORE_ASSERT(attachment_id < color_attachments_.size());
   KEN_CORE_ASSERT(spec_.samples == 1, "OpenglFramebuffer::read_pixels does not support multisampled attachments");
 

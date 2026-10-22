@@ -7,6 +7,9 @@
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
+#include <kEn/core/profile.hpp>
+
+#include "opengl_profile.hpp"
 
 namespace kEn {
 
@@ -23,8 +26,14 @@ void OpenglSwapChain::init() {
   KEN_CORE_INFO("\tVendor: {0}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
   KEN_CORE_INFO("\tRenderer: {0}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
   KEN_CORE_INFO("\tVersion: {0}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+
+  profile::create_gpu_context();
 }
 
-void OpenglSwapChain::swap_buffers() { glfwSwapBuffers(window_ptr_); }
+void OpenglSwapChain::swap_buffers() {
+  KEN_PROFILE_FUNCTION();
+  glfwSwapBuffers(window_ptr_);
+  profile::end_frame();
+}
 
 }  // namespace kEn

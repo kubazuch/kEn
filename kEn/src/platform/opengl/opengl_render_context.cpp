@@ -10,6 +10,7 @@
 
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
+#include <kEn/core/profile.hpp>
 #include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/render_context.hpp>
@@ -18,6 +19,7 @@
 #include <kEn/renderer/texture.hpp>
 #include <kEn/renderer/vertex_input.hpp>
 
+#include "opengl_profile.hpp"
 #include "opengl_state.hpp"
 #include "opengl_texture_format.hpp"
 
@@ -215,6 +217,8 @@ void OpenglRenderContext::bind_image(std::uint32_t unit, const Texture& texture,
 }
 
 void OpenglRenderContext::dispatch_compute(std::uint32_t groups_x, std::uint32_t groups_y, std::uint32_t groups_z) {
+  KEN_PROFILE_FUNCTION();
+  KEN_PROFILE_GPU_SCOPE("OpenglRenderContext::dispatch_compute");
   glDispatchCompute(groups_x, groups_y, groups_z);
 }
 
@@ -227,11 +231,13 @@ void OpenglRenderContext::set_render_target(Framebuffer& framebuffer) {
 void OpenglRenderContext::bind_default_framebuffer() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
 void OpenglRenderContext::draw(std::size_t vertex_count, std::uint32_t start_vertex, RenderMode mode) {
+  profile::count_draw();
   glDrawArrays(render_mode::opengl_mode(mode), static_cast<GLint>(start_vertex), static_cast<GLsizei>(vertex_count));
 }
 
 void OpenglRenderContext::draw_instanced(std::size_t vertex_count, std::size_t instance_count,
                                          std::uint32_t start_vertex, std::uint32_t start_instance, RenderMode mode) {
+  profile::count_draw();
   glDrawArraysInstancedBaseInstance(render_mode::opengl_mode(mode), static_cast<GLint>(start_vertex),
                                     static_cast<GLsizei>(vertex_count), static_cast<GLsizei>(instance_count),
                                     start_instance);
@@ -239,6 +245,7 @@ void OpenglRenderContext::draw_instanced(std::size_t vertex_count, std::size_t i
 
 void OpenglRenderContext::draw_indexed(std::size_t index_count, std::uint32_t start_index, std::int32_t base_vertex,
                                        RenderMode mode) {
+  profile::count_draw();
   const auto byte_offset = static_cast<uintptr_t>(start_index * sizeof(GLuint));
   glDrawElementsBaseVertex(  //
       render_mode::opengl_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT,
@@ -248,6 +255,7 @@ void OpenglRenderContext::draw_indexed(std::size_t index_count, std::uint32_t st
 void OpenglRenderContext::draw_indexed_instanced(std::size_t index_count, std::size_t instance_count,
                                                  std::uint32_t start_index, std::int32_t base_vertex,
                                                  std::uint32_t start_instance, RenderMode mode) {
+  profile::count_draw();
   const auto byte_offset = static_cast<uintptr_t>(start_index * sizeof(GLuint));
   glDrawElementsInstancedBaseVertexBaseInstance(  //
       render_mode::opengl_mode(mode), static_cast<GLsizei>(index_count), GL_UNSIGNED_INT,

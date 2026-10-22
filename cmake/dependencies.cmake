@@ -438,6 +438,31 @@ function(fetch_json_schema_validator)
 endfunction()
 
 # ##############################################################################
+# Tracy
+# ##############################################################################
+function(fetch_tracy)
+  if(TARGET TracyClient)
+    return()
+  endif()
+
+  block()
+    _fetch_begin("Tracy")
+
+    set(TRACY_ON_DEMAND ON CACHE BOOL "Collect profiling data only while the profiler is connected" FORCE)
+
+    _declare_dep(
+      tracy
+      "https://github.com/wolfpld/tracy.git"
+      "v0.14.1"
+    )
+
+    FetchContent_MakeAvailable(tracy)
+
+    _fetch_end()
+  endblock()
+endfunction()
+
+# ##############################################################################
 # GTest
 # ##############################################################################
 function(fetch_googletest)

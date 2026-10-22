@@ -8,7 +8,10 @@
 #include <utility>
 
 #include <kEn/core/assert.hpp>
+#include <kEn/core/profile.hpp>
 #include <kEn/renderer/buffer.hpp>
+
+#include "opengl_profile.hpp"
 
 namespace kEn {
 
@@ -53,6 +56,10 @@ void OpenglBuffer::unbind(BufferTarget target) const {  // NOLINT(readability-co
 }
 
 void OpenglBuffer::allocate(const void* data) const {
+  KEN_PROFILE_FUNCTION();
+  if (data != nullptr) {
+    profile::count_upload(desc_.size);
+  }
   glNamedBufferData(renderer_id_, static_cast<GLsizeiptr>(desc_.size), data, buffer_usage::opengl_usage(desc_.usage));
 }
 
@@ -84,6 +91,7 @@ bool OpenglMutableBuffer::can_map(MapMode mode) const {
 }
 
 MappedBuffer OpenglMutableBuffer::map(MapMode mode) const {
+  KEN_PROFILE_FUNCTION();
   KEN_CORE_ASSERT(can_map(mode), "Requested map mode is incompatible with buffer usage");
 
   void* ptr = glMapNamedBufferRange(buffer_->renderer_id_, 0, static_cast<GLsizeiptr>(buffer_->size()),
@@ -111,6 +119,8 @@ void OpenglMutableBuffer::update_data(std::size_t offset, const void* data, std:
     return;
   }
 
+  KEN_PROFILE_FUNCTION();
+  profile::count_upload(size);
   glNamedBufferSubData(buffer_->renderer_id_, static_cast<GLintptr>(offset), static_cast<GLsizeiptr>(size), data);
 }
 

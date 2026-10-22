@@ -11,6 +11,8 @@
 #include <utility>
 #include <vector>
 
+#include <kEn/core/profile.hpp>
+
 // NOLINTBEGIN(bugprone-suspicious-stringview-data-usage)
 
 namespace kEn {
@@ -216,6 +218,7 @@ std::expected<void, FileDialogError> ensure_initialized() {
 }  // namespace
 
 FileDialogResult<std::filesystem::path> open_file(const OpenOptions& options) {
+  KEN_PROFILE_FUNCTION();
   if (auto init = ensure_initialized(); !init) {
     return std::unexpected(init.error());
   }
@@ -235,6 +238,7 @@ FileDialogResult<std::filesystem::path> open_file(const OpenOptions& options) {
 }
 
 FileDialogResult<std::vector<std::filesystem::path>> open_files(const OpenOptions& options) {
+  KEN_PROFILE_FUNCTION();
   if (auto init = ensure_initialized(); !init) {
     return std::unexpected(init.error());
   }
@@ -254,6 +258,7 @@ FileDialogResult<std::vector<std::filesystem::path>> open_files(const OpenOption
 }
 
 FileDialogResult<std::filesystem::path> save_file(const SaveOptions& options) {
+  KEN_PROFILE_FUNCTION();
   if (auto init = ensure_initialized(); !init) {
     return std::unexpected(init.error());
   }
@@ -274,6 +279,7 @@ FileDialogResult<std::filesystem::path> save_file(const SaveOptions& options) {
 }
 
 FileDialogResult<std::filesystem::path> select_folder(const std::filesystem::path& path) {
+  KEN_PROFILE_FUNCTION();
   if (auto init = ensure_initialized(); !init) {
     return std::unexpected(init.error());
   }

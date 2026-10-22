@@ -87,6 +87,33 @@ Output: `build/{preset-name}/bin/` (executables), `build/{preset-name}/lib/` (li
 | `BUILD_TESTS` | `OFF` | Fetch GoogleTest and build mEn unit tests (dev presets set this to `ON`) |
 | `BUILD_SANDBOX` | `OFF` | Build the Sandbox demo executable (dev presets set this to `ON`) |
 | `MEN_USE_GLM` | `OFF` | Use GLM types instead of native mEn |
+| `TRACY_ENABLE` | `OFF` | Fetch the [Tracy](https://github.com/wolfpld/tracy) client and build with profiler instrumentation (on demand: nothing is collected until the profiler connects) |
+
+### Profiling
+
+Configure with `-DTRACY_ENABLE=ON` (preferably on a release preset), start the app, and connect with the Tracy
+profiler GUI of the same version as the fetched client (`fetch_tracy` in `cmake/dependencies.cmake`). Instrument code
+with the macros in `kEn/core/profile.hpp`; they expand to nothing when the option is off:
+
+| Macro | Effect |
+| ----- | ------ |
+| `KEN_PROFILE_FUNCTION()` | CPU zone named after the enclosing function |
+| `KEN_PROFILE_SCOPE("name")` | CPU zone with a literal name, until the end of the block |
+| `KEN_PROFILE_SCOPE_DYNAMIC(c_str)` | CPU zone with a runtime name |
+| `KEN_PROFILE_GPU_SCOPE("name")` | GPU timer zone (OpenGL timestamp queries), until the end of the block |
+| `KEN_PROFILE_PLOT("name", value)` | Adds a sample to a plot (name must be a string literal) |
+| `KEN_PROFILE_FRAME()` | Frame boundary (already called by `Application::run`) |
+| `KEN_PROFILE_THREAD("name")` | Names the calling thread |
+
+The engine already instruments:
+
+- frames, event polling, every layer's update / render / ImGui, buffer swaps;
+- GPU time of the render and ImGui passes, texture uploads and compute dispatches;
+- CPU <-> GPU transfers: buffer uploads and maps, texture uploads, `Framebuffer::read_pixels` (waits for the GPU);
+- framebuffer (re)creation, shader and texture loading, blocking file dialogs;
+- plots per frame: `Draw calls` and `GPU uploads` (bytes sent to buffers and textures);
+- log records of both loggers as profiler messages with their severity (only those passing the logger level: warnings
+  and above in release builds).
 
 ## Tests
 
