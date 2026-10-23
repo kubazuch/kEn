@@ -231,6 +231,21 @@ class Texture {
   void set_region(std::span<const std::byte> data, const TextureRegion& region, std::uint32_t row_length = 0) {
     set_region(data, region, row_length, 0, 0);
   }
+  /**
+   * @brief Reads a region of a mip level and array layer back to CPU memory.
+   *
+   * Waits for every command writing the texture to finish. Writes made by shader image stores become visible
+   * only after a @ref RenderContext::memory_barrier with @ref MemoryBarrierBit::TextureUpdate.
+   *
+   * @param data       Destination; receives the region's texels tightly packed, row by row (then slice by slice).
+   * @param region     Texel box inside the source mip level.
+   * @param mip_level  Zero-based mip level index.
+   * @param layer      Zero-based array layer (or cube face) index.
+   */
+  virtual void read_region(std::span<std::byte> data, const TextureRegion& region, std::uint32_t mip_level,
+                           std::uint32_t layer) const = 0;
+  /** @brief Reads a region of mip level 0 of layer 0 back to CPU memory. */
+  void read_region(std::span<std::byte> data, const TextureRegion& region) const { read_region(data, region, 0, 0); }
 
   /** @brief Returns the texture width in texels. */
   [[nodiscard]] std::uint32_t width() const noexcept { return desc().width; }

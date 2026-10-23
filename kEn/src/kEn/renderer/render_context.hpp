@@ -60,6 +60,8 @@ enum class MemoryBarrierBit : std::uint8_t {
   ShaderImageAccess = 1U << 0U, /**< @brief Image load/store writes (e.g. before reusing as an image). */
   TextureFetch      = 1U << 1U, /**< @brief Writes visible to subsequent @c texture() sampling. */
   ShaderStorage     = 1U << 2U, /**< @brief Shader storage buffer writes. */
+  TextureUpdate     = 1U << 3U, /**< @brief Image writes visible to texture uploads and @c Texture::read_region. */
+  BufferUpdate      = 1U << 4U, /**< @brief Buffer writes visible to buffer updates and mapping. */
 };
 
 KEN_ENABLE_FLAGS(::kEn::MemoryBarrierBit);

@@ -50,6 +50,12 @@ namespace {
   if (bits.test(MemoryBarrierBit::ShaderStorage)) {
     flags |= GL_SHADER_STORAGE_BARRIER_BIT;
   }
+  if (bits.test(MemoryBarrierBit::TextureUpdate)) {
+    flags |= GL_TEXTURE_UPDATE_BARRIER_BIT;
+  }
+  if (bits.test(MemoryBarrierBit::BufferUpdate)) {
+    flags |= GL_BUFFER_UPDATE_BARRIER_BIT;
+  }
   return flags;
 }
 

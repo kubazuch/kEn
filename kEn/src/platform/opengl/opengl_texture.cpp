@@ -82,6 +82,19 @@ namespace {
   return ((rows * row_length) + region.width) * static_cast<std::size_t>(texture_format::bytes_per_block(format));
 }
 
+/** @brief Reads @p region of level @p mip_level, slices from @p z on, tightly packed into @p data. */
+void read_texture_region(GLuint renderer_id, TextureFormat format, std::span<std::byte> data,
+                         const TextureRegion& region, std::uint32_t mip_level, std::uint32_t z) {
+  KEN_CORE_ASSERT(data.size_bytes() >= region_bytes(region, format), "Data must cover the region");
+
+  glPixelStorei(GL_PACK_ALIGNMENT, 1);
+  glGetTextureSubImage(renderer_id, static_cast<GLint>(mip_level), static_cast<GLint>(region.x),
+                       static_cast<GLint>(region.y), static_cast<GLint>(z), static_cast<GLsizei>(region.width),
+                       static_cast<GLsizei>(region.height), static_cast<GLsizei>(region.depth),
+                       texture_format::pixel_format(format), texture_format::pixel_type(format),
+                       static_cast<GLsizei>(data.size_bytes()), data.data());
+}
+
 }  // namespace
 
 OpenglTexture2D::OpenglTexture2D(TextureDesc desc, SamplerDesc sampler) : desc_(desc), sampler_desc_(sampler) {
@@ -195,6 +208,18 @@ void OpenglTexture2D::set_region(std::span<const std::byte> data, const TextureR
   if (mip_level == 0 && desc_.resolved_mip_levels() > 1) {
     glGenerateTextureMipmap(renderer_id_);
   }
+}
+
+void OpenglTexture2D::read_region(std::span<std::byte> data, const TextureRegion& region, std::uint32_t mip_level,
+                                  [[maybe_unused]] std::uint32_t layer) const {
+  KEN_PROFILE_FUNCTION();
+  KEN_PROFILE_GPU_SCOPE("OpenglTexture2D::read_region");
+  KEN_CORE_ASSERT(renderer_id_ != 0);
+  KEN_CORE_ASSERT(layer == 0);
+  KEN_CORE_ASSERT(mip_level < desc_.resolved_mip_levels());
+  KEN_CORE_ASSERT(region_inside(region, desc_, mip_level), "Region must lie inside the source mip");
+
+  read_texture_region(renderer_id_, desc_.format, data, region, mip_level, 0);
 }
 
 void OpenglTexture2D::allocate_storage() {
@@ -336,6 +361,19 @@ void OpenglTextureCube::set_region(std::span<const std::byte> data, const Textur
   glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 }
 
+void OpenglTextureCube::read_region(std::span<std::byte> data, const TextureRegion& region, std::uint32_t mip_level,
+                                    std::uint32_t layer) const {
+  KEN_PROFILE_FUNCTION();
+  KEN_PROFILE_GPU_SCOPE("OpenglTextureCube::read_region");
+  KEN_CORE_ASSERT(renderer_id_ != 0);
+  KEN_CORE_ASSERT(layer < 6);
+  KEN_CORE_ASSERT(mip_level < desc_.resolved_mip_levels());
+  KEN_CORE_ASSERT(region_inside(region, desc_, mip_level), "Region must lie inside the source mip");
+
+  // For a cube map the array layer (z-offset) selects the face.
+  read_texture_region(renderer_id_, desc_.format, data, region, mip_level, layer);
+}
+
 void OpenglTextureCube::allocate_storage() {
   KEN_CORE_ASSERT(renderer_id_ == 0);
 
@@ -435,6 +473,18 @@ void OpenglTexture3D::set_region(std::span<const std::byte> data, const TextureR
   if (mip_level == 0 && desc_.resolved_mip_levels() > 1) {
     glGenerateTextureMipmap(renderer_id_);
   }
+}
+
+void OpenglTexture3D::read_region(std::span<std::byte> data, const TextureRegion& region, std::uint32_t mip_level,
+                                  [[maybe_unused]] std::uint32_t layer) const {
+  KEN_PROFILE_FUNCTION();
+  KEN_PROFILE_GPU_SCOPE("OpenglTexture3D::read_region");
+  KEN_CORE_ASSERT(renderer_id_ != 0);
+  KEN_CORE_ASSERT(layer == 0);
+  KEN_CORE_ASSERT(mip_level < desc_.resolved_mip_levels());
+  KEN_CORE_ASSERT(region_inside(region, desc_, mip_level), "Region must lie inside the source mip");
+
+  read_texture_region(renderer_id_, desc_.format, data, region, mip_level, region.z);
 }
 
 void OpenglTexture3D::allocate_storage() {
