@@ -230,6 +230,15 @@ void OpenglRenderContext::dispatch_compute(std::uint32_t groups_x, std::uint32_t
 
 void OpenglRenderContext::memory_barrier(MemoryBarrierBits bits) { glMemoryBarrier(opengl_memory_barrier(bits)); }
 
+void OpenglRenderContext::copy_buffer(const Buffer& source, std::size_t source_offset, const Buffer& destination,
+                                      std::size_t destination_offset, std::size_t size) {
+  KEN_CORE_ASSERT(source_offset + size <= source.size(), "Copy reads past the end of the source buffer");
+  KEN_CORE_ASSERT(destination_offset + size <= destination.size(), "Copy writes past the end of the destination");
+  glCopyNamedBufferSubData(static_cast<GLuint>(source.native_handle()),
+                           static_cast<GLuint>(destination.native_handle()), static_cast<GLintptr>(source_offset),
+                           static_cast<GLintptr>(destination_offset), static_cast<GLsizeiptr>(size));
+}
+
 void OpenglRenderContext::set_render_target(Framebuffer& framebuffer) {
   glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(framebuffer.native_handle()));
 }

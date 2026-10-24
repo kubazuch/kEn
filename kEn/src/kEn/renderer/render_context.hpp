@@ -17,6 +17,7 @@
 
 namespace kEn {
 
+struct Buffer;
 class Texture;
 class UniformBuffer;
 class ShaderStorageBuffer;
@@ -225,6 +226,20 @@ class RenderContext {
    * @param bits Categories of access to synchronize.
    */
   virtual void memory_barrier(MemoryBarrierBits bits) = 0;
+
+  /**
+   * @brief Copies bytes between two GPU buffers on the GPU.
+   *
+   * Shader writes to @p source are copied only after a @ref memory_barrier with @ref MemoryBarrierBit::BufferUpdate.
+   *
+   * @param source             Buffer read from.
+   * @param source_offset      Byte offset of the first byte read.
+   * @param destination        Buffer written to; may be @p source when the ranges do not overlap.
+   * @param destination_offset Byte offset of the first byte written.
+   * @param size               Bytes to copy.
+   */
+  virtual void copy_buffer(const Buffer& source, std::size_t source_offset, const Buffer& destination,
+                           std::size_t destination_offset, std::size_t size) = 0;
 
   /**
    * @brief Redirects subsequent draw calls to the given framebuffer.
