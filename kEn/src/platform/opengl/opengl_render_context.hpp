@@ -84,6 +84,7 @@ class OpenglRenderContext final : public RenderContext {
   void memory_barrier(MemoryBarrierBits bits) override;
   void copy_buffer(const Buffer& source, std::size_t source_offset, const Buffer& destination,
                    std::size_t destination_offset, std::size_t size) override;
+  [[nodiscard]] std::unique_ptr<Fence> insert_fence() override;
 
   void set_render_target(Framebuffer& framebuffer) override;
   void bind_default_framebuffer() override;

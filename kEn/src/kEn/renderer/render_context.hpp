@@ -2,9 +2,11 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 
 #include <mEn/vec4.hpp>
 
+#include <kEn/renderer/fence.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/render_state.hpp>
 #include <kEn/renderer/shader.hpp>
@@ -240,6 +242,9 @@ class RenderContext {
    */
   virtual void copy_buffer(const Buffer& source, std::size_t source_offset, const Buffer& destination,
                            std::size_t destination_offset, std::size_t size) = 0;
+
+  /** @brief Inserts a fence after the commands issued so far. */
+  [[nodiscard]] virtual std::unique_ptr<Fence> insert_fence() = 0;
 
   /**
    * @brief Redirects subsequent draw calls to the given framebuffer.

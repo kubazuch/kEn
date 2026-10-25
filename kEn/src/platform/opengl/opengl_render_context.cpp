@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 
 #include <mEn/fwd.hpp>
 
@@ -12,6 +13,7 @@
 #include <kEn/core/log.hpp>
 #include <kEn/core/profile.hpp>
 #include <kEn/renderer/buffer.hpp>
+#include <kEn/renderer/fence.hpp>
 #include <kEn/renderer/framebuffer.hpp>
 #include <kEn/renderer/render_context.hpp>
 #include <kEn/renderer/render_state.hpp>
@@ -19,6 +21,7 @@
 #include <kEn/renderer/texture.hpp>
 #include <kEn/renderer/vertex_input.hpp>
 
+#include "opengl_fence.hpp"
 #include "opengl_profile.hpp"
 #include "opengl_state.hpp"
 #include "opengl_texture_format.hpp"
@@ -238,6 +241,8 @@ void OpenglRenderContext::copy_buffer(const Buffer& source, std::size_t source_o
                            static_cast<GLuint>(destination.native_handle()), static_cast<GLintptr>(source_offset),
                            static_cast<GLintptr>(destination_offset), static_cast<GLsizeiptr>(size));
 }
+
+std::unique_ptr<Fence> OpenglRenderContext::insert_fence() { return std::make_unique<OpenglFence>(); }
 
 void OpenglRenderContext::set_render_target(Framebuffer& framebuffer) {
   glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(framebuffer.native_handle()));
