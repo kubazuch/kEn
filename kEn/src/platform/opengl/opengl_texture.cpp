@@ -14,6 +14,7 @@
 #include <kEn/core/assert.hpp>
 #include <kEn/core/log.hpp>
 #include <kEn/core/profile.hpp>
+#include <kEn/renderer/buffer.hpp>
 #include <kEn/renderer/texture.hpp>
 #include <kEn/renderer/texture_format.hpp>
 
@@ -93,6 +94,21 @@ void read_texture_region(GLuint renderer_id, TextureFormat format, std::span<std
                        static_cast<GLsizei>(region.height), static_cast<GLsizei>(region.depth),
                        texture_format::pixel_format(format), texture_format::pixel_type(format),
                        static_cast<GLsizei>(data.size_bytes()), data.data());
+}
+
+/** @brief Copies @p region of level 0, slices from @p z on, tightly packed into @p buffer at @p offset. */
+void read_texture_region(GLuint renderer_id, TextureFormat format, const Buffer& buffer, std::size_t offset,
+                         const TextureRegion& region, std::uint32_t z) {
+  KEN_CORE_ASSERT(offset + region_bytes(region, format) <= buffer.size(), "Buffer must cover the region");
+
+  glBindBuffer(GL_PIXEL_PACK_BUFFER, static_cast<GLuint>(buffer.native_handle()));
+  glPixelStorei(GL_PACK_ALIGNMENT, 1);
+  glGetTextureSubImage(renderer_id, 0, static_cast<GLint>(region.x), static_cast<GLint>(region.y),
+                       static_cast<GLint>(z), static_cast<GLsizei>(region.width), static_cast<GLsizei>(region.height),
+                       static_cast<GLsizei>(region.depth), texture_format::pixel_format(format),
+                       texture_format::pixel_type(format), static_cast<GLsizei>(region_bytes(region, format)),
+                       reinterpret_cast<void*>(offset));  // NOLINT(performance-no-int-to-ptr)
+  glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 }
 
 }  // namespace
@@ -220,6 +236,14 @@ void OpenglTexture2D::read_region(std::span<std::byte> data, const TextureRegion
   KEN_CORE_ASSERT(region_inside(region, desc_, mip_level), "Region must lie inside the source mip");
 
   read_texture_region(renderer_id_, desc_.format, data, region, mip_level, 0);
+}
+
+void OpenglTexture2D::read_region(const Buffer& buffer, std::size_t offset, const TextureRegion& region) const {
+  KEN_PROFILE_FUNCTION();
+  KEN_CORE_ASSERT(renderer_id_ != 0);
+  KEN_CORE_ASSERT(region_inside(region, desc_, 0), "Region must lie inside the source mip");
+
+  read_texture_region(renderer_id_, desc_.format, buffer, offset, region, 0);
 }
 
 void OpenglTexture2D::allocate_storage() {
@@ -374,6 +398,14 @@ void OpenglTextureCube::read_region(std::span<std::byte> data, const TextureRegi
   read_texture_region(renderer_id_, desc_.format, data, region, mip_level, layer);
 }
 
+void OpenglTextureCube::read_region(const Buffer& buffer, std::size_t offset, const TextureRegion& region) const {
+  KEN_PROFILE_FUNCTION();
+  KEN_CORE_ASSERT(renderer_id_ != 0);
+  KEN_CORE_ASSERT(region_inside(region, desc_, 0), "Region must lie inside the source mip");
+
+  read_texture_region(renderer_id_, desc_.format, buffer, offset, region, 0);
+}
+
 void OpenglTextureCube::allocate_storage() {
   KEN_CORE_ASSERT(renderer_id_ == 0);
 
@@ -485,6 +517,14 @@ void OpenglTexture3D::read_region(std::span<std::byte> data, const TextureRegion
   KEN_CORE_ASSERT(region_inside(region, desc_, mip_level), "Region must lie inside the source mip");
 
   read_texture_region(renderer_id_, desc_.format, data, region, mip_level, region.z);
+}
+
+void OpenglTexture3D::read_region(const Buffer& buffer, std::size_t offset, const TextureRegion& region) const {
+  KEN_PROFILE_FUNCTION();
+  KEN_CORE_ASSERT(renderer_id_ != 0);
+  KEN_CORE_ASSERT(region_inside(region, desc_, 0), "Region must lie inside the source mip");
+
+  read_texture_region(renderer_id_, desc_.format, buffer, offset, region, region.z);
 }
 
 void OpenglTexture3D::allocate_storage() {

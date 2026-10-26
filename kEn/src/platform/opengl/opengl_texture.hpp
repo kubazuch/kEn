@@ -3,6 +3,7 @@
 #include <glad/gl.h>
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <filesystem>
 
@@ -55,6 +56,7 @@ class OpenglTexture2D : public Texture {
                   std::uint32_t mip_level, std::uint32_t layer) override;
   void read_region(std::span<std::byte> data, const TextureRegion& region, std::uint32_t mip_level,
                    std::uint32_t layer) const override;
+  void read_region(const Buffer& buffer, std::size_t offset, const TextureRegion& region) const override;
 
   [[nodiscard]] const SamplerDesc& sampler_desc() const noexcept { return sampler_desc_; }
   [[nodiscard]] GLuint renderer_id() const noexcept { return renderer_id_; }
@@ -117,6 +119,7 @@ class OpenglTextureCube : public Texture {
                   std::uint32_t mip_level, std::uint32_t layer) override;
   void read_region(std::span<std::byte> data, const TextureRegion& region, std::uint32_t mip_level,
                    std::uint32_t layer) const override;
+  void read_region(const Buffer& buffer, std::size_t offset, const TextureRegion& region) const override;
 
   [[nodiscard]] const SamplerDesc& sampler_desc() const noexcept { return sampler_desc_; }
   [[nodiscard]] GLuint renderer_id() const noexcept { return renderer_id_; }
@@ -167,6 +170,7 @@ class OpenglTexture3D : public Texture {
                   std::uint32_t mip_level, std::uint32_t layer) override;
   void read_region(std::span<std::byte> data, const TextureRegion& region, std::uint32_t mip_level,
                    std::uint32_t layer) const override;
+  void read_region(const Buffer& buffer, std::size_t offset, const TextureRegion& region) const override;
 
   [[nodiscard]] const SamplerDesc& sampler_desc() const noexcept { return sampler_desc_; }
   [[nodiscard]] GLuint renderer_id() const noexcept { return renderer_id_; }

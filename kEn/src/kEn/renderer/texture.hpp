@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <bit>
+#include <cstddef>
 #include <cstdint>
 #include <span>
 
@@ -246,6 +247,12 @@ class Texture {
                            std::uint32_t layer) const = 0;
   /** @brief Reads a region of mip level 0 of layer 0 back to CPU memory. */
   void read_region(std::span<std::byte> data, const TextureRegion& region) const { read_region(data, region, 0, 0); }
+  /**
+   * @brief Copies a region of mip level 0 of layer 0 into a GPU buffer, tightly packed, without waiting.
+   *
+   * The copy is done once the commands before it have finished; map @p buffer after a @ref Fence inserted later.
+   */
+  virtual void read_region(const Buffer& buffer, std::size_t offset, const TextureRegion& region) const = 0;
 
   /** @brief Returns the texture width in texels. */
   [[nodiscard]] std::uint32_t width() const noexcept { return desc().width; }
